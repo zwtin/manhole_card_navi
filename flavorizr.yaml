@@ -1,0 +1,32 @@
+# Flavorの設定
+app:
+  android:
+    flavorDimensions: "flavor-type"
+
+flavors:
+  development:
+    app:
+      name: "マンナビDev"
+
+    android:
+      applicationId: "com.zwtin.manholecardnavi.dev"
+      firebase:
+        config: "firebase/development/google-services.json"
+
+    ios:
+      bundleId: "com.zwtin.manholecardnavi.dev"
+      firebase:
+        config: "firebase/development/GoogleService-Info.plist"
+
+  production:
+    app:
+      name: "マンナビ"
+
+    android:
+      applicationId: "com.zwtin.manholecardnavi"
+      firebase:
+        config: "firebase/production/google-services.json"
+    ios:
+      bundleId: "com.zwtin.manholecardnavi"
+      firebase:
+        config: "firebase/production/GoogleService-Info.plist"
