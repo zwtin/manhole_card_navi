@@ -12,6 +12,14 @@ if (localPropertiesFile.exists()) {
     }
 }
 
+// key.propertiesを読み込む
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+// ここまで
+
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
     flutterVersionCode = '1'
@@ -59,22 +67,54 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    // key.properties内のデータを変数にセット
+    signingConfigs {
+        development {
+            keyAlias keystoreProperties['debugKeyAlias']
+            keyPassword keystoreProperties['debugKeyPassword']
+            storeFile keystoreProperties['debugStoreFile'] ? file(keystoreProperties['debugStoreFile']) : null
+            storePassword keystoreProperties['debugStorePassword']
+        }
+
+        production {
+            keyAlias keystoreProperties['releaseKeyAlias']
+            keyPassword keystoreProperties['releaseKeyPassword']
+            storeFile keystoreProperties['releaseStoreFile'] ? file(keystoreProperties['releaseStoreFile']) : null
+            storePassword keystoreProperties['releaseStorePassword']
+        }
+    }
+    // ここまで
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.zwtin.manhole_card_navi"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
+        minSdkVersion 20
+        targetSdkVersion 33
+        multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
 
     buildTypes {
+        debug {
+            signingConfig null // ★ 追加
+            debuggable true
+            productFlavors.development.signingConfig signingConfigs.development
+            productFlavors.production.signingConfig signingConfigs.production
+        }
+
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig null // ★ 追加
+            debuggable false
+            productFlavors.development.signingConfig signingConfigs.development
+            productFlavors.production.signingConfig signingConfigs.production
+
+            // この下がないと画像が表示できない
+            // https://github.com/Baseflow/flutter_cached_network_image/issues/497
+            shrinkResources false
+            minifyEnabled false
         }
     }
 }
@@ -83,4 +123,10 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.support:multidex:1.0.3'
+}
+
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
