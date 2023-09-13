@@ -56,7 +56,24 @@ dependencies:
   cloud_functions: ^4.4.0
   firebase_remote_config: ^4.2.5
 
+  # For immutable object
+  freezed_annotation: ^2.4.1
+  # For immutable object
+  json_annotation: ^4.8.1
+
+  # For local database
+  realm: ^1.4.0
+
+  # For save local
+  path_provider: ^2.1.1
+
 dev_dependencies:
+  build_runner: ^2.4.6
+  # For immutable object
+  freezed: ^2.4.1
+  # For immutable object
+  json_serializable: ^6.7.1
+
   flutter_test:
     sdk: flutter
 
