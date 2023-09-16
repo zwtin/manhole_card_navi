@@ -7,8 +7,6 @@ import 'package:manhole_card_navi/infra/dao/realm_prefecture_dao.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:realm/realm.dart';
 
-import '../flavors.dart';
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -74,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(F.title),
+        title: const Text(''),
       ),
       body: Center(
         child: propertyFile == null ? Container() : Image.file(propertyFile!),
