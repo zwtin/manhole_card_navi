@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/view_data/router_view_data.dart';
-import '/app/view_model/bottom_tab_view_model.dart';
 
-final routerProvider =
-    StateNotifierProvider.autoDispose<RouterNotifier, RouterViewData?>(
-  (ref) {
+final routerProvider = StateNotifierProvider.family
+    .autoDispose<RouterNotifier, RouterViewData?, Key?>(
+  (ref, key) {
     return RouterNotifier(ref);
   },
 );
@@ -19,10 +18,8 @@ class RouterNotifier extends StateNotifier<RouterViewData?> {
   Future<void> push({
     required Widget nextWidget,
   }) async {
-    final bottomTabIndex = _ref.read(bottomTabViewModelProvider).selectedIndex;
     state = RouterViewData(
       type: TransitionType.push,
-      bottomTabIndex: bottomTabIndex,
       nextWidget: nextWidget,
     );
   }
@@ -32,17 +29,6 @@ class RouterNotifier extends StateNotifier<RouterViewData?> {
   }) async {
     state = RouterViewData(
       type: TransitionType.pushReplacement,
-      bottomTabIndex: null,
-      nextWidget: nextWidget,
-    );
-  }
-
-  Future<void> pushRoot({
-    required Widget nextWidget,
-  }) async {
-    state = RouterViewData(
-      type: TransitionType.push,
-      bottomTabIndex: null,
       nextWidget: nextWidget,
     );
   }
@@ -52,7 +38,6 @@ class RouterNotifier extends StateNotifier<RouterViewData?> {
   }) async {
     state = RouterViewData(
       type: TransitionType.present,
-      bottomTabIndex: null,
       nextWidget: nextWidget,
     );
   }
@@ -60,14 +45,12 @@ class RouterNotifier extends StateNotifier<RouterViewData?> {
   Future<void> pop() async {
     state = const RouterViewData(
       type: TransitionType.pop,
-      bottomTabIndex: null,
     );
   }
 
   Future<void> popToRoot() async {
     state = const RouterViewData(
       type: TransitionType.popToRoot,
-      bottomTabIndex: null,
     );
   }
 

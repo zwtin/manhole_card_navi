@@ -7,7 +7,6 @@ part 'router_view_data.freezed.dart';
 abstract class RouterViewData implements _$RouterViewData {
   const factory RouterViewData({
     required TransitionType type,
-    required int? bottomTabIndex,
     Widget? nextWidget,
   }) = _RouterViewData;
   const RouterViewData._();

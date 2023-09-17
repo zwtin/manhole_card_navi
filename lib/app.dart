@@ -7,8 +7,10 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: StartView(),
+    return MaterialApp(
+      home: StartView(
+        key: UniqueKey(),
+      ),
     );
   }
 }

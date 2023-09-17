@@ -9,9 +9,10 @@ import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/check_update_use_case.dart';
 
 final startViewModelProvider =
-    ChangeNotifierProvider.autoDispose<StartViewModel>(
-  (ref) {
+    ChangeNotifierProvider.family.autoDispose<StartViewModel, Key?>(
+  (ref, key) {
     return StartViewModel(
+      key,
       ref,
       ref.watch(analyticsUseCaseProvider),
       ref.watch(checkUpdateUseCaseProvider),
@@ -21,11 +22,13 @@ final startViewModelProvider =
 
 class StartViewModel extends ChangeNotifier {
   StartViewModel(
+    this._key,
     this._ref,
     this._analyticsUseCase,
     this._checkUpdateUseCase,
   );
 
+  final Key? _key;
   final Ref _ref;
   final _logger = Logger();
 
@@ -60,8 +63,10 @@ class StartViewModel extends ChangeNotifier {
                 cancelButtonAction: null,
               );
         } else {
-          await _ref.read(routerProvider.notifier).pushReplacement(
-                nextWidget: const BottomTabView(),
+          await _ref.read(routerProvider(_key).notifier).pushReplacement(
+                nextWidget: BottomTabView(
+                  key: UniqueKey(),
+                ),
               );
         }
       },

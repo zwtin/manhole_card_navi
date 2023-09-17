@@ -5,9 +5,10 @@ import 'package:logger/logger.dart';
 import '/app/provider/router_provider.dart';
 
 final bottomTabViewModelProvider =
-    ChangeNotifierProvider.autoDispose<BottomTabViewModel>(
-  (ref) {
+    ChangeNotifierProvider.family.autoDispose<BottomTabViewModel, Key?>(
+  (ref, key) {
     return BottomTabViewModel(
+      key,
       ref,
     );
   },
@@ -15,9 +16,11 @@ final bottomTabViewModelProvider =
 
 class BottomTabViewModel extends ChangeNotifier {
   BottomTabViewModel(
+    this._key,
     this._ref,
   );
 
+  final Key? _key;
   final Ref _ref;
   final _logger = Logger();
 
@@ -29,7 +32,7 @@ class BottomTabViewModel extends ChangeNotifier {
 
   void onTap(int index) {
     if (selectedIndex == index) {
-      _ref.read(routerProvider.notifier).popToRoot();
+      _ref.read(routerProvider(_key).notifier).popToRoot();
     } else {
       selectedIndex = index;
       notifyListeners();

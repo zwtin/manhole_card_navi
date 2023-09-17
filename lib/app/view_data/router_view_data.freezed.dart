@@ -17,7 +17,6 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$RouterViewData {
   TransitionType get type => throw _privateConstructorUsedError;
-  int? get bottomTabIndex => throw _privateConstructorUsedError;
   Widget? get nextWidget => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -31,7 +30,7 @@ abstract class $RouterViewDataCopyWith<$Res> {
           RouterViewData value, $Res Function(RouterViewData) then) =
       _$RouterViewDataCopyWithImpl<$Res, RouterViewData>;
   @useResult
-  $Res call({TransitionType type, int? bottomTabIndex, Widget? nextWidget});
+  $Res call({TransitionType type, Widget? nextWidget});
 }
 
 /// @nodoc
@@ -48,7 +47,6 @@ class _$RouterViewDataCopyWithImpl<$Res, $Val extends RouterViewData>
   @override
   $Res call({
     Object? type = null,
-    Object? bottomTabIndex = freezed,
     Object? nextWidget = freezed,
   }) {
     return _then(_value.copyWith(
@@ -56,10 +54,6 @@ class _$RouterViewDataCopyWithImpl<$Res, $Val extends RouterViewData>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as TransitionType,
-      bottomTabIndex: freezed == bottomTabIndex
-          ? _value.bottomTabIndex
-          : bottomTabIndex // ignore: cast_nullable_to_non_nullable
-              as int?,
       nextWidget: freezed == nextWidget
           ? _value.nextWidget
           : nextWidget // ignore: cast_nullable_to_non_nullable
@@ -76,7 +70,7 @@ abstract class _$$_RouterViewDataCopyWith<$Res>
       __$$_RouterViewDataCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({TransitionType type, int? bottomTabIndex, Widget? nextWidget});
+  $Res call({TransitionType type, Widget? nextWidget});
 }
 
 /// @nodoc
@@ -91,7 +85,6 @@ class __$$_RouterViewDataCopyWithImpl<$Res>
   @override
   $Res call({
     Object? type = null,
-    Object? bottomTabIndex = freezed,
     Object? nextWidget = freezed,
   }) {
     return _then(_$_RouterViewData(
@@ -99,10 +92,6 @@ class __$$_RouterViewDataCopyWithImpl<$Res>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as TransitionType,
-      bottomTabIndex: freezed == bottomTabIndex
-          ? _value.bottomTabIndex
-          : bottomTabIndex // ignore: cast_nullable_to_non_nullable
-              as int?,
       nextWidget: freezed == nextWidget
           ? _value.nextWidget
           : nextWidget // ignore: cast_nullable_to_non_nullable
@@ -114,20 +103,16 @@ class __$$_RouterViewDataCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_RouterViewData extends _RouterViewData {
-  const _$_RouterViewData(
-      {required this.type, required this.bottomTabIndex, this.nextWidget})
-      : super._();
+  const _$_RouterViewData({required this.type, this.nextWidget}) : super._();
 
   @override
   final TransitionType type;
-  @override
-  final int? bottomTabIndex;
   @override
   final Widget? nextWidget;
 
   @override
   String toString() {
-    return 'RouterViewData(type: $type, bottomTabIndex: $bottomTabIndex, nextWidget: $nextWidget)';
+    return 'RouterViewData(type: $type, nextWidget: $nextWidget)';
   }
 
   @override
@@ -136,15 +121,12 @@ class _$_RouterViewData extends _RouterViewData {
         (other.runtimeType == runtimeType &&
             other is _$_RouterViewData &&
             (identical(other.type, type) || other.type == type) &&
-            (identical(other.bottomTabIndex, bottomTabIndex) ||
-                other.bottomTabIndex == bottomTabIndex) &&
             (identical(other.nextWidget, nextWidget) ||
                 other.nextWidget == nextWidget));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, type, bottomTabIndex, nextWidget);
+  int get hashCode => Object.hash(runtimeType, type, nextWidget);
 
   @JsonKey(ignore: true)
   @override
@@ -156,14 +138,11 @@ class _$_RouterViewData extends _RouterViewData {
 abstract class _RouterViewData extends RouterViewData {
   const factory _RouterViewData(
       {required final TransitionType type,
-      required final int? bottomTabIndex,
       final Widget? nextWidget}) = _$_RouterViewData;
   const _RouterViewData._() : super._();
 
   @override
   TransitionType get type;
-  @override
-  int? get bottomTabIndex;
   @override
   Widget? get nextWidget;
   @override

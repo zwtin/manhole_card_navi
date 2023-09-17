@@ -2,10 +2,9 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:manhole_card_navi/app/widget/router_widget.dart';
 
-import '/app/provider/router_provider.dart';
 import '/app/view/home_view.dart';
-import '/app/view_data/router_view_data.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/widget/alert_widget.dart';
 import '/gen/colors.gen.dart';
@@ -17,7 +16,7 @@ class BottomTabView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = ref.watch(bottomTabViewModelProvider);
+    final viewModel = ref.watch(bottomTabViewModelProvider(key));
     final controller = useTabController(initialLength: 2)
       ..index = viewModel.selectedIndex;
 
@@ -33,94 +32,62 @@ class BottomTabView extends HookConsumerWidget {
       const [],
     );
 
-    ref.listen(
-      routerProvider,
-      (previous, next) async {
-        switch (next?.type) {
-          case TransitionType.push:
-            if (next?.bottomTabIndex == null) {
-              await Navigator.of(context).push(
-                MaterialPageRoute<Widget>(
-                  builder: (newContext) {
-                    return next?.nextWidget ?? Container();
-                  },
-                ),
-              );
-            }
-            break;
-          case TransitionType.present:
-            await Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute<Widget>(
-                builder: (newContext) {
-                  return next?.nextWidget ?? Container();
-                },
-                fullscreenDialog: true,
-              ),
-            );
-            break;
-          case TransitionType.pop:
-            Navigator.of(context).pop();
-            break;
-          case TransitionType.popToRoot:
-            Navigator.of(context).popUntil((route) => route.isFirst);
-            break;
-          default:
-            break;
-        }
-      },
-    );
-
     return AlertWidget(
-      child: Scaffold(
-        bottomNavigationBar: ConvexAppBar(
-          backgroundColor: ColorName.background,
-          activeColor: ColorName.main,
-          controller: controller,
-          initialActiveIndex: viewModel.selectedIndex,
-          onTap: (index) {
-            ref.read(bottomTabViewModelProvider).onTap(index);
-          },
-          items: const [
-            TabItem<IconData>(
-              icon: Icons.map_outlined,
-              title: 'マップ',
-            ),
-            TabItem<IconData>(
-              icon: Icons.list_alt,
-              title: 'リスト',
-            ),
-          ],
-        ),
-        body: IndexedStack(
-          index: viewModel.selectedIndex,
-          children: <Widget>[
-            Navigator(
-              onGenerateRoute: (settings) {
-                return PageRouteBuilder<Widget>(
-                  pageBuilder: (
-                    context,
-                    animation1,
-                    animation2,
-                  ) {
-                    return const HomeView();
-                  },
-                );
-              },
-            ),
-            Navigator(
-              onGenerateRoute: (settings) {
-                return PageRouteBuilder<Widget>(
-                  pageBuilder: (
-                    context,
-                    animation1,
-                    animation2,
-                  ) {
-                    return Container();
-                  },
-                );
-              },
-            ),
-          ],
+      child: RouterWidget(
+        key: key,
+        child: Scaffold(
+          bottomNavigationBar: ConvexAppBar(
+            backgroundColor: ColorName.background,
+            activeColor: ColorName.main,
+            controller: controller,
+            initialActiveIndex: viewModel.selectedIndex,
+            onTap: (index) {
+              ref.read(bottomTabViewModelProvider(key)).onTap(index);
+            },
+            items: const [
+              TabItem<IconData>(
+                icon: Icons.map_outlined,
+                title: 'マップ',
+              ),
+              TabItem<IconData>(
+                icon: Icons.list_alt,
+                title: 'リスト',
+              ),
+            ],
+          ),
+          body: IndexedStack(
+            index: viewModel.selectedIndex,
+            children: <Widget>[
+              Navigator(
+                onGenerateRoute: (settings) {
+                  return PageRouteBuilder<Widget>(
+                    pageBuilder: (
+                      context,
+                      animation1,
+                      animation2,
+                    ) {
+                      return HomeView(
+                        key: UniqueKey(),
+                      );
+                    },
+                  );
+                },
+              ),
+              Navigator(
+                onGenerateRoute: (settings) {
+                  return PageRouteBuilder<Widget>(
+                    pageBuilder: (
+                      context,
+                      animation1,
+                      animation2,
+                    ) {
+                      return Container();
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
