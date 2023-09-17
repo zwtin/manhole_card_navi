@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:manhole_card_navi/app/widget/router_widget.dart';
 
@@ -58,8 +59,16 @@ class HomeView extends HookConsumerWidget {
             ),
           ], // 影をなくす
         ),
-        body: Container(
-          color: ColorName.main,
+        body: GoogleMap(
+          onMapCreated: (controller) async {
+            ref
+                .read(homeViewModelProvider(key))
+                .setGoogleMapController(controller);
+          },
+          initialCameraPosition: const CameraPosition(
+            target: LatLng(35.80099213322445, 139.71850198834352),
+            zoom: 17.0,
+          ),
         ),
       ),
     );

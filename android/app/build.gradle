@@ -95,6 +95,9 @@ android {
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        manifestPlaceholders += [
+            googleMapApiKey: keystoreProperties['googleMapsAPIKey'],
+        ]
     }
 
     buildTypes {
