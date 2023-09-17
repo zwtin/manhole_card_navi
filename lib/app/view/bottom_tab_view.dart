@@ -4,9 +4,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/provider/router_provider.dart';
+import '/app/view/home_view.dart';
 import '/app/view_data/router_view_data.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/widget/alert_widget.dart';
+import '/gen/colors.gen.dart';
 
 class BottomTabView extends HookConsumerWidget {
   const BottomTabView({
@@ -71,8 +73,8 @@ class BottomTabView extends HookConsumerWidget {
     return AlertWidget(
       child: Scaffold(
         bottomNavigationBar: ConvexAppBar(
-          backgroundColor: Colors.black87,
-          activeColor: const Color(0xFFFFCC00),
+          backgroundColor: ColorName.background,
+          activeColor: ColorName.main,
           controller: controller,
           initialActiveIndex: viewModel.selectedIndex,
           onTap: (index) {
@@ -80,12 +82,12 @@ class BottomTabView extends HookConsumerWidget {
           },
           items: const [
             TabItem<IconData>(
-              icon: Icons.home,
-              title: 'ホーム',
+              icon: Icons.map_outlined,
+              title: 'マップ',
             ),
             TabItem<IconData>(
-              icon: Icons.person,
-              title: 'マイページ',
+              icon: Icons.list_alt,
+              title: 'リスト',
             ),
           ],
         ),
@@ -100,7 +102,7 @@ class BottomTabView extends HookConsumerWidget {
                     animation1,
                     animation2,
                   ) {
-                    return Container();
+                    return const HomeView();
                   },
                 );
               },

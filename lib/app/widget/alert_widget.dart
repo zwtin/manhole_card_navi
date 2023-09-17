@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:manhole_card_navi/gen/colors.gen.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '/app/provider/alert_provider.dart';
@@ -32,7 +33,7 @@ class AlertWidget extends HookConsumerWidget {
                 ref.read(alertProvider.notifier).dismiss();
                 await cancelButtonViewData.action();
               },
-              color: const Color(0xFFFFCC00),
+              color: ColorName.main,
               child: Text(cancelButtonViewData.title),
             ));
           }
@@ -44,7 +45,7 @@ class AlertWidget extends HookConsumerWidget {
                 ref.read(alertProvider.notifier).dismiss();
                 await okButtonViewData.action();
               },
-              color: const Color(0xFFFFCC00),
+              color: ColorName.main,
               child: Text(okButtonViewData.title),
             ));
           }

@@ -84,8 +84,12 @@ dependencies:
   # To Use SharedPreferences
   streaming_shared_preferences: ^2.0.0
 
+  introduction_screen: ^3.1.11
+
 dev_dependencies:
   build_runner: ^2.4.6
+  flutter_gen_runner: ^5.3.1
+
   # For immutable object
   freezed: ^2.4.1
   # For immutable object
@@ -113,9 +117,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -142,3 +145,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+
+# pubspec.yaml
+# ...
+
+flutter_gen:
+  colors:
+    inputs:
+      - assets/colors/colors.xml

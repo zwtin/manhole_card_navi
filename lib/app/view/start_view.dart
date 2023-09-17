@@ -7,6 +7,7 @@ import '/app/provider/router_provider.dart';
 import '/app/view_data/router_view_data.dart';
 import '/app/view_model/start_view_model.dart';
 import '/app/widget/alert_widget.dart';
+import '/gen/colors.gen.dart';
 
 class StartView extends HookConsumerWidget {
   const StartView({
@@ -70,7 +71,7 @@ class StartView extends HookConsumerWidget {
         color: Colors.grey,
         child: Scaffold(
           body: Container(
-            color: const Color(0xFFFFCC00),
+            color: ColorName.main,
           ),
         ),
       ),
