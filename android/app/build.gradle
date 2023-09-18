@@ -96,7 +96,8 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         manifestPlaceholders += [
-            googleMapApiKey: keystoreProperties['googleMapsAPIKey'],
+            debugGoogleMapApiKey: keystoreProperties['debugGoogleMapsAPIKey'],
+            releaseGoogleMapApiKey: keystoreProperties['releaseGoogleMapsAPIKey'],
         ]
     }
 

@@ -10,11 +10,19 @@ import GoogleMaps
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
 
-    if let path = Bundle.main.path(forResource: "Keys", ofType: "plist"),
+    #if development
+    if let path = Bundle.main.path(forResource: "DevelopmentKeys", ofType: "plist"),
        let keys = NSDictionary(contentsOfFile: path),
        let key = keys["Google Maps API key"] as? String {
         GMSServices.provideAPIKey(key)
     }
+    #elseif production
+    if let path = Bundle.main.path(forResource: "ProductionKeys", ofType: "plist"),
+       let keys = NSDictionary(contentsOfFile: path),
+       let key = keys["Google Maps API key"] as? String {
+        GMSServices.provideAPIKey(key)
+    }
+    #endif
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
