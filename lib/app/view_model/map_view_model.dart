@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/app/provider/router_provider.dart';
-import 'package:manhole_card_navi/app/view/home_view.dart';
 
-final homeViewModelProvider =
-    ChangeNotifierProvider.family.autoDispose<HomeViewModel, Key?>(
+import '/app/provider/router_provider.dart';
+import '/app/view/map_view.dart';
+
+final mapViewModelProvider =
+    ChangeNotifierProvider.family.autoDispose<MapViewModel, Key?>(
   (ref, key) {
-    return HomeViewModel(
+    return MapViewModel(
       key,
       ref,
     );
   },
 );
 
-class HomeViewModel extends ChangeNotifier {
-  HomeViewModel(
+class MapViewModel extends ChangeNotifier {
+  MapViewModel(
     this._key,
     this._ref,
   );
@@ -28,7 +29,7 @@ class HomeViewModel extends ChangeNotifier {
   late GoogleMapController mapController;
 
   Future<void> onLoad() async {
-    _logger.d('HomeViewModel');
+    _logger.d('MapViewModel');
   }
 
   void setGoogleMapController(GoogleMapController controller) {
@@ -37,7 +38,7 @@ class HomeViewModel extends ChangeNotifier {
 
   void onTap() {
     _ref.read(routerProvider(_key).notifier).push(
-          nextWidget: HomeView(
+          nextWidget: MapView(
             key: UniqueKey(),
           ),
         );
@@ -46,6 +47,6 @@ class HomeViewModel extends ChangeNotifier {
   @override
   void dispose() {
     super.dispose();
-    _logger.d('HomeViewModel dispose');
+    _logger.d('MapViewModel dispose');
   }
 }

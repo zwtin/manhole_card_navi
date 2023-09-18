@@ -1,8 +1,8 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/domain/entity/inquired_app_version.dart';
 
+import '/domain/entity/inquired_app_version.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/remote_config_repository.dart';
 

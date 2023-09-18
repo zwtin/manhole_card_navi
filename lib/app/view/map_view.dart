@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:manhole_card_navi/app/widget/router_widget.dart';
 
-import '/app/view_model/home_view_model.dart';
+import '/app/view_model/map_view_model.dart';
+import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';
 
-class HomeView extends HookConsumerWidget {
-  const HomeView({
+class MapView extends HookConsumerWidget {
+  const MapView({
     super.key,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = ref.watch(homeViewModelProvider(key));
+    final viewModel = ref.watch(mapViewModelProvider(key));
 
     useEffect(
       () {
@@ -33,7 +33,7 @@ class HomeView extends HookConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'ホーム',
+            'マップ',
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -54,7 +54,7 @@ class HomeView extends HookConsumerWidget {
                 Icons.menu,
               ),
               onPressed: () {
-                ref.read(homeViewModelProvider(key)).onTap();
+                ref.read(mapViewModelProvider(key)).onTap();
               },
             ),
           ], // 影をなくす
@@ -62,7 +62,7 @@ class HomeView extends HookConsumerWidget {
         body: GoogleMap(
           onMapCreated: (controller) async {
             ref
-                .read(homeViewModelProvider(key))
+                .read(mapViewModelProvider(key))
                 .setGoogleMapController(controller);
           },
           initialCameraPosition: const CameraPosition(

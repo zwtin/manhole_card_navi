@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:manhole_card_navi/app/provider/router_provider.dart';
-import 'package:manhole_card_navi/app/view_data/router_view_data.dart';
+
+import '/app/provider/router_provider.dart';
+import '/app/view_data/router_view_data.dart';
 
 class RouterWidget extends HookConsumerWidget {
   const RouterWidget({

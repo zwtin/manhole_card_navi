@@ -1,8 +1,8 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/domain/entity/current_app_version.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '/domain/entity/current_app_version.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/app_info_repository.dart';
 import '/temporary_provider.dart';
