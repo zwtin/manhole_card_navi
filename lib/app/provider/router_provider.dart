@@ -6,14 +6,12 @@ import '/app/view_data/router_view_data.dart';
 final routerProvider = StateNotifierProvider.family
     .autoDispose<RouterNotifier, RouterViewData?, Key?>(
   (ref, key) {
-    return RouterNotifier(ref);
+    return RouterNotifier();
   },
 );
 
 class RouterNotifier extends StateNotifier<RouterViewData?> {
-  RouterNotifier(this._ref) : super(null);
-
-  final Ref _ref;
+  RouterNotifier() : super(null);
 
   Future<void> push({
     required Widget nextWidget,

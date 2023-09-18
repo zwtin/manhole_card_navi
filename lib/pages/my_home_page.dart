@@ -22,15 +22,15 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    var config = Configuration.local([RealmPrefectureDao.schema]);
+    var config = Configuration.local([RealmPrefectureDAO.schema]);
     var realm = Realm(config);
 
-    var prefecture = RealmPrefectureDao('aaa', '北海道');
+    var prefecture = RealmPrefectureDAO('aaa', '北海道');
     realm.write(() {
       realm.add(prefecture);
     });
 
-    var prefectures = realm.all<RealmPrefectureDao>();
+    var prefectures = realm.all<RealmPrefectureDAO>();
     var hokkaido = prefectures[0];
     print("hokkaido id is ${hokkaido.id} name ${hokkaido.name}");
 

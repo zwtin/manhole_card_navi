@@ -10,9 +10,15 @@ import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';
 
 class BottomTabView extends HookConsumerWidget {
-  const BottomTabView({
+  BottomTabView({
     super.key,
   });
+
+  final tab0 = MapView(
+    key: UniqueKey(),
+  );
+
+  final tab1 = Container();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -66,9 +72,7 @@ class BottomTabView extends HookConsumerWidget {
                       animation1,
                       animation2,
                     ) {
-                      return MapView(
-                        key: UniqueKey(),
-                      );
+                      return tab0;
                     },
                   );
                 },
@@ -81,7 +85,7 @@ class BottomTabView extends HookConsumerWidget {
                       animation1,
                       animation2,
                     ) {
-                      return Container();
+                      return tab1;
                     },
                   );
                 },

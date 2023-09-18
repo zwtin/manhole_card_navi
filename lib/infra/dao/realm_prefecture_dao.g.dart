@@ -6,9 +6,9 @@ part of 'realm_prefecture_dao.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
-class RealmPrefectureDao extends _RealmPrefectureDao
+class RealmPrefectureDAO extends _RealmPrefectureDAO
     with RealmEntity, RealmObjectBase, RealmObject {
-  RealmPrefectureDao(
+  RealmPrefectureDAO(
     String id,
     String name,
   ) {
@@ -16,7 +16,7 @@ class RealmPrefectureDao extends _RealmPrefectureDao
     RealmObjectBase.set(this, 'name', name);
   }
 
-  RealmPrefectureDao._();
+  RealmPrefectureDAO._();
 
   @override
   String get id => RealmObjectBase.get<String>(this, 'id') as String;
@@ -29,19 +29,19 @@ class RealmPrefectureDao extends _RealmPrefectureDao
   set name(String value) => RealmObjectBase.set(this, 'name', value);
 
   @override
-  Stream<RealmObjectChanges<RealmPrefectureDao>> get changes =>
-      RealmObjectBase.getChanges<RealmPrefectureDao>(this);
+  Stream<RealmObjectChanges<RealmPrefectureDAO>> get changes =>
+      RealmObjectBase.getChanges<RealmPrefectureDAO>(this);
 
   @override
-  RealmPrefectureDao freeze() =>
-      RealmObjectBase.freezeObject<RealmPrefectureDao>(this);
+  RealmPrefectureDAO freeze() =>
+      RealmObjectBase.freezeObject<RealmPrefectureDAO>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(RealmPrefectureDao._);
+    RealmObjectBase.registerFactory(RealmPrefectureDAO._);
     return const SchemaObject(
-        ObjectType.realmObject, RealmPrefectureDao, 'RealmPrefectureDao', [
+        ObjectType.realmObject, RealmPrefectureDAO, 'RealmPrefectureDAO', [
       SchemaProperty('id', RealmPropertyType.string),
       SchemaProperty('name', RealmPropertyType.string),
     ]);
