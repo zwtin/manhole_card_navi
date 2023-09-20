@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:manhole_card_navi/infra/dao/realm_card_dao.dart';
 import 'package:manhole_card_navi/infra/dao/realm_prefecture_dao.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:manhole_card_navi/infra/dao/realm_volume_dao.dart';
 import 'package:realm/realm.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -22,48 +22,68 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    var config = Configuration.local([RealmPrefectureDAO.schema]);
+    var config = Configuration.local([
+      RealmCardDAO.schema,
+      RealmPrefectureDAO.schema,
+      RealmVolumeDAO.schema,
+    ]);
     var realm = Realm(config);
 
-    var prefecture = RealmPrefectureDAO('aaa', '北海道');
+    var card = RealmCardDAO('00-101-A001', '日本下水道事業団');
+    var prefecture = RealmPrefectureDAO('00', '全国');
+    var volume1 = RealmVolumeDAO('0000', '第01弾');
+    var volume2 = RealmVolumeDAO('0001', '第02弾');
+    card.prefectures.add(prefecture);
+    card.volumes.add(volume1);
+    card.volumes.add(volume2);
+
     realm.write(() {
-      realm.add(prefecture);
+      realm.add(card);
     });
+    // realm.close();
 
-    var prefectures = realm.all<RealmPrefectureDAO>();
-    var hokkaido = prefectures[0];
-    print("hokkaido id is ${hokkaido.id} name ${hokkaido.name}");
+    // realm.write(() {
+    //   realm.deleteAll<RealmPrefectureDAO>();
+    // });
+    // realm.write(() {
+    //   realm.deleteAll();
+    // });
+    // realm.close();
 
-    final firebaseStorageRef = FirebaseStorage.instance.ref();
-    final firebaseStoragePath =
-        firebaseStorageRef.child('images/cards/00-101-A01.jpg');
-    try {
-      const oneMegabyte = 1024 * 1024;
-      Future(() async {
-        final Uint8List? data = await firebaseStoragePath.getData(oneMegabyte);
-        if (data == null) {
-          return;
-        }
-        final appDirectory = await getApplicationDocumentsDirectory();
-        final imageDirectory = Directory('${appDirectory.path}/images');
-        var imagePath = '';
-        if (!imageDirectory.existsSync()) {
-          imageDirectory.createSync(recursive: true);
-          imageDirectory.createSync();
-          imagePath = '${imageDirectory.path}/00-101-A01.jpg';
-          final imageFile = File(imagePath);
-          await imageFile.writeAsBytes(data);
-        } else {
-          imageDirectory.deleteSync(recursive: true);
-          imagePath = '${imageDirectory.path}/00-101-A01.jpg';
-        }
-        final readFile = File(imagePath);
-        setState(() {
-          bytes = data;
-          propertyFile = readFile;
-        });
-      });
-    } on FirebaseException catch (e) {}
+    // var prefectures = realm.all<RealmPrefectureDAO>();
+    // var hokkaido = prefectures[0];
+    // print("hokkaido id is ${hokkaido.id} name ${hokkaido.name}");
+
+    // final firebaseStorageRef = FirebaseStorage.instance.ref();
+    // final firebaseStoragePath =
+    //     firebaseStorageRef.child('images/cards/00-101-A01.jpg');
+    // try {
+    //   const oneMegabyte = 1024 * 1024;
+    //   Future(() async {
+    //     final Uint8List? data = await firebaseStoragePath.getData(oneMegabyte);
+    //     if (data == null) {
+    //       return;
+    //     }
+    //     final appDirectory = await getApplicationDocumentsDirectory();
+    //     final imageDirectory = Directory('${appDirectory.path}/images');
+    //     var imagePath = '';
+    //     if (!imageDirectory.existsSync()) {
+    //       imageDirectory.createSync(recursive: true);
+    //       imageDirectory.createSync();
+    //       imagePath = '${imageDirectory.path}/00-101-A01.jpg';
+    //       final imageFile = File(imagePath);
+    //       await imageFile.writeAsBytes(data);
+    //     } else {
+    //       imageDirectory.deleteSync(recursive: true);
+    //       imagePath = '${imageDirectory.path}/00-101-A01.jpg';
+    //     }
+    //     final readFile = File(imagePath);
+    //     setState(() {
+    //       bytes = data;
+    //       propertyFile = readFile;
+    //     });
+    //   });
+    // } on FirebaseException catch (e) {}
 
     // cars = realm.all<Car>().query("make == 'Tesla'");
   }

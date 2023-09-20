@@ -2,6 +2,7 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:manhole_card_navi/pages/my_home_page.dart';
 
 import '/app/view/map_view.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
@@ -18,7 +19,9 @@ class BottomTabView extends HookConsumerWidget {
     key: UniqueKey(),
   );
 
-  final tab1 = Container();
+  final tab1 = MyHomePage(
+    key: UniqueKey(),
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

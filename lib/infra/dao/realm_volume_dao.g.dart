@@ -1,14 +1,14 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'realm_prefecture_dao.dart';
+part of 'realm_volume_dao.dart';
 
 // **************************************************************************
 // RealmObjectGenerator
 // **************************************************************************
 
-class RealmPrefectureDAO extends $RealmPrefectureDAO
+class RealmVolumeDAO extends $RealmVolumeDAO
     with RealmEntity, RealmObjectBase, RealmObject {
-  RealmPrefectureDAO(
+  RealmVolumeDAO(
     String id,
     String name,
   ) {
@@ -16,7 +16,7 @@ class RealmPrefectureDAO extends $RealmPrefectureDAO
     RealmObjectBase.set(this, 'name', name);
   }
 
-  RealmPrefectureDAO._();
+  RealmVolumeDAO._();
 
   @override
   String get id => RealmObjectBase.get<String>(this, 'id') as String;
@@ -29,20 +29,19 @@ class RealmPrefectureDAO extends $RealmPrefectureDAO
   set name(String value) => RealmObjectBase.set(this, 'name', value);
 
   @override
-  Stream<RealmObjectChanges<RealmPrefectureDAO>> get changes =>
-      RealmObjectBase.getChanges<RealmPrefectureDAO>(this);
+  Stream<RealmObjectChanges<RealmVolumeDAO>> get changes =>
+      RealmObjectBase.getChanges<RealmVolumeDAO>(this);
 
   @override
-  RealmPrefectureDAO freeze() =>
-      RealmObjectBase.freezeObject<RealmPrefectureDAO>(this);
+  RealmVolumeDAO freeze() => RealmObjectBase.freezeObject<RealmVolumeDAO>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(RealmPrefectureDAO._);
+    RealmObjectBase.registerFactory(RealmVolumeDAO._);
     return const SchemaObject(
-        ObjectType.realmObject, RealmPrefectureDAO, 'RealmPrefectureDAO', [
-      SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
+        ObjectType.realmObject, RealmVolumeDAO, 'RealmVolumeDAO', [
+      SchemaProperty('id', RealmPropertyType.string),
       SchemaProperty('name', RealmPropertyType.string),
     ]);
   }
