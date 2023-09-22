@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
-import '/app/view/bottom_tab_view.dart';
+import '/app/view/master_update_view.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/check_update_use_case.dart';
 
@@ -39,8 +39,8 @@ class StartViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _logger.d('StartViewModel');
-    await _checkNeedUpdate();
     await _sendEvent();
+    await _checkNeedUpdate();
   }
 
   Future<void> _checkNeedUpdate() async {
@@ -64,7 +64,7 @@ class StartViewModel extends ChangeNotifier {
               );
         } else {
           await _ref.read(routerProvider(_key).notifier).pushReplacement(
-                nextWidget: BottomTabView(
+                nextWidget: MasterUpdateView(
                   key: UniqueKey(),
                 ),
               );

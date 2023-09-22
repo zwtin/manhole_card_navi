@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
 import '/domain/entity/inquired_app_version.dart';
+import '/domain/entity/inquired_master_version.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/remote_config_repository.dart';
 
@@ -21,11 +22,21 @@ class RemoteConfigRepositoryImpl implements RemoteConfigRepository {
 
   @override
   Future<Result<InquiredAppVersion>> getInquiredAppVersion() async {
-    final forceUpdateAppVersion =
-        _remoteConfig.getString('force_update_app_version');
+    final inquiredAppVersion = _remoteConfig.getString('inquired_app_version');
     return Result.success(
       InquiredAppVersion(
-        version: forceUpdateAppVersion,
+        version: inquiredAppVersion,
+      ),
+    );
+  }
+
+  @override
+  Future<Result<InquiredMasterVersion>> getInquiredMasterVersion() async {
+    final inquiredMasterVersion =
+        _remoteConfig.getString('inquired_master_version');
+    return Result.success(
+      InquiredMasterVersion(
+        version: inquiredMasterVersion,
       ),
     );
   }

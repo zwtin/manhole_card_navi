@@ -5,8 +5,10 @@ import 'package:logger/logger.dart';
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/view/bottom_tab_view.dart';
+import '/domain/entity/result.dart';
+import '/use_case/dto/need_master_update_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
-import '/use_case/use_case/check_update_use_case.dart';
+import '/use_case/use_case/master_update_use_case.dart';
 
 final masterUpdateViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<MasterUpdateViewModel, Key?>(
@@ -15,7 +17,7 @@ final masterUpdateViewModelProvider =
       key,
       ref,
       ref.watch(analyticsUseCaseProvider),
-      ref.watch(checkUpdateUseCaseProvider),
+      ref.watch(masterUpdateUseCaseProvider),
     );
   },
 );
@@ -25,7 +27,7 @@ class MasterUpdateViewModel extends ChangeNotifier {
     this._key,
     this._ref,
     this._analyticsUseCase,
-    this._checkUpdateUseCase,
+    this._masterUpdateUseCase,
   );
 
   final Key? _key;
@@ -33,56 +35,46 @@ class MasterUpdateViewModel extends ChangeNotifier {
   final _logger = Logger();
 
   final AnalyticsUseCase _analyticsUseCase;
-  final CheckUpdateUseCase _checkUpdateUseCase;
+  final MasterUpdateUseCase _masterUpdateUseCase;
 
   bool isLoading = false;
 
   Future<void> onLoad() async {
     _logger.d('MasterUpdateViewModel');
-    await _checkNeedUpdate();
     await _sendEvent();
+    await _checkNeedUpdate();
   }
 
   Future<void> _checkNeedUpdate() async {
     isLoading = true;
     notifyListeners();
-    final result = await _checkUpdateUseCase.getNeedUpdate();
+    final getNeedMasterUpdateResult =
+        await _masterUpdateUseCase.getNeedMasterUpdate();
     isLoading = false;
     notifyListeners();
-    result.when(
-      success: (dto) async {
-        if (dto.need) {
-          _ref.read(alertProvider.notifier).show(
-                title: 'エラー',
-                message: '最新バージョンのアプリをお使いください',
-                okButtonTitle: 'OK',
-                okButtonAction: () async {
-                  await _checkNeedUpdate();
-                },
-                cancelButtonTitle: null,
-                cancelButtonAction: null,
-              );
-        } else {
-          await _ref.read(routerProvider(_key).notifier).pushReplacement(
-                nextWidget: BottomTabView(
-                  key: UniqueKey(),
-                ),
-              );
-        }
-      },
-      failure: (exception) async {
-        _ref.read(alertProvider.notifier).show(
-              title: 'エラー',
-              message: 'アプリバージョンの取得に失敗しました',
-              okButtonTitle: 'OK',
-              okButtonAction: () async {
-                await _checkNeedUpdate();
-              },
-              cancelButtonTitle: null,
-              cancelButtonAction: null,
-            );
-      },
-    );
+    if (getNeedMasterUpdateResult is Failure) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: 'マスターデータのバージョンの取得に失敗しました',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {
+              await _checkNeedUpdate();
+            },
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+      return;
+    }
+    final dto =
+        (getNeedMasterUpdateResult as Success<NeedMasterUpdateDTO>).value;
+    if (dto.need) {
+      _logger.d('need master update');
+    }
+    await _ref.read(routerProvider(_key).notifier).pushReplacement(
+          nextWidget: BottomTabView(
+            key: UniqueKey(),
+          ),
+        );
   }
 
   Future<void> _sendEvent() async {
