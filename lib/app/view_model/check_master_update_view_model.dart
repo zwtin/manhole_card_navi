@@ -8,26 +8,26 @@ import '/app/view/bottom_tab_view.dart';
 import '/domain/entity/result.dart';
 import '/use_case/dto/need_master_update_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
-import '/use_case/use_case/master_update_use_case.dart';
+import '/use_case/use_case/check_master_update_use_case.dart';
 
-final masterUpdateViewModelProvider =
-    ChangeNotifierProvider.family.autoDispose<MasterUpdateViewModel, Key?>(
+final checkMasterUpdateViewModelProvider =
+    ChangeNotifierProvider.family.autoDispose<CheckMasterUpdateViewModel, Key?>(
   (ref, key) {
-    return MasterUpdateViewModel(
+    return CheckMasterUpdateViewModel(
       key,
       ref,
       ref.watch(analyticsUseCaseProvider),
-      ref.watch(masterUpdateUseCaseProvider),
+      ref.watch(checkMasterUpdateUseCaseProvider),
     );
   },
 );
 
-class MasterUpdateViewModel extends ChangeNotifier {
-  MasterUpdateViewModel(
+class CheckMasterUpdateViewModel extends ChangeNotifier {
+  CheckMasterUpdateViewModel(
     this._key,
     this._ref,
     this._analyticsUseCase,
-    this._masterUpdateUseCase,
+    this._checkMasterUpdateUseCase,
   );
 
   final Key? _key;
@@ -35,12 +35,12 @@ class MasterUpdateViewModel extends ChangeNotifier {
   final _logger = Logger();
 
   final AnalyticsUseCase _analyticsUseCase;
-  final MasterUpdateUseCase _masterUpdateUseCase;
+  final CheckMasterUpdateUseCase _checkMasterUpdateUseCase;
 
   bool isLoading = false;
 
   Future<void> onLoad() async {
-    _logger.d('MasterUpdateViewModel');
+    _logger.d('CheckMasterUpdateViewModel');
     await _sendEvent();
     await _checkNeedUpdate();
   }
@@ -49,7 +49,7 @@ class MasterUpdateViewModel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     final getNeedMasterUpdateResult =
-        await _masterUpdateUseCase.getNeedMasterUpdate();
+        await _checkMasterUpdateUseCase.getNeedMasterUpdate();
     isLoading = false;
     notifyListeners();
     if (getNeedMasterUpdateResult is Failure) {
@@ -80,13 +80,13 @@ class MasterUpdateViewModel extends ChangeNotifier {
   Future<void> _sendEvent() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
-      parameters: {'screen_name': 'master_update_view'},
+      parameters: {'screen_name': 'check_master_update_view'},
     );
   }
 
   @override
   void dispose() {
     super.dispose();
-    _logger.d('MasterUpdateViewModel dispose');
+    _logger.d('CheckMasterUpdateViewModel dispose');
   }
 }

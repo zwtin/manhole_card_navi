@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/app/view/start_view.dart';
+import '/app/view/check_app_update_view.dart';
 
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
@@ -8,7 +8,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: StartView(
+      home: CheckAppUpdateView(
         key: UniqueKey(),
       ),
     );

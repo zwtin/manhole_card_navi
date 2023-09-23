@@ -11,19 +11,20 @@ import '/infra/repository_impl/master_version_repository_impl.dart';
 import '/infra/repository_impl/remote_config_repository_impl.dart';
 import '/use_case/dto/need_master_update_dto.dart';
 
-final masterUpdateUseCaseProvider = Provider.autoDispose<MasterUpdateUseCase>(
+final checkMasterUpdateUseCaseProvider =
+    Provider.autoDispose<CheckMasterUpdateUseCase>(
   (ref) {
-    final masterUpdateUseCase = MasterUpdateUseCase(
+    final checkMasterUpdateUseCase = CheckMasterUpdateUseCase(
       ref.watch(masterVersionRepositoryProvider),
       ref.watch(remoteConfigRepositoryProvider),
     );
-    ref.onDispose(masterUpdateUseCase.dispose);
-    return masterUpdateUseCase;
+    ref.onDispose(checkMasterUpdateUseCase.dispose);
+    return checkMasterUpdateUseCase;
   },
 );
 
-class MasterUpdateUseCase {
-  MasterUpdateUseCase(
+class CheckMasterUpdateUseCase {
+  CheckMasterUpdateUseCase(
     this._masterVersionRepository,
     this._remoteConfigRepository,
   );
@@ -61,6 +62,6 @@ class MasterUpdateUseCase {
   }
 
   void dispose() {
-    _logger.d('MasterUpdateUseCase dispose');
+    _logger.d('CheckMasterUpdateUseCase dispose');
   }
 }

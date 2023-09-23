@@ -3,19 +3,19 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
-import '/app/view_model/start_view_model.dart';
+import '/app/view_model/check_app_update_view_model.dart';
 import '/app/widget/alert_widget.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';
 
-class StartView extends HookConsumerWidget {
-  const StartView({
+class CheckAppUpdateView extends HookConsumerWidget {
+  const CheckAppUpdateView({
     super.key,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = ref.watch(startViewModelProvider(key));
+    final viewModel = ref.watch(checkAppUpdateViewModelProvider(key));
     useEffect(
       () {
         WidgetsBinding.instance.addPostFrameCallback(

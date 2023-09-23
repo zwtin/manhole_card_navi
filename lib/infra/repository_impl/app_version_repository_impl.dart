@@ -4,21 +4,21 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '/domain/entity/current_app_version.dart';
 import '/domain/entity/result.dart';
-import '/domain/repository/app_info_repository.dart';
+import '/domain/repository/app_version_repository.dart';
 import '/temporary_provider.dart';
 
-final appInfoRepositoryProvider = Provider.autoDispose<AppInfoRepository>(
+final appVersionRepositoryProvider = Provider.autoDispose<AppVersionRepository>(
   (ref) {
-    final appInfoRepository = AppInfoRepositoryImpl(
+    final appVersionRepository = AppVersionRepositoryImpl(
       ref.watch(packageInfoProvider),
     );
-    ref.onDispose(appInfoRepository.dispose);
-    return appInfoRepository;
+    ref.onDispose(appVersionRepository.dispose);
+    return appVersionRepository;
   },
 );
 
-class AppInfoRepositoryImpl implements AppInfoRepository {
-  AppInfoRepositoryImpl(
+class AppVersionRepositoryImpl implements AppVersionRepository {
+  AppVersionRepositoryImpl(
     this._packageInfo,
   );
 
@@ -36,6 +36,6 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
   }
 
   void dispose() {
-    _logger.d('AppInfoRepositoryImpl dispose');
+    _logger.d('AppVersionRepositoryImpl dispose');
   }
 }

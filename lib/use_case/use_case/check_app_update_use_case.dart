@@ -5,37 +5,38 @@ import '/domain/entity/current_app_version.dart';
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/inquired_app_version.dart';
 import '/domain/entity/result.dart';
-import '/domain/repository/app_info_repository.dart';
+import '/domain/repository/app_version_repository.dart';
 import '/domain/repository/remote_config_repository.dart';
-import '/infra/repository_impl/app_info_repository_impl.dart';
+import '/infra/repository_impl/app_version_repository_impl.dart';
 import '/infra/repository_impl/remote_config_repository_impl.dart';
-import '/use_case/dto/need_update_dto.dart';
+import '/use_case/dto/need_app_update_dto.dart';
 
-final checkUpdateUseCaseProvider = Provider.autoDispose<CheckUpdateUseCase>(
+final checkAppUpdateUseCaseProvider =
+    Provider.autoDispose<CheckAppUpdateUseCase>(
   (ref) {
-    final checkUpdateUseCase = CheckUpdateUseCase(
-      ref.watch(appInfoRepositoryProvider),
+    final checkAppUpdateUseCase = CheckAppUpdateUseCase(
+      ref.watch(appVersionRepositoryProvider),
       ref.watch(remoteConfigRepositoryProvider),
     );
-    ref.onDispose(checkUpdateUseCase.dispose);
-    return checkUpdateUseCase;
+    ref.onDispose(checkAppUpdateUseCase.dispose);
+    return checkAppUpdateUseCase;
   },
 );
 
-class CheckUpdateUseCase {
-  CheckUpdateUseCase(
-    this._appInfoRepository,
+class CheckAppUpdateUseCase {
+  CheckAppUpdateUseCase(
+    this._appversionRepository,
     this._remoteConfigRepository,
   );
 
-  final AppInfoRepository _appInfoRepository;
+  final AppVersionRepository _appversionRepository;
   final RemoteConfigRepository _remoteConfigRepository;
 
   final _logger = Logger();
 
-  Future<Result<NeedUpdateDTO>> getNeedUpdate() async {
+  Future<Result<NeedAppUpdateDTO>> getNeedUpdate() async {
     final result = await Future.wait([
-      _appInfoRepository.getCurrentAppVersion(),
+      _appversionRepository.getCurrentAppVersion(),
       _remoteConfigRepository.getInquiredAppVersion(),
     ]);
 
@@ -54,8 +55,8 @@ class CheckUpdateUseCase {
         (result.elementAt(1) as Success<InquiredAppVersion>).value;
 
     return Result.success(
-      NeedUpdateDTO(
-        need: _checkNeedUpdate(
+      NeedAppUpdateDTO(
+        need: _checkNeedAppUpdate(
           currentAppVersion: currentAppVersion,
           inquiredAppVersion: inquiredAppVersion,
         ),
@@ -63,7 +64,7 @@ class CheckUpdateUseCase {
     );
   }
 
-  bool _checkNeedUpdate({
+  bool _checkNeedAppUpdate({
     required CurrentAppVersion currentAppVersion,
     required InquiredAppVersion inquiredAppVersion,
   }) {
@@ -86,6 +87,6 @@ class CheckUpdateUseCase {
   }
 
   void dispose() {
-    _logger.d('CheckUpdateUseCase dispose');
+    _logger.d('CheckAppUpdateUseCase dispose');
   }
 }
