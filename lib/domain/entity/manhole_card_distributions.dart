@@ -5,10 +5,13 @@ import '/domain/entity/manhole_card_distribution.dart';
 part 'manhole_card_distributions.freezed.dart';
 
 @freezed
-abstract class ManholeCardDistributions
-    with _$ManholeCardDistributions, Iterable<ManholeCardDistribution> {
+abstract class ManholeCardDistributions with _$ManholeCardDistributions {
   const factory ManholeCardDistributions({
     required List<ManholeCardDistribution> list,
   }) = _ManholeCardDistributions;
   const ManholeCardDistributions._();
+
+  Iterable<T> map<T>(T Function(ManholeCardDistribution) toElement) {
+    return list.map(toElement);
+  }
 }

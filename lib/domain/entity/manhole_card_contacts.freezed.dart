@@ -105,6 +105,11 @@ class _$_ManholeCardContacts extends _ManholeCardContacts {
   }
 
   @override
+  String toString() {
+    return 'ManholeCardContacts(list: $list)';
+  }
+
+  @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&

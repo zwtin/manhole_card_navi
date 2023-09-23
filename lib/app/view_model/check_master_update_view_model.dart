@@ -68,7 +68,24 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
     final dto =
         (getNeedMasterUpdateResult as Success<NeedMasterUpdateDTO>).value;
     if (dto.need) {
-      _logger.d('need master update');
+      isLoading = true;
+      notifyListeners();
+      final updateMasterResult = await _checkMasterUpdateUseCase.updateMaster();
+      isLoading = false;
+      notifyListeners();
+      if (updateMasterResult is Failure) {
+        _ref.read(alertProvider.notifier).show(
+              title: 'エラー',
+              message: 'マスターデータの更新に失敗しました',
+              okButtonTitle: 'OK',
+              okButtonAction: () async {
+                await _checkNeedUpdate();
+              },
+              cancelButtonTitle: null,
+              cancelButtonAction: null,
+            );
+        return;
+      }
     }
     await _ref.read(routerProvider(_key).notifier).pushReplacement(
           nextWidget: BottomTabView(
