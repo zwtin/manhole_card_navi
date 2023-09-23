@@ -1,1 +1,13 @@
-abstract class PrefectureRepository {}
+import '/domain/entity/current_master_version.dart';
+import '/domain/entity/manhole_card_prefectures.dart';
+import '/domain/entity/result.dart';
+
+abstract class PrefectureRepository {
+  Future<Result<ManholeCardPrefectures>> fetchMaster({
+    required CurrentMasterVersion currentMasterVersion,
+  });
+  Future<Result<void>> deleteMaster();
+  Future<Result<void>> saveMaster({
+    required ManholeCardPrefectures manholeCardPrefectures,
+  });
+}

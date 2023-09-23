@@ -7,6 +7,7 @@ abstract class ManholeCardImage implements _$ManholeCardImage {
   const factory ManholeCardImage({
     required String id,
     required String name,
+    required String path,
   }) = _ManholeCardImage;
   const ManholeCardImage._();
 }
