@@ -5,13 +5,14 @@ import '/domain/entity/manhole_card_volume.dart';
 part 'manhole_card_volumes.freezed.dart';
 
 @freezed
-abstract class ManholeCardVolumes implements _$ManholeCardVolumes {
+abstract class ManholeCardVolumes
+    with _$ManholeCardVolumes, Iterable<ManholeCardVolume> {
   const factory ManholeCardVolumes({
     required List<ManholeCardVolume> list,
   }) = _ManholeCardVolumes;
   const ManholeCardVolumes._();
 
-  // Result<void> unfavor({required Answer answer}) {
+// Result<void> unfavor({required Answer answer}) {
   //   if (!favorAnswers.map((e) => e.id).contains(answer.id)) {
   //     return Result.failure(
   //       OTException(

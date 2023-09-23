@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'manhole_card_contact.freezed.dart';
 
 @freezed
-abstract class ManholeCardContact implements _$ManholeCardContact {
+abstract class ManholeCardContact with _$ManholeCardContact {
   const factory ManholeCardContact({
     required String address,
     required String id,

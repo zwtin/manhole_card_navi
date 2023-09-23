@@ -108,11 +108,6 @@ class _$_ManholeCardPrefectures extends _ManholeCardPrefectures {
   }
 
   @override
-  String toString() {
-    return 'ManholeCardPrefectures(list: $list)';
-  }
-
-  @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&

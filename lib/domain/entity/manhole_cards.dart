@@ -5,7 +5,7 @@ import '/domain/entity/manhole_card.dart';
 part 'manhole_cards.freezed.dart';
 
 @freezed
-abstract class ManholeCards implements _$ManholeCards {
+abstract class ManholeCards with _$ManholeCards, Iterable<ManholeCard> {
   const factory ManholeCards({
     required List<ManholeCard> list,
   }) = _ManholeCards;

@@ -4,7 +4,7 @@ part 'firestore_distribution_dao.freezed.dart';
 part 'firestore_distribution_dao.g.dart';
 
 @freezed
-abstract class FirestoreDistributionDAO implements _$FirestoreDistributionDAO {
+abstract class FirestoreDistributionDAO with _$FirestoreDistributionDAO {
   const factory FirestoreDistributionDAO({
     required String id,
     required String other,

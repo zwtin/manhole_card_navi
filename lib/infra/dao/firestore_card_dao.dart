@@ -4,7 +4,7 @@ part 'firestore_card_dao.freezed.dart';
 part 'firestore_card_dao.g.dart';
 
 @freezed
-abstract class FirestoreCardDAO implements _$FirestoreCardDAO {
+abstract class FirestoreCardDAO with _$FirestoreCardDAO {
   const factory FirestoreCardDAO({
     required String id,
     required double latitude,

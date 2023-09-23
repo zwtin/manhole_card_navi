@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'manhole_card_distribution.freezed.dart';
 
 @freezed
-abstract class ManholeCardDistribution implements _$ManholeCardDistribution {
+abstract class ManholeCardDistribution with _$ManholeCardDistribution {
   const factory ManholeCardDistribution({
     required String id,
     required String other,

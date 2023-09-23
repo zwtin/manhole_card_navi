@@ -4,7 +4,7 @@ part 'firestore_volume_dao.freezed.dart';
 part 'firestore_volume_dao.g.dart';
 
 @freezed
-abstract class FirestoreVolumeDAO implements _$FirestoreVolumeDAO {
+abstract class FirestoreVolumeDAO with _$FirestoreVolumeDAO {
   const factory FirestoreVolumeDAO({
     required String id,
     required String name,

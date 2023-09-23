@@ -1,14 +1,15 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:manhole_card_navi/domain/entity/manhole_card_contact.dart';
-import 'package:manhole_card_navi/domain/entity/manhole_card_distribution.dart';
-import 'package:manhole_card_navi/domain/entity/manhole_card_image.dart';
-import 'package:manhole_card_navi/domain/entity/manhole_card_prefecture.dart';
-import 'package:manhole_card_navi/domain/entity/manhole_card_volume.dart';
+
+import '/domain/entity/manhole_card_contact.dart';
+import '/domain/entity/manhole_card_distribution.dart';
+import '/domain/entity/manhole_card_image.dart';
+import '/domain/entity/manhole_card_prefecture.dart';
+import '/domain/entity/manhole_card_volume.dart';
 
 part 'manhole_card.freezed.dart';
 
 @freezed
-abstract class ManholeCard implements _$ManholeCard {
+abstract class ManholeCard with _$ManholeCard {
   const factory ManholeCard({
     required String id,
     required double latitude,

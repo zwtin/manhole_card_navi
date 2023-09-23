@@ -2,10 +2,11 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:manhole_card_navi/infra/dao/realm_card_dao.dart';
-import 'package:manhole_card_navi/infra/dao/realm_prefecture_dao.dart';
-import 'package:manhole_card_navi/infra/dao/realm_volume_dao.dart';
 import 'package:realm/realm.dart';
+
+import '/infra/dao/realm_card_dao.dart';
+import '/infra/dao/realm_prefecture_dao.dart';
+import '/infra/dao/realm_volume_dao.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});

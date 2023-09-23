@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'manhole_card_prefecture.freezed.dart';
 
 @freezed
-abstract class ManholeCardPrefecture implements _$ManholeCardPrefecture {
+abstract class ManholeCardPrefecture with _$ManholeCardPrefecture {
   const factory ManholeCardPrefecture({
     required String id,
     required String name,

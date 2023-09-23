@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'alert_view_data.freezed.dart';
 
 @freezed
-abstract class AlertViewData implements _$AlertViewData {
+abstract class AlertViewData with _$AlertViewData {
   const factory AlertViewData({
     required String title,
     required String message,
@@ -14,7 +14,7 @@ abstract class AlertViewData implements _$AlertViewData {
 }
 
 @freezed
-abstract class AlertOKButtonViewData implements _$AlertOKButtonViewData {
+abstract class AlertOKButtonViewData with _$AlertOKButtonViewData {
   const factory AlertOKButtonViewData({
     required String title,
     required Future<void> Function() action,
@@ -23,8 +23,7 @@ abstract class AlertOKButtonViewData implements _$AlertOKButtonViewData {
 }
 
 @freezed
-abstract class AlertCancelButtonViewData
-    implements _$AlertCancelButtonViewData {
+abstract class AlertCancelButtonViewData with _$AlertCancelButtonViewData {
   const factory AlertCancelButtonViewData({
     required String title,
     required Future<void> Function() action,
