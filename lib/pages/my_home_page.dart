@@ -29,17 +29,17 @@ class _MyHomePageState extends State<MyHomePage> {
     ]);
     var realm = Realm(config);
 
-    var card = RealmCardDAO('00-101-A001', '日本下水道事業団');
-    var prefecture = RealmPrefectureDAO('00', '全国');
-    var volume1 = RealmVolumeDAO('0000', '第01弾');
-    var volume2 = RealmVolumeDAO('0001', '第02弾');
-    card.prefectures.add(prefecture);
-    card.volumes.add(volume1);
-    card.volumes.add(volume2);
-
-    realm.write(() {
-      realm.add(card);
-    });
+    // var card = RealmCardDAO('00-101-A001', '日本下水道事業団');
+    // var prefecture = RealmPrefectureDAO('00', '全国');
+    // var volume1 = RealmVolumeDAO('0000', '第01弾');
+    // var volume2 = RealmVolumeDAO('0001', '第02弾');
+    // card.prefectures.add(prefecture);
+    // card.volumes.add(volume1);
+    // card.volumes.add(volume2);
+    //
+    // realm.write(() {
+    //   realm.add(card);
+    // });
     // realm.close();
 
     // realm.write(() {

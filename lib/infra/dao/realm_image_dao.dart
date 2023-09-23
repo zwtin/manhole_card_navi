@@ -1,10 +1,11 @@
 import 'package:realm/realm.dart';
 
-part 'realm_volume_dao.g.dart';
+part 'realm_image_dao.g.dart';
 
 @RealmModel()
-class $RealmVolumeDAO {
+class $RealmImageDAO {
   @PrimaryKey()
   late String id;
   late String name;
+  late String path;
 }

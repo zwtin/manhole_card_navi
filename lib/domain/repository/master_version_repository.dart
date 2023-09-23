@@ -4,6 +4,6 @@ import '/domain/entity/result.dart';
 abstract class MasterVersionRepository {
   Future<Result<CurrentMasterVersion>> getCurrentMasterVersion();
   Future<Result<void>> setCurrentMasterVersion({
-    required CurrentMasterVersion version,
+    required CurrentMasterVersion currentMasterVersion,
   });
 }

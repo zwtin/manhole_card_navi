@@ -30,7 +30,7 @@ class AnalyticsUseCase {
     Map<String, Object>? parameters,
   }) async {
     final event = AnalyticsEvent(name: name, parameters: parameters);
-    return _analyticsRepository.sendEvent(event: event);
+    return _analyticsRepository.sendEvent(analyticsEvent: event);
   }
 
   void dispose() {

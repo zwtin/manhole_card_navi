@@ -20,12 +20,13 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
   final _analytics = FirebaseAnalytics.instance;
 
   @override
-  Future<Result<void>> sendEvent({required AnalyticsEvent event}) async {
+  Future<Result<void>> sendEvent(
+      {required AnalyticsEvent analyticsEvent}) async {
     try {
       if (F.appFlavor == Flavor.development) {
         await _analytics.logEvent(
-          name: event.name,
-          parameters: event.parameters,
+          name: analyticsEvent.name,
+          parameters: analyticsEvent.parameters,
         );
       }
       return const Result.success(null);

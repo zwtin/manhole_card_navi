@@ -1,0 +1,282 @@
+// coverage:ignore-file
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'firestore_contact_dao.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+T _$identity<T>(T value) => value;
+
+final _privateConstructorUsedError = UnsupportedError(
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+
+FirestoreContactDAO _$FirestoreContactDAOFromJson(Map<String, dynamic> json) {
+  return _FirestoreContactDAO.fromJson(json);
+}
+
+/// @nodoc
+mixin _$FirestoreContactDAO {
+  String get address => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError;
+  double get latitude => throw _privateConstructorUsedError;
+  String get longitude => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String get other => throw _privateConstructorUsedError;
+  String get phoneNumber => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $FirestoreContactDAOCopyWith<FirestoreContactDAO> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $FirestoreContactDAOCopyWith<$Res> {
+  factory $FirestoreContactDAOCopyWith(
+          FirestoreContactDAO value, $Res Function(FirestoreContactDAO) then) =
+      _$FirestoreContactDAOCopyWithImpl<$Res, FirestoreContactDAO>;
+  @useResult
+  $Res call(
+      {String address,
+      String id,
+      double latitude,
+      String longitude,
+      String name,
+      String other,
+      String phoneNumber});
+}
+
+/// @nodoc
+class _$FirestoreContactDAOCopyWithImpl<$Res, $Val extends FirestoreContactDAO>
+    implements $FirestoreContactDAOCopyWith<$Res> {
+  _$FirestoreContactDAOCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? address = null,
+    Object? id = null,
+    Object? latitude = null,
+    Object? longitude = null,
+    Object? name = null,
+    Object? other = null,
+    Object? phoneNumber = null,
+  }) {
+    return _then(_value.copyWith(
+      address: null == address
+          ? _value.address
+          : address // ignore: cast_nullable_to_non_nullable
+              as String,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      latitude: null == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: null == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      other: null == other
+          ? _value.other
+          : other // ignore: cast_nullable_to_non_nullable
+              as String,
+      phoneNumber: null == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_FirestoreContactDAOCopyWith<$Res>
+    implements $FirestoreContactDAOCopyWith<$Res> {
+  factory _$$_FirestoreContactDAOCopyWith(_$_FirestoreContactDAO value,
+          $Res Function(_$_FirestoreContactDAO) then) =
+      __$$_FirestoreContactDAOCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String address,
+      String id,
+      double latitude,
+      String longitude,
+      String name,
+      String other,
+      String phoneNumber});
+}
+
+/// @nodoc
+class __$$_FirestoreContactDAOCopyWithImpl<$Res>
+    extends _$FirestoreContactDAOCopyWithImpl<$Res, _$_FirestoreContactDAO>
+    implements _$$_FirestoreContactDAOCopyWith<$Res> {
+  __$$_FirestoreContactDAOCopyWithImpl(_$_FirestoreContactDAO _value,
+      $Res Function(_$_FirestoreContactDAO) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? address = null,
+    Object? id = null,
+    Object? latitude = null,
+    Object? longitude = null,
+    Object? name = null,
+    Object? other = null,
+    Object? phoneNumber = null,
+  }) {
+    return _then(_$_FirestoreContactDAO(
+      address: null == address
+          ? _value.address
+          : address // ignore: cast_nullable_to_non_nullable
+              as String,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      latitude: null == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: null == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      other: null == other
+          ? _value.other
+          : other // ignore: cast_nullable_to_non_nullable
+              as String,
+      phoneNumber: null == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$_FirestoreContactDAO extends _FirestoreContactDAO {
+  const _$_FirestoreContactDAO(
+      {required this.address,
+      required this.id,
+      required this.latitude,
+      required this.longitude,
+      required this.name,
+      required this.other,
+      required this.phoneNumber})
+      : super._();
+
+  factory _$_FirestoreContactDAO.fromJson(Map<String, dynamic> json) =>
+      _$$_FirestoreContactDAOFromJson(json);
+
+  @override
+  final String address;
+  @override
+  final String id;
+  @override
+  final double latitude;
+  @override
+  final String longitude;
+  @override
+  final String name;
+  @override
+  final String other;
+  @override
+  final String phoneNumber;
+
+  @override
+  String toString() {
+    return 'FirestoreContactDAO(address: $address, id: $id, latitude: $latitude, longitude: $longitude, name: $name, other: $other, phoneNumber: $phoneNumber)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_FirestoreContactDAO &&
+            (identical(other.address, address) || other.address == address) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.latitude, latitude) ||
+                other.latitude == latitude) &&
+            (identical(other.longitude, longitude) ||
+                other.longitude == longitude) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.other, this.other) || other.other == this.other) &&
+            (identical(other.phoneNumber, phoneNumber) ||
+                other.phoneNumber == phoneNumber));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, address, id, latitude, longitude, name, other, phoneNumber);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_FirestoreContactDAOCopyWith<_$_FirestoreContactDAO> get copyWith =>
+      __$$_FirestoreContactDAOCopyWithImpl<_$_FirestoreContactDAO>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_FirestoreContactDAOToJson(
+      this,
+    );
+  }
+}
+
+abstract class _FirestoreContactDAO extends FirestoreContactDAO {
+  const factory _FirestoreContactDAO(
+      {required final String address,
+      required final String id,
+      required final double latitude,
+      required final String longitude,
+      required final String name,
+      required final String other,
+      required final String phoneNumber}) = _$_FirestoreContactDAO;
+  const _FirestoreContactDAO._() : super._();
+
+  factory _FirestoreContactDAO.fromJson(Map<String, dynamic> json) =
+      _$_FirestoreContactDAO.fromJson;
+
+  @override
+  String get address;
+  @override
+  String get id;
+  @override
+  double get latitude;
+  @override
+  String get longitude;
+  @override
+  String get name;
+  @override
+  String get other;
+  @override
+  String get phoneNumber;
+  @override
+  @JsonKey(ignore: true)
+  _$$_FirestoreContactDAOCopyWith<_$_FirestoreContactDAO> get copyWith =>
+      throw _privateConstructorUsedError;
+}

@@ -44,11 +44,11 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
 
   @override
   Future<Result<void>> setCurrentMasterVersion({
-    required CurrentMasterVersion version,
+    required CurrentMasterVersion currentMasterVersion,
   }) async {
     final result = await _instance.setString(
       'current_master_version',
-      version.version,
+      currentMasterVersion.version,
     );
     if (result) {
       return const Result.success(null);

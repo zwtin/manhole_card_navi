@@ -1,22 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'realm_volume_dao.dart';
+part of 'realm_image_dao.dart';
 
 // **************************************************************************
 // RealmObjectGenerator
 // **************************************************************************
 
-class RealmVolumeDAO extends $RealmVolumeDAO
+class RealmImageDAO extends $RealmImageDAO
     with RealmEntity, RealmObjectBase, RealmObject {
-  RealmVolumeDAO(
+  RealmImageDAO(
     String id,
     String name,
+    String path,
   ) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'path', path);
   }
 
-  RealmVolumeDAO._();
+  RealmImageDAO._();
 
   @override
   String get id => RealmObjectBase.get<String>(this, 'id') as String;
@@ -29,20 +31,26 @@ class RealmVolumeDAO extends $RealmVolumeDAO
   set name(String value) => RealmObjectBase.set(this, 'name', value);
 
   @override
-  Stream<RealmObjectChanges<RealmVolumeDAO>> get changes =>
-      RealmObjectBase.getChanges<RealmVolumeDAO>(this);
+  String get path => RealmObjectBase.get<String>(this, 'path') as String;
+  @override
+  set path(String value) => RealmObjectBase.set(this, 'path', value);
 
   @override
-  RealmVolumeDAO freeze() => RealmObjectBase.freezeObject<RealmVolumeDAO>(this);
+  Stream<RealmObjectChanges<RealmImageDAO>> get changes =>
+      RealmObjectBase.getChanges<RealmImageDAO>(this);
+
+  @override
+  RealmImageDAO freeze() => RealmObjectBase.freezeObject<RealmImageDAO>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(RealmVolumeDAO._);
+    RealmObjectBase.registerFactory(RealmImageDAO._);
     return const SchemaObject(
-        ObjectType.realmObject, RealmVolumeDAO, 'RealmVolumeDAO', [
+        ObjectType.realmObject, RealmImageDAO, 'RealmImageDAO', [
       SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('path', RealmPropertyType.string),
     ]);
   }
 }
