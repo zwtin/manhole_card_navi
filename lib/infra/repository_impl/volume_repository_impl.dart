@@ -71,8 +71,9 @@ class VolumeRepositoryImpl implements VolumeRepository {
     ]);
     var realm = Realm(config);
 
-    final realmVolumes =
-        RealmVolumeMapper.convertFromModel(model: manholeCardVolumes);
+    final realmVolumes = RealmVolumeMapper.convertFromModel(
+      model: manholeCardVolumes,
+    );
 
     realm.write(() {
       realm.addAll(realmVolumes);

@@ -71,8 +71,9 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
     ]);
     var realm = Realm(config);
 
-    final realmPrefectures =
-        RealmPrefectureMapper.convertFromModel(model: manholeCardPrefectures);
+    final realmPrefectures = RealmPrefectureMapper.convertFromModel(
+      model: manholeCardPrefectures,
+    );
 
     realm.write(() {
       realm.addAll(realmPrefectures);
