@@ -21,13 +21,12 @@ mixin _$ManholeCard {
   double get longitude => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   DateTime get publicationDate => throw _privateConstructorUsedError;
-  List<ManholeCardContact> get contacts => throw _privateConstructorUsedError;
-  List<ManholeCardDistribution> get distributions =>
+  ManholeCardContacts get contacts => throw _privateConstructorUsedError;
+  ManholeCardDistributions get distributions =>
       throw _privateConstructorUsedError;
-  List<ManholeCardImage> get images => throw _privateConstructorUsedError;
-  List<ManholeCardPrefecture> get prefectures =>
-      throw _privateConstructorUsedError;
-  List<ManholeCardVolume> get volumes => throw _privateConstructorUsedError;
+  ManholeCardImages get images => throw _privateConstructorUsedError;
+  ManholeCardPrefectures get prefectures => throw _privateConstructorUsedError;
+  ManholeCardVolumes get volumes => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ManholeCardCopyWith<ManholeCard> get copyWith =>
@@ -46,11 +45,17 @@ abstract class $ManholeCardCopyWith<$Res> {
       double longitude,
       String name,
       DateTime publicationDate,
-      List<ManholeCardContact> contacts,
-      List<ManholeCardDistribution> distributions,
-      List<ManholeCardImage> images,
-      List<ManholeCardPrefecture> prefectures,
-      List<ManholeCardVolume> volumes});
+      ManholeCardContacts contacts,
+      ManholeCardDistributions distributions,
+      ManholeCardImages images,
+      ManholeCardPrefectures prefectures,
+      ManholeCardVolumes volumes});
+
+  $ManholeCardContactsCopyWith<$Res> get contacts;
+  $ManholeCardDistributionsCopyWith<$Res> get distributions;
+  $ManholeCardImagesCopyWith<$Res> get images;
+  $ManholeCardPrefecturesCopyWith<$Res> get prefectures;
+  $ManholeCardVolumesCopyWith<$Res> get volumes;
 }
 
 /// @nodoc
@@ -101,24 +106,65 @@ class _$ManholeCardCopyWithImpl<$Res, $Val extends ManholeCard>
       contacts: null == contacts
           ? _value.contacts
           : contacts // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardContact>,
+              as ManholeCardContacts,
       distributions: null == distributions
           ? _value.distributions
           : distributions // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardDistribution>,
+              as ManholeCardDistributions,
       images: null == images
           ? _value.images
           : images // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardImage>,
+              as ManholeCardImages,
       prefectures: null == prefectures
           ? _value.prefectures
           : prefectures // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardPrefecture>,
+              as ManholeCardPrefectures,
       volumes: null == volumes
           ? _value.volumes
           : volumes // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardVolume>,
+              as ManholeCardVolumes,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ManholeCardContactsCopyWith<$Res> get contacts {
+    return $ManholeCardContactsCopyWith<$Res>(_value.contacts, (value) {
+      return _then(_value.copyWith(contacts: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ManholeCardDistributionsCopyWith<$Res> get distributions {
+    return $ManholeCardDistributionsCopyWith<$Res>(_value.distributions,
+        (value) {
+      return _then(_value.copyWith(distributions: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ManholeCardImagesCopyWith<$Res> get images {
+    return $ManholeCardImagesCopyWith<$Res>(_value.images, (value) {
+      return _then(_value.copyWith(images: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ManholeCardPrefecturesCopyWith<$Res> get prefectures {
+    return $ManholeCardPrefecturesCopyWith<$Res>(_value.prefectures, (value) {
+      return _then(_value.copyWith(prefectures: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ManholeCardVolumesCopyWith<$Res> get volumes {
+    return $ManholeCardVolumesCopyWith<$Res>(_value.volumes, (value) {
+      return _then(_value.copyWith(volumes: value) as $Val);
+    });
   }
 }
 
@@ -136,11 +182,22 @@ abstract class _$$_ManholeCardCopyWith<$Res>
       double longitude,
       String name,
       DateTime publicationDate,
-      List<ManholeCardContact> contacts,
-      List<ManholeCardDistribution> distributions,
-      List<ManholeCardImage> images,
-      List<ManholeCardPrefecture> prefectures,
-      List<ManholeCardVolume> volumes});
+      ManholeCardContacts contacts,
+      ManholeCardDistributions distributions,
+      ManholeCardImages images,
+      ManholeCardPrefectures prefectures,
+      ManholeCardVolumes volumes});
+
+  @override
+  $ManholeCardContactsCopyWith<$Res> get contacts;
+  @override
+  $ManholeCardDistributionsCopyWith<$Res> get distributions;
+  @override
+  $ManholeCardImagesCopyWith<$Res> get images;
+  @override
+  $ManholeCardPrefecturesCopyWith<$Res> get prefectures;
+  @override
+  $ManholeCardVolumesCopyWith<$Res> get volumes;
 }
 
 /// @nodoc
@@ -187,25 +244,25 @@ class __$$_ManholeCardCopyWithImpl<$Res>
           : publicationDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
       contacts: null == contacts
-          ? _value._contacts
+          ? _value.contacts
           : contacts // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardContact>,
+              as ManholeCardContacts,
       distributions: null == distributions
-          ? _value._distributions
+          ? _value.distributions
           : distributions // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardDistribution>,
+              as ManholeCardDistributions,
       images: null == images
-          ? _value._images
+          ? _value.images
           : images // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardImage>,
+              as ManholeCardImages,
       prefectures: null == prefectures
-          ? _value._prefectures
+          ? _value.prefectures
           : prefectures // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardPrefecture>,
+              as ManholeCardPrefectures,
       volumes: null == volumes
-          ? _value._volumes
+          ? _value.volumes
           : volumes // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardVolume>,
+              as ManholeCardVolumes,
     ));
   }
 }
@@ -219,17 +276,12 @@ class _$_ManholeCard extends _ManholeCard {
       required this.longitude,
       required this.name,
       required this.publicationDate,
-      required final List<ManholeCardContact> contacts,
-      required final List<ManholeCardDistribution> distributions,
-      required final List<ManholeCardImage> images,
-      required final List<ManholeCardPrefecture> prefectures,
-      required final List<ManholeCardVolume> volumes})
-      : _contacts = contacts,
-        _distributions = distributions,
-        _images = images,
-        _prefectures = prefectures,
-        _volumes = volumes,
-        super._();
+      required this.contacts,
+      required this.distributions,
+      required this.images,
+      required this.prefectures,
+      required this.volumes})
+      : super._();
 
   @override
   final String id;
@@ -241,45 +293,16 @@ class _$_ManholeCard extends _ManholeCard {
   final String name;
   @override
   final DateTime publicationDate;
-  final List<ManholeCardContact> _contacts;
   @override
-  List<ManholeCardContact> get contacts {
-    if (_contacts is EqualUnmodifiableListView) return _contacts;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_contacts);
-  }
-
-  final List<ManholeCardDistribution> _distributions;
+  final ManholeCardContacts contacts;
   @override
-  List<ManholeCardDistribution> get distributions {
-    if (_distributions is EqualUnmodifiableListView) return _distributions;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_distributions);
-  }
-
-  final List<ManholeCardImage> _images;
+  final ManholeCardDistributions distributions;
   @override
-  List<ManholeCardImage> get images {
-    if (_images is EqualUnmodifiableListView) return _images;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_images);
-  }
-
-  final List<ManholeCardPrefecture> _prefectures;
+  final ManholeCardImages images;
   @override
-  List<ManholeCardPrefecture> get prefectures {
-    if (_prefectures is EqualUnmodifiableListView) return _prefectures;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_prefectures);
-  }
-
-  final List<ManholeCardVolume> _volumes;
+  final ManholeCardPrefectures prefectures;
   @override
-  List<ManholeCardVolume> get volumes {
-    if (_volumes is EqualUnmodifiableListView) return _volumes;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_volumes);
-  }
+  final ManholeCardVolumes volumes;
 
   @override
   String toString() {
@@ -299,28 +322,19 @@ class _$_ManholeCard extends _ManholeCard {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.publicationDate, publicationDate) ||
                 other.publicationDate == publicationDate) &&
-            const DeepCollectionEquality().equals(other._contacts, _contacts) &&
-            const DeepCollectionEquality()
-                .equals(other._distributions, _distributions) &&
-            const DeepCollectionEquality().equals(other._images, _images) &&
-            const DeepCollectionEquality()
-                .equals(other._prefectures, _prefectures) &&
-            const DeepCollectionEquality().equals(other._volumes, _volumes));
+            (identical(other.contacts, contacts) ||
+                other.contacts == contacts) &&
+            (identical(other.distributions, distributions) ||
+                other.distributions == distributions) &&
+            (identical(other.images, images) || other.images == images) &&
+            (identical(other.prefectures, prefectures) ||
+                other.prefectures == prefectures) &&
+            (identical(other.volumes, volumes) || other.volumes == volumes));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      latitude,
-      longitude,
-      name,
-      publicationDate,
-      const DeepCollectionEquality().hash(_contacts),
-      const DeepCollectionEquality().hash(_distributions),
-      const DeepCollectionEquality().hash(_images),
-      const DeepCollectionEquality().hash(_prefectures),
-      const DeepCollectionEquality().hash(_volumes));
+  int get hashCode => Object.hash(runtimeType, id, latitude, longitude, name,
+      publicationDate, contacts, distributions, images, prefectures, volumes);
 
   @JsonKey(ignore: true)
   @override
@@ -336,11 +350,11 @@ abstract class _ManholeCard extends ManholeCard {
       required final double longitude,
       required final String name,
       required final DateTime publicationDate,
-      required final List<ManholeCardContact> contacts,
-      required final List<ManholeCardDistribution> distributions,
-      required final List<ManholeCardImage> images,
-      required final List<ManholeCardPrefecture> prefectures,
-      required final List<ManholeCardVolume> volumes}) = _$_ManholeCard;
+      required final ManholeCardContacts contacts,
+      required final ManholeCardDistributions distributions,
+      required final ManholeCardImages images,
+      required final ManholeCardPrefectures prefectures,
+      required final ManholeCardVolumes volumes}) = _$_ManholeCard;
   const _ManholeCard._() : super._();
 
   @override
@@ -354,15 +368,15 @@ abstract class _ManholeCard extends ManholeCard {
   @override
   DateTime get publicationDate;
   @override
-  List<ManholeCardContact> get contacts;
+  ManholeCardContacts get contacts;
   @override
-  List<ManholeCardDistribution> get distributions;
+  ManholeCardDistributions get distributions;
   @override
-  List<ManholeCardImage> get images;
+  ManholeCardImages get images;
   @override
-  List<ManholeCardPrefecture> get prefectures;
+  ManholeCardPrefectures get prefectures;
   @override
-  List<ManholeCardVolume> get volumes;
+  ManholeCardVolumes get volumes;
   @override
   @JsonKey(ignore: true)
   _$$_ManholeCardCopyWith<_$_ManholeCard> get copyWith =>

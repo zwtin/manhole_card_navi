@@ -4,44 +4,44 @@ import 'package:logger/logger.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/current_master_version.dart';
-import '/domain/entity/manhole_card_volume.dart';
-import '/domain/entity/manhole_card_volumes.dart';
+import '/domain/entity/manhole_card_prefecture.dart';
+import '/domain/entity/manhole_card_prefectures.dart';
 import '/domain/entity/result.dart';
-import '/domain/repository/volume_repository.dart';
-import '/infra/dao/realm_volume_dao.dart';
-import '/infra/mapper/realm_volume_mapper.dart';
+import '/domain/repository/prefecture_repository.dart';
+import '/infra/dao/realm_prefecture_dao.dart';
+import '/infra/mapper/realm_prefecture_mapper.dart';
 
-final volumeRepositoryProvider = Provider.autoDispose<VolumeRepository>(
+final prefectureRepositoryProvider = Provider.autoDispose<PrefectureRepository>(
   (ref) {
-    final volumeRepository = VolumeRepositoryImpl();
-    ref.onDispose(volumeRepository.dispose);
-    return volumeRepository;
+    final prefectureRepository = PrefectureRepositoryImpl();
+    ref.onDispose(prefectureRepository.dispose);
+    return prefectureRepository;
   },
 );
 
-class VolumeRepositoryImpl implements VolumeRepository {
+class PrefectureRepositoryImpl implements PrefectureRepository {
   final _logger = Logger();
   final _firestore = FirebaseFirestore.instance;
 
   @override
-  Future<Result<ManholeCardVolumes>> fetchMaster({
+  Future<Result<ManholeCardPrefectures>> fetchMaster({
     required CurrentMasterVersion currentMasterVersion,
   }) async {
     final querySnapshot = await _firestore
         .collection('master')
         .doc(currentMasterVersion.version)
-        .collection('volumes')
+        .collection('prefectures')
         .get();
     final list = querySnapshot.docs.map(
       (doc) {
-        return ManholeCardVolume(
+        return ManholeCardPrefecture(
           id: doc['id'] as String,
           name: doc['name'] as String,
         );
       },
     ).toList();
     return Result.success(
-      ManholeCardVolumes(
+      ManholeCardPrefectures(
         list: list,
       ),
     );
@@ -50,12 +50,12 @@ class VolumeRepositoryImpl implements VolumeRepository {
   @override
   Future<Result<void>> deleteMaster() async {
     var config = Configuration.local([
-      RealmVolumeDAO.schema,
+      RealmPrefectureDAO.schema,
     ]);
     var realm = Realm(config);
 
     realm.write(() {
-      realm.deleteAll<RealmVolumeDAO>();
+      realm.deleteAll<RealmPrefectureDAO>();
     });
     realm.close();
 
@@ -64,18 +64,18 @@ class VolumeRepositoryImpl implements VolumeRepository {
 
   @override
   Future<Result<void>> saveMaster({
-    required ManholeCardVolumes manholeCardVolumes,
+    required ManholeCardPrefectures manholeCardPrefectures,
   }) async {
     var config = Configuration.local([
-      RealmVolumeDAO.schema,
+      RealmPrefectureDAO.schema,
     ]);
     var realm = Realm(config);
 
-    final realmVolumes =
-        RealmVolumeMapper.convertFromModel(model: manholeCardVolumes);
+    final realmPrefectures =
+        RealmPrefectureMapper.convertFromModel(model: manholeCardPrefectures);
 
     realm.write(() {
-      realm.addAll(realmVolumes);
+      realm.addAll(realmPrefectures);
     });
     realm.close();
 
@@ -83,6 +83,6 @@ class VolumeRepositoryImpl implements VolumeRepository {
   }
 
   void dispose() {
-    _logger.d('VolumeRepositoryImpl dispose');
+    _logger.d('PrefectureRepositoryImpl dispose');
   }
 }
