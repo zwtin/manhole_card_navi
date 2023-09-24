@@ -159,7 +159,19 @@ class CheckMasterUpdateUseCase {
         ),
       );
     }
-    final manholeCards = (fetchResult as Success<ManholeCards>).value;
+    final tmpManholeCards = (fetchResult as Success<ManholeCards>).value;
+
+    final manholeCards = await Future.wait(
+      tmpManholeCards.map(
+        (manholeCard) async {
+          final contacts = await Future.wait(
+            manholeCard.contacts.map(
+              (manholeCardContact) async {},
+            ),
+          );
+        },
+      ),
+    );
 
     final deleteResult = await _cardRepository.deleteMaster();
     if (deleteResult is Failure) {

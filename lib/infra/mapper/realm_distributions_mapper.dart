@@ -1,7 +1,7 @@
 import '/domain/entity/manhole_card_distributions.dart';
 import '/infra/dao/realm_distribution_dao.dart';
 
-class RealmDistributionMapper {
+class RealmDistributionsMapper {
   static List<RealmDistributionDAO> convertFromModel({
     required ManholeCardDistributions model,
   }) {

@@ -9,7 +9,7 @@ import '/domain/entity/manhole_card_prefectures.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/prefecture_repository.dart';
 import '/infra/dao/realm_prefecture_dao.dart';
-import '/infra/mapper/realm_prefecture_mapper.dart';
+import '/infra/mapper/realm_prefectures_mapper.dart';
 
 final prefectureRepositoryProvider = Provider.autoDispose<PrefectureRepository>(
   (ref) {
@@ -71,7 +71,7 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
     ]);
     var realm = Realm(config);
 
-    final realmPrefectures = RealmPrefectureMapper.convertFromModel(
+    final realmPrefectures = RealmPrefecturesMapper.convertFromModel(
       model: manholeCardPrefectures,
     );
 

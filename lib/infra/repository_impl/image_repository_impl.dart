@@ -13,7 +13,7 @@ import '/domain/entity/manhole_card_images.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/image_repository.dart';
 import '/infra/dao/realm_image_dao.dart';
-import '/infra/mapper/realm_image_mapper.dart';
+import '/infra/mapper/realm_images_mapper.dart';
 
 final imageRepositoryProvider = Provider.autoDispose<ImageRepository>(
   (ref) {
@@ -110,7 +110,7 @@ class ImageRepositoryImpl implements ImageRepository {
     ]);
     var realm = Realm(config);
 
-    final realmImages = RealmImageMapper.convertFromModel(
+    final realmImages = RealmImagesMapper.convertFromModel(
       model: manholeCardImages,
     );
 

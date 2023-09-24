@@ -1,7 +1,7 @@
 import '/domain/entity/manhole_card_contacts.dart';
 import '/infra/dao/realm_contact_dao.dart';
 
-class RealmContactMapper {
+class RealmContactsMapper {
   static List<RealmContactDAO> convertFromModel({
     required ManholeCardContacts model,
   }) {

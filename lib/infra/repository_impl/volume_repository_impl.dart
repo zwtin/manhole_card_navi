@@ -9,7 +9,7 @@ import '/domain/entity/manhole_card_volumes.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/volume_repository.dart';
 import '/infra/dao/realm_volume_dao.dart';
-import '/infra/mapper/realm_volume_mapper.dart';
+import '/infra/mapper/realm_volumes_mapper.dart';
 
 final volumeRepositoryProvider = Provider.autoDispose<VolumeRepository>(
   (ref) {
@@ -71,7 +71,7 @@ class VolumeRepositoryImpl implements VolumeRepository {
     ]);
     var realm = Realm(config);
 
-    final realmVolumes = RealmVolumeMapper.convertFromModel(
+    final realmVolumes = RealmVolumesMapper.convertFromModel(
       model: manholeCardVolumes,
     );
 

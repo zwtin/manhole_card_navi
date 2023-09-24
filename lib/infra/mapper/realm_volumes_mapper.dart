@@ -1,7 +1,7 @@
 import '/domain/entity/manhole_card_volumes.dart';
 import '/infra/dao/realm_volume_dao.dart';
 
-class RealmVolumeMapper {
+class RealmVolumesMapper {
   static List<RealmVolumeDAO> convertFromModel({
     required ManholeCardVolumes model,
   }) {

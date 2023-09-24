@@ -1,7 +1,7 @@
 import '/domain/entity/manhole_card_images.dart';
 import '/infra/dao/realm_image_dao.dart';
 
-class RealmImageMapper {
+class RealmImagesMapper {
   static List<RealmImageDAO> convertFromModel({
     required ManholeCardImages model,
   }) {

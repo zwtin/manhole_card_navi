@@ -1,7 +1,7 @@
 import '/domain/entity/manhole_card_prefectures.dart';
 import '/infra/dao/realm_prefecture_dao.dart';
 
-class RealmPrefectureMapper {
+class RealmPrefecturesMapper {
   static List<RealmPrefectureDAO> convertFromModel({
     required ManholeCardPrefectures model,
   }) {

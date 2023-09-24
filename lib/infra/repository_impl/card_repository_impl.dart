@@ -25,7 +25,7 @@ import '/infra/dao/realm_distribution_dao.dart';
 import '/infra/dao/realm_image_dao.dart';
 import '/infra/dao/realm_prefecture_dao.dart';
 import '/infra/dao/realm_volume_dao.dart';
-import '/infra/mapper/realm_card_mapper.dart';
+import '/infra/mapper/realm_cards_mapper.dart';
 
 final cardRepositoryProvider = Provider.autoDispose<CardRepository>(
   (ref) {
@@ -200,7 +200,7 @@ class CardRepositoryImpl implements CardRepository {
     ]);
     var realm = Realm(config);
 
-    final realmCards = RealmCardMapper.convertFromModel(
+    final realmCards = RealmCardsMapper.convertFromModel(
       model: manholeCards,
     );
 

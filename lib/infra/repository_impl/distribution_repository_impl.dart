@@ -9,7 +9,7 @@ import '/domain/entity/manhole_card_distributions.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/distribution_repository.dart';
 import '/infra/dao/realm_distribution_dao.dart';
-import '/infra/mapper/realm_distribution_mapper.dart';
+import '/infra/mapper/realm_distributions_mapper.dart';
 
 final distributionRepositoryProvider =
     Provider.autoDispose<DistributionRepository>(
@@ -75,7 +75,7 @@ class DistributionRepositoryImpl implements DistributionRepository {
     ]);
     var realm = Realm(config);
 
-    final realmDistributions = RealmDistributionMapper.convertFromModel(
+    final realmDistributions = RealmDistributionsMapper.convertFromModel(
       model: manholeCardDistributions,
     );
 
