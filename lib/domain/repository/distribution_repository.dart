@@ -1,3 +1,5 @@
+import 'package:manhole_card_navi/domain/entity/manhole_card_distribution.dart';
+
 import '/domain/entity/current_master_version.dart';
 import '/domain/entity/manhole_card_distributions.dart';
 import '/domain/entity/result.dart';
@@ -10,4 +12,5 @@ abstract class DistributionRepository {
   Future<Result<void>> saveMaster({
     required ManholeCardDistributions manholeCardDistributions,
   });
+  Future<Result<ManholeCardDistribution>> get({required String id});
 }

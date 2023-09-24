@@ -10,7 +10,7 @@ class RealmDistributionsMapper {
         return RealmDistributionDAO(
           element.id,
           element.other,
-          element.state.toString(),
+          element.state.name,
         );
       },
     ).toList();

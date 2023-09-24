@@ -1,9 +1,15 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/domain/entity/manhole_card.dart';
+import 'package:manhole_card_navi/domain/entity/manhole_card_contact.dart';
 import 'package:manhole_card_navi/domain/entity/manhole_card_contacts.dart';
+import 'package:manhole_card_navi/domain/entity/manhole_card_distribution.dart';
 import 'package:manhole_card_navi/domain/entity/manhole_card_distributions.dart';
+import 'package:manhole_card_navi/domain/entity/manhole_card_image.dart';
 import 'package:manhole_card_navi/domain/entity/manhole_card_images.dart';
+import 'package:manhole_card_navi/domain/entity/manhole_card_prefecture.dart';
 import 'package:manhole_card_navi/domain/entity/manhole_card_prefectures.dart';
+import 'package:manhole_card_navi/domain/entity/manhole_card_volume.dart';
 import 'package:manhole_card_navi/domain/entity/manhole_cards.dart';
 
 import '/domain/entity/current_master_version.dart';
@@ -131,6 +137,17 @@ class CheckMasterUpdateUseCase {
       );
     }
 
+    final updateCardMasterResult =
+        await _updateCardMaster(currentMasterVersion: currentMasterVersion);
+    if (updateCardMasterResult is Failure) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: 'マスターデータの更新に失敗しました',
+        ),
+      );
+    }
+
     final setCurrentMasterVersionResult = await _masterVersionRepository
         .setCurrentMasterVersion(currentMasterVersion: currentMasterVersion);
     if (setCurrentMasterVersionResult is Failure) {
@@ -161,16 +178,104 @@ class CheckMasterUpdateUseCase {
     }
     final tmpManholeCards = (fetchResult as Success<ManholeCards>).value;
 
-    final manholeCards = await Future.wait(
+    final manholeCardList = await Future.wait(
       tmpManholeCards.map(
         (manholeCard) async {
-          final contacts = await Future.wait(
+          final contactsResult = await Future.wait(
             manholeCard.contacts.map(
-              (manholeCardContact) async {},
+              (manholeCardContact) async {
+                return _contactRepository.get(
+                  id: manholeCardContact.id,
+                );
+              },
             ),
+          );
+          final distributionsResult = await Future.wait(
+            manholeCard.distributions.map(
+              (manholeCardDistribution) async {
+                return _distributionRepository.get(
+                  id: manholeCardDistribution.id,
+                );
+              },
+            ),
+          );
+          final imagesResult = await Future.wait(
+            manholeCard.images.map(
+              (manholeCardImage) async {
+                return _imageRepository.get(
+                  id: manholeCardImage.id,
+                );
+              },
+            ),
+          );
+          final prefecturesResult = await Future.wait(
+            manholeCard.prefectures.map(
+              (manholeCardPrefecture) async {
+                return _prefectureRepository.get(
+                  id: manholeCardPrefecture.id,
+                );
+              },
+            ),
+          );
+          final volumesResult = await Future.wait(
+            manholeCard.volumes.map(
+              (manholeCardVolume) async {
+                return _volumeRepository.get(
+                  id: manholeCardVolume.id,
+                );
+              },
+            ),
+          );
+          if (contactsResult.whereType<Failure>().isNotEmpty ||
+              distributionsResult.whereType<Failure>().isNotEmpty ||
+              imagesResult.whereType<Failure>().isNotEmpty ||
+              prefecturesResult.whereType<Failure>().isNotEmpty ||
+              volumesResult.whereType<Failure>().isNotEmpty) {
+            return null;
+          }
+          final contactList = contactsResult
+              .whereType<Success<ManholeCardContact>>()
+              .map((e) => e.value)
+              .toList();
+          final contacts = ManholeCardContacts(list: contactList);
+
+          final distributionList = distributionsResult
+              .whereType<Success<ManholeCardDistribution>>()
+              .map((e) => e.value)
+              .toList();
+          final distributions =
+              ManholeCardDistributions(list: distributionList);
+
+          final imageList = imagesResult
+              .whereType<Success<ManholeCardImage>>()
+              .map((e) => e.value)
+              .toList();
+          final images = ManholeCardImages(list: imageList);
+
+          final prefectureList = prefecturesResult
+              .whereType<Success<ManholeCardPrefecture>>()
+              .map((e) => e.value)
+              .toList();
+          final prefectures = ManholeCardPrefectures(list: prefectureList);
+
+          final volumeList = volumesResult
+              .whereType<Success<ManholeCardVolume>>()
+              .map((e) => e.value)
+              .toList();
+          final volumes = ManholeCardVolumes(list: volumeList);
+
+          return manholeCard.copyWith(
+            contacts: contacts,
+            distributions: distributions,
+            images: images,
+            prefectures: prefectures,
+            volumes: volumes,
           );
         },
       ),
+    );
+    final manholeCards = ManholeCards(
+      list: manholeCardList.whereType<ManholeCard>().toList(),
     );
 
     final deleteResult = await _cardRepository.deleteMaster();

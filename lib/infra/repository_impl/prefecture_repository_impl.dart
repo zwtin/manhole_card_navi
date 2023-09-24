@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
+import 'package:manhole_card_navi/infra/mapper/realm_prefecture_mapper.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/current_master_version.dart';
@@ -81,6 +83,31 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
     realm.close();
 
     return const Result.success(null);
+  }
+
+  @override
+  Future<Result<ManholeCardPrefecture>> get({required String id}) async {
+    var config = Configuration.local([
+      RealmPrefectureDAO.schema,
+    ]);
+    var realm = Realm(config);
+
+    final daoOrNull = realm
+        .all<RealmPrefectureDAO>()
+        .query(
+          "id == '$id'",
+        )
+        .firstOrNull;
+    if (daoOrNull == null) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: 'データが見つかりませんでした',
+        ),
+      );
+    }
+    final prefecture = RealmPrefectureMapper.convertToModel(dao: daoOrNull);
+    return Result.success(prefecture);
   }
 
   void dispose() {

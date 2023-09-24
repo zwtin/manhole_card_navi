@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
+import 'package:manhole_card_navi/infra/mapper/realm_image_mapper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:realm/realm.dart';
 
@@ -59,7 +61,9 @@ class ImageRepositoryImpl implements ImageRepository {
   }) async {
     final appDirectory = await getApplicationDocumentsDirectory();
     final imageDirectory = Directory('${appDirectory.path}/images');
-    imageDirectory.deleteSync(recursive: true);
+    if (imageDirectory.existsSync()) {
+      imageDirectory.deleteSync(recursive: true);
+    }
     imageDirectory.createSync(recursive: true);
 
     final newManholeCardImageList = await Future.wait(
@@ -120,6 +124,31 @@ class ImageRepositoryImpl implements ImageRepository {
     realm.close();
 
     return const Result.success(null);
+  }
+
+  @override
+  Future<Result<ManholeCardImage>> get({required String id}) async {
+    var config = Configuration.local([
+      RealmImageDAO.schema,
+    ]);
+    var realm = Realm(config);
+
+    final daoOrNull = realm
+        .all<RealmImageDAO>()
+        .query(
+          "id == '$id'",
+        )
+        .firstOrNull;
+    if (daoOrNull == null) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: 'データが見つかりませんでした',
+        ),
+      );
+    }
+    final image = RealmImageMapper.convertToModel(dao: daoOrNull);
+    return Result.success(image);
   }
 
   void dispose() {

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
+import 'package:manhole_card_navi/infra/mapper/realm_contact_mapper.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/current_master_version.dart';
@@ -96,20 +97,22 @@ class ContactRepositoryImpl implements ContactRepository {
     ]);
     var realm = Realm(config);
 
-    final contactOrNull = realm
+    final daoOrNull = realm
         .all<RealmContactDAO>()
         .query(
-          'id == $id',
+          "id == '$id'",
         )
         .firstOrNull;
-    if (contactOrNull == null) {
+    if (daoOrNull == null) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '問い合わせ情報が見つかりませんでした',
+          text: 'データが見つかりませんでした',
         ),
       );
     }
+    final contact = RealmContactMapper.convertToModel(dao: daoOrNull);
+    return Result.success(contact);
   }
 
   void dispose() {
