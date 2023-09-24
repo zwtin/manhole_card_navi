@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
-import 'package:manhole_card_navi/infra/mapper/realm_contact_mapper.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/current_master_version.dart';
+import '/domain/entity/custom_exception.dart';
 import '/domain/entity/manhole_card_contact.dart';
 import '/domain/entity/manhole_card_contacts.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/contact_repository.dart';
 import '/infra/dao/realm_contact_dao.dart';
+import '/infra/mapper/realm_contact_mapper.dart';
 import '/infra/mapper/realm_contacts_mapper.dart';
 
 final contactRepositoryProvider = Provider.autoDispose<ContactRepository>(
@@ -91,7 +91,9 @@ class ContactRepositoryImpl implements ContactRepository {
   }
 
   @override
-  Future<Result<ManholeCardContact>> get({required String id}) async {
+  Future<Result<ManholeCardContact>> get({
+    required String id,
+  }) async {
     var config = Configuration.local([
       RealmContactDAO.schema,
     ]);

@@ -4,17 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
-import 'package:manhole_card_navi/infra/mapper/realm_image_mapper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/current_master_version.dart';
+import '/domain/entity/custom_exception.dart';
 import '/domain/entity/manhole_card_image.dart';
 import '/domain/entity/manhole_card_images.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/image_repository.dart';
 import '/infra/dao/realm_image_dao.dart';
+import '/infra/mapper/realm_image_mapper.dart';
 import '/infra/mapper/realm_images_mapper.dart';
 
 final imageRepositoryProvider = Provider.autoDispose<ImageRepository>(
@@ -127,7 +127,9 @@ class ImageRepositoryImpl implements ImageRepository {
   }
 
   @override
-  Future<Result<ManholeCardImage>> get({required String id}) async {
+  Future<Result<ManholeCardImage>> get({
+    required String id,
+  }) async {
     var config = Configuration.local([
       RealmImageDAO.schema,
     ]);

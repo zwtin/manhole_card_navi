@@ -1,5 +1,5 @@
-import 'package:manhole_card_navi/domain/entity/manhole_card_contact.dart';
-import 'package:manhole_card_navi/infra/dao/realm_contact_dao.dart';
+import '/domain/entity/manhole_card_contact.dart';
+import '/infra/dao/realm_contact_dao.dart';
 
 class RealmContactMapper {
   static ManholeCardContact convertToModel({

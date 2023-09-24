@@ -1,5 +1,5 @@
-import 'package:manhole_card_navi/domain/entity/manhole_card_image.dart';
-import 'package:manhole_card_navi/infra/dao/realm_image_dao.dart';
+import '/domain/entity/manhole_card_image.dart';
+import '/infra/dao/realm_image_dao.dart';
 
 class RealmImageMapper {
   static ManholeCardImage convertToModel({

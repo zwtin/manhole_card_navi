@@ -1,10 +1,10 @@
-import 'package:manhole_card_navi/domain/entity/manhole_card.dart';
-import 'package:manhole_card_navi/domain/entity/manhole_card_contacts.dart';
-import 'package:manhole_card_navi/domain/entity/manhole_card_distributions.dart';
-import 'package:manhole_card_navi/domain/entity/manhole_card_images.dart';
-import 'package:manhole_card_navi/domain/entity/manhole_card_prefectures.dart';
-import 'package:manhole_card_navi/domain/entity/manhole_card_volumes.dart';
-import 'package:manhole_card_navi/infra/dao/realm_card_dao.dart';
+import '/domain/entity/manhole_card.dart';
+import '/domain/entity/manhole_card_contacts.dart';
+import '/domain/entity/manhole_card_distributions.dart';
+import '/domain/entity/manhole_card_images.dart';
+import '/domain/entity/manhole_card_prefectures.dart';
+import '/domain/entity/manhole_card_volumes.dart';
+import '/infra/dao/realm_card_dao.dart';
 
 class RealmCardMapper {
   static ManholeCard convertToModel({

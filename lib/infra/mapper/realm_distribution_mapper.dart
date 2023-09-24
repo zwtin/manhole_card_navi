@@ -1,5 +1,5 @@
-import 'package:manhole_card_navi/domain/entity/manhole_card_distribution.dart';
-import 'package:manhole_card_navi/infra/dao/realm_distribution_dao.dart';
+import '/domain/entity/manhole_card_distribution.dart';
+import '/infra/dao/realm_distribution_dao.dart';
 
 class RealmDistributionMapper {
   static ManholeCardDistribution convertToModel({

@@ -11,5 +11,7 @@ abstract class ContactRepository {
   Future<Result<void>> saveMaster({
     required ManholeCardContacts manholeCardContacts,
   });
-  Future<Result<ManholeCardContact>> get({required String id});
+  Future<Result<ManholeCardContact>> get({
+    required String id,
+  });
 }

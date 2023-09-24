@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
-import 'package:manhole_card_navi/infra/mapper/realm_prefecture_mapper.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/current_master_version.dart';
+import '/domain/entity/custom_exception.dart';
 import '/domain/entity/manhole_card_prefecture.dart';
 import '/domain/entity/manhole_card_prefectures.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/prefecture_repository.dart';
 import '/infra/dao/realm_prefecture_dao.dart';
+import '/infra/mapper/realm_prefecture_mapper.dart';
 import '/infra/mapper/realm_prefectures_mapper.dart';
 
 final prefectureRepositoryProvider = Provider.autoDispose<PrefectureRepository>(
@@ -86,7 +86,9 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
   }
 
   @override
-  Future<Result<ManholeCardPrefecture>> get({required String id}) async {
+  Future<Result<ManholeCardPrefecture>> get({
+    required String id,
+  }) async {
     var config = Configuration.local([
       RealmPrefectureDAO.schema,
     ]);

@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
-import 'package:manhole_card_navi/infra/mapper/realm_distribution_mapper.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/current_master_version.dart';
+import '/domain/entity/custom_exception.dart';
 import '/domain/entity/manhole_card_distribution.dart';
 import '/domain/entity/manhole_card_distributions.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/distribution_repository.dart';
 import '/infra/dao/realm_distribution_dao.dart';
+import '/infra/mapper/realm_distribution_mapper.dart';
 import '/infra/mapper/realm_distributions_mapper.dart';
 
 final distributionRepositoryProvider =
@@ -90,7 +90,9 @@ class DistributionRepositoryImpl implements DistributionRepository {
   }
 
   @override
-  Future<Result<ManholeCardDistribution>> get({required String id}) async {
+  Future<Result<ManholeCardDistribution>> get({
+    required String id,
+  }) async {
     var config = Configuration.local([
       RealmDistributionDAO.schema,
     ]);

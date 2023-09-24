@@ -1,5 +1,5 @@
-import 'package:manhole_card_navi/domain/entity/manhole_card_prefecture.dart';
-import 'package:manhole_card_navi/infra/dao/realm_prefecture_dao.dart';
+import '/domain/entity/manhole_card_prefecture.dart';
+import '/infra/dao/realm_prefecture_dao.dart';
 
 class RealmPrefectureMapper {
   static ManholeCardPrefecture convertToModel({
