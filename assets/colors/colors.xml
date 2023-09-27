@@ -3,4 +3,7 @@
     <color name="main">#90CAF9</color>
     <color name="accent">#1565C0</color>
     <color name="background">#795548</color>
+    <color name="distributing">#2ecc71</color>
+    <color name="stopped">#e74c3c</color>
+    <color name="notClear">#f1c40f</color>
 </resources>

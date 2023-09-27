@@ -21,6 +21,7 @@ mixin _$MapMarkerViewData {
   String get imagePath => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
+  MapMarkerFrameState get state => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MapMarkerViewDataCopyWith<MapMarkerViewData> get copyWith =>
@@ -38,7 +39,8 @@ abstract class $MapMarkerViewDataCopyWith<$Res> {
       String title,
       String imagePath,
       double latitude,
-      double longitude});
+      double longitude,
+      MapMarkerFrameState state});
 }
 
 /// @nodoc
@@ -59,6 +61,7 @@ class _$MapMarkerViewDataCopyWithImpl<$Res, $Val extends MapMarkerViewData>
     Object? imagePath = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? state = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -81,6 +84,10 @@ class _$MapMarkerViewDataCopyWithImpl<$Res, $Val extends MapMarkerViewData>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as MapMarkerFrameState,
     ) as $Val);
   }
 }
@@ -98,7 +105,8 @@ abstract class _$$_MapMarkerViewDataCopyWith<$Res>
       String title,
       String imagePath,
       double latitude,
-      double longitude});
+      double longitude,
+      MapMarkerFrameState state});
 }
 
 /// @nodoc
@@ -117,6 +125,7 @@ class __$$_MapMarkerViewDataCopyWithImpl<$Res>
     Object? imagePath = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? state = null,
   }) {
     return _then(_$_MapMarkerViewData(
       id: null == id
@@ -139,6 +148,10 @@ class __$$_MapMarkerViewDataCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as MapMarkerFrameState,
     ));
   }
 }
@@ -151,7 +164,8 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
       required this.title,
       required this.imagePath,
       required this.latitude,
-      required this.longitude})
+      required this.longitude,
+      required this.state})
       : super._();
 
   @override
@@ -164,10 +178,12 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
   final double latitude;
   @override
   final double longitude;
+  @override
+  final MapMarkerFrameState state;
 
   @override
   String toString() {
-    return 'MapMarkerViewData(id: $id, title: $title, imagePath: $imagePath, latitude: $latitude, longitude: $longitude)';
+    return 'MapMarkerViewData(id: $id, title: $title, imagePath: $imagePath, latitude: $latitude, longitude: $longitude, state: $state)';
   }
 
   @override
@@ -182,12 +198,13 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
-                other.longitude == longitude));
+                other.longitude == longitude) &&
+            (identical(other.state, state) || other.state == state));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, title, imagePath, latitude, longitude);
+  int get hashCode => Object.hash(
+      runtimeType, id, title, imagePath, latitude, longitude, state);
 
   @JsonKey(ignore: true)
   @override
@@ -203,7 +220,8 @@ abstract class _MapMarkerViewData extends MapMarkerViewData {
       required final String title,
       required final String imagePath,
       required final double latitude,
-      required final double longitude}) = _$_MapMarkerViewData;
+      required final double longitude,
+      required final MapMarkerFrameState state}) = _$_MapMarkerViewData;
   const _MapMarkerViewData._() : super._();
 
   @override
@@ -216,6 +234,8 @@ abstract class _MapMarkerViewData extends MapMarkerViewData {
   double get latitude;
   @override
   double get longitude;
+  @override
+  MapMarkerFrameState get state;
   @override
   @JsonKey(ignore: true)
   _$$_MapMarkerViewDataCopyWith<_$_MapMarkerViewData> get copyWith =>

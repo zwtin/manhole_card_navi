@@ -19,6 +19,15 @@ class ColorName {
   /// Color: #795548
   static const Color background = Color(0xFF795548);
 
+  /// Color: #2ecc71
+  static const Color distributing = Color(0xFF2ECC71);
+
   /// Color: #90CAF9
   static const Color main = Color(0xFF90CAF9);
+
+  /// Color: #f1c40f
+  static const Color notClear = Color(0xFFF1C40F);
+
+  /// Color: #e74c3c
+  static const Color stopped = Color(0xFFE74C3C);
 }

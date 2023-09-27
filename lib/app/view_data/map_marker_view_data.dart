@@ -10,6 +10,13 @@ abstract class MapMarkerViewData with _$MapMarkerViewData {
     required String imagePath,
     required double latitude,
     required double longitude,
+    required MapMarkerFrameState state,
   }) = _MapMarkerViewData;
   const MapMarkerViewData._();
+}
+
+enum MapMarkerFrameState {
+  distributing,
+  stopped,
+  notClear,
 }
