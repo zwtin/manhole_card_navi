@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/app/view_data/map_marker_view_data.dart';
 
 import '/app/provider/router_provider.dart';
 import '/app/view/map_view.dart';
@@ -27,6 +28,7 @@ class MapViewModel extends ChangeNotifier {
   final _logger = Logger();
 
   late GoogleMapController mapController;
+  final List<MapMarkerViewData> markersViewData = [];
 
   Future<void> onLoad() async {
     _logger.d('MapViewModel');
@@ -43,6 +45,8 @@ class MapViewModel extends ChangeNotifier {
           ),
         );
   }
+
+  Future<void> onTapMarker(String markerId) async {}
 
   @override
   void dispose() {

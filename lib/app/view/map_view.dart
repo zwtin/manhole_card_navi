@@ -69,6 +69,15 @@ class MapView extends HookConsumerWidget {
             target: LatLng(35.80099213322445, 139.71850198834352),
             zoom: 17.0,
           ),
+          markers: viewModel.markersViewData.map(
+            (viewData) {
+              return Marker(
+                markerId: MarkerId(
+                  viewData.id,
+                ),
+              );
+            },
+          ).toSet(),
         ),
       ),
     );
