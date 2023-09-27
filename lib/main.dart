@@ -13,27 +13,27 @@ import 'flavors.dart';
 import 'temporary_provider.dart';
 
 FutureOr<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
-  // The following lines are the same as previously explained in "Handling uncaught errors"
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-
-  final streamSharedPreference = await StreamingSharedPreferences.instance;
-
-  final packageInfo = await PackageInfo.fromPlatform();
-
-  final remoteConfig = FirebaseRemoteConfig.instance;
-  if (F.appFlavor == Flavor.development) {
-    await remoteConfig.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: const Duration(seconds: 10),
-      minimumFetchInterval: const Duration(seconds: 0),
-    ));
-  }
-  await remoteConfig.fetchAndActivate();
-
   runZonedGuarded<Future<void>>(
     () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+
+      // The following lines are the same as previously explained in "Handling uncaught errors"
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+
+      final streamSharedPreference = await StreamingSharedPreferences.instance;
+
+      final packageInfo = await PackageInfo.fromPlatform();
+
+      final remoteConfig = FirebaseRemoteConfig.instance;
+      if (F.appFlavor == Flavor.development) {
+        await remoteConfig.setConfigSettings(RemoteConfigSettings(
+          fetchTimeout: const Duration(seconds: 10),
+          minimumFetchInterval: const Duration(seconds: 0),
+        ));
+      }
+      await remoteConfig.fetchAndActivate();
+
       runApp(
         ProviderScope(
           overrides: [
