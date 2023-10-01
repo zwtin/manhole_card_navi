@@ -1,7 +1,11 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image/image.dart' as img;
 
 import '/app/view_model/map_view_model.dart';
 import '/app/widget/router_widget.dart';
@@ -59,27 +63,64 @@ class MapView extends HookConsumerWidget {
             ),
           ], // 影をなくす
         ),
-        body: GoogleMap(
-          onMapCreated: (controller) async {
-            ref
-                .read(mapViewModelProvider(key))
-                .setGoogleMapController(controller);
-          },
-          initialCameraPosition: const CameraPosition(
-            target: LatLng(35.80099213322445, 139.71850198834352),
-            zoom: 17.0,
+        body: FutureBuilder<List<Marker>>(
+          future: Future.wait(
+            viewModel.markersViewData.map(
+              (markerViewData) async {
+                return Marker(
+                  markerId: MarkerId(markerViewData.id),
+                );
+              },
+            ),
           ),
-          markers: viewModel.markersViewData.map(
-            (viewData) {
-              return Marker(
-                markerId: MarkerId(
-                  viewData.id,
-                ),
-              );
-            },
-          ).toSet(),
+          builder: (_, snapshot) {
+            final markers = <Marker>[];
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData) {
+              markers.addAll(snapshot.data!);
+            }
+            return GoogleMap(
+              onMapCreated: (controller) async {
+                ref
+                    .read(mapViewModelProvider(key))
+                    .setGoogleMapController(controller);
+              },
+              initialCameraPosition: const CameraPosition(
+                target: LatLng(35.80099213322445, 139.71850198834352),
+                zoom: 17.0,
+              ),
+              markers: markers.toSet(),
+            );
+          },
         ),
       ),
     );
+  }
+
+  Future<img.Image?> decodeAsset(String path) async {
+    final data = await rootBundle.load(path);
+
+    final buffer = await ui.ImmutableBuffer.fromUint8List(
+      data.buffer.asUint8List(),
+    );
+
+    final id = await ui.ImageDescriptor.encoded(buffer);
+    final codec = await id.instantiateCodec(
+      targetHeight: id.height,
+      targetWidth: id.width,
+    );
+
+    final fi = await codec.getNextFrame();
+
+    final uiImage = fi.image;
+    final uiBytes = await uiImage.toByteData();
+
+    final image = img.Image.fromBytes(
+      width: id.width,
+      height: id.height,
+      bytes: uiBytes!.buffer,
+      numChannels: 4,
+    );
+    return image;
   }
 }

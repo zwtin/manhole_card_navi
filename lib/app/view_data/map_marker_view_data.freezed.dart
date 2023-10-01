@@ -18,10 +18,10 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$MapMarkerViewData {
   String get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
-  String get imagePath => throw _privateConstructorUsedError;
+  String get pinImagePath => throw _privateConstructorUsedError;
+  String get cardImagePath => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
-  MapMarkerFrameState get state => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MapMarkerViewDataCopyWith<MapMarkerViewData> get copyWith =>
@@ -37,10 +37,10 @@ abstract class $MapMarkerViewDataCopyWith<$Res> {
   $Res call(
       {String id,
       String title,
-      String imagePath,
+      String pinImagePath,
+      String cardImagePath,
       double latitude,
-      double longitude,
-      MapMarkerFrameState state});
+      double longitude});
 }
 
 /// @nodoc
@@ -58,10 +58,10 @@ class _$MapMarkerViewDataCopyWithImpl<$Res, $Val extends MapMarkerViewData>
   $Res call({
     Object? id = null,
     Object? title = null,
-    Object? imagePath = null,
+    Object? pinImagePath = null,
+    Object? cardImagePath = null,
     Object? latitude = null,
     Object? longitude = null,
-    Object? state = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -72,9 +72,13 @@ class _$MapMarkerViewDataCopyWithImpl<$Res, $Val extends MapMarkerViewData>
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
-      imagePath: null == imagePath
-          ? _value.imagePath
-          : imagePath // ignore: cast_nullable_to_non_nullable
+      pinImagePath: null == pinImagePath
+          ? _value.pinImagePath
+          : pinImagePath // ignore: cast_nullable_to_non_nullable
+              as String,
+      cardImagePath: null == cardImagePath
+          ? _value.cardImagePath
+          : cardImagePath // ignore: cast_nullable_to_non_nullable
               as String,
       latitude: null == latitude
           ? _value.latitude
@@ -84,10 +88,6 @@ class _$MapMarkerViewDataCopyWithImpl<$Res, $Val extends MapMarkerViewData>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
-      state: null == state
-          ? _value.state
-          : state // ignore: cast_nullable_to_non_nullable
-              as MapMarkerFrameState,
     ) as $Val);
   }
 }
@@ -103,10 +103,10 @@ abstract class _$$_MapMarkerViewDataCopyWith<$Res>
   $Res call(
       {String id,
       String title,
-      String imagePath,
+      String pinImagePath,
+      String cardImagePath,
       double latitude,
-      double longitude,
-      MapMarkerFrameState state});
+      double longitude});
 }
 
 /// @nodoc
@@ -122,10 +122,10 @@ class __$$_MapMarkerViewDataCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? title = null,
-    Object? imagePath = null,
+    Object? pinImagePath = null,
+    Object? cardImagePath = null,
     Object? latitude = null,
     Object? longitude = null,
-    Object? state = null,
   }) {
     return _then(_$_MapMarkerViewData(
       id: null == id
@@ -136,9 +136,13 @@ class __$$_MapMarkerViewDataCopyWithImpl<$Res>
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
-      imagePath: null == imagePath
-          ? _value.imagePath
-          : imagePath // ignore: cast_nullable_to_non_nullable
+      pinImagePath: null == pinImagePath
+          ? _value.pinImagePath
+          : pinImagePath // ignore: cast_nullable_to_non_nullable
+              as String,
+      cardImagePath: null == cardImagePath
+          ? _value.cardImagePath
+          : cardImagePath // ignore: cast_nullable_to_non_nullable
               as String,
       latitude: null == latitude
           ? _value.latitude
@@ -148,10 +152,6 @@ class __$$_MapMarkerViewDataCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
-      state: null == state
-          ? _value.state
-          : state // ignore: cast_nullable_to_non_nullable
-              as MapMarkerFrameState,
     ));
   }
 }
@@ -162,10 +162,10 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
   const _$_MapMarkerViewData(
       {required this.id,
       required this.title,
-      required this.imagePath,
+      required this.pinImagePath,
+      required this.cardImagePath,
       required this.latitude,
-      required this.longitude,
-      required this.state})
+      required this.longitude})
       : super._();
 
   @override
@@ -173,17 +173,17 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
   @override
   final String title;
   @override
-  final String imagePath;
+  final String pinImagePath;
+  @override
+  final String cardImagePath;
   @override
   final double latitude;
   @override
   final double longitude;
-  @override
-  final MapMarkerFrameState state;
 
   @override
   String toString() {
-    return 'MapMarkerViewData(id: $id, title: $title, imagePath: $imagePath, latitude: $latitude, longitude: $longitude, state: $state)';
+    return 'MapMarkerViewData(id: $id, title: $title, pinImagePath: $pinImagePath, cardImagePath: $cardImagePath, latitude: $latitude, longitude: $longitude)';
   }
 
   @override
@@ -193,18 +193,19 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
             other is _$_MapMarkerViewData &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
-            (identical(other.imagePath, imagePath) ||
-                other.imagePath == imagePath) &&
+            (identical(other.pinImagePath, pinImagePath) ||
+                other.pinImagePath == pinImagePath) &&
+            (identical(other.cardImagePath, cardImagePath) ||
+                other.cardImagePath == cardImagePath) &&
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
-                other.longitude == longitude) &&
-            (identical(other.state, state) || other.state == state));
+                other.longitude == longitude));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, id, title, imagePath, latitude, longitude, state);
+      runtimeType, id, title, pinImagePath, cardImagePath, latitude, longitude);
 
   @JsonKey(ignore: true)
   @override
@@ -218,10 +219,10 @@ abstract class _MapMarkerViewData extends MapMarkerViewData {
   const factory _MapMarkerViewData(
       {required final String id,
       required final String title,
-      required final String imagePath,
+      required final String pinImagePath,
+      required final String cardImagePath,
       required final double latitude,
-      required final double longitude,
-      required final MapMarkerFrameState state}) = _$_MapMarkerViewData;
+      required final double longitude}) = _$_MapMarkerViewData;
   const _MapMarkerViewData._() : super._();
 
   @override
@@ -229,13 +230,13 @@ abstract class _MapMarkerViewData extends MapMarkerViewData {
   @override
   String get title;
   @override
-  String get imagePath;
+  String get pinImagePath;
+  @override
+  String get cardImagePath;
   @override
   double get latitude;
   @override
   double get longitude;
-  @override
-  MapMarkerFrameState get state;
   @override
   @JsonKey(ignore: true)
   _$$_MapMarkerViewDataCopyWith<_$_MapMarkerViewData> get copyWith =>

@@ -7,16 +7,10 @@ abstract class MapMarkerViewData with _$MapMarkerViewData {
   const factory MapMarkerViewData({
     required String id,
     required String title,
-    required String imagePath,
+    required String pinImagePath,
+    required String cardImagePath,
     required double latitude,
     required double longitude,
-    required MapMarkerFrameState state,
   }) = _MapMarkerViewData;
   const MapMarkerViewData._();
-}
-
-enum MapMarkerFrameState {
-  distributing,
-  stopped,
-  notClear,
 }
