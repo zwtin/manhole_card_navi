@@ -66,9 +66,45 @@ class MapView extends HookConsumerWidget {
         body: FutureBuilder<List<Marker>>(
           future: Future.wait(
             viewModel.markersViewData.map(
-              (markerViewData) async {
+              (viewData) async {
+                final cardImageOrNull =
+                    await decodeAsset(viewData.cardImagePath);
+                final pinImageOrNull = await decodeAsset(viewData.pinImagePath);
+                final cardImage = cardImageOrNull!;
+                final pinImage = pinImageOrNull!;
+
+                final cardThumbnail =
+                    img.copyResize(cardImage, width: 259, height: 361);
+                final pinThumbnail =
+                    img.copyResize(pinImage, width: 309, height: 411);
+
+                final mergeImage = img.Image(
+                  width: 309,
+                  height: 411,
+                );
+                img.compositeImage(
+                  mergeImage,
+                  pinThumbnail,
+                );
+                img.compositeImage(
+                  mergeImage,
+                  cardThumbnail,
+                  dstX: 25,
+                  dstY: 25,
+                );
                 return Marker(
-                  markerId: MarkerId(markerViewData.id),
+                  markerId: MarkerId(viewData.id),
+                  icon: BitmapDescriptor.fromBytes(
+                    img.encodeJpg(mergeImage).buffer.asUint8List(),
+                  ),
+                  position: LatLng(
+                    viewData.latitude,
+                    viewData.longitude,
+                  ),
+                  infoWindow: InfoWindow(
+                    title: viewData.title,
+                  ),
+                  onTap: () {},
                 );
               },
             ),
