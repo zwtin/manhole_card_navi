@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
@@ -26,14 +27,33 @@ class MapViewModel extends ChangeNotifier {
   final _logger = Logger();
 
   late GoogleMapController mapController;
+  late CameraPosition currentCameraPosition = const CameraPosition(
+    target: LatLng(35.680212, 139.757669),
+    zoom: 12.5,
+  );
   final List<MapMarkerViewData> markersViewData = [];
 
   Future<void> onLoad() async {
     _logger.d('MapViewModel');
   }
 
-  void setGoogleMapController(GoogleMapController controller) {
+  Future<void> setGoogleMapController(GoogleMapController controller) async {
     mapController = controller;
+  }
+
+  Future<void> onTapCurrentLocationButton() async {
+    final position = await Geolocator.getCurrentPosition();
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(
+            position.latitude,
+            position.longitude,
+          ),
+          zoom: 12.5,
+        ),
+      ),
+    );
   }
 
   void onTap() {

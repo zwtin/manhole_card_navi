@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image/image.dart' as img;
@@ -61,76 +62,145 @@ class MapView extends HookConsumerWidget {
                 ref.read(mapViewModelProvider(key)).onTap();
               },
             ),
-          ], // 影をなくす
+          ],
         ),
-        body: FutureBuilder<List<Marker>>(
-          future: Future.wait(
-            viewModel.markersViewData.map(
-              (viewData) async {
-                final cardImageOrNull =
-                    await decodeAsset(viewData.cardImagePath);
-                final pinImageOrNull = await decodeAsset(viewData.pinImagePath);
-                final cardImage = cardImageOrNull!;
-                final pinImage = pinImageOrNull!;
-
-                final cardThumbnail =
-                    img.copyResize(cardImage, width: 259, height: 361);
-                final pinThumbnail =
-                    img.copyResize(pinImage, width: 309, height: 411);
-
-                final mergeImage = img.Image(
-                  width: 309,
-                  height: 411,
-                );
-                img.compositeImage(
-                  mergeImage,
-                  pinThumbnail,
-                );
-                img.compositeImage(
-                  mergeImage,
-                  cardThumbnail,
-                  dstX: 25,
-                  dstY: 25,
-                );
-                return Marker(
-                  markerId: MarkerId(viewData.id),
-                  icon: BitmapDescriptor.fromBytes(
-                    img.encodeJpg(mergeImage).buffer.asUint8List(),
-                  ),
-                  position: LatLng(
-                    viewData.latitude,
-                    viewData.longitude,
-                  ),
-                  infoWindow: InfoWindow(
-                    title: viewData.title,
-                  ),
-                  onTap: () {},
-                );
-              },
-            ),
-          ),
-          builder: (_, snapshot) {
-            final markers = <Marker>[];
-            if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasData) {
-              markers.addAll(snapshot.data!);
+        body: FutureBuilder<Position>(
+          future: requestPermission(),
+          builder: (_, positionSnapshot) {
+            if (positionSnapshot.connectionState != ConnectionState.done) {
+              return GoogleMap(
+                initialCameraPosition: viewModel.currentCameraPosition,
+                myLocationEnabled: true,
+                myLocationButtonEnabled: false,
+                zoomControlsEnabled: false,
+                rotateGesturesEnabled: false,
+                tiltGesturesEnabled: false,
+                mapType: MapType.normal,
+              );
             }
-            return GoogleMap(
-              onMapCreated: (controller) async {
-                ref
-                    .read(mapViewModelProvider(key))
-                    .setGoogleMapController(controller);
-              },
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(35.80099213322445, 139.71850198834352),
-                zoom: 17.0,
+            return FutureBuilder<List<Marker>>(
+              future: Future.wait(
+                viewModel.markersViewData.map(
+                  (viewData) async {
+                    final cardImageOrNull =
+                        await decodeAsset(viewData.cardImagePath);
+                    final pinImageOrNull =
+                        await decodeAsset(viewData.pinImagePath);
+                    final cardImage = cardImageOrNull!;
+                    final pinImage = pinImageOrNull!;
+
+                    final cardThumbnail =
+                        img.copyResize(cardImage, width: 259, height: 361);
+                    final pinThumbnail =
+                        img.copyResize(pinImage, width: 309, height: 411);
+
+                    final mergeImage = img.Image(
+                      width: 309,
+                      height: 411,
+                    );
+                    img.compositeImage(
+                      mergeImage,
+                      pinThumbnail,
+                    );
+                    img.compositeImage(
+                      mergeImage,
+                      cardThumbnail,
+                      dstX: 25,
+                      dstY: 25,
+                    );
+                    return Marker(
+                      markerId: MarkerId(viewData.id),
+                      icon: BitmapDescriptor.fromBytes(
+                        img.encodeJpg(mergeImage).buffer.asUint8List(),
+                      ),
+                      position: LatLng(
+                        viewData.latitude,
+                        viewData.longitude,
+                      ),
+                      infoWindow: InfoWindow(
+                        title: viewData.title,
+                      ),
+                      onTap: () {},
+                    );
+                  },
+                ),
               ),
-              markers: markers.toSet(),
+              builder: (_, markerSnapshot) {
+                final markers = <Marker>[];
+                if (markerSnapshot.connectionState == ConnectionState.done &&
+                    markerSnapshot.hasData) {
+                  markers.addAll(markerSnapshot.data!);
+                }
+                return GoogleMap(
+                  onMapCreated: (controller) async {
+                    ref
+                        .read(mapViewModelProvider(key))
+                        .setGoogleMapController(controller);
+                    ref
+                        .read(mapViewModelProvider(key))
+                        .onTapCurrentLocationButton();
+                  },
+                  initialCameraPosition: viewModel.currentCameraPosition,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
+                  zoomControlsEnabled: false,
+                  rotateGesturesEnabled: false,
+                  tiltGesturesEnabled: false,
+                  mapType: MapType.normal,
+                  markers: markers.toSet(),
+                );
+              },
             );
           },
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            ref.read(mapViewModelProvider(key)).onTapCurrentLocationButton();
+          },
+          backgroundColor: ColorName.main,
+          foregroundColor: ColorName.background,
+          shape: const CircleBorder(
+            side: BorderSide(
+              color: ColorName.background,
+              width: 3,
+            ),
+          ),
+          elevation: 0.0,
+          focusElevation: 0.0,
+          hoverElevation: 0.0,
+          highlightElevation: 0.0,
+          disabledElevation: 0.0,
+          child: const Icon(Icons.room_outlined),
+        ),
       ),
     );
+  }
+
+  Future<Position> requestPermission() async {
+    final isServiceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!isServiceEnabled) {
+      return Future.error(
+        'Location services are disabled.',
+      );
+    }
+
+    var permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error(
+          'Location permissions are denied',
+        );
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
+    }
+
+    return await Geolocator.getCurrentPosition();
   }
 
   Future<img.Image?> decodeAsset(String path) async {
