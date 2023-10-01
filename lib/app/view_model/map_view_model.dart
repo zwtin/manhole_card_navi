@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
+import '/app/provider/location_permission_provider.dart';
 import '/app/view_data/map_marker_view_data.dart';
 
 final mapViewModelProvider =
@@ -27,14 +28,22 @@ class MapViewModel extends ChangeNotifier {
   final _logger = Logger();
 
   late GoogleMapController mapController;
-  late CameraPosition currentCameraPosition = const CameraPosition(
+  CameraPosition currentCameraPosition = const CameraPosition(
     target: LatLng(35.680212, 139.757669),
     zoom: 12.5,
   );
+  bool myLocationEnabled = false;
   final List<MapMarkerViewData> markersViewData = [];
 
   Future<void> onLoad() async {
     _logger.d('MapViewModel');
+    _ref.read(locationPermissionProvider.notifier).request();
+  }
+
+  Future<void> setupMyLocation() async {
+    myLocationEnabled = true;
+    await _moveToCurrentLocation(false);
+    notifyListeners();
   }
 
   Future<void> setGoogleMapController(GoogleMapController controller) async {
@@ -42,18 +51,36 @@ class MapViewModel extends ChangeNotifier {
   }
 
   Future<void> onTapCurrentLocationButton() async {
+    await _moveToCurrentLocation(true);
+  }
+
+  Future<void> _moveToCurrentLocation(bool animation) async {
     final position = await Geolocator.getCurrentPosition();
-    mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(
-            position.latitude,
-            position.longitude,
+    if (animation) {
+      mapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(
+              position.latitude,
+              position.longitude,
+            ),
+            zoom: 12.5,
           ),
-          zoom: 12.5,
         ),
-      ),
-    );
+      );
+    } else {
+      mapController.moveCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(
+              position.latitude,
+              position.longitude,
+            ),
+            zoom: 12.5,
+          ),
+        ),
+      );
+    }
   }
 
   void onTap() {

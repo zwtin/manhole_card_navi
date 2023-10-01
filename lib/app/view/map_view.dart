@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image/image.dart' as img;
 
+import '/app/provider/location_permission_provider.dart';
 import '/app/view_model/map_view_model.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';
@@ -31,6 +32,13 @@ class MapView extends HookConsumerWidget {
         return null;
       },
       const [],
+    );
+
+    ref.listen(
+      locationPermissionProvider,
+      (previous, next) async {
+        await requestPermission(ref);
+      },
     );
 
     return RouterWidget(
@@ -64,92 +72,73 @@ class MapView extends HookConsumerWidget {
             ),
           ],
         ),
-        body: FutureBuilder<Position>(
-          future: requestPermission(),
-          builder: (_, positionSnapshot) {
-            if (positionSnapshot.connectionState != ConnectionState.done) {
-              return GoogleMap(
-                initialCameraPosition: viewModel.currentCameraPosition,
-                myLocationEnabled: true,
-                myLocationButtonEnabled: false,
-                zoomControlsEnabled: false,
-                rotateGesturesEnabled: false,
-                tiltGesturesEnabled: false,
-                mapType: MapType.normal,
-              );
-            }
-            return FutureBuilder<List<Marker>>(
-              future: Future.wait(
-                viewModel.markersViewData.map(
-                  (viewData) async {
-                    final cardImageOrNull =
-                        await decodeAsset(viewData.cardImagePath);
-                    final pinImageOrNull =
-                        await decodeAsset(viewData.pinImagePath);
-                    final cardImage = cardImageOrNull!;
-                    final pinImage = pinImageOrNull!;
+        body: FutureBuilder<List<Marker>>(
+          future: Future.wait(
+            viewModel.markersViewData.map(
+              (viewData) async {
+                final cardImageOrNull =
+                    await decodeAsset(viewData.cardImagePath);
+                final pinImageOrNull = await decodeAsset(viewData.pinImagePath);
+                final cardImage = cardImageOrNull!;
+                final pinImage = pinImageOrNull!;
 
-                    final cardThumbnail =
-                        img.copyResize(cardImage, width: 259, height: 361);
-                    final pinThumbnail =
-                        img.copyResize(pinImage, width: 309, height: 411);
+                final cardThumbnail =
+                    img.copyResize(cardImage, width: 259, height: 361);
+                final pinThumbnail =
+                    img.copyResize(pinImage, width: 309, height: 411);
 
-                    final mergeImage = img.Image(
-                      width: 309,
-                      height: 411,
-                    );
-                    img.compositeImage(
-                      mergeImage,
-                      pinThumbnail,
-                    );
-                    img.compositeImage(
-                      mergeImage,
-                      cardThumbnail,
-                      dstX: 25,
-                      dstY: 25,
-                    );
-                    return Marker(
-                      markerId: MarkerId(viewData.id),
-                      icon: BitmapDescriptor.fromBytes(
-                        img.encodeJpg(mergeImage).buffer.asUint8List(),
-                      ),
-                      position: LatLng(
-                        viewData.latitude,
-                        viewData.longitude,
-                      ),
-                      infoWindow: InfoWindow(
-                        title: viewData.title,
-                      ),
-                      onTap: () {},
-                    );
-                  },
-                ),
-              ),
-              builder: (_, markerSnapshot) {
-                final markers = <Marker>[];
-                if (markerSnapshot.connectionState == ConnectionState.done &&
-                    markerSnapshot.hasData) {
-                  markers.addAll(markerSnapshot.data!);
-                }
-                return GoogleMap(
-                  onMapCreated: (controller) async {
-                    ref
-                        .read(mapViewModelProvider(key))
-                        .setGoogleMapController(controller);
-                    ref
-                        .read(mapViewModelProvider(key))
-                        .onTapCurrentLocationButton();
-                  },
-                  initialCameraPosition: viewModel.currentCameraPosition,
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: false,
-                  zoomControlsEnabled: false,
-                  rotateGesturesEnabled: false,
-                  tiltGesturesEnabled: false,
-                  mapType: MapType.normal,
-                  markers: markers.toSet(),
+                final mergeImage = img.Image(
+                  width: 309,
+                  height: 411,
+                );
+                img.compositeImage(
+                  mergeImage,
+                  pinThumbnail,
+                );
+                img.compositeImage(
+                  mergeImage,
+                  cardThumbnail,
+                  dstX: 25,
+                  dstY: 25,
+                );
+                return Marker(
+                  markerId: MarkerId(viewData.id),
+                  icon: BitmapDescriptor.fromBytes(
+                    img.encodeJpg(mergeImage).buffer.asUint8List(),
+                  ),
+                  position: LatLng(
+                    viewData.latitude,
+                    viewData.longitude,
+                  ),
+                  infoWindow: InfoWindow(
+                    title: viewData.title,
+                  ),
+                  onTap: () {},
                 );
               },
+            ),
+          ),
+          builder: (_, markerSnapshot) {
+            final markers = <Marker>[];
+            if (markerSnapshot.connectionState == ConnectionState.done &&
+                markerSnapshot.hasData) {
+              markers.addAll(markerSnapshot.data!);
+            }
+            return GoogleMap(
+              onMapCreated: (controller) async {
+                ref
+                    .read(mapViewModelProvider(key))
+                    .setGoogleMapController(controller);
+                ref.read(mapViewModelProvider(key)).setupMyLocation();
+              },
+              initialCameraPosition: viewModel.currentCameraPosition,
+              myLocationEnabled: viewModel.myLocationEnabled,
+              myLocationButtonEnabled: false,
+              zoomControlsEnabled: false,
+              rotateGesturesEnabled: false,
+              tiltGesturesEnabled: false,
+              mapType: MapType.normal,
+              markers: markers.toSet(),
             );
           },
         ),
@@ -176,7 +165,7 @@ class MapView extends HookConsumerWidget {
     );
   }
 
-  Future<Position> requestPermission() async {
+  Future<void> requestPermission(WidgetRef ref) async {
     final isServiceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!isServiceEnabled) {
       return Future.error(
@@ -200,7 +189,7 @@ class MapView extends HookConsumerWidget {
       );
     }
 
-    return await Geolocator.getCurrentPosition();
+    ref.read(mapViewModelProvider(key)).setupMyLocation();
   }
 
   Future<img.Image?> decodeAsset(String path) async {
