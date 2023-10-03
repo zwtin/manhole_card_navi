@@ -9,8 +9,34 @@
 
 import 'package:flutter/widgets.dart';
 
+class $AssetsImagesGen {
+  const $AssetsImagesGen();
+
+  /// File path: assets/images/frame_green.png
+  AssetGenImage get frameGreen =>
+      const AssetGenImage('assets/images/frame_green.png');
+
+  /// File path: assets/images/frame_red.png
+  AssetGenImage get frameRed =>
+      const AssetGenImage('assets/images/frame_red.png');
+
+  /// File path: assets/images/frame_yellow.png
+  AssetGenImage get frameYellow =>
+      const AssetGenImage('assets/images/frame_yellow.png');
+
+  /// File path: assets/images/gray_frame.png
+  AssetGenImage get grayFrame =>
+      const AssetGenImage('assets/images/gray_frame.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values =>
+      [frameGreen, frameRed, frameYellow, grayFrame];
+}
+
 class Assets {
   Assets._();
+
+  static const $AssetsImagesGen images = $AssetsImagesGen();
 }
 
 class AssetGenImage {
