@@ -1,9 +1,13 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/infra/dao/realm_contact_dao.dart';
+import 'package:manhole_card_navi/infra/dao/realm_prefecture_dao.dart';
+import 'package:manhole_card_navi/infra/dao/realm_volume_dao.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/result.dart';
+import '/gen/assets.gen.dart';
 import '/infra/dao/realm_card_dao.dart';
 import '/infra/dao/realm_distribution_dao.dart';
 import '/infra/dao/realm_image_dao.dart';
@@ -27,8 +31,11 @@ class DistributionCardsQueryServiceImpl
   Future<Result<List<MapCardDTO>>> fetch() async {
     final config = Configuration.local([
       RealmCardDAO.schema,
+      RealmContactDAO.schema,
       RealmDistributionDAO.schema,
       RealmImageDAO.schema,
+      RealmPrefectureDAO.schema,
+      RealmVolumeDAO.schema,
     ]);
     var realm = Realm(config);
 
@@ -43,7 +50,7 @@ class DistributionCardsQueryServiceImpl
     }
 
     final dtoList = daoList.map((dao) {
-      final MapCardState dtoState;
+      final String pinImagePath;
       final distributionDAO = realm
           .all<RealmDistributionDAO>()
           .query(
@@ -52,16 +59,16 @@ class DistributionCardsQueryServiceImpl
           .first;
       switch (distributionDAO.state) {
         case 'distributing':
-          dtoState = MapCardState.distributing;
+          pinImagePath = Assets.images.frameGreen.path;
           break;
         case 'stopped;':
-          dtoState = MapCardState.stopped;
+          pinImagePath = Assets.images.frameRed.path;
           break;
         case 'notClear;':
-          dtoState = MapCardState.notClear;
+          pinImagePath = Assets.images.frameYellow.path;
           break;
         default:
-          dtoState = MapCardState.notClear;
+          pinImagePath = Assets.images.frameGray.path;
           break;
       }
       final imageDAO = realm
@@ -73,10 +80,10 @@ class DistributionCardsQueryServiceImpl
       return MapCardDTO(
         id: dao.id,
         title: dao.name,
+        pinImagePath: pinImagePath,
         cardImagePath: imageDAO.path,
         latitude: dao.latitude,
         longitude: dao.longitude,
-        state: dtoState,
       );
     }).toList();
     return Result.success(dtoList);

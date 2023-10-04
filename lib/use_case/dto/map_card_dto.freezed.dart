@@ -18,10 +18,10 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$MapCardDTO {
   String get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
+  String get pinImagePath => throw _privateConstructorUsedError;
   String get cardImagePath => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
-  MapCardState get state => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MapCardDTOCopyWith<MapCardDTO> get copyWith =>
@@ -37,10 +37,10 @@ abstract class $MapCardDTOCopyWith<$Res> {
   $Res call(
       {String id,
       String title,
+      String pinImagePath,
       String cardImagePath,
       double latitude,
-      double longitude,
-      MapCardState state});
+      double longitude});
 }
 
 /// @nodoc
@@ -58,10 +58,10 @@ class _$MapCardDTOCopyWithImpl<$Res, $Val extends MapCardDTO>
   $Res call({
     Object? id = null,
     Object? title = null,
+    Object? pinImagePath = null,
     Object? cardImagePath = null,
     Object? latitude = null,
     Object? longitude = null,
-    Object? state = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -71,6 +71,10 @@ class _$MapCardDTOCopyWithImpl<$Res, $Val extends MapCardDTO>
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      pinImagePath: null == pinImagePath
+          ? _value.pinImagePath
+          : pinImagePath // ignore: cast_nullable_to_non_nullable
               as String,
       cardImagePath: null == cardImagePath
           ? _value.cardImagePath
@@ -84,10 +88,6 @@ class _$MapCardDTOCopyWithImpl<$Res, $Val extends MapCardDTO>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
-      state: null == state
-          ? _value.state
-          : state // ignore: cast_nullable_to_non_nullable
-              as MapCardState,
     ) as $Val);
   }
 }
@@ -103,10 +103,10 @@ abstract class _$$_MapCardDTOCopyWith<$Res>
   $Res call(
       {String id,
       String title,
+      String pinImagePath,
       String cardImagePath,
       double latitude,
-      double longitude,
-      MapCardState state});
+      double longitude});
 }
 
 /// @nodoc
@@ -122,10 +122,10 @@ class __$$_MapCardDTOCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? title = null,
+    Object? pinImagePath = null,
     Object? cardImagePath = null,
     Object? latitude = null,
     Object? longitude = null,
-    Object? state = null,
   }) {
     return _then(_$_MapCardDTO(
       id: null == id
@@ -135,6 +135,10 @@ class __$$_MapCardDTOCopyWithImpl<$Res>
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      pinImagePath: null == pinImagePath
+          ? _value.pinImagePath
+          : pinImagePath // ignore: cast_nullable_to_non_nullable
               as String,
       cardImagePath: null == cardImagePath
           ? _value.cardImagePath
@@ -148,10 +152,6 @@ class __$$_MapCardDTOCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
-      state: null == state
-          ? _value.state
-          : state // ignore: cast_nullable_to_non_nullable
-              as MapCardState,
     ));
   }
 }
@@ -162,10 +162,10 @@ class _$_MapCardDTO extends _MapCardDTO {
   const _$_MapCardDTO(
       {required this.id,
       required this.title,
+      required this.pinImagePath,
       required this.cardImagePath,
       required this.latitude,
-      required this.longitude,
-      required this.state})
+      required this.longitude})
       : super._();
 
   @override
@@ -173,17 +173,17 @@ class _$_MapCardDTO extends _MapCardDTO {
   @override
   final String title;
   @override
+  final String pinImagePath;
+  @override
   final String cardImagePath;
   @override
   final double latitude;
   @override
   final double longitude;
-  @override
-  final MapCardState state;
 
   @override
   String toString() {
-    return 'MapCardDTO(id: $id, title: $title, cardImagePath: $cardImagePath, latitude: $latitude, longitude: $longitude, state: $state)';
+    return 'MapCardDTO(id: $id, title: $title, pinImagePath: $pinImagePath, cardImagePath: $cardImagePath, latitude: $latitude, longitude: $longitude)';
   }
 
   @override
@@ -193,18 +193,19 @@ class _$_MapCardDTO extends _MapCardDTO {
             other is _$_MapCardDTO &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
+            (identical(other.pinImagePath, pinImagePath) ||
+                other.pinImagePath == pinImagePath) &&
             (identical(other.cardImagePath, cardImagePath) ||
                 other.cardImagePath == cardImagePath) &&
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
-                other.longitude == longitude) &&
-            (identical(other.state, state) || other.state == state));
+                other.longitude == longitude));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, id, title, cardImagePath, latitude, longitude, state);
+      runtimeType, id, title, pinImagePath, cardImagePath, latitude, longitude);
 
   @JsonKey(ignore: true)
   @override
@@ -217,10 +218,10 @@ abstract class _MapCardDTO extends MapCardDTO {
   const factory _MapCardDTO(
       {required final String id,
       required final String title,
+      required final String pinImagePath,
       required final String cardImagePath,
       required final double latitude,
-      required final double longitude,
-      required final MapCardState state}) = _$_MapCardDTO;
+      required final double longitude}) = _$_MapCardDTO;
   const _MapCardDTO._() : super._();
 
   @override
@@ -228,13 +229,13 @@ abstract class _MapCardDTO extends MapCardDTO {
   @override
   String get title;
   @override
+  String get pinImagePath;
+  @override
   String get cardImagePath;
   @override
   double get latitude;
   @override
   double get longitude;
-  @override
-  MapCardState get state;
   @override
   @JsonKey(ignore: true)
   _$$_MapCardDTOCopyWith<_$_MapCardDTO> get copyWith =>

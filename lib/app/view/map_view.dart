@@ -77,7 +77,7 @@ class MapView extends HookConsumerWidget {
             viewModel.markersViewData.map(
               (viewData) async {
                 final cardImageOrNull =
-                    await decodeAsset(viewData.cardImagePath);
+                    await img.decodeJpgFile(viewData.cardImagePath);
                 final pinImageOrNull = await decodeAsset(viewData.pinImagePath);
                 final cardImage = cardImageOrNull!;
                 final pinImage = pinImageOrNull!;

@@ -4,6 +4,7 @@ import 'package:realm/realm.dart';
 
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/result.dart';
+import '/gen/assets.gen.dart';
 import '/infra/dao/realm_card_dao.dart';
 import '/infra/dao/realm_distribution_dao.dart';
 import '/infra/dao/realm_image_dao.dart';
@@ -42,7 +43,7 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
     }
 
     final dtoList = daoList.map((dao) {
-      final MapCardState dtoState;
+      final String pinImagePath;
       final distributionDAO = realm
           .all<RealmDistributionDAO>()
           .query(
@@ -51,16 +52,16 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
           .first;
       switch (distributionDAO.state) {
         case 'distributing':
-          dtoState = MapCardState.distributing;
+          pinImagePath = Assets.images.frameGreen.path;
           break;
         case 'stopped;':
-          dtoState = MapCardState.stopped;
+          pinImagePath = Assets.images.frameRed.path;
           break;
         case 'notClear;':
-          dtoState = MapCardState.notClear;
+          pinImagePath = Assets.images.frameYellow.path;
           break;
         default:
-          dtoState = MapCardState.notClear;
+          pinImagePath = Assets.images.frameGray.path;
           break;
       }
       final imageDAO = realm
@@ -72,10 +73,10 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
       return MapCardDTO(
         id: dao.id,
         title: dao.name,
+        pinImagePath: pinImagePath,
         cardImagePath: imageDAO.path,
         latitude: dao.latitude,
         longitude: dao.longitude,
-        state: dtoState,
       );
     }).toList();
     return Result.success(dtoList);
