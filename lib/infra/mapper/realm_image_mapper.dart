@@ -8,7 +8,6 @@ class RealmImageMapper {
     return ManholeCardImage(
       id: dao.id,
       name: dao.name,
-      path: dao.path,
     );
   }
 }

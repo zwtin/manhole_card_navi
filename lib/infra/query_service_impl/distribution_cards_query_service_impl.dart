@@ -1,16 +1,19 @@
+import 'dart:io';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/infra/dao/realm_contact_dao.dart';
-import 'package:manhole_card_navi/infra/dao/realm_prefecture_dao.dart';
-import 'package:manhole_card_navi/infra/dao/realm_volume_dao.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/result.dart';
 import '/gen/assets.gen.dart';
 import '/infra/dao/realm_card_dao.dart';
+import '/infra/dao/realm_contact_dao.dart';
 import '/infra/dao/realm_distribution_dao.dart';
 import '/infra/dao/realm_image_dao.dart';
+import '/infra/dao/realm_prefecture_dao.dart';
+import '/infra/dao/realm_volume_dao.dart';
 import '/use_case/dto/map_card_dto.dart';
 import '/use_case/query_service/distribution_cards_query_service.dart';
 
@@ -49,6 +52,9 @@ class DistributionCardsQueryServiceImpl
       );
     }
 
+    final appDirectory = await getApplicationDocumentsDirectory();
+    final imageDirectory = Directory('${appDirectory.path}/images');
+
     final dtoList = daoList.map((dao) {
       final String pinImagePath;
       final distributionDAO = realm
@@ -77,11 +83,13 @@ class DistributionCardsQueryServiceImpl
             "id == '${dao.images.first.id}'",
           )
           .first;
+      final imagePath = '${imageDirectory.path}/${imageDAO.name}';
+
       return MapCardDTO(
         id: dao.id,
         title: dao.name,
         pinImagePath: pinImagePath,
-        cardImagePath: imageDAO.path,
+        cardImagePath: imagePath,
         latitude: dao.latitude,
         longitude: dao.longitude,
       );

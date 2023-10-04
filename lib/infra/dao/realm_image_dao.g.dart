@@ -11,11 +11,9 @@ class RealmImageDAO extends $RealmImageDAO
   RealmImageDAO(
     String id,
     String name,
-    String path,
   ) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
-    RealmObjectBase.set(this, 'path', path);
   }
 
   RealmImageDAO._();
@@ -29,11 +27,6 @@ class RealmImageDAO extends $RealmImageDAO
   String get name => RealmObjectBase.get<String>(this, 'name') as String;
   @override
   set name(String value) => RealmObjectBase.set(this, 'name', value);
-
-  @override
-  String get path => RealmObjectBase.get<String>(this, 'path') as String;
-  @override
-  set path(String value) => RealmObjectBase.set(this, 'path', value);
 
   @override
   Stream<RealmObjectChanges<RealmImageDAO>> get changes =>
@@ -50,7 +43,6 @@ class RealmImageDAO extends $RealmImageDAO
         ObjectType.realmObject, RealmImageDAO, 'RealmImageDAO', [
       SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string),
-      SchemaProperty('path', RealmPropertyType.string),
     ]);
   }
 }

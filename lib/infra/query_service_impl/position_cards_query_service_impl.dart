@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/custom_exception.dart';
@@ -42,6 +45,9 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
       );
     }
 
+    final appDirectory = await getApplicationDocumentsDirectory();
+    final imageDirectory = Directory('${appDirectory.path}/images');
+
     final dtoList = daoList.map((dao) {
       final String pinImagePath;
       final distributionDAO = realm
@@ -70,11 +76,13 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
             "id == '${dao.images.first.id}'",
           )
           .first;
+      final imagePath = '${imageDirectory.path}/${imageDAO.name}';
+
       return MapCardDTO(
         id: dao.id,
         title: dao.name,
         pinImagePath: pinImagePath,
-        cardImagePath: imageDAO.path,
+        cardImagePath: imagePath,
         latitude: dao.latitude,
         longitude: dao.longitude,
       );

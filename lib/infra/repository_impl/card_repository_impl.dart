@@ -102,7 +102,6 @@ class CardRepositoryImpl implements CardRepository {
             return ManholeCardImage(
               id: element['id'] as String,
               name: '',
-              path: '',
             );
           }).toList();
           final images = ManholeCardImages(list: imageList);

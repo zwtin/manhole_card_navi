@@ -44,7 +44,6 @@ class ImageRepositoryImpl implements ImageRepository {
         return ManholeCardImage(
           id: doc['id'] as String,
           name: doc['name'] as String,
-          path: '',
         );
       },
     ).toList();
@@ -79,7 +78,7 @@ class ImageRepositoryImpl implements ImageRepository {
           final imagePath = '${imageDirectory.path}/${manholeCardImage.name}';
           final imageFile = File(imagePath);
           await imageFile.writeAsBytes(data);
-          return manholeCardImage.copyWith(path: imagePath);
+          return manholeCardImage;
         },
       ),
     );

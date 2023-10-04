@@ -83,13 +83,14 @@ class MapView extends HookConsumerWidget {
                 final pinImage = pinImageOrNull!;
 
                 final cardThumbnail =
-                    img.copyResize(cardImage, width: 259, height: 361);
+                    img.copyResize(cardImage, width: 130, height: 180);
                 final pinThumbnail =
-                    img.copyResize(pinImage, width: 309, height: 411);
+                    img.copyResize(pinImage, width: 146, height: 221);
 
                 final mergeImage = img.Image(
-                  width: 309,
-                  height: 411,
+                  width: 146,
+                  height: 221,
+                  numChannels: 4,
                 );
                 img.compositeImage(
                   mergeImage,
@@ -98,20 +99,17 @@ class MapView extends HookConsumerWidget {
                 img.compositeImage(
                   mergeImage,
                   cardThumbnail,
-                  dstX: 25,
-                  dstY: 25,
+                  dstX: 8,
+                  dstY: 8,
                 );
                 return Marker(
                   markerId: MarkerId(viewData.id),
                   icon: BitmapDescriptor.fromBytes(
-                    img.encodeJpg(mergeImage).buffer.asUint8List(),
+                    img.encodePng(mergeImage).buffer.asUint8List(),
                   ),
                   position: LatLng(
                     viewData.latitude,
                     viewData.longitude,
-                  ),
-                  infoWindow: InfoWindow(
-                    title: viewData.title,
                   ),
                   onTap: () {},
                 );

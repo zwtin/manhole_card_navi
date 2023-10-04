@@ -18,7 +18,6 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ManholeCardImage {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String get path => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ManholeCardImageCopyWith<ManholeCardImage> get copyWith =>
@@ -31,7 +30,7 @@ abstract class $ManholeCardImageCopyWith<$Res> {
           ManholeCardImage value, $Res Function(ManholeCardImage) then) =
       _$ManholeCardImageCopyWithImpl<$Res, ManholeCardImage>;
   @useResult
-  $Res call({String id, String name, String path});
+  $Res call({String id, String name});
 }
 
 /// @nodoc
@@ -49,7 +48,6 @@ class _$ManholeCardImageCopyWithImpl<$Res, $Val extends ManholeCardImage>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? path = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -59,10 +57,6 @@ class _$ManholeCardImageCopyWithImpl<$Res, $Val extends ManholeCardImage>
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      path: null == path
-          ? _value.path
-          : path // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -76,7 +70,7 @@ abstract class _$$_ManholeCardImageCopyWith<$Res>
       __$$_ManholeCardImageCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String name, String path});
+  $Res call({String id, String name});
 }
 
 /// @nodoc
@@ -92,7 +86,6 @@ class __$$_ManholeCardImageCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? path = null,
   }) {
     return _then(_$_ManholeCardImage(
       id: null == id
@@ -103,10 +96,6 @@ class __$$_ManholeCardImageCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      path: null == path
-          ? _value.path
-          : path // ignore: cast_nullable_to_non_nullable
-              as String,
     ));
   }
 }
@@ -114,20 +103,16 @@ class __$$_ManholeCardImageCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_ManholeCardImage extends _ManholeCardImage {
-  const _$_ManholeCardImage(
-      {required this.id, required this.name, required this.path})
-      : super._();
+  const _$_ManholeCardImage({required this.id, required this.name}) : super._();
 
   @override
   final String id;
   @override
   final String name;
-  @override
-  final String path;
 
   @override
   String toString() {
-    return 'ManholeCardImage(id: $id, name: $name, path: $path)';
+    return 'ManholeCardImage(id: $id, name: $name)';
   }
 
   @override
@@ -136,12 +121,11 @@ class _$_ManholeCardImage extends _ManholeCardImage {
         (other.runtimeType == runtimeType &&
             other is _$_ManholeCardImage &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.path, path) || other.path == path));
+            (identical(other.name, name) || other.name == name));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, path);
+  int get hashCode => Object.hash(runtimeType, id, name);
 
   @JsonKey(ignore: true)
   @override
@@ -153,16 +137,13 @@ class _$_ManholeCardImage extends _ManholeCardImage {
 abstract class _ManholeCardImage extends ManholeCardImage {
   const factory _ManholeCardImage(
       {required final String id,
-      required final String name,
-      required final String path}) = _$_ManholeCardImage;
+      required final String name}) = _$_ManholeCardImage;
   const _ManholeCardImage._() : super._();
 
   @override
   String get id;
   @override
   String get name;
-  @override
-  String get path;
   @override
   @JsonKey(ignore: true)
   _$$_ManholeCardImageCopyWith<_$_ManholeCardImage> get copyWith =>

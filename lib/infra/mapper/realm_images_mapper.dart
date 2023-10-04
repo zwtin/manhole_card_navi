@@ -10,7 +10,6 @@ class RealmImagesMapper {
         return RealmImageDAO(
           element.id,
           element.name,
-          element.path,
         );
       },
     ).toList();

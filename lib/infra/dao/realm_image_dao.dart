@@ -7,5 +7,4 @@ class $RealmImageDAO {
   @PrimaryKey()
   late String id;
   late String name;
-  late String path;
 }
