@@ -22,9 +22,15 @@ FirestoreCardDAO _$FirestoreCardDAOFromJson(Map<String, dynamic> json) {
 mixin _$FirestoreCardDAO {
   String get id => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
-  String get longitude => throw _privateConstructorUsedError;
+  double get longitude => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get publicationDate => throw _privateConstructorUsedError;
+  String get imageId => throw _privateConstructorUsedError;
+  String get prefectureId => throw _privateConstructorUsedError;
+  String get volumeId => throw _privateConstructorUsedError;
+  String get distributionState => throw _privateConstructorUsedError;
+  String get distributionText => throw _privateConstructorUsedError;
+  String get distributionUrl => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -41,9 +47,15 @@ abstract class $FirestoreCardDAOCopyWith<$Res> {
   $Res call(
       {String id,
       double latitude,
-      String longitude,
+      double longitude,
       String name,
-      String publicationDate});
+      String publicationDate,
+      String imageId,
+      String prefectureId,
+      String volumeId,
+      String distributionState,
+      String distributionText,
+      String distributionUrl});
 }
 
 /// @nodoc
@@ -64,6 +76,12 @@ class _$FirestoreCardDAOCopyWithImpl<$Res, $Val extends FirestoreCardDAO>
     Object? longitude = null,
     Object? name = null,
     Object? publicationDate = null,
+    Object? imageId = null,
+    Object? prefectureId = null,
+    Object? volumeId = null,
+    Object? distributionState = null,
+    Object? distributionText = null,
+    Object? distributionUrl = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -77,7 +95,7 @@ class _$FirestoreCardDAOCopyWithImpl<$Res, $Val extends FirestoreCardDAO>
       longitude: null == longitude
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
-              as String,
+              as double,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -85,6 +103,30 @@ class _$FirestoreCardDAOCopyWithImpl<$Res, $Val extends FirestoreCardDAO>
       publicationDate: null == publicationDate
           ? _value.publicationDate
           : publicationDate // ignore: cast_nullable_to_non_nullable
+              as String,
+      imageId: null == imageId
+          ? _value.imageId
+          : imageId // ignore: cast_nullable_to_non_nullable
+              as String,
+      prefectureId: null == prefectureId
+          ? _value.prefectureId
+          : prefectureId // ignore: cast_nullable_to_non_nullable
+              as String,
+      volumeId: null == volumeId
+          ? _value.volumeId
+          : volumeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionState: null == distributionState
+          ? _value.distributionState
+          : distributionState // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionText: null == distributionText
+          ? _value.distributionText
+          : distributionText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionUrl: null == distributionUrl
+          ? _value.distributionUrl
+          : distributionUrl // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -101,9 +143,15 @@ abstract class _$$_FirestoreCardDAOCopyWith<$Res>
   $Res call(
       {String id,
       double latitude,
-      String longitude,
+      double longitude,
       String name,
-      String publicationDate});
+      String publicationDate,
+      String imageId,
+      String prefectureId,
+      String volumeId,
+      String distributionState,
+      String distributionText,
+      String distributionUrl});
 }
 
 /// @nodoc
@@ -122,6 +170,12 @@ class __$$_FirestoreCardDAOCopyWithImpl<$Res>
     Object? longitude = null,
     Object? name = null,
     Object? publicationDate = null,
+    Object? imageId = null,
+    Object? prefectureId = null,
+    Object? volumeId = null,
+    Object? distributionState = null,
+    Object? distributionText = null,
+    Object? distributionUrl = null,
   }) {
     return _then(_$_FirestoreCardDAO(
       id: null == id
@@ -135,7 +189,7 @@ class __$$_FirestoreCardDAOCopyWithImpl<$Res>
       longitude: null == longitude
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
-              as String,
+              as double,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -143,6 +197,30 @@ class __$$_FirestoreCardDAOCopyWithImpl<$Res>
       publicationDate: null == publicationDate
           ? _value.publicationDate
           : publicationDate // ignore: cast_nullable_to_non_nullable
+              as String,
+      imageId: null == imageId
+          ? _value.imageId
+          : imageId // ignore: cast_nullable_to_non_nullable
+              as String,
+      prefectureId: null == prefectureId
+          ? _value.prefectureId
+          : prefectureId // ignore: cast_nullable_to_non_nullable
+              as String,
+      volumeId: null == volumeId
+          ? _value.volumeId
+          : volumeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionState: null == distributionState
+          ? _value.distributionState
+          : distributionState // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionText: null == distributionText
+          ? _value.distributionText
+          : distributionText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionUrl: null == distributionUrl
+          ? _value.distributionUrl
+          : distributionUrl // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -156,7 +234,13 @@ class _$_FirestoreCardDAO extends _FirestoreCardDAO {
       required this.latitude,
       required this.longitude,
       required this.name,
-      required this.publicationDate})
+      required this.publicationDate,
+      required this.imageId,
+      required this.prefectureId,
+      required this.volumeId,
+      required this.distributionState,
+      required this.distributionText,
+      required this.distributionUrl})
       : super._();
 
   factory _$_FirestoreCardDAO.fromJson(Map<String, dynamic> json) =>
@@ -167,15 +251,27 @@ class _$_FirestoreCardDAO extends _FirestoreCardDAO {
   @override
   final double latitude;
   @override
-  final String longitude;
+  final double longitude;
   @override
   final String name;
   @override
   final String publicationDate;
+  @override
+  final String imageId;
+  @override
+  final String prefectureId;
+  @override
+  final String volumeId;
+  @override
+  final String distributionState;
+  @override
+  final String distributionText;
+  @override
+  final String distributionUrl;
 
   @override
   String toString() {
-    return 'FirestoreCardDAO(id: $id, latitude: $latitude, longitude: $longitude, name: $name, publicationDate: $publicationDate)';
+    return 'FirestoreCardDAO(id: $id, latitude: $latitude, longitude: $longitude, name: $name, publicationDate: $publicationDate, imageId: $imageId, prefectureId: $prefectureId, volumeId: $volumeId, distributionState: $distributionState, distributionText: $distributionText, distributionUrl: $distributionUrl)';
   }
 
   @override
@@ -190,13 +286,35 @@ class _$_FirestoreCardDAO extends _FirestoreCardDAO {
                 other.longitude == longitude) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.publicationDate, publicationDate) ||
-                other.publicationDate == publicationDate));
+                other.publicationDate == publicationDate) &&
+            (identical(other.imageId, imageId) || other.imageId == imageId) &&
+            (identical(other.prefectureId, prefectureId) ||
+                other.prefectureId == prefectureId) &&
+            (identical(other.volumeId, volumeId) ||
+                other.volumeId == volumeId) &&
+            (identical(other.distributionState, distributionState) ||
+                other.distributionState == distributionState) &&
+            (identical(other.distributionText, distributionText) ||
+                other.distributionText == distributionText) &&
+            (identical(other.distributionUrl, distributionUrl) ||
+                other.distributionUrl == distributionUrl));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, latitude, longitude, name, publicationDate);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      latitude,
+      longitude,
+      name,
+      publicationDate,
+      imageId,
+      prefectureId,
+      volumeId,
+      distributionState,
+      distributionText,
+      distributionUrl);
 
   @JsonKey(ignore: true)
   @override
@@ -216,9 +334,15 @@ abstract class _FirestoreCardDAO extends FirestoreCardDAO {
   const factory _FirestoreCardDAO(
       {required final String id,
       required final double latitude,
-      required final String longitude,
+      required final double longitude,
       required final String name,
-      required final String publicationDate}) = _$_FirestoreCardDAO;
+      required final String publicationDate,
+      required final String imageId,
+      required final String prefectureId,
+      required final String volumeId,
+      required final String distributionState,
+      required final String distributionText,
+      required final String distributionUrl}) = _$_FirestoreCardDAO;
   const _FirestoreCardDAO._() : super._();
 
   factory _FirestoreCardDAO.fromJson(Map<String, dynamic> json) =
@@ -229,11 +353,23 @@ abstract class _FirestoreCardDAO extends FirestoreCardDAO {
   @override
   double get latitude;
   @override
-  String get longitude;
+  double get longitude;
   @override
   String get name;
   @override
   String get publicationDate;
+  @override
+  String get imageId;
+  @override
+  String get prefectureId;
+  @override
+  String get volumeId;
+  @override
+  String get distributionState;
+  @override
+  String get distributionText;
+  @override
+  String get distributionUrl;
   @override
   @JsonKey(ignore: true)
   _$$_FirestoreCardDAOCopyWith<_$_FirestoreCardDAO> get copyWith =>

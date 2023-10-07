@@ -30,4 +30,7 @@ class ColorName {
 
   /// Color: #e74c3c
   static const Color stopped = Color(0xFFE74C3C);
+
+  /// Color: #999999
+  static const Color unknown = Color(0xFF999999);
 }

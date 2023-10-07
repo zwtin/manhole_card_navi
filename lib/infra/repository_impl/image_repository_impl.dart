@@ -69,7 +69,7 @@ class ImageRepositoryImpl implements ImageRepository {
       manholeCardImages.map(
         (manholeCardImage) async {
           final firebaseStoragePath = _storage.ref().child(
-                'images/cards/${manholeCardImage.name}',
+                'images/${manholeCardImage.name}',
               );
           final data = await firebaseStoragePath.getData();
           if (data == null) {
@@ -113,8 +113,8 @@ class ImageRepositoryImpl implements ImageRepository {
     ]);
     var realm = Realm(config);
 
-    final realmImages = RealmImagesMapper.convertFromModel(
-      model: manholeCardImages,
+    final realmImages = RealmImagesMapper.convertFromEntity(
+      entity: manholeCardImages,
     );
 
     realm.write(() {
@@ -148,7 +148,7 @@ class ImageRepositoryImpl implements ImageRepository {
         ),
       );
     }
-    final image = RealmImageMapper.convertToModel(dao: daoOrNull);
+    final image = RealmImageMapper.convertToEntity(dao: daoOrNull);
     return Result.success(image);
   }
 

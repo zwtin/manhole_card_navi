@@ -10,7 +10,6 @@ import '/domain/entity/result.dart';
 import '/gen/assets.gen.dart';
 import '/infra/dao/realm_card_dao.dart';
 import '/infra/dao/realm_contact_dao.dart';
-import '/infra/dao/realm_distribution_dao.dart';
 import '/infra/dao/realm_image_dao.dart';
 import '/infra/dao/realm_prefecture_dao.dart';
 import '/infra/dao/realm_volume_dao.dart';
@@ -35,7 +34,6 @@ class DistributionCardsQueryServiceImpl
     final config = Configuration.local([
       RealmCardDAO.schema,
       RealmContactDAO.schema,
-      RealmDistributionDAO.schema,
       RealmImageDAO.schema,
       RealmPrefectureDAO.schema,
       RealmVolumeDAO.schema,
@@ -55,15 +53,10 @@ class DistributionCardsQueryServiceImpl
     final appDirectory = await getApplicationDocumentsDirectory();
     final imageDirectory = Directory('${appDirectory.path}/images');
 
-    final dtoList = daoList.map((dao) {
+    final dtoList = <MapCardDTO>[];
+    for (final dao in daoList) {
       final String pinImagePath;
-      final distributionDAO = realm
-          .all<RealmDistributionDAO>()
-          .query(
-            "id == '${dao.distributions.first.id}'",
-          )
-          .first;
-      switch (distributionDAO.state) {
+      switch (dao.distributionState) {
         case 'distributing':
           pinImagePath = Assets.images.frameGreen.path;
           break;
@@ -80,20 +73,31 @@ class DistributionCardsQueryServiceImpl
       final imageDAO = realm
           .all<RealmImageDAO>()
           .query(
-            "id == '${dao.images.first.id}'",
+            "id == '${dao.image?.id ?? ''}'",
           )
           .first;
       final imagePath = '${imageDirectory.path}/${imageDAO.name}';
 
-      return MapCardDTO(
-        id: dao.id,
-        title: dao.name,
-        pinImagePath: pinImagePath,
-        cardImagePath: imagePath,
-        latitude: dao.latitude,
-        longitude: dao.longitude,
-      );
-    }).toList();
+      for (final contact in dao.contacts) {
+        final contactDAO = realm
+            .all<RealmContactDAO>()
+            .query(
+              "id == '${contact.id}'",
+            )
+            .first;
+
+        dtoList.add(
+          MapCardDTO(
+            id: dao.id,
+            pinImagePath: pinImagePath,
+            cardImagePath: imagePath,
+            latitude: contactDAO.latitude,
+            longitude: contactDAO.longitude,
+          ),
+        );
+      }
+    }
+
     return Result.success(dtoList);
   }
 

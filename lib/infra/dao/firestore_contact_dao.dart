@@ -9,10 +9,12 @@ abstract class FirestoreContactDAO with _$FirestoreContactDAO {
     required String address,
     required String id,
     required double latitude,
-    required String longitude,
+    required double longitude,
     required String name,
     required String other,
     required String phoneNumber,
+    required String time,
+    required String timeOther,
   }) = _FirestoreContactDAO;
 
   const FirestoreContactDAO._();

@@ -12,6 +12,8 @@ abstract class ManholeCardContact with _$ManholeCardContact {
     required String name,
     required String other,
     required String phoneNumber,
+    required String time,
+    required String timeOther,
   }) = _ManholeCardContact;
   const ManholeCardContact._();
 }

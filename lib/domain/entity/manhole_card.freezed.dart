@@ -21,12 +21,14 @@ mixin _$ManholeCard {
   double get longitude => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   DateTime get publicationDate => throw _privateConstructorUsedError;
-  ManholeCardContacts get contacts => throw _privateConstructorUsedError;
-  ManholeCardDistributions get distributions =>
+  ManholeCardDistributionState get distributionState =>
       throw _privateConstructorUsedError;
-  ManholeCardImages get images => throw _privateConstructorUsedError;
-  ManholeCardPrefectures get prefectures => throw _privateConstructorUsedError;
-  ManholeCardVolumes get volumes => throw _privateConstructorUsedError;
+  String get distributionText => throw _privateConstructorUsedError;
+  String get distributionUrl => throw _privateConstructorUsedError;
+  ManholeCardContacts get contacts => throw _privateConstructorUsedError;
+  ManholeCardImage get image => throw _privateConstructorUsedError;
+  ManholeCardPrefecture get prefecture => throw _privateConstructorUsedError;
+  ManholeCardVolume get volume => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ManholeCardCopyWith<ManholeCard> get copyWith =>
@@ -45,17 +47,18 @@ abstract class $ManholeCardCopyWith<$Res> {
       double longitude,
       String name,
       DateTime publicationDate,
+      ManholeCardDistributionState distributionState,
+      String distributionText,
+      String distributionUrl,
       ManholeCardContacts contacts,
-      ManholeCardDistributions distributions,
-      ManholeCardImages images,
-      ManholeCardPrefectures prefectures,
-      ManholeCardVolumes volumes});
+      ManholeCardImage image,
+      ManholeCardPrefecture prefecture,
+      ManholeCardVolume volume});
 
   $ManholeCardContactsCopyWith<$Res> get contacts;
-  $ManholeCardDistributionsCopyWith<$Res> get distributions;
-  $ManholeCardImagesCopyWith<$Res> get images;
-  $ManholeCardPrefecturesCopyWith<$Res> get prefectures;
-  $ManholeCardVolumesCopyWith<$Res> get volumes;
+  $ManholeCardImageCopyWith<$Res> get image;
+  $ManholeCardPrefectureCopyWith<$Res> get prefecture;
+  $ManholeCardVolumeCopyWith<$Res> get volume;
 }
 
 /// @nodoc
@@ -76,11 +79,13 @@ class _$ManholeCardCopyWithImpl<$Res, $Val extends ManholeCard>
     Object? longitude = null,
     Object? name = null,
     Object? publicationDate = null,
+    Object? distributionState = null,
+    Object? distributionText = null,
+    Object? distributionUrl = null,
     Object? contacts = null,
-    Object? distributions = null,
-    Object? images = null,
-    Object? prefectures = null,
-    Object? volumes = null,
+    Object? image = null,
+    Object? prefecture = null,
+    Object? volume = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -103,26 +108,34 @@ class _$ManholeCardCopyWithImpl<$Res, $Val extends ManholeCard>
           ? _value.publicationDate
           : publicationDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      distributionState: null == distributionState
+          ? _value.distributionState
+          : distributionState // ignore: cast_nullable_to_non_nullable
+              as ManholeCardDistributionState,
+      distributionText: null == distributionText
+          ? _value.distributionText
+          : distributionText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionUrl: null == distributionUrl
+          ? _value.distributionUrl
+          : distributionUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       contacts: null == contacts
           ? _value.contacts
           : contacts // ignore: cast_nullable_to_non_nullable
               as ManholeCardContacts,
-      distributions: null == distributions
-          ? _value.distributions
-          : distributions // ignore: cast_nullable_to_non_nullable
-              as ManholeCardDistributions,
-      images: null == images
-          ? _value.images
-          : images // ignore: cast_nullable_to_non_nullable
-              as ManholeCardImages,
-      prefectures: null == prefectures
-          ? _value.prefectures
-          : prefectures // ignore: cast_nullable_to_non_nullable
-              as ManholeCardPrefectures,
-      volumes: null == volumes
-          ? _value.volumes
-          : volumes // ignore: cast_nullable_to_non_nullable
-              as ManholeCardVolumes,
+      image: null == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as ManholeCardImage,
+      prefecture: null == prefecture
+          ? _value.prefecture
+          : prefecture // ignore: cast_nullable_to_non_nullable
+              as ManholeCardPrefecture,
+      volume: null == volume
+          ? _value.volume
+          : volume // ignore: cast_nullable_to_non_nullable
+              as ManholeCardVolume,
     ) as $Val);
   }
 
@@ -136,34 +149,25 @@ class _$ManholeCardCopyWithImpl<$Res, $Val extends ManholeCard>
 
   @override
   @pragma('vm:prefer-inline')
-  $ManholeCardDistributionsCopyWith<$Res> get distributions {
-    return $ManholeCardDistributionsCopyWith<$Res>(_value.distributions,
-        (value) {
-      return _then(_value.copyWith(distributions: value) as $Val);
+  $ManholeCardImageCopyWith<$Res> get image {
+    return $ManholeCardImageCopyWith<$Res>(_value.image, (value) {
+      return _then(_value.copyWith(image: value) as $Val);
     });
   }
 
   @override
   @pragma('vm:prefer-inline')
-  $ManholeCardImagesCopyWith<$Res> get images {
-    return $ManholeCardImagesCopyWith<$Res>(_value.images, (value) {
-      return _then(_value.copyWith(images: value) as $Val);
+  $ManholeCardPrefectureCopyWith<$Res> get prefecture {
+    return $ManholeCardPrefectureCopyWith<$Res>(_value.prefecture, (value) {
+      return _then(_value.copyWith(prefecture: value) as $Val);
     });
   }
 
   @override
   @pragma('vm:prefer-inline')
-  $ManholeCardPrefecturesCopyWith<$Res> get prefectures {
-    return $ManholeCardPrefecturesCopyWith<$Res>(_value.prefectures, (value) {
-      return _then(_value.copyWith(prefectures: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $ManholeCardVolumesCopyWith<$Res> get volumes {
-    return $ManholeCardVolumesCopyWith<$Res>(_value.volumes, (value) {
-      return _then(_value.copyWith(volumes: value) as $Val);
+  $ManholeCardVolumeCopyWith<$Res> get volume {
+    return $ManholeCardVolumeCopyWith<$Res>(_value.volume, (value) {
+      return _then(_value.copyWith(volume: value) as $Val);
     });
   }
 }
@@ -182,22 +186,22 @@ abstract class _$$_ManholeCardCopyWith<$Res>
       double longitude,
       String name,
       DateTime publicationDate,
+      ManholeCardDistributionState distributionState,
+      String distributionText,
+      String distributionUrl,
       ManholeCardContacts contacts,
-      ManholeCardDistributions distributions,
-      ManholeCardImages images,
-      ManholeCardPrefectures prefectures,
-      ManholeCardVolumes volumes});
+      ManholeCardImage image,
+      ManholeCardPrefecture prefecture,
+      ManholeCardVolume volume});
 
   @override
   $ManholeCardContactsCopyWith<$Res> get contacts;
   @override
-  $ManholeCardDistributionsCopyWith<$Res> get distributions;
+  $ManholeCardImageCopyWith<$Res> get image;
   @override
-  $ManholeCardImagesCopyWith<$Res> get images;
+  $ManholeCardPrefectureCopyWith<$Res> get prefecture;
   @override
-  $ManholeCardPrefecturesCopyWith<$Res> get prefectures;
-  @override
-  $ManholeCardVolumesCopyWith<$Res> get volumes;
+  $ManholeCardVolumeCopyWith<$Res> get volume;
 }
 
 /// @nodoc
@@ -216,11 +220,13 @@ class __$$_ManholeCardCopyWithImpl<$Res>
     Object? longitude = null,
     Object? name = null,
     Object? publicationDate = null,
+    Object? distributionState = null,
+    Object? distributionText = null,
+    Object? distributionUrl = null,
     Object? contacts = null,
-    Object? distributions = null,
-    Object? images = null,
-    Object? prefectures = null,
-    Object? volumes = null,
+    Object? image = null,
+    Object? prefecture = null,
+    Object? volume = null,
   }) {
     return _then(_$_ManholeCard(
       id: null == id
@@ -243,26 +249,34 @@ class __$$_ManholeCardCopyWithImpl<$Res>
           ? _value.publicationDate
           : publicationDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      distributionState: null == distributionState
+          ? _value.distributionState
+          : distributionState // ignore: cast_nullable_to_non_nullable
+              as ManholeCardDistributionState,
+      distributionText: null == distributionText
+          ? _value.distributionText
+          : distributionText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionUrl: null == distributionUrl
+          ? _value.distributionUrl
+          : distributionUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       contacts: null == contacts
           ? _value.contacts
           : contacts // ignore: cast_nullable_to_non_nullable
               as ManholeCardContacts,
-      distributions: null == distributions
-          ? _value.distributions
-          : distributions // ignore: cast_nullable_to_non_nullable
-              as ManholeCardDistributions,
-      images: null == images
-          ? _value.images
-          : images // ignore: cast_nullable_to_non_nullable
-              as ManholeCardImages,
-      prefectures: null == prefectures
-          ? _value.prefectures
-          : prefectures // ignore: cast_nullable_to_non_nullable
-              as ManholeCardPrefectures,
-      volumes: null == volumes
-          ? _value.volumes
-          : volumes // ignore: cast_nullable_to_non_nullable
-              as ManholeCardVolumes,
+      image: null == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as ManholeCardImage,
+      prefecture: null == prefecture
+          ? _value.prefecture
+          : prefecture // ignore: cast_nullable_to_non_nullable
+              as ManholeCardPrefecture,
+      volume: null == volume
+          ? _value.volume
+          : volume // ignore: cast_nullable_to_non_nullable
+              as ManholeCardVolume,
     ));
   }
 }
@@ -276,11 +290,13 @@ class _$_ManholeCard extends _ManholeCard {
       required this.longitude,
       required this.name,
       required this.publicationDate,
+      required this.distributionState,
+      required this.distributionText,
+      required this.distributionUrl,
       required this.contacts,
-      required this.distributions,
-      required this.images,
-      required this.prefectures,
-      required this.volumes})
+      required this.image,
+      required this.prefecture,
+      required this.volume})
       : super._();
 
   @override
@@ -294,19 +310,23 @@ class _$_ManholeCard extends _ManholeCard {
   @override
   final DateTime publicationDate;
   @override
+  final ManholeCardDistributionState distributionState;
+  @override
+  final String distributionText;
+  @override
+  final String distributionUrl;
+  @override
   final ManholeCardContacts contacts;
   @override
-  final ManholeCardDistributions distributions;
+  final ManholeCardImage image;
   @override
-  final ManholeCardImages images;
+  final ManholeCardPrefecture prefecture;
   @override
-  final ManholeCardPrefectures prefectures;
-  @override
-  final ManholeCardVolumes volumes;
+  final ManholeCardVolume volume;
 
   @override
   String toString() {
-    return 'ManholeCard(id: $id, latitude: $latitude, longitude: $longitude, name: $name, publicationDate: $publicationDate, contacts: $contacts, distributions: $distributions, images: $images, prefectures: $prefectures, volumes: $volumes)';
+    return 'ManholeCard(id: $id, latitude: $latitude, longitude: $longitude, name: $name, publicationDate: $publicationDate, distributionState: $distributionState, distributionText: $distributionText, distributionUrl: $distributionUrl, contacts: $contacts, image: $image, prefecture: $prefecture, volume: $volume)';
   }
 
   @override
@@ -322,19 +342,35 @@ class _$_ManholeCard extends _ManholeCard {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.publicationDate, publicationDate) ||
                 other.publicationDate == publicationDate) &&
+            (identical(other.distributionState, distributionState) ||
+                other.distributionState == distributionState) &&
+            (identical(other.distributionText, distributionText) ||
+                other.distributionText == distributionText) &&
+            (identical(other.distributionUrl, distributionUrl) ||
+                other.distributionUrl == distributionUrl) &&
             (identical(other.contacts, contacts) ||
                 other.contacts == contacts) &&
-            (identical(other.distributions, distributions) ||
-                other.distributions == distributions) &&
-            (identical(other.images, images) || other.images == images) &&
-            (identical(other.prefectures, prefectures) ||
-                other.prefectures == prefectures) &&
-            (identical(other.volumes, volumes) || other.volumes == volumes));
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.prefecture, prefecture) ||
+                other.prefecture == prefecture) &&
+            (identical(other.volume, volume) || other.volume == volume));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, latitude, longitude, name,
-      publicationDate, contacts, distributions, images, prefectures, volumes);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      latitude,
+      longitude,
+      name,
+      publicationDate,
+      distributionState,
+      distributionText,
+      distributionUrl,
+      contacts,
+      image,
+      prefecture,
+      volume);
 
   @JsonKey(ignore: true)
   @override
@@ -350,11 +386,13 @@ abstract class _ManholeCard extends ManholeCard {
       required final double longitude,
       required final String name,
       required final DateTime publicationDate,
+      required final ManholeCardDistributionState distributionState,
+      required final String distributionText,
+      required final String distributionUrl,
       required final ManholeCardContacts contacts,
-      required final ManholeCardDistributions distributions,
-      required final ManholeCardImages images,
-      required final ManholeCardPrefectures prefectures,
-      required final ManholeCardVolumes volumes}) = _$_ManholeCard;
+      required final ManholeCardImage image,
+      required final ManholeCardPrefecture prefecture,
+      required final ManholeCardVolume volume}) = _$_ManholeCard;
   const _ManholeCard._() : super._();
 
   @override
@@ -368,15 +406,19 @@ abstract class _ManholeCard extends ManholeCard {
   @override
   DateTime get publicationDate;
   @override
+  ManholeCardDistributionState get distributionState;
+  @override
+  String get distributionText;
+  @override
+  String get distributionUrl;
+  @override
   ManholeCardContacts get contacts;
   @override
-  ManholeCardDistributions get distributions;
+  ManholeCardImage get image;
   @override
-  ManholeCardImages get images;
+  ManholeCardPrefecture get prefecture;
   @override
-  ManholeCardPrefectures get prefectures;
-  @override
-  ManholeCardVolumes get volumes;
+  ManholeCardVolume get volume;
   @override
   @JsonKey(ignore: true)
   _$$_ManholeCardCopyWith<_$_ManholeCard> get copyWith =>

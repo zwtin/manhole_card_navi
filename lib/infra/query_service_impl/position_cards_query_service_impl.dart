@@ -9,7 +9,6 @@ import '/domain/entity/custom_exception.dart';
 import '/domain/entity/result.dart';
 import '/gen/assets.gen.dart';
 import '/infra/dao/realm_card_dao.dart';
-import '/infra/dao/realm_distribution_dao.dart';
 import '/infra/dao/realm_image_dao.dart';
 import '/use_case/dto/map_card_dto.dart';
 import '/use_case/query_service/position_cards_query_service.dart';
@@ -30,7 +29,6 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
   Future<Result<List<MapCardDTO>>> fetch() async {
     final config = Configuration.local([
       RealmCardDAO.schema,
-      RealmDistributionDAO.schema,
       RealmImageDAO.schema,
     ]);
     var realm = Realm(config);
@@ -50,13 +48,7 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
 
     final dtoList = daoList.map((dao) {
       final String pinImagePath;
-      final distributionDAO = realm
-          .all<RealmDistributionDAO>()
-          .query(
-            "id == '${dao.distributions.first.id}'",
-          )
-          .first;
-      switch (distributionDAO.state) {
+      switch (dao.distributionState) {
         case 'distributing':
           pinImagePath = Assets.images.frameGreen.path;
           break;
@@ -73,14 +65,13 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
       final imageDAO = realm
           .all<RealmImageDAO>()
           .query(
-            "id == '${dao.images.first.id}'",
+            "id == '${dao.image?.id ?? ''}'",
           )
           .first;
       final imagePath = '${imageDirectory.path}/${imageDAO.name}';
 
       return MapCardDTO(
         id: dao.id,
-        title: dao.name,
         pinImagePath: pinImagePath,
         cardImagePath: imagePath,
         latitude: dao.latitude,

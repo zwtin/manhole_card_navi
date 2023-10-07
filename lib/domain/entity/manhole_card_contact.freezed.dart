@@ -23,6 +23,8 @@ mixin _$ManholeCardContact {
   String get name => throw _privateConstructorUsedError;
   String get other => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
+  String get time => throw _privateConstructorUsedError;
+  String get timeOther => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ManholeCardContactCopyWith<ManholeCardContact> get copyWith =>
@@ -42,7 +44,9 @@ abstract class $ManholeCardContactCopyWith<$Res> {
       double longitude,
       String name,
       String other,
-      String phoneNumber});
+      String phoneNumber,
+      String time,
+      String timeOther});
 }
 
 /// @nodoc
@@ -65,6 +69,8 @@ class _$ManholeCardContactCopyWithImpl<$Res, $Val extends ManholeCardContact>
     Object? name = null,
     Object? other = null,
     Object? phoneNumber = null,
+    Object? time = null,
+    Object? timeOther = null,
   }) {
     return _then(_value.copyWith(
       address: null == address
@@ -95,6 +101,14 @@ class _$ManholeCardContactCopyWithImpl<$Res, $Val extends ManholeCardContact>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String,
+      time: null == time
+          ? _value.time
+          : time // ignore: cast_nullable_to_non_nullable
+              as String,
+      timeOther: null == timeOther
+          ? _value.timeOther
+          : timeOther // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -114,7 +128,9 @@ abstract class _$$_ManholeCardContactCopyWith<$Res>
       double longitude,
       String name,
       String other,
-      String phoneNumber});
+      String phoneNumber,
+      String time,
+      String timeOther});
 }
 
 /// @nodoc
@@ -135,6 +151,8 @@ class __$$_ManholeCardContactCopyWithImpl<$Res>
     Object? name = null,
     Object? other = null,
     Object? phoneNumber = null,
+    Object? time = null,
+    Object? timeOther = null,
   }) {
     return _then(_$_ManholeCardContact(
       address: null == address
@@ -165,6 +183,14 @@ class __$$_ManholeCardContactCopyWithImpl<$Res>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String,
+      time: null == time
+          ? _value.time
+          : time // ignore: cast_nullable_to_non_nullable
+              as String,
+      timeOther: null == timeOther
+          ? _value.timeOther
+          : timeOther // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -179,7 +205,9 @@ class _$_ManholeCardContact extends _ManholeCardContact {
       required this.longitude,
       required this.name,
       required this.other,
-      required this.phoneNumber})
+      required this.phoneNumber,
+      required this.time,
+      required this.timeOther})
       : super._();
 
   @override
@@ -196,10 +224,14 @@ class _$_ManholeCardContact extends _ManholeCardContact {
   final String other;
   @override
   final String phoneNumber;
+  @override
+  final String time;
+  @override
+  final String timeOther;
 
   @override
   String toString() {
-    return 'ManholeCardContact(address: $address, id: $id, latitude: $latitude, longitude: $longitude, name: $name, other: $other, phoneNumber: $phoneNumber)';
+    return 'ManholeCardContact(address: $address, id: $id, latitude: $latitude, longitude: $longitude, name: $name, other: $other, phoneNumber: $phoneNumber, time: $time, timeOther: $timeOther)';
   }
 
   @override
@@ -216,12 +248,15 @@ class _$_ManholeCardContact extends _ManholeCardContact {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.other, this.other) || other.other == this.other) &&
             (identical(other.phoneNumber, phoneNumber) ||
-                other.phoneNumber == phoneNumber));
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.time, time) || other.time == time) &&
+            (identical(other.timeOther, timeOther) ||
+                other.timeOther == timeOther));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, address, id, latitude, longitude, name, other, phoneNumber);
+  int get hashCode => Object.hash(runtimeType, address, id, latitude, longitude,
+      name, other, phoneNumber, time, timeOther);
 
   @JsonKey(ignore: true)
   @override
@@ -239,7 +274,9 @@ abstract class _ManholeCardContact extends ManholeCardContact {
       required final double longitude,
       required final String name,
       required final String other,
-      required final String phoneNumber}) = _$_ManholeCardContact;
+      required final String phoneNumber,
+      required final String time,
+      required final String timeOther}) = _$_ManholeCardContact;
   const _ManholeCardContact._() : super._();
 
   @override
@@ -256,6 +293,10 @@ abstract class _ManholeCardContact extends ManholeCardContact {
   String get other;
   @override
   String get phoneNumber;
+  @override
+  String get time;
+  @override
+  String get timeOther;
   @override
   @JsonKey(ignore: true)
   _$$_ManholeCardContactCopyWith<_$_ManholeCardContact> get copyWith =>

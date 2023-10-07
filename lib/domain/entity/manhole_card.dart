@@ -1,10 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '/domain/entity/manhole_card_contacts.dart';
-import '/domain/entity/manhole_card_distributions.dart';
-import '/domain/entity/manhole_card_images.dart';
-import '/domain/entity/manhole_card_prefectures.dart';
-import '/domain/entity/manhole_card_volumes.dart';
+import '/domain/entity/manhole_card_image.dart';
+import '/domain/entity/manhole_card_prefecture.dart';
+import '/domain/entity/manhole_card_volume.dart';
 
 part 'manhole_card.freezed.dart';
 
@@ -16,11 +15,19 @@ abstract class ManholeCard with _$ManholeCard {
     required double longitude,
     required String name,
     required DateTime publicationDate,
+    required ManholeCardDistributionState distributionState,
+    required String distributionText,
+    required String distributionUrl,
     required ManholeCardContacts contacts,
-    required ManholeCardDistributions distributions,
-    required ManholeCardImages images,
-    required ManholeCardPrefectures prefectures,
-    required ManholeCardVolumes volumes,
+    required ManholeCardImage image,
+    required ManholeCardPrefecture prefecture,
+    required ManholeCardVolume volume,
   }) = _ManholeCard;
   const ManholeCard._();
+}
+
+enum ManholeCardDistributionState {
+  distributing,
+  stopped,
+  notClear,
 }

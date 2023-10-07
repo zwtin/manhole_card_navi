@@ -17,7 +17,6 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MapMarkerViewData {
   String get id => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
   String get pinImagePath => throw _privateConstructorUsedError;
   String get cardImagePath => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
@@ -36,7 +35,6 @@ abstract class $MapMarkerViewDataCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      String title,
       String pinImagePath,
       String cardImagePath,
       double latitude,
@@ -57,7 +55,6 @@ class _$MapMarkerViewDataCopyWithImpl<$Res, $Val extends MapMarkerViewData>
   @override
   $Res call({
     Object? id = null,
-    Object? title = null,
     Object? pinImagePath = null,
     Object? cardImagePath = null,
     Object? latitude = null,
@@ -67,10 +64,6 @@ class _$MapMarkerViewDataCopyWithImpl<$Res, $Val extends MapMarkerViewData>
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
               as String,
       pinImagePath: null == pinImagePath
           ? _value.pinImagePath
@@ -102,7 +95,6 @@ abstract class _$$_MapMarkerViewDataCopyWith<$Res>
   @useResult
   $Res call(
       {String id,
-      String title,
       String pinImagePath,
       String cardImagePath,
       double latitude,
@@ -121,7 +113,6 @@ class __$$_MapMarkerViewDataCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? title = null,
     Object? pinImagePath = null,
     Object? cardImagePath = null,
     Object? latitude = null,
@@ -131,10 +122,6 @@ class __$$_MapMarkerViewDataCopyWithImpl<$Res>
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
               as String,
       pinImagePath: null == pinImagePath
           ? _value.pinImagePath
@@ -161,7 +148,6 @@ class __$$_MapMarkerViewDataCopyWithImpl<$Res>
 class _$_MapMarkerViewData extends _MapMarkerViewData {
   const _$_MapMarkerViewData(
       {required this.id,
-      required this.title,
       required this.pinImagePath,
       required this.cardImagePath,
       required this.latitude,
@@ -170,8 +156,6 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
 
   @override
   final String id;
-  @override
-  final String title;
   @override
   final String pinImagePath;
   @override
@@ -183,7 +167,7 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
 
   @override
   String toString() {
-    return 'MapMarkerViewData(id: $id, title: $title, pinImagePath: $pinImagePath, cardImagePath: $cardImagePath, latitude: $latitude, longitude: $longitude)';
+    return 'MapMarkerViewData(id: $id, pinImagePath: $pinImagePath, cardImagePath: $cardImagePath, latitude: $latitude, longitude: $longitude)';
   }
 
   @override
@@ -192,7 +176,6 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
         (other.runtimeType == runtimeType &&
             other is _$_MapMarkerViewData &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.title, title) || other.title == title) &&
             (identical(other.pinImagePath, pinImagePath) ||
                 other.pinImagePath == pinImagePath) &&
             (identical(other.cardImagePath, cardImagePath) ||
@@ -205,7 +188,7 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, id, title, pinImagePath, cardImagePath, latitude, longitude);
+      runtimeType, id, pinImagePath, cardImagePath, latitude, longitude);
 
   @JsonKey(ignore: true)
   @override
@@ -218,7 +201,6 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
 abstract class _MapMarkerViewData extends MapMarkerViewData {
   const factory _MapMarkerViewData(
       {required final String id,
-      required final String title,
       required final String pinImagePath,
       required final String cardImagePath,
       required final double latitude,
@@ -227,8 +209,6 @@ abstract class _MapMarkerViewData extends MapMarkerViewData {
 
   @override
   String get id;
-  @override
-  String get title;
   @override
   String get pinImagePath;
   @override

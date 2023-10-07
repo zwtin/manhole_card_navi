@@ -16,6 +16,8 @@ class RealmContactDAO extends $RealmContactDAO
     String name,
     String other,
     String phoneNumber,
+    String time,
+    String timeOther,
   ) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'address', address);
@@ -24,6 +26,8 @@ class RealmContactDAO extends $RealmContactDAO
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'other', other);
     RealmObjectBase.set(this, 'phoneNumber', phoneNumber);
+    RealmObjectBase.set(this, 'time', time);
+    RealmObjectBase.set(this, 'timeOther', timeOther);
   }
 
   RealmContactDAO._();
@@ -68,6 +72,17 @@ class RealmContactDAO extends $RealmContactDAO
       RealmObjectBase.set(this, 'phoneNumber', value);
 
   @override
+  String get time => RealmObjectBase.get<String>(this, 'time') as String;
+  @override
+  set time(String value) => RealmObjectBase.set(this, 'time', value);
+
+  @override
+  String get timeOther =>
+      RealmObjectBase.get<String>(this, 'timeOther') as String;
+  @override
+  set timeOther(String value) => RealmObjectBase.set(this, 'timeOther', value);
+
+  @override
   Stream<RealmObjectChanges<RealmContactDAO>> get changes =>
       RealmObjectBase.getChanges<RealmContactDAO>(this);
 
@@ -88,6 +103,8 @@ class RealmContactDAO extends $RealmContactDAO
       SchemaProperty('name', RealmPropertyType.string),
       SchemaProperty('other', RealmPropertyType.string),
       SchemaProperty('phoneNumber', RealmPropertyType.string),
+      SchemaProperty('time', RealmPropertyType.string),
+      SchemaProperty('timeOther', RealmPropertyType.string),
     ]);
   }
 }

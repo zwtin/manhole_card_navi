@@ -7,8 +7,6 @@ import '/domain/entity/inquired_master_version.dart';
 import '/domain/entity/manhole_card.dart';
 import '/domain/entity/manhole_card_contact.dart';
 import '/domain/entity/manhole_card_contacts.dart';
-import '/domain/entity/manhole_card_distribution.dart';
-import '/domain/entity/manhole_card_distributions.dart';
 import '/domain/entity/manhole_card_image.dart';
 import '/domain/entity/manhole_card_images.dart';
 import '/domain/entity/manhole_card_prefecture.dart';
@@ -19,7 +17,6 @@ import '/domain/entity/manhole_cards.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/card_repository.dart';
 import '/domain/repository/contact_repository.dart';
-import '/domain/repository/distribution_repository.dart';
 import '/domain/repository/image_repository.dart';
 import '/domain/repository/master_version_repository.dart';
 import '/domain/repository/prefecture_repository.dart';
@@ -27,7 +24,6 @@ import '/domain/repository/remote_config_repository.dart';
 import '/domain/repository/volume_repository.dart';
 import '/infra/repository_impl/card_repository_impl.dart';
 import '/infra/repository_impl/contact_repository_impl.dart';
-import '/infra/repository_impl/distribution_repository_impl.dart';
 import '/infra/repository_impl/image_repository_impl.dart';
 import '/infra/repository_impl/master_version_repository_impl.dart';
 import '/infra/repository_impl/prefecture_repository_impl.dart';
@@ -41,7 +37,6 @@ final checkMasterUpdateUseCaseProvider =
     final checkMasterUpdateUseCase = CheckMasterUpdateUseCase(
       ref.watch(cardRepositoryProvider),
       ref.watch(contactRepositoryProvider),
-      ref.watch(distributionRepositoryProvider),
       ref.watch(imageRepositoryProvider),
       ref.watch(masterVersionRepositoryProvider),
       ref.watch(prefectureRepositoryProvider),
@@ -57,7 +52,6 @@ class CheckMasterUpdateUseCase {
   CheckMasterUpdateUseCase(
     this._cardRepository,
     this._contactRepository,
-    this._distributionRepository,
     this._imageRepository,
     this._masterVersionRepository,
     this._prefectureRepository,
@@ -67,7 +61,6 @@ class CheckMasterUpdateUseCase {
 
   final CardRepository _cardRepository;
   final ContactRepository _contactRepository;
-  final DistributionRepository _distributionRepository;
   final ImageRepository _imageRepository;
   final MasterVersionRepository _masterVersionRepository;
   final PrefectureRepository _prefectureRepository;
@@ -122,7 +115,6 @@ class CheckMasterUpdateUseCase {
 
     final result = await Future.wait([
       _updateContactMaster(currentMasterVersion: currentMasterVersion),
-      _updateDistributionMaster(currentMasterVersion: currentMasterVersion),
       _updateImageMaster(currentMasterVersion: currentMasterVersion),
       _updatePrefectureMaster(currentMasterVersion: currentMasterVersion),
       _updateVolumeMaster(currentMasterVersion: currentMasterVersion),
@@ -190,47 +182,19 @@ class CheckMasterUpdateUseCase {
               },
             ),
           );
-          final distributionsResult = await Future.wait(
-            manholeCard.distributions.map(
-              (manholeCardDistribution) async {
-                return _distributionRepository.get(
-                  id: manholeCardDistribution.id,
-                );
-              },
-            ),
+          final imageResult = await _imageRepository.get(
+            id: manholeCard.image.id,
           );
-          final imagesResult = await Future.wait(
-            manholeCard.images.map(
-              (manholeCardImage) async {
-                return _imageRepository.get(
-                  id: manholeCardImage.id,
-                );
-              },
-            ),
+          final prefectureResult = await _prefectureRepository.get(
+            id: manholeCard.prefecture.id,
           );
-          final prefecturesResult = await Future.wait(
-            manholeCard.prefectures.map(
-              (manholeCardPrefecture) async {
-                return _prefectureRepository.get(
-                  id: manholeCardPrefecture.id,
-                );
-              },
-            ),
-          );
-          final volumesResult = await Future.wait(
-            manholeCard.volumes.map(
-              (manholeCardVolume) async {
-                return _volumeRepository.get(
-                  id: manholeCardVolume.id,
-                );
-              },
-            ),
+          final volumeResult = await _volumeRepository.get(
+            id: manholeCard.volume.id,
           );
           if (contactsResult.whereType<Failure>().isNotEmpty ||
-              distributionsResult.whereType<Failure>().isNotEmpty ||
-              imagesResult.whereType<Failure>().isNotEmpty ||
-              prefecturesResult.whereType<Failure>().isNotEmpty ||
-              volumesResult.whereType<Failure>().isNotEmpty) {
+              imageResult is Failure ||
+              prefectureResult is Failure ||
+              volumeResult is Failure) {
             return null;
           }
           final contactList = contactsResult
@@ -239,37 +203,16 @@ class CheckMasterUpdateUseCase {
               .toList();
           final contacts = ManholeCardContacts(list: contactList);
 
-          final distributionList = distributionsResult
-              .whereType<Success<ManholeCardDistribution>>()
-              .map((e) => e.value)
-              .toList();
-          final distributions =
-              ManholeCardDistributions(list: distributionList);
-
-          final imageList = imagesResult
-              .whereType<Success<ManholeCardImage>>()
-              .map((e) => e.value)
-              .toList();
-          final images = ManholeCardImages(list: imageList);
-
-          final prefectureList = prefecturesResult
-              .whereType<Success<ManholeCardPrefecture>>()
-              .map((e) => e.value)
-              .toList();
-          final prefectures = ManholeCardPrefectures(list: prefectureList);
-
-          final volumeList = volumesResult
-              .whereType<Success<ManholeCardVolume>>()
-              .map((e) => e.value)
-              .toList();
-          final volumes = ManholeCardVolumes(list: volumeList);
+          final image = (imageResult as Success<ManholeCardImage>).value;
+          final prefecture =
+              (prefectureResult as Success<ManholeCardPrefecture>).value;
+          final volume = (volumeResult as Success<ManholeCardVolume>).value;
 
           return manholeCard.copyWith(
             contacts: contacts,
-            distributions: distributions,
-            images: images,
-            prefectures: prefectures,
-            volumes: volumes,
+            image: image,
+            prefecture: prefecture,
+            volume: volume,
           );
         },
       ),
@@ -332,48 +275,6 @@ class CheckMasterUpdateUseCase {
 
     final saveResult = await _contactRepository.saveMaster(
       manholeCardContacts: manholeCardContacts,
-    );
-    if (saveResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
-    }
-
-    return const Result.success(null);
-  }
-
-  Future<Result<void>> _updateDistributionMaster({
-    required CurrentMasterVersion currentMasterVersion,
-  }) async {
-    final fetchResult = await _distributionRepository.fetchMaster(
-      currentMasterVersion: currentMasterVersion,
-    );
-    if (fetchResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
-    }
-    final manholeCardDistributions =
-        (fetchResult as Success<ManholeCardDistributions>).value;
-
-    final deleteResult = await _distributionRepository.deleteMaster();
-    if (deleteResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
-    }
-
-    final saveResult = await _distributionRepository.saveMaster(
-      manholeCardDistributions: manholeCardDistributions,
     );
     if (saveResult is Failure) {
       return const Result.failure(

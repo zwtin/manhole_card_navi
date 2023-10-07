@@ -44,6 +44,8 @@ class ContactRepositoryImpl implements ContactRepository {
           name: doc['name'] as String,
           other: doc['other'] as String,
           phoneNumber: doc['phone_number'] as String,
+          time: doc['time'] as String,
+          timeOther: doc['time_other'] as String,
         );
       },
     ).toList();
@@ -78,8 +80,8 @@ class ContactRepositoryImpl implements ContactRepository {
     ]);
     var realm = Realm(config);
 
-    final realmContacts = RealmContactsMapper.convertFromModel(
-      model: manholeCardContacts,
+    final realmContacts = RealmContactsMapper.convertFromEntity(
+      entity: manholeCardContacts,
     );
 
     realm.write(() {
@@ -113,7 +115,7 @@ class ContactRepositoryImpl implements ContactRepository {
         ),
       );
     }
-    final contact = RealmContactMapper.convertToModel(dao: daoOrNull);
+    final contact = RealmContactMapper.convertToEntity(dao: daoOrNull);
     return Result.success(contact);
   }
 

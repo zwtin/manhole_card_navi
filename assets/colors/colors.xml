@@ -6,4 +6,5 @@
     <color name="distributing">#2ecc71</color>
     <color name="stopped">#e74c3c</color>
     <color name="notClear">#f1c40f</color>
+    <color name="unknown">#999999</color>
 </resources>

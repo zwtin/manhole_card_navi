@@ -12,4 +12,6 @@ class $RealmContactDAO {
   late String name;
   late String other;
   late String phoneNumber;
+  late String time;
+  late String timeOther;
 }

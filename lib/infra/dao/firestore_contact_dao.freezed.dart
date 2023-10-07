@@ -23,10 +23,12 @@ mixin _$FirestoreContactDAO {
   String get address => throw _privateConstructorUsedError;
   String get id => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
-  String get longitude => throw _privateConstructorUsedError;
+  double get longitude => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get other => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
+  String get time => throw _privateConstructorUsedError;
+  String get timeOther => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -44,10 +46,12 @@ abstract class $FirestoreContactDAOCopyWith<$Res> {
       {String address,
       String id,
       double latitude,
-      String longitude,
+      double longitude,
       String name,
       String other,
-      String phoneNumber});
+      String phoneNumber,
+      String time,
+      String timeOther});
 }
 
 /// @nodoc
@@ -70,6 +74,8 @@ class _$FirestoreContactDAOCopyWithImpl<$Res, $Val extends FirestoreContactDAO>
     Object? name = null,
     Object? other = null,
     Object? phoneNumber = null,
+    Object? time = null,
+    Object? timeOther = null,
   }) {
     return _then(_value.copyWith(
       address: null == address
@@ -87,7 +93,7 @@ class _$FirestoreContactDAOCopyWithImpl<$Res, $Val extends FirestoreContactDAO>
       longitude: null == longitude
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
-              as String,
+              as double,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -99,6 +105,14 @@ class _$FirestoreContactDAOCopyWithImpl<$Res, $Val extends FirestoreContactDAO>
       phoneNumber: null == phoneNumber
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      time: null == time
+          ? _value.time
+          : time // ignore: cast_nullable_to_non_nullable
+              as String,
+      timeOther: null == timeOther
+          ? _value.timeOther
+          : timeOther // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -116,10 +130,12 @@ abstract class _$$_FirestoreContactDAOCopyWith<$Res>
       {String address,
       String id,
       double latitude,
-      String longitude,
+      double longitude,
       String name,
       String other,
-      String phoneNumber});
+      String phoneNumber,
+      String time,
+      String timeOther});
 }
 
 /// @nodoc
@@ -140,6 +156,8 @@ class __$$_FirestoreContactDAOCopyWithImpl<$Res>
     Object? name = null,
     Object? other = null,
     Object? phoneNumber = null,
+    Object? time = null,
+    Object? timeOther = null,
   }) {
     return _then(_$_FirestoreContactDAO(
       address: null == address
@@ -157,7 +175,7 @@ class __$$_FirestoreContactDAOCopyWithImpl<$Res>
       longitude: null == longitude
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
-              as String,
+              as double,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -169,6 +187,14 @@ class __$$_FirestoreContactDAOCopyWithImpl<$Res>
       phoneNumber: null == phoneNumber
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      time: null == time
+          ? _value.time
+          : time // ignore: cast_nullable_to_non_nullable
+              as String,
+      timeOther: null == timeOther
+          ? _value.timeOther
+          : timeOther // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -184,7 +210,9 @@ class _$_FirestoreContactDAO extends _FirestoreContactDAO {
       required this.longitude,
       required this.name,
       required this.other,
-      required this.phoneNumber})
+      required this.phoneNumber,
+      required this.time,
+      required this.timeOther})
       : super._();
 
   factory _$_FirestoreContactDAO.fromJson(Map<String, dynamic> json) =>
@@ -197,17 +225,21 @@ class _$_FirestoreContactDAO extends _FirestoreContactDAO {
   @override
   final double latitude;
   @override
-  final String longitude;
+  final double longitude;
   @override
   final String name;
   @override
   final String other;
   @override
   final String phoneNumber;
+  @override
+  final String time;
+  @override
+  final String timeOther;
 
   @override
   String toString() {
-    return 'FirestoreContactDAO(address: $address, id: $id, latitude: $latitude, longitude: $longitude, name: $name, other: $other, phoneNumber: $phoneNumber)';
+    return 'FirestoreContactDAO(address: $address, id: $id, latitude: $latitude, longitude: $longitude, name: $name, other: $other, phoneNumber: $phoneNumber, time: $time, timeOther: $timeOther)';
   }
 
   @override
@@ -224,13 +256,16 @@ class _$_FirestoreContactDAO extends _FirestoreContactDAO {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.other, this.other) || other.other == this.other) &&
             (identical(other.phoneNumber, phoneNumber) ||
-                other.phoneNumber == phoneNumber));
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.time, time) || other.time == time) &&
+            (identical(other.timeOther, timeOther) ||
+                other.timeOther == timeOther));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, address, id, latitude, longitude, name, other, phoneNumber);
+  int get hashCode => Object.hash(runtimeType, address, id, latitude, longitude,
+      name, other, phoneNumber, time, timeOther);
 
   @JsonKey(ignore: true)
   @override
@@ -252,10 +287,12 @@ abstract class _FirestoreContactDAO extends FirestoreContactDAO {
       {required final String address,
       required final String id,
       required final double latitude,
-      required final String longitude,
+      required final double longitude,
       required final String name,
       required final String other,
-      required final String phoneNumber}) = _$_FirestoreContactDAO;
+      required final String phoneNumber,
+      required final String time,
+      required final String timeOther}) = _$_FirestoreContactDAO;
   const _FirestoreContactDAO._() : super._();
 
   factory _FirestoreContactDAO.fromJson(Map<String, dynamic> json) =
@@ -268,13 +305,17 @@ abstract class _FirestoreContactDAO extends FirestoreContactDAO {
   @override
   double get latitude;
   @override
-  String get longitude;
+  double get longitude;
   @override
   String get name;
   @override
   String get other;
   @override
   String get phoneNumber;
+  @override
+  String get time;
+  @override
+  String get timeOther;
   @override
   @JsonKey(ignore: true)
   _$$_FirestoreContactDAOCopyWith<_$_FirestoreContactDAO> get copyWith =>

@@ -73,8 +73,8 @@ class VolumeRepositoryImpl implements VolumeRepository {
     ]);
     var realm = Realm(config);
 
-    final realmVolumes = RealmVolumesMapper.convertFromModel(
-      model: manholeCardVolumes,
+    final realmVolumes = RealmVolumesMapper.convertFromEntity(
+      entity: manholeCardVolumes,
     );
 
     realm.write(() {
@@ -108,7 +108,7 @@ class VolumeRepositoryImpl implements VolumeRepository {
         ),
       );
     }
-    final volume = RealmVolumeMapper.convertToModel(dao: daoOrNull);
+    final volume = RealmVolumeMapper.convertToEntity(dao: daoOrNull);
     return Result.success(volume);
   }
 

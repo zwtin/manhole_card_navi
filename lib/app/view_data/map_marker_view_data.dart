@@ -6,7 +6,6 @@ part 'map_marker_view_data.freezed.dart';
 abstract class MapMarkerViewData with _$MapMarkerViewData {
   const factory MapMarkerViewData({
     required String id,
-    required String title,
     required String pinImagePath,
     required String cardImagePath,
     required double latitude,

@@ -6,7 +6,6 @@ part 'map_card_dto.freezed.dart';
 abstract class MapCardDTO with _$MapCardDTO {
   const factory MapCardDTO({
     required String id,
-    required String title,
     required String pinImagePath,
     required String cardImagePath,
     required double latitude,

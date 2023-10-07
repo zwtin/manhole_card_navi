@@ -8,9 +8,15 @@ abstract class FirestoreCardDAO with _$FirestoreCardDAO {
   const factory FirestoreCardDAO({
     required String id,
     required double latitude,
-    required String longitude,
+    required double longitude,
     required String name,
     required String publicationDate,
+    required String imageId,
+    required String prefectureId,
+    required String volumeId,
+    required String distributionState,
+    required String distributionText,
+    required String distributionUrl,
   }) = _FirestoreCardDAO;
 
   const FirestoreCardDAO._();

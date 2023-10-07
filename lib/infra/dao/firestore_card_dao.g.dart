@@ -10,9 +10,15 @@ _$_FirestoreCardDAO _$$_FirestoreCardDAOFromJson(Map<String, dynamic> json) =>
     _$_FirestoreCardDAO(
       id: json['id'] as String,
       latitude: (json['latitude'] as num).toDouble(),
-      longitude: json['longitude'] as String,
+      longitude: (json['longitude'] as num).toDouble(),
       name: json['name'] as String,
       publicationDate: json['publicationDate'] as String,
+      imageId: json['imageId'] as String,
+      prefectureId: json['prefectureId'] as String,
+      volumeId: json['volumeId'] as String,
+      distributionState: json['distributionState'] as String,
+      distributionText: json['distributionText'] as String,
+      distributionUrl: json['distributionUrl'] as String,
     );
 
 Map<String, dynamic> _$$_FirestoreCardDAOToJson(_$_FirestoreCardDAO instance) =>
@@ -22,4 +28,10 @@ Map<String, dynamic> _$$_FirestoreCardDAOToJson(_$_FirestoreCardDAO instance) =>
       'longitude': instance.longitude,
       'name': instance.name,
       'publicationDate': instance.publicationDate,
+      'imageId': instance.imageId,
+      'prefectureId': instance.prefectureId,
+      'volumeId': instance.volumeId,
+      'distributionState': instance.distributionState,
+      'distributionText': instance.distributionText,
+      'distributionUrl': instance.distributionUrl,
     };

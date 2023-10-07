@@ -13,28 +13,28 @@ class RealmCardDAO extends _RealmCardDAO
     double latitude,
     double longitude,
     String name,
-    DateTime publicationDate, {
+    DateTime publicationDate,
+    String distributionState,
+    String distributionText,
+    String distributionUrl, {
+    RealmImageDAO? image,
+    RealmPrefectureDAO? prefecture,
+    RealmVolumeDAO? volume,
     Iterable<RealmContactDAO> contacts = const [],
-    Iterable<RealmDistributionDAO> distributions = const [],
-    Iterable<RealmImageDAO> images = const [],
-    Iterable<RealmPrefectureDAO> prefectures = const [],
-    Iterable<RealmVolumeDAO> volumes = const [],
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'latitude', latitude);
     RealmObjectBase.set(this, 'longitude', longitude);
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'publicationDate', publicationDate);
+    RealmObjectBase.set(this, 'distributionState', distributionState);
+    RealmObjectBase.set(this, 'distributionText', distributionText);
+    RealmObjectBase.set(this, 'distributionUrl', distributionUrl);
+    RealmObjectBase.set(this, 'image', image);
+    RealmObjectBase.set(this, 'prefecture', prefecture);
+    RealmObjectBase.set(this, 'volume', volume);
     RealmObjectBase.set<RealmList<RealmContactDAO>>(
         this, 'contacts', RealmList<RealmContactDAO>(contacts));
-    RealmObjectBase.set<RealmList<RealmDistributionDAO>>(
-        this, 'distributions', RealmList<RealmDistributionDAO>(distributions));
-    RealmObjectBase.set<RealmList<RealmImageDAO>>(
-        this, 'images', RealmList<RealmImageDAO>(images));
-    RealmObjectBase.set<RealmList<RealmPrefectureDAO>>(
-        this, 'prefectures', RealmList<RealmPrefectureDAO>(prefectures));
-    RealmObjectBase.set<RealmList<RealmVolumeDAO>>(
-        this, 'volumes', RealmList<RealmVolumeDAO>(volumes));
   }
 
   RealmCardDAO._();
@@ -69,43 +69,54 @@ class RealmCardDAO extends _RealmCardDAO
       RealmObjectBase.set(this, 'publicationDate', value);
 
   @override
+  String get distributionState =>
+      RealmObjectBase.get<String>(this, 'distributionState') as String;
+  @override
+  set distributionState(String value) =>
+      RealmObjectBase.set(this, 'distributionState', value);
+
+  @override
+  String get distributionText =>
+      RealmObjectBase.get<String>(this, 'distributionText') as String;
+  @override
+  set distributionText(String value) =>
+      RealmObjectBase.set(this, 'distributionText', value);
+
+  @override
+  String get distributionUrl =>
+      RealmObjectBase.get<String>(this, 'distributionUrl') as String;
+  @override
+  set distributionUrl(String value) =>
+      RealmObjectBase.set(this, 'distributionUrl', value);
+
+  @override
+  RealmImageDAO? get image =>
+      RealmObjectBase.get<RealmImageDAO>(this, 'image') as RealmImageDAO?;
+  @override
+  set image(covariant RealmImageDAO? value) =>
+      RealmObjectBase.set(this, 'image', value);
+
+  @override
+  RealmPrefectureDAO? get prefecture =>
+      RealmObjectBase.get<RealmPrefectureDAO>(this, 'prefecture')
+          as RealmPrefectureDAO?;
+  @override
+  set prefecture(covariant RealmPrefectureDAO? value) =>
+      RealmObjectBase.set(this, 'prefecture', value);
+
+  @override
+  RealmVolumeDAO? get volume =>
+      RealmObjectBase.get<RealmVolumeDAO>(this, 'volume') as RealmVolumeDAO?;
+  @override
+  set volume(covariant RealmVolumeDAO? value) =>
+      RealmObjectBase.set(this, 'volume', value);
+
+  @override
   RealmList<RealmContactDAO> get contacts =>
       RealmObjectBase.get<RealmContactDAO>(this, 'contacts')
           as RealmList<RealmContactDAO>;
   @override
   set contacts(covariant RealmList<RealmContactDAO> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
-  RealmList<RealmDistributionDAO> get distributions =>
-      RealmObjectBase.get<RealmDistributionDAO>(this, 'distributions')
-          as RealmList<RealmDistributionDAO>;
-  @override
-  set distributions(covariant RealmList<RealmDistributionDAO> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
-  RealmList<RealmImageDAO> get images =>
-      RealmObjectBase.get<RealmImageDAO>(this, 'images')
-          as RealmList<RealmImageDAO>;
-  @override
-  set images(covariant RealmList<RealmImageDAO> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
-  RealmList<RealmPrefectureDAO> get prefectures =>
-      RealmObjectBase.get<RealmPrefectureDAO>(this, 'prefectures')
-          as RealmList<RealmPrefectureDAO>;
-  @override
-  set prefectures(covariant RealmList<RealmPrefectureDAO> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
-  RealmList<RealmVolumeDAO> get volumes =>
-      RealmObjectBase.get<RealmVolumeDAO>(this, 'volumes')
-          as RealmList<RealmVolumeDAO>;
-  @override
-  set volumes(covariant RealmList<RealmVolumeDAO> value) =>
       throw RealmUnsupportedSetError();
 
   @override
@@ -126,20 +137,17 @@ class RealmCardDAO extends _RealmCardDAO
       SchemaProperty('longitude', RealmPropertyType.double),
       SchemaProperty('name', RealmPropertyType.string),
       SchemaProperty('publicationDate', RealmPropertyType.timestamp),
+      SchemaProperty('distributionState', RealmPropertyType.string),
+      SchemaProperty('distributionText', RealmPropertyType.string),
+      SchemaProperty('distributionUrl', RealmPropertyType.string),
+      SchemaProperty('image', RealmPropertyType.object,
+          optional: true, linkTarget: 'RealmImageDAO'),
+      SchemaProperty('prefecture', RealmPropertyType.object,
+          optional: true, linkTarget: 'RealmPrefectureDAO'),
+      SchemaProperty('volume', RealmPropertyType.object,
+          optional: true, linkTarget: 'RealmVolumeDAO'),
       SchemaProperty('contacts', RealmPropertyType.object,
           linkTarget: 'RealmContactDAO',
-          collectionType: RealmCollectionType.list),
-      SchemaProperty('distributions', RealmPropertyType.object,
-          linkTarget: 'RealmDistributionDAO',
-          collectionType: RealmCollectionType.list),
-      SchemaProperty('images', RealmPropertyType.object,
-          linkTarget: 'RealmImageDAO',
-          collectionType: RealmCollectionType.list),
-      SchemaProperty('prefectures', RealmPropertyType.object,
-          linkTarget: 'RealmPrefectureDAO',
-          collectionType: RealmCollectionType.list),
-      SchemaProperty('volumes', RealmPropertyType.object,
-          linkTarget: 'RealmVolumeDAO',
           collectionType: RealmCollectionType.list),
     ]);
   }

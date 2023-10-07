@@ -2,7 +2,7 @@ import '/domain/entity/manhole_card_contact.dart';
 import '/infra/dao/realm_contact_dao.dart';
 
 class RealmContactMapper {
-  static ManholeCardContact convertToModel({
+  static ManholeCardContact convertToEntity({
     required RealmContactDAO dao,
   }) {
     return ManholeCardContact(
@@ -13,6 +13,24 @@ class RealmContactMapper {
       name: dao.name,
       other: dao.other,
       phoneNumber: dao.phoneNumber,
+      time: dao.time,
+      timeOther: dao.timeOther,
+    );
+  }
+
+  static RealmContactDAO convertFromEntity({
+    required ManholeCardContact entity,
+  }) {
+    return RealmContactDAO(
+      entity.id,
+      entity.address,
+      entity.latitude,
+      entity.longitude,
+      entity.name,
+      entity.other,
+      entity.phoneNumber,
+      entity.time,
+      entity.timeOther,
     );
   }
 }

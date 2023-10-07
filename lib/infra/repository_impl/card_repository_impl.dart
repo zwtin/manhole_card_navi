@@ -8,20 +8,14 @@ import '/domain/entity/current_master_version.dart';
 import '/domain/entity/manhole_card.dart';
 import '/domain/entity/manhole_card_contact.dart';
 import '/domain/entity/manhole_card_contacts.dart';
-import '/domain/entity/manhole_card_distribution.dart';
-import '/domain/entity/manhole_card_distributions.dart';
 import '/domain/entity/manhole_card_image.dart';
-import '/domain/entity/manhole_card_images.dart';
 import '/domain/entity/manhole_card_prefecture.dart';
-import '/domain/entity/manhole_card_prefectures.dart';
 import '/domain/entity/manhole_card_volume.dart';
-import '/domain/entity/manhole_card_volumes.dart';
 import '/domain/entity/manhole_cards.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/card_repository.dart';
 import '/infra/dao/realm_card_dao.dart';
 import '/infra/dao/realm_contact_dao.dart';
-import '/infra/dao/realm_distribution_dao.dart';
 import '/infra/dao/realm_image_dao.dart';
 import '/infra/dao/realm_prefecture_dao.dart';
 import '/infra/dao/realm_volume_dao.dart';
@@ -69,85 +63,38 @@ class CardRepositoryImpl implements CardRepository {
               name: '',
               other: '',
               phoneNumber: '',
+              time: '',
+              timeOther: '',
             );
           }).toList();
           final contacts = ManholeCardContacts(list: contactList);
-
-          final distributionsQuerySnapshot = await _firestore
-              .collection('master')
-              .doc(currentMasterVersion.version)
-              .collection('cards')
-              .doc(cardId)
-              .collection('distribution_id')
-              .get();
-          final distributionList =
-              distributionsQuerySnapshot.docs.map((element) {
-            return ManholeCardDistribution(
-              id: element['id'] as String,
-              other: '',
-              state: ManholeCardDistributionState.distributing,
-            );
-          }).toList();
-          final distributions =
-              ManholeCardDistributions(list: distributionList);
-
-          final imagesQuerySnapshot = await _firestore
-              .collection('master')
-              .doc(currentMasterVersion.version)
-              .collection('cards')
-              .doc(cardId)
-              .collection('image_id')
-              .get();
-          final imageList = imagesQuerySnapshot.docs.map((element) {
-            return ManholeCardImage(
-              id: element['id'] as String,
-              name: '',
-            );
-          }).toList();
-          final images = ManholeCardImages(list: imageList);
-
-          final prefecturesQuerySnapshot = await _firestore
-              .collection('master')
-              .doc(currentMasterVersion.version)
-              .collection('cards')
-              .doc(cardId)
-              .collection('prefecture_id')
-              .get();
-          final prefectureList = prefecturesQuerySnapshot.docs.map((element) {
-            return ManholeCardPrefecture(
-              id: element['id'] as String,
-              name: '',
-            );
-          }).toList();
-          final prefectures = ManholeCardPrefectures(list: prefectureList);
-
-          final volumesQuerySnapshot = await _firestore
-              .collection('master')
-              .doc(currentMasterVersion.version)
-              .collection('cards')
-              .doc(cardId)
-              .collection('volume_id')
-              .get();
-          final volumeList = volumesQuerySnapshot.docs.map((element) {
-            return ManholeCardVolume(
-              id: element['id'] as String,
-              name: '',
-            );
-          }).toList();
-          final volumes = ManholeCardVolumes(list: volumeList);
 
           return ManholeCard(
             id: doc['id'] as String,
             latitude: doc['latitude'] as double,
             longitude: doc['longitude'] as double,
             name: doc['name'] as String,
-            publicationDate: DateFormat('yyyy/MM/dd')
-                .parse(doc['publication_date'] as String),
+            publicationDate: DateFormat('yyyy/MM/dd').parse(
+              doc['publication_date'] as String,
+            ),
             contacts: contacts,
-            distributions: distributions,
-            images: images,
-            prefectures: prefectures,
-            volumes: volumes,
+            distributionState: ManholeCardDistributionState.values.byName(
+              doc['distribution_state'] as String,
+            ),
+            distributionText: doc['distribution_text'] as String,
+            distributionUrl: doc['distribution_url'] as String,
+            image: ManholeCardImage(
+              id: doc['image_id'] as String,
+              name: '',
+            ),
+            prefecture: ManholeCardPrefecture(
+              id: doc['prefecture_id'] as String,
+              name: '',
+            ),
+            volume: ManholeCardVolume(
+              id: doc['volume_id'] as String,
+              name: '',
+            ),
           );
         },
       ),
@@ -165,7 +112,6 @@ class CardRepositoryImpl implements CardRepository {
     var config = Configuration.local([
       RealmCardDAO.schema,
       RealmContactDAO.schema,
-      RealmDistributionDAO.schema,
       RealmImageDAO.schema,
       RealmPrefectureDAO.schema,
       RealmVolumeDAO.schema,
@@ -175,7 +121,6 @@ class CardRepositoryImpl implements CardRepository {
     realm.write(() {
       realm.deleteAll<RealmCardDAO>();
       realm.deleteAll<RealmContactDAO>();
-      realm.deleteAll<RealmDistributionDAO>();
       realm.deleteAll<RealmImageDAO>();
       realm.deleteAll<RealmPrefectureDAO>();
       realm.deleteAll<RealmVolumeDAO>();
@@ -192,15 +137,14 @@ class CardRepositoryImpl implements CardRepository {
     var config = Configuration.local([
       RealmCardDAO.schema,
       RealmContactDAO.schema,
-      RealmDistributionDAO.schema,
       RealmImageDAO.schema,
       RealmPrefectureDAO.schema,
       RealmVolumeDAO.schema,
     ]);
     var realm = Realm(config);
 
-    final realmCards = RealmCardsMapper.convertFromModel(
-      model: manholeCards,
+    final realmCards = RealmCardsMapper.convertFromEntity(
+      entity: manholeCards,
     );
 
     realm.write(() {

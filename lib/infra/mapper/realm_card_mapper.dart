@@ -1,13 +1,16 @@
+import 'package:manhole_card_navi/infra/dao/realm_image_dao.dart';
+import 'package:manhole_card_navi/infra/dao/realm_prefecture_dao.dart';
+import 'package:manhole_card_navi/infra/dao/realm_volume_dao.dart';
+import 'package:manhole_card_navi/infra/mapper/realm_contacts_mapper.dart';
+import 'package:manhole_card_navi/infra/mapper/realm_image_mapper.dart';
+import 'package:manhole_card_navi/infra/mapper/realm_prefecture_mapper.dart';
+import 'package:manhole_card_navi/infra/mapper/realm_volume_mapper.dart';
+
 import '/domain/entity/manhole_card.dart';
-import '/domain/entity/manhole_card_contacts.dart';
-import '/domain/entity/manhole_card_distributions.dart';
-import '/domain/entity/manhole_card_images.dart';
-import '/domain/entity/manhole_card_prefectures.dart';
-import '/domain/entity/manhole_card_volumes.dart';
 import '/infra/dao/realm_card_dao.dart';
 
 class RealmCardMapper {
-  static ManholeCard convertToModel({
+  static ManholeCard convertToEntity({
     required RealmCardDAO dao,
   }) {
     return ManholeCard(
@@ -16,11 +19,23 @@ class RealmCardMapper {
       longitude: dao.longitude,
       name: dao.name,
       publicationDate: dao.publicationDate,
-      contacts: const ManholeCardContacts(list: []),
-      distributions: const ManholeCardDistributions(list: []),
-      images: const ManholeCardImages(list: []),
-      prefectures: const ManholeCardPrefectures(list: []),
-      volumes: const ManholeCardVolumes(list: []),
+      distributionState: ManholeCardDistributionState.values.byName(
+        dao.distributionState,
+      ),
+      distributionText: dao.distributionText,
+      distributionUrl: dao.distributionUrl,
+      contacts: RealmContactsMapper.convertToEntity(
+        daoList: dao.contacts,
+      ),
+      image: RealmImageMapper.convertToEntity(
+        dao: dao.image ?? RealmImageDAO('', ''),
+      ),
+      prefecture: RealmPrefectureMapper.convertToEntity(
+        dao: dao.prefecture ?? RealmPrefectureDAO('', ''),
+      ),
+      volume: RealmVolumeMapper.convertToEntity(
+        dao: dao.volume ?? RealmVolumeDAO('', ''),
+      ),
     );
   }
 }

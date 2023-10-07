@@ -73,8 +73,8 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
     ]);
     var realm = Realm(config);
 
-    final realmPrefectures = RealmPrefecturesMapper.convertFromModel(
-      model: manholeCardPrefectures,
+    final realmPrefectures = RealmPrefecturesMapper.convertFromEntity(
+      entity: manholeCardPrefectures,
     );
 
     realm.write(() {
@@ -108,7 +108,7 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
         ),
       );
     }
-    final prefecture = RealmPrefectureMapper.convertToModel(dao: daoOrNull);
+    final prefecture = RealmPrefectureMapper.convertToEntity(dao: daoOrNull);
     return Result.success(prefecture);
   }
 

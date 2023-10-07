@@ -113,7 +113,6 @@ class MapViewModel extends ChangeNotifier {
         (dto) {
           return MapMarkerViewData(
             id: dto.id,
-            title: dto.title,
             pinImagePath: dto.pinImagePath,
             cardImagePath: dto.cardImagePath,
             latitude: dto.latitude,
