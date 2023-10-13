@@ -1,13 +1,12 @@
-import 'package:manhole_card_navi/infra/dao/realm_image_dao.dart';
-import 'package:manhole_card_navi/infra/dao/realm_prefecture_dao.dart';
-import 'package:manhole_card_navi/infra/dao/realm_volume_dao.dart';
-import 'package:manhole_card_navi/infra/mapper/realm_contacts_mapper.dart';
-import 'package:manhole_card_navi/infra/mapper/realm_image_mapper.dart';
-import 'package:manhole_card_navi/infra/mapper/realm_prefecture_mapper.dart';
-import 'package:manhole_card_navi/infra/mapper/realm_volume_mapper.dart';
-
 import '/domain/entity/manhole_card.dart';
 import '/infra/dao/realm_card_dao.dart';
+import '/infra/dao/realm_image_dao.dart';
+import '/infra/dao/realm_prefecture_dao.dart';
+import '/infra/dao/realm_volume_dao.dart';
+import '/infra/mapper/realm_contacts_mapper.dart';
+import '/infra/mapper/realm_image_mapper.dart';
+import '/infra/mapper/realm_prefecture_mapper.dart';
+import '/infra/mapper/realm_volume_mapper.dart';
 
 class RealmCardMapper {
   static ManholeCard convertToEntity({

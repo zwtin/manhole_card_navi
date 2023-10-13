@@ -109,13 +109,16 @@ class CardRepositoryImpl implements CardRepository {
 
   @override
   Future<Result<void>> deleteMaster() async {
-    var config = Configuration.local([
-      RealmCardDAO.schema,
-      RealmContactDAO.schema,
-      RealmImageDAO.schema,
-      RealmPrefectureDAO.schema,
-      RealmVolumeDAO.schema,
-    ]);
+    var config = Configuration.local(
+      [
+        RealmCardDAO.schema,
+        RealmContactDAO.schema,
+        RealmImageDAO.schema,
+        RealmPrefectureDAO.schema,
+        RealmVolumeDAO.schema,
+      ],
+      shouldDeleteIfMigrationNeeded: true,
+    );
     var realm = Realm(config);
 
     realm.write(() {

@@ -1,12 +1,15 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/location_permission_provider.dart';
-import '/app/view_data/map_marker_view_data.dart';
 import '/domain/entity/result.dart';
 import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
 import '/use_case/dto/map_card_dto.dart';
@@ -42,7 +45,7 @@ class MapViewModel extends ChangeNotifier {
     zoom: 12.5,
   );
   bool myLocationEnabled = false;
-  final List<MapMarkerViewData> markersViewData = [];
+  final List<Marker> markers = [];
 
   Future<void> onLoad() async {
     _logger.d('MapViewModel');
@@ -51,7 +54,9 @@ class MapViewModel extends ChangeNotifier {
   }
 
   Future<void> setupMyLocation() async {
-    myLocationEnabled = true;
+    var permission = await Geolocator.checkPermission();
+    myLocationEnabled = permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always;
     await _moveToCurrentLocation(false);
     notifyListeners();
   }
@@ -107,21 +112,73 @@ class MapViewModel extends ChangeNotifier {
       return;
     }
     final dtoList = (result as Success<List<MapCardDTO>>).value;
-    markersViewData.clear();
-    markersViewData.addAll(
-      dtoList.map(
-        (dto) {
-          return MapMarkerViewData(
-            id: dto.id,
-            pinImagePath: dto.pinImagePath,
-            cardImagePath: dto.cardImagePath,
-            latitude: dto.latitude,
-            longitude: dto.longitude,
-          );
-        },
-      ),
-    );
+    markers.clear();
+    for (final dto in dtoList) {
+      final cardImageOrNull = await img.decodeJpgFile(dto.cardImagePath);
+      final pinImageOrNull = await decodeAsset(dto.pinImagePath);
+      final cardImage = cardImageOrNull!;
+      final pinImage = pinImageOrNull!;
+
+      final cardThumbnail = img.copyResize(cardImage, width: 130, height: 180);
+      final pinThumbnail = img.copyResize(pinImage, width: 146, height: 221);
+
+      final mergeImage = img.Image(
+        width: 146,
+        height: 221,
+        numChannels: 4,
+      );
+      img.compositeImage(
+        mergeImage,
+        pinThumbnail,
+      );
+      img.compositeImage(
+        mergeImage,
+        cardThumbnail,
+        dstX: 8,
+        dstY: 8,
+      );
+      markers.add(
+        Marker(
+          markerId: MarkerId(dto.id),
+          icon: BitmapDescriptor.fromBytes(
+            img.encodePng(mergeImage).buffer.asUint8List(),
+          ),
+          position: LatLng(
+            dto.latitude,
+            dto.longitude,
+          ),
+          onTap: () {},
+        ),
+      );
+    }
     notifyListeners();
+  }
+
+  Future<img.Image?> decodeAsset(String path) async {
+    final data = await rootBundle.load(path);
+
+    final buffer = await ui.ImmutableBuffer.fromUint8List(
+      data.buffer.asUint8List(),
+    );
+
+    final id = await ui.ImageDescriptor.encoded(buffer);
+    final codec = await id.instantiateCodec(
+      targetHeight: id.height,
+      targetWidth: id.width,
+    );
+
+    final fi = await codec.getNextFrame();
+
+    final uiImage = fi.image;
+    final uiBytes = await uiImage.toByteData();
+
+    final image = img.Image.fromBytes(
+      width: id.width,
+      height: id.height,
+      bytes: uiBytes!.buffer,
+      numChannels: 4,
+    );
+    return image;
   }
 
   void onTap() {

@@ -58,9 +58,12 @@ class ContactRepositoryImpl implements ContactRepository {
 
   @override
   Future<Result<void>> deleteMaster() async {
-    var config = Configuration.local([
-      RealmContactDAO.schema,
-    ]);
+    var config = Configuration.local(
+      [
+        RealmContactDAO.schema,
+      ],
+      shouldDeleteIfMigrationNeeded: true,
+    );
     var realm = Realm(config);
 
     realm.write(() {
@@ -116,6 +119,7 @@ class ContactRepositoryImpl implements ContactRepository {
       );
     }
     final contact = RealmContactMapper.convertToEntity(dao: daoOrNull);
+    realm.close();
     return Result.success(contact);
   }
 

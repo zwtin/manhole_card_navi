@@ -176,7 +176,7 @@ class CheckMasterUpdateUseCase {
           final contactsResult = await Future.wait(
             manholeCard.contacts.map(
               (manholeCardContact) async {
-                return _contactRepository.get(
+                return await _contactRepository.get(
                   id: manholeCardContact.id,
                 );
               },

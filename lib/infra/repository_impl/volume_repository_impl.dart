@@ -51,9 +51,12 @@ class VolumeRepositoryImpl implements VolumeRepository {
 
   @override
   Future<Result<void>> deleteMaster() async {
-    var config = Configuration.local([
-      RealmVolumeDAO.schema,
-    ]);
+    var config = Configuration.local(
+      [
+        RealmVolumeDAO.schema,
+      ],
+      shouldDeleteIfMigrationNeeded: true,
+    );
     var realm = Realm(config);
 
     realm.write(() {
@@ -109,6 +112,7 @@ class VolumeRepositoryImpl implements VolumeRepository {
       );
     }
     final volume = RealmVolumeMapper.convertToEntity(dao: daoOrNull);
+    realm.close();
     return Result.success(volume);
   }
 

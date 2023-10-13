@@ -91,9 +91,12 @@ class ImageRepositoryImpl implements ImageRepository {
 
   @override
   Future<Result<void>> deleteMaster() async {
-    var config = Configuration.local([
-      RealmImageDAO.schema,
-    ]);
+    var config = Configuration.local(
+      [
+        RealmImageDAO.schema,
+      ],
+      shouldDeleteIfMigrationNeeded: true,
+    );
     var realm = Realm(config);
 
     realm.write(() {
@@ -149,6 +152,7 @@ class ImageRepositoryImpl implements ImageRepository {
       );
     }
     final image = RealmImageMapper.convertToEntity(dao: daoOrNull);
+    realm.close();
     return Result.success(image);
   }
 

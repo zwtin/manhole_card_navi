@@ -51,9 +51,12 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
 
   @override
   Future<Result<void>> deleteMaster() async {
-    var config = Configuration.local([
-      RealmPrefectureDAO.schema,
-    ]);
+    var config = Configuration.local(
+      [
+        RealmPrefectureDAO.schema,
+      ],
+      shouldDeleteIfMigrationNeeded: true,
+    );
     var realm = Realm(config);
 
     realm.write(() {
@@ -109,6 +112,7 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
       );
     }
     final prefecture = RealmPrefectureMapper.convertToEntity(dao: daoOrNull);
+    realm.close();
     return Result.success(prefecture);
   }
 
