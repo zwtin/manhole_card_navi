@@ -10,6 +10,7 @@ import 'package:logger/logger.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/location_permission_provider.dart';
+import '/app/provider/map_modal_provider.dart';
 import '/domain/entity/result.dart';
 import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
 import '/use_case/dto/map_card_dto.dart';
@@ -47,6 +48,8 @@ class MapViewModel extends ChangeNotifier {
   bool myLocationEnabled = false;
   final List<Marker> markers = [];
 
+  bool isShowModal = false;
+
   Future<void> onLoad() async {
     _logger.d('MapViewModel');
     _ref.read(locationPermissionProvider.notifier).request();
@@ -70,6 +73,9 @@ class MapViewModel extends ChangeNotifier {
   }
 
   Future<void> _moveToCurrentLocation(bool animation) async {
+    if (!myLocationEnabled) {
+      return;
+    }
     final position = await Geolocator.getCurrentPosition();
     if (animation) {
       mapController.animateCamera(
@@ -115,7 +121,7 @@ class MapViewModel extends ChangeNotifier {
     markers.clear();
     for (final dto in dtoList) {
       final cardImageOrNull = await img.decodeJpgFile(dto.cardImagePath);
-      final pinImageOrNull = await decodeAsset(dto.pinImagePath);
+      final pinImageOrNull = await _decodeAsset(dto.pinImagePath);
       final cardImage = cardImageOrNull!;
       final pinImage = pinImageOrNull!;
 
@@ -147,14 +153,44 @@ class MapViewModel extends ChangeNotifier {
             dto.latitude,
             dto.longitude,
           ),
-          onTap: () {},
+          onTap: () {
+            onTapMarker(dto.id);
+          },
         ),
       );
     }
     notifyListeners();
   }
 
-  Future<img.Image?> decodeAsset(String path) async {
+  Future<void> onTapMarker(String markerId) async {
+    isShowModal = true;
+    _ref.read(mapModalProvider.notifier).show();
+    final marker = markers.firstWhere(
+      (element) {
+        return element.markerId.value == markerId;
+      },
+    );
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(
+            marker.position.latitude,
+            marker.position.longitude,
+          ),
+          zoom: 12.5,
+        ),
+      ),
+    );
+    notifyListeners();
+  }
+
+  Future<void> onCloseMarkerModal(bool isClosed) async {
+    isShowModal = false;
+    _ref.read(mapModalProvider.notifier).hide();
+    notifyListeners();
+  }
+
+  Future<img.Image?> _decodeAsset(String path) async {
     final data = await rootBundle.load(path);
 
     final buffer = await ui.ImmutableBuffer.fromUint8List(
@@ -180,12 +216,6 @@ class MapViewModel extends ChangeNotifier {
     );
     return image;
   }
-
-  void onTap() {
-    notifyListeners();
-  }
-
-  Future<void> onTapMarker(String markerId) async {}
 
   @override
   void dispose() {

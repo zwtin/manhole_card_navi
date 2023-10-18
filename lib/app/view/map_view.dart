@@ -1,15 +1,12 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
 
 import '/app/provider/location_permission_provider.dart';
+import '/app/provider/map_modal_provider.dart';
 import '/app/view_model/map_view_model.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';
@@ -42,6 +39,15 @@ class MapView extends HookConsumerWidget {
       },
     );
 
+    ref.listen(
+      mapModalProvider,
+      (previous, next) async {
+        if (next) {
+          await showCardModal(ref, context);
+        }
+      },
+    );
+
     useOnAppLifecycleStateChange((previous, current) {
       Logger().d('did change to $current');
     });
@@ -66,32 +72,33 @@ class MapView extends HookConsumerWidget {
               height: 1,
             ),
           ),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(
-                Icons.menu,
-              ),
-              onPressed: () {
-                ref.read(mapViewModelProvider(key)).onTap();
-              },
-            ),
-          ],
         ),
-        body: GoogleMap(
-          onMapCreated: (controller) async {
-            ref
-                .read(mapViewModelProvider(key))
-                .setGoogleMapController(controller);
-            ref.read(mapViewModelProvider(key)).setupMyLocation();
-          },
-          initialCameraPosition: viewModel.currentCameraPosition,
-          myLocationEnabled: viewModel.myLocationEnabled,
-          myLocationButtonEnabled: false,
-          zoomControlsEnabled: false,
-          rotateGesturesEnabled: false,
-          tiltGesturesEnabled: false,
-          mapType: MapType.normal,
-          markers: viewModel.markers.toSet(),
+        body: Column(
+          children: [
+            Flexible(
+              child: GoogleMap(
+                onMapCreated: (controller) async {
+                  ref
+                      .read(mapViewModelProvider(key))
+                      .setGoogleMapController(controller);
+                  ref.read(mapViewModelProvider(key)).setupMyLocation();
+                },
+                initialCameraPosition: viewModel.currentCameraPosition,
+                myLocationEnabled: viewModel.myLocationEnabled,
+                myLocationButtonEnabled: false,
+                zoomControlsEnabled: false,
+                rotateGesturesEnabled: false,
+                tiltGesturesEnabled: false,
+                mapType: MapType.normal,
+                markers: viewModel.markers.toSet(),
+              ),
+            ),
+            if (viewModel.isShowModal)
+              const SizedBox(
+                height: 400,
+                width: double.infinity,
+              ),
+          ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
@@ -143,30 +150,28 @@ class MapView extends HookConsumerWidget {
     ref.read(mapViewModelProvider(key)).setupMyLocation();
   }
 
-  Future<img.Image?> decodeAsset(String path) async {
-    final data = await rootBundle.load(path);
-
-    final buffer = await ui.ImmutableBuffer.fromUint8List(
-      data.buffer.asUint8List(),
-    );
-
-    final id = await ui.ImageDescriptor.encoded(buffer);
-    final codec = await id.instantiateCodec(
-      targetHeight: id.height,
-      targetWidth: id.width,
-    );
-
-    final fi = await codec.getNextFrame();
-
-    final uiImage = fi.image;
-    final uiBytes = await uiImage.toByteData();
-
-    final image = img.Image.fromBytes(
-      width: id.width,
-      height: id.height,
-      bytes: uiBytes!.buffer,
-      numChannels: 4,
-    );
-    return image;
+  Future<void> showCardModal(WidgetRef ref, BuildContext context) async {
+    final result = await showModalBottomSheet(
+          isScrollControlled: true,
+          context: context,
+          builder: (_) {
+            return SizedBox(
+              height: 400,
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: 155.1,
+                    height: 216.6,
+                    child: Container(),
+                  ),
+                  const Text('data'),
+                  const Text('data2'),
+                ],
+              ),
+            );
+          },
+        ) ??
+        false;
+    ref.read(mapViewModelProvider(key)).onCloseMarkerModal(result);
   }
 }
