@@ -1,20 +1,24 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '/app/view_data/map_modal_view_data.dart';
+
 final mapModalProvider =
-    StateNotifierProvider.autoDispose<MapModalNotifier, bool>(
+    StateNotifierProvider.autoDispose<MapModalNotifier, MapModalViewData?>(
   (ref) {
     return MapModalNotifier();
   },
 );
 
-class MapModalNotifier extends StateNotifier<bool> {
-  MapModalNotifier() : super(false);
+class MapModalNotifier extends StateNotifier<MapModalViewData?> {
+  MapModalNotifier() : super(null);
 
-  void show() {
-    state = true;
+  void present({
+    required MapModalViewData viewData,
+  }) {
+    state = viewData;
   }
 
-  void hide() {
-    state = false;
+  void dismiss() {
+    state = null;
   }
 }

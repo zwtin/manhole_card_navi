@@ -11,6 +11,8 @@ import 'package:logger/logger.dart';
 import '/app/provider/alert_provider.dart';
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/map_modal_provider.dart';
+import '/app/view_data/map_marker_view_data.dart';
+import '/app/view_data/map_modal_view_data.dart';
 import '/domain/entity/result.dart';
 import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
 import '/use_case/dto/map_card_dto.dart';
@@ -46,7 +48,7 @@ class MapViewModel extends ChangeNotifier {
     zoom: 12.5,
   );
   bool myLocationEnabled = false;
-  final List<Marker> markers = [];
+  final List<MapMarkerViewData> markersViewData = [];
 
   bool isShowModal = false;
 
@@ -118,7 +120,7 @@ class MapViewModel extends ChangeNotifier {
       return;
     }
     final dtoList = (result as Success<List<MapCardDTO>>).value;
-    markers.clear();
+    markersViewData.clear();
     for (final dto in dtoList) {
       final cardImageOrNull = await img.decodeJpgFile(dto.cardImagePath);
       final pinImageOrNull = await _decodeAsset(dto.pinImagePath);
@@ -143,19 +145,12 @@ class MapViewModel extends ChangeNotifier {
         dstX: 8,
         dstY: 8,
       );
-      markers.add(
-        Marker(
-          markerId: MarkerId(dto.id),
-          icon: BitmapDescriptor.fromBytes(
-            img.encodePng(mergeImage).buffer.asUint8List(),
-          ),
-          position: LatLng(
-            dto.latitude,
-            dto.longitude,
-          ),
-          onTap: () {
-            onTapMarker(dto.id);
-          },
+      markersViewData.add(
+        MapMarkerViewData(
+          id: dto.id,
+          icon: img.encodePng(mergeImage).buffer.asUint8List(),
+          latitude: dto.latitude,
+          longitude: dto.longitude,
         ),
       );
     }
@@ -164,18 +159,21 @@ class MapViewModel extends ChangeNotifier {
 
   Future<void> onTapMarker(String markerId) async {
     isShowModal = true;
-    _ref.read(mapModalProvider.notifier).show();
-    final marker = markers.firstWhere(
+    final viewData = MapModalViewData(id: markerId);
+    _ref.read(mapModalProvider.notifier).present(
+          viewData: viewData,
+        );
+    final markerViewData = markersViewData.firstWhere(
       (element) {
-        return element.markerId.value == markerId;
+        return element.id == markerId;
       },
     );
     mapController.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
           target: LatLng(
-            marker.position.latitude,
-            marker.position.longitude,
+            markerViewData.latitude,
+            markerViewData.longitude,
           ),
           zoom: 12.5,
         ),
@@ -184,9 +182,9 @@ class MapViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> onCloseMarkerModal(bool isClosed) async {
+  Future<void> onCloseMarkerModal() async {
     isShowModal = false;
-    _ref.read(mapModalProvider.notifier).hide();
+    _ref.read(mapModalProvider.notifier).dismiss();
     notifyListeners();
   }
 

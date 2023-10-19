@@ -7,6 +7,7 @@ import 'package:logger/logger.dart';
 
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/map_modal_provider.dart';
+import '/app/view_data/map_modal_view_data.dart';
 import '/app/view_model/map_view_model.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';
@@ -42,8 +43,12 @@ class MapView extends HookConsumerWidget {
     ref.listen(
       mapModalProvider,
       (previous, next) async {
-        if (next) {
-          await showCardModal(ref, context);
+        if (previous == null && next != null) {
+          await showCardModal(
+            ref,
+            context,
+            next,
+          );
         }
       },
     );
@@ -90,7 +95,27 @@ class MapView extends HookConsumerWidget {
                 rotateGesturesEnabled: false,
                 tiltGesturesEnabled: false,
                 mapType: MapType.normal,
-                markers: viewModel.markers.toSet(),
+                markers: viewModel.markersViewData.map(
+                  (viewData) {
+                    return Marker(
+                      markerId: MarkerId(
+                        viewData.id,
+                      ),
+                      icon: BitmapDescriptor.fromBytes(
+                        viewData.icon,
+                      ),
+                      position: LatLng(
+                        viewData.latitude,
+                        viewData.longitude,
+                      ),
+                      onTap: () {
+                        ref
+                            .read(mapViewModelProvider(key))
+                            .onTapMarker(viewData.id);
+                      },
+                    );
+                  },
+                ).toSet(),
               ),
             ),
             if (viewModel.isShowModal)
@@ -150,8 +175,12 @@ class MapView extends HookConsumerWidget {
     ref.read(mapViewModelProvider(key)).setupMyLocation();
   }
 
-  Future<void> showCardModal(WidgetRef ref, BuildContext context) async {
-    final result = await showModalBottomSheet(
+  Future<void> showCardModal(
+    WidgetRef ref,
+    BuildContext context,
+    MapModalViewData viewData,
+  ) async {
+    final _ = await showModalBottomSheet(
           isScrollControlled: true,
           context: context,
           builder: (_) {
@@ -172,6 +201,6 @@ class MapView extends HookConsumerWidget {
           },
         ) ??
         false;
-    ref.read(mapViewModelProvider(key)).onCloseMarkerModal(result);
+    ref.read(mapViewModelProvider(key)).onCloseMarkerModal();
   }
 }
