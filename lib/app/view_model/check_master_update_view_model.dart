@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
-import '/app/view/bottom_tab_view.dart';
+import '/app/view/custom_introduction_view.dart';
 import '/domain/entity/result.dart';
 import '/use_case/dto/need_master_update_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
@@ -88,7 +88,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
       }
     }
     await _ref.read(routerProvider(_key).notifier).pushReplacement(
-          nextWidget: BottomTabView(
+          nextWidget: CustomIntroductionView(
             key: UniqueKey(),
           ),
         );
