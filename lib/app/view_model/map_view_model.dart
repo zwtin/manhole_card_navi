@@ -159,15 +159,19 @@ class MapViewModel extends ChangeNotifier {
 
   Future<void> onTapMarker(String markerId) async {
     isShowModal = true;
-    final viewData = MapModalViewData(id: markerId);
-    _ref.read(mapModalProvider.notifier).present(
-          viewData: viewData,
-        );
     final markerViewData = markersViewData.firstWhere(
       (element) {
         return element.id == markerId;
       },
     );
+    final viewData = MapModalViewData(
+      id: markerId,
+      latitude: markerViewData.latitude,
+      longitude: markerViewData.longitude,
+    );
+    _ref.read(mapModalProvider.notifier).present(
+          viewData: viewData,
+        );
     mapController.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(

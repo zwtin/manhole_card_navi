@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/map_modal_provider.dart';
@@ -183,7 +184,7 @@ class MapView extends HookConsumerWidget {
     final _ = await showModalBottomSheet(
           isScrollControlled: true,
           context: context,
-          builder: (_) {
+          builder: (context) {
             return SizedBox(
               height: 400,
               child: Column(
@@ -195,6 +196,27 @@ class MapView extends HookConsumerWidget {
                   ),
                   const Text('data'),
                   const Text('data2'),
+                  TextButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      final uri = Uri(
+                        scheme: 'https',
+                        host: 'www.google.com',
+                        path: '/maps/search/',
+                        queryParameters: {
+                          'api': '1',
+                          'query': '${viewData.latitude},${viewData.longitude}',
+                        },
+                      );
+                      if (await canLaunchUrl(uri)) {
+                        launchUrl(
+                          uri,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      }
+                    },
+                    child: const Text('Googleマップで開く'),
+                  ),
                 ],
               ),
             );

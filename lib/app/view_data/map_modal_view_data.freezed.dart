@@ -17,6 +17,8 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MapModalViewData {
   String get id => throw _privateConstructorUsedError;
+  double get latitude => throw _privateConstructorUsedError;
+  double get longitude => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MapModalViewDataCopyWith<MapModalViewData> get copyWith =>
@@ -29,7 +31,7 @@ abstract class $MapModalViewDataCopyWith<$Res> {
           MapModalViewData value, $Res Function(MapModalViewData) then) =
       _$MapModalViewDataCopyWithImpl<$Res, MapModalViewData>;
   @useResult
-  $Res call({String id});
+  $Res call({String id, double latitude, double longitude});
 }
 
 /// @nodoc
@@ -46,12 +48,22 @@ class _$MapModalViewDataCopyWithImpl<$Res, $Val extends MapModalViewData>
   @override
   $Res call({
     Object? id = null,
+    Object? latitude = null,
+    Object? longitude = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
+      latitude: null == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: null == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 }
@@ -64,7 +76,7 @@ abstract class _$$_MapModalViewDataCopyWith<$Res>
       __$$_MapModalViewDataCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id});
+  $Res call({String id, double latitude, double longitude});
 }
 
 /// @nodoc
@@ -79,12 +91,22 @@ class __$$_MapModalViewDataCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? latitude = null,
+    Object? longitude = null,
   }) {
     return _then(_$_MapModalViewData(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
+      latitude: null == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: null == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -92,14 +114,20 @@ class __$$_MapModalViewDataCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_MapModalViewData extends _MapModalViewData {
-  const _$_MapModalViewData({required this.id}) : super._();
+  const _$_MapModalViewData(
+      {required this.id, required this.latitude, required this.longitude})
+      : super._();
 
   @override
   final String id;
+  @override
+  final double latitude;
+  @override
+  final double longitude;
 
   @override
   String toString() {
-    return 'MapModalViewData(id: $id)';
+    return 'MapModalViewData(id: $id, latitude: $latitude, longitude: $longitude)';
   }
 
   @override
@@ -107,11 +135,15 @@ class _$_MapModalViewData extends _MapModalViewData {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_MapModalViewData &&
-            (identical(other.id, id) || other.id == id));
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.latitude, latitude) ||
+                other.latitude == latitude) &&
+            (identical(other.longitude, longitude) ||
+                other.longitude == longitude));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id);
+  int get hashCode => Object.hash(runtimeType, id, latitude, longitude);
 
   @JsonKey(ignore: true)
   @override
@@ -121,12 +153,18 @@ class _$_MapModalViewData extends _MapModalViewData {
 }
 
 abstract class _MapModalViewData extends MapModalViewData {
-  const factory _MapModalViewData({required final String id}) =
-      _$_MapModalViewData;
+  const factory _MapModalViewData(
+      {required final String id,
+      required final double latitude,
+      required final double longitude}) = _$_MapModalViewData;
   const _MapModalViewData._() : super._();
 
   @override
   String get id;
+  @override
+  double get latitude;
+  @override
+  double get longitude;
   @override
   @JsonKey(ignore: true)
   _$$_MapModalViewDataCopyWith<_$_MapModalViewData> get copyWith =>
