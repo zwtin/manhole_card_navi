@@ -83,19 +83,20 @@ class MapView extends HookConsumerWidget {
           children: [
             Flexible(
               child: GoogleMap(
+                initialCameraPosition: viewModel.currentCameraPosition,
                 onMapCreated: (controller) async {
                   ref
                       .read(mapViewModelProvider(key))
                       .setGoogleMapController(controller);
                   ref.read(mapViewModelProvider(key)).setupMyLocation();
                 },
-                initialCameraPosition: viewModel.currentCameraPosition,
+                mapToolbarEnabled: false,
+                mapType: MapType.normal,
+                rotateGesturesEnabled: false,
+                zoomControlsEnabled: false,
+                tiltGesturesEnabled: false,
                 myLocationEnabled: viewModel.myLocationEnabled,
                 myLocationButtonEnabled: false,
-                zoomControlsEnabled: false,
-                rotateGesturesEnabled: false,
-                tiltGesturesEnabled: false,
-                mapType: MapType.normal,
                 markers: viewModel.markersViewData.map(
                   (viewData) {
                     return Marker(
