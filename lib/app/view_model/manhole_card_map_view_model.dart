@@ -18,10 +18,10 @@ import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
 import '/use_case/dto/map_card_dto.dart';
 import '/use_case/query_service/distribution_cards_query_service.dart';
 
-final mapViewModelProvider =
-    ChangeNotifierProvider.family.autoDispose<MapViewModel, Key?>(
+final manholeCardMapViewModelProvider =
+    ChangeNotifierProvider.family.autoDispose<ManholeCardMapViewModel, Key?>(
   (ref, key) {
-    return MapViewModel(
+    return ManholeCardMapViewModel(
       key,
       ref,
       ref.watch(distributionCardsQueryServiceProvider),
@@ -29,8 +29,8 @@ final mapViewModelProvider =
   },
 );
 
-class MapViewModel extends ChangeNotifier {
-  MapViewModel(
+class ManholeCardMapViewModel extends ChangeNotifier {
+  ManholeCardMapViewModel(
     this._key,
     this._ref,
     this._distributionCardsQueryService,
@@ -53,7 +53,7 @@ class MapViewModel extends ChangeNotifier {
   bool isShowModal = false;
 
   Future<void> onLoad() async {
-    _logger.d('MapViewModel');
+    _logger.d('ManholeCardMapViewModel');
     _ref.read(locationPermissionProvider.notifier).request();
     fetchDistributionMarker();
   }
@@ -222,6 +222,6 @@ class MapViewModel extends ChangeNotifier {
   @override
   void dispose() {
     super.dispose();
-    _logger.d('MapViewModel dispose');
+    _logger.d('ManholeCardMapViewModel dispose');
   }
 }

@@ -20,7 +20,7 @@ class CheckMasterUpdateView extends HookConsumerWidget {
       () {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) async {
-            await viewModel.onLoad();
+            await ref.read(checkMasterUpdateViewModelProvider(key)).onLoad();
           },
         );
         return null;

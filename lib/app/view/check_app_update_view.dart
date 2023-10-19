@@ -20,7 +20,7 @@ class CheckAppUpdateView extends HookConsumerWidget {
       () {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) async {
-            await viewModel.onLoad();
+            await ref.read(checkAppUpdateViewModelProvider(key)).onLoad();
           },
         );
         return null;

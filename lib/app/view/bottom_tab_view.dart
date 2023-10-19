@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '/app/view/map_view.dart';
+import '/app/view/manhole_card_list_view.dart';
+import '/app/view/manhole_card_map_view.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/widget/alert_widget.dart';
 import '/app/widget/router_widget.dart';
@@ -14,11 +15,13 @@ class BottomTabView extends HookConsumerWidget {
     super.key,
   });
 
-  final tab0 = MapView(
+  final tab0 = ManholeCardMapView(
     key: UniqueKey(),
   );
 
-  final tab1 = Container();
+  final tab1 = ManholeCardListView(
+    key: UniqueKey(),
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +33,7 @@ class BottomTabView extends HookConsumerWidget {
       () {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) async {
-            await viewModel.onLoad();
+            await ref.read(bottomTabViewModelProvider(key)).onLoad();
           },
         );
         return null;

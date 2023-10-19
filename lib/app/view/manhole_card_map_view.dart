@@ -9,24 +9,24 @@ import 'package:url_launcher/url_launcher.dart';
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/map_modal_provider.dart';
 import '/app/view_data/map_modal_view_data.dart';
-import '/app/view_model/map_view_model.dart';
+import '/app/view_model/manhole_card_map_view_model.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';
 
-class MapView extends HookConsumerWidget {
-  const MapView({
+class ManholeCardMapView extends HookConsumerWidget {
+  const ManholeCardMapView({
     super.key,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = ref.watch(mapViewModelProvider(key));
+    final viewModel = ref.watch(manholeCardMapViewModelProvider(key));
 
     useEffect(
       () {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) async {
-            await viewModel.onLoad();
+            await ref.read(manholeCardMapViewModelProvider(key)).onLoad();
           },
         );
         return null;
@@ -86,9 +86,11 @@ class MapView extends HookConsumerWidget {
                 initialCameraPosition: viewModel.currentCameraPosition,
                 onMapCreated: (controller) async {
                   ref
-                      .read(mapViewModelProvider(key))
+                      .read(manholeCardMapViewModelProvider(key))
                       .setGoogleMapController(controller);
-                  ref.read(mapViewModelProvider(key)).setupMyLocation();
+                  ref
+                      .read(manholeCardMapViewModelProvider(key))
+                      .setupMyLocation();
                 },
                 mapToolbarEnabled: false,
                 mapType: MapType.normal,
@@ -112,7 +114,7 @@ class MapView extends HookConsumerWidget {
                       ),
                       onTap: () {
                         ref
-                            .read(mapViewModelProvider(key))
+                            .read(manholeCardMapViewModelProvider(key))
                             .onTapMarker(viewData.id);
                       },
                     );
@@ -129,7 +131,9 @@ class MapView extends HookConsumerWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            ref.read(mapViewModelProvider(key)).onTapCurrentLocationButton();
+            ref
+                .read(manholeCardMapViewModelProvider(key))
+                .onTapCurrentLocationButton();
           },
           backgroundColor: ColorName.main,
           foregroundColor: ColorName.background,
@@ -174,7 +178,7 @@ class MapView extends HookConsumerWidget {
       );
     }
 
-    ref.read(mapViewModelProvider(key)).setupMyLocation();
+    ref.read(manholeCardMapViewModelProvider(key)).setupMyLocation();
   }
 
   Future<void> showCardModal(
@@ -224,6 +228,6 @@ class MapView extends HookConsumerWidget {
           },
         ) ??
         false;
-    ref.read(mapViewModelProvider(key)).onCloseMarkerModal();
+    ref.read(manholeCardMapViewModelProvider(key)).onCloseMarkerModal();
   }
 }
