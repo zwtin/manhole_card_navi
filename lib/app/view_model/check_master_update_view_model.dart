@@ -4,8 +4,10 @@ import 'package:logger/logger.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
+import '/app/view/bottom_tab_view.dart';
 import '/app/view/custom_introduction_view.dart';
 import '/domain/entity/result.dart';
+import '/use_case/dto/first_open_dto.dart';
 import '/use_case/dto/need_master_update_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/check_master_update_use_case.dart';
@@ -43,6 +45,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
     _logger.d('CheckMasterUpdateViewModel');
     await _sendEvent();
     await _checkNeedUpdate();
+    await _transition();
   }
 
   Future<void> _checkNeedUpdate() async {
@@ -87,11 +90,6 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
         return;
       }
     }
-    await _ref.read(routerProvider(_key).notifier).pushReplacement(
-          nextWidget: CustomIntroductionView(
-            key: UniqueKey(),
-          ),
-        );
   }
 
   Future<void> _sendEvent() async {
@@ -99,6 +97,38 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
       name: 'screen_pv',
       parameters: {'screen_name': 'check_master_update_view'},
     );
+  }
+
+  Future<void> _transition() async {
+    final isFirstOpenResult = await _checkMasterUpdateUseCase.getIsFirstOpen();
+    if (isFirstOpenResult is Failure) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: '起動フラグの確認に失敗しました',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {
+              await _transition();
+            },
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+      return;
+    }
+    final dto = (isFirstOpenResult as Success<FirstOpenDTO>).value;
+    if (dto.isFirst) {
+      await _checkMasterUpdateUseCase.setIsNotFirstOpen();
+      await _ref.read(routerProvider(_key).notifier).pushReplacement(
+            nextWidget: CustomIntroductionView(
+              key: UniqueKey(),
+            ),
+          );
+    } else {
+      await _ref.read(routerProvider(_key).notifier).pushReplacement(
+            nextWidget: BottomTabView(
+              key: UniqueKey(),
+            ),
+          );
+    }
   }
 
   @override
