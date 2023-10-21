@@ -11,6 +11,7 @@ import '/use_case/dto/first_open_dto.dart';
 import '/use_case/dto/need_master_update_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/check_master_update_use_case.dart';
+import '/use_case/use_case/is_first_open_use_case.dart';
 
 final checkMasterUpdateViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<CheckMasterUpdateViewModel, Key?>(
@@ -20,6 +21,7 @@ final checkMasterUpdateViewModelProvider =
       ref,
       ref.watch(analyticsUseCaseProvider),
       ref.watch(checkMasterUpdateUseCaseProvider),
+      ref.watch(isFirstOpenUseCaseProvider),
     );
   },
 );
@@ -30,6 +32,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
     this._ref,
     this._analyticsUseCase,
     this._checkMasterUpdateUseCase,
+    this._isFirstOpenUseCase,
   );
 
   final Key? _key;
@@ -38,6 +41,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
 
   final AnalyticsUseCase _analyticsUseCase;
   final CheckMasterUpdateUseCase _checkMasterUpdateUseCase;
+  final IsFirstOpenUseCase _isFirstOpenUseCase;
 
   bool isLoading = false;
 
@@ -100,7 +104,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
   }
 
   Future<void> _checkFirstOpen() async {
-    final isFirstOpenResult = await _checkMasterUpdateUseCase.getIsFirstOpen();
+    final isFirstOpenResult = await _isFirstOpenUseCase.getIsFirstOpen();
     if (isFirstOpenResult is Failure) {
       _ref.read(alertProvider.notifier).show(
             title: 'エラー',
@@ -113,7 +117,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
       return;
     }
     final dto = (isFirstOpenResult as Success<FirstOpenDTO>).value;
-    await _checkMasterUpdateUseCase.setIsFirstOpen();
+    await _isFirstOpenUseCase.setIsFirstOpen();
     if (dto.isFirst) {
       await _transitionToCustomIntroductionView();
     } else {

@@ -4,7 +4,6 @@ import 'package:logger/logger.dart';
 import '/domain/entity/current_master_version.dart';
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/inquired_master_version.dart';
-import '/domain/entity/is_first_open.dart';
 import '/domain/entity/manhole_card.dart';
 import '/domain/entity/manhole_card_contact.dart';
 import '/domain/entity/manhole_card_contacts.dart';
@@ -18,7 +17,6 @@ import '/domain/entity/manhole_cards.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/card_repository.dart';
 import '/domain/repository/contact_repository.dart';
-import '/domain/repository/first_open_repository.dart';
 import '/domain/repository/image_repository.dart';
 import '/domain/repository/master_version_repository.dart';
 import '/domain/repository/prefecture_repository.dart';
@@ -26,13 +24,11 @@ import '/domain/repository/remote_config_repository.dart';
 import '/domain/repository/volume_repository.dart';
 import '/infra/repository_impl/card_repository_impl.dart';
 import '/infra/repository_impl/contact_repository_impl.dart';
-import '/infra/repository_impl/first_open_repository_impl.dart';
 import '/infra/repository_impl/image_repository_impl.dart';
 import '/infra/repository_impl/master_version_repository_impl.dart';
 import '/infra/repository_impl/prefecture_repository_impl.dart';
 import '/infra/repository_impl/remote_config_repository_impl.dart';
 import '/infra/repository_impl/volume_repository_impl.dart';
-import '/use_case/dto/first_open_dto.dart';
 import '/use_case/dto/need_master_update_dto.dart';
 
 final checkMasterUpdateUseCaseProvider =
@@ -41,7 +37,6 @@ final checkMasterUpdateUseCaseProvider =
     final checkMasterUpdateUseCase = CheckMasterUpdateUseCase(
       ref.watch(cardRepositoryProvider),
       ref.watch(contactRepositoryProvider),
-      ref.watch(firstOpenRepositoryProvider),
       ref.watch(imageRepositoryProvider),
       ref.watch(masterVersionRepositoryProvider),
       ref.watch(prefectureRepositoryProvider),
@@ -57,7 +52,6 @@ class CheckMasterUpdateUseCase {
   CheckMasterUpdateUseCase(
     this._cardRepository,
     this._contactRepository,
-    this._firstOpenRepository,
     this._imageRepository,
     this._masterVersionRepository,
     this._prefectureRepository,
@@ -67,7 +61,6 @@ class CheckMasterUpdateUseCase {
 
   final CardRepository _cardRepository;
   final ContactRepository _contactRepository;
-  final FirstOpenRepository _firstOpenRepository;
   final ImageRepository _imageRepository;
   final MasterVersionRepository _masterVersionRepository;
   final PrefectureRepository _prefectureRepository;
@@ -159,29 +152,6 @@ class CheckMasterUpdateUseCase {
     }
 
     return const Result.success(null);
-  }
-
-  Future<Result<FirstOpenDTO>> getIsFirstOpen() async {
-    final result = await _firstOpenRepository.getIsFirstOpen();
-    if (result is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '起動済みフラグの確認に失敗しました',
-        ),
-      );
-    }
-    final isFirstOpen = (result as Success<IsFirstOpen>).value;
-    return Result.success(
-      FirstOpenDTO(
-        isFirst: isFirstOpen.value,
-      ),
-    );
-  }
-
-  Future<Result<void>> setIsFirstOpen() async {
-    const isNotFirstOpen = IsFirstOpen(value: false);
-    return _firstOpenRepository.setIsFirstOpen(isFirstOpen: isNotFirstOpen);
   }
 
   Future<Result<void>> _updateCardMaster({
