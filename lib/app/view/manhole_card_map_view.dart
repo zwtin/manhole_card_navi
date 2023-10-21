@@ -3,7 +3,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '/app/provider/location_permission_provider.dart';
@@ -53,10 +52,6 @@ class ManholeCardMapView extends HookConsumerWidget {
         }
       },
     );
-
-    useOnAppLifecycleStateChange((previous, current) {
-      Logger().d('did change to $current');
-    });
 
     return RouterWidget(
       key: key,

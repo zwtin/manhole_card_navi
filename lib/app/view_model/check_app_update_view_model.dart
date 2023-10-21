@@ -5,6 +5,8 @@ import 'package:logger/logger.dart';
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/view/check_master_update_view.dart';
+import '/domain/entity/result.dart';
+import '/use_case/dto/need_app_update_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/check_app_update_use_case.dart';
 
@@ -39,7 +41,7 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _logger.d('CheckAppUpdateViewModel');
-    await _sendEvent();
+    await _sendPVEvent();
     await _checkNeedUpdate();
   }
 
@@ -49,47 +51,48 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
     final result = await _checkAppUpdateUseCase.getNeedUpdate();
     isLoading = false;
     notifyListeners();
-    result.when(
-      success: (dto) async {
-        if (dto.need) {
-          _ref.read(alertProvider.notifier).show(
-                title: 'エラー',
-                message: '最新バージョンのアプリをお使いください',
-                okButtonTitle: 'OK',
-                okButtonAction: () async {
-                  await _checkNeedUpdate();
-                },
-                cancelButtonTitle: null,
-                cancelButtonAction: null,
-              );
-        } else {
-          await _ref.read(routerProvider(_key).notifier).pushReplacement(
-                nextWidget: CheckMasterUpdateView(
-                  key: UniqueKey(),
-                ),
-              );
-        }
-      },
-      failure: (exception) async {
-        _ref.read(alertProvider.notifier).show(
-              title: 'エラー',
-              message: 'アプリバージョンの取得に失敗しました',
-              okButtonTitle: 'OK',
-              okButtonAction: () async {
-                await _checkNeedUpdate();
-              },
-              cancelButtonTitle: null,
-              cancelButtonAction: null,
-            );
-      },
-    );
+    if (result is Failure) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: 'アプリバージョンの取得に失敗しました',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {
+              await _checkNeedUpdate();
+            },
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+    }
+    final dto = (result as Success<NeedAppUpdateDTO>).value;
+    if (dto.need) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: '最新バージョンのアプリをお使いください',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {
+              await _checkNeedUpdate();
+            },
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+    } else {
+      await _transitionToCheckMasterUpdateView();
+    }
   }
 
-  Future<void> _sendEvent() async {
+  Future<void> _sendPVEvent() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
       parameters: {'screen_name': 'check_app_update_view'},
     );
+  }
+
+  Future<void> _transitionToCheckMasterUpdateView() async {
+    await _ref.read(routerProvider(_key).notifier).pushReplacement(
+          nextWidget: CheckMasterUpdateView(
+            key: UniqueKey(),
+          ),
+        );
   }
 
   @override

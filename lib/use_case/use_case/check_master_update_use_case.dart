@@ -179,7 +179,7 @@ class CheckMasterUpdateUseCase {
     );
   }
 
-  Future<Result<void>> setIsNotFirstOpen() async {
+  Future<Result<void>> setIsFirstOpen() async {
     const isNotFirstOpen = IsFirstOpen(value: false);
     return _firstOpenRepository.setIsFirstOpen(isFirstOpen: isNotFirstOpen);
   }

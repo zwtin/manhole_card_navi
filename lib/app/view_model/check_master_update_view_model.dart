@@ -43,9 +43,9 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _logger.d('CheckMasterUpdateViewModel');
-    await _sendEvent();
+    await _sendPVEvent();
     await _checkNeedUpdate();
-    await _transition();
+    await _checkFirstOpen();
   }
 
   Future<void> _checkNeedUpdate() async {
@@ -92,43 +92,49 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _sendEvent() async {
+  Future<void> _sendPVEvent() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
       parameters: {'screen_name': 'check_master_update_view'},
     );
   }
 
-  Future<void> _transition() async {
+  Future<void> _checkFirstOpen() async {
     final isFirstOpenResult = await _checkMasterUpdateUseCase.getIsFirstOpen();
     if (isFirstOpenResult is Failure) {
       _ref.read(alertProvider.notifier).show(
             title: 'エラー',
             message: '起動フラグの確認に失敗しました',
             okButtonTitle: 'OK',
-            okButtonAction: () async {
-              await _transition();
-            },
+            okButtonAction: () async {},
             cancelButtonTitle: null,
             cancelButtonAction: null,
           );
       return;
     }
     final dto = (isFirstOpenResult as Success<FirstOpenDTO>).value;
+    await _checkMasterUpdateUseCase.setIsFirstOpen();
     if (dto.isFirst) {
-      await _checkMasterUpdateUseCase.setIsNotFirstOpen();
-      await _ref.read(routerProvider(_key).notifier).pushReplacement(
-            nextWidget: CustomIntroductionView(
-              key: UniqueKey(),
-            ),
-          );
+      await _transitionToCustomIntroductionView();
     } else {
-      await _ref.read(routerProvider(_key).notifier).pushReplacement(
-            nextWidget: BottomTabView(
-              key: UniqueKey(),
-            ),
-          );
+      await _transitionToBottomTabView();
     }
+  }
+
+  Future<void> _transitionToCustomIntroductionView() async {
+    await _ref.read(routerProvider(_key).notifier).pushReplacement(
+          nextWidget: CustomIntroductionView(
+            key: UniqueKey(),
+          ),
+        );
+  }
+
+  Future<void> _transitionToBottomTabView() async {
+    await _ref.read(routerProvider(_key).notifier).pushReplacement(
+          nextWidget: BottomTabView(
+            key: UniqueKey(),
+          ),
+        );
   }
 
   @override

@@ -45,19 +45,23 @@ class FirstOpenRepositoryImpl implements FirstOpenRepository {
   Future<Result<void>> setIsFirstOpen({
     required IsFirstOpen isFirstOpen,
   }) async {
-    final result = await _instance.setBool(
-      'is_first_open',
-      isFirstOpen.value,
-    );
-    if (result) {
-      return const Result.success(null);
-    } else {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '起動済みフラグの保存に失敗しました',
-        ),
+    try {
+      final result = await _instance.setBool(
+        'is_first_open',
+        isFirstOpen.value,
       );
+      if (result) {
+        return const Result.success(null);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '起動済みフラグの保存に失敗しました',
+          ),
+        );
+      }
+    } on Exception catch (exception) {
+      return Result.failure(exception);
     }
   }
 
