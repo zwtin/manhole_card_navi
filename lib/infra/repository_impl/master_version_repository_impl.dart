@@ -1,9 +1,11 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import '/domain/entity/current_master_version.dart';
 import '/domain/entity/custom_exception.dart';
+import '/domain/entity/inquired_master_version.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/master_version_repository.dart';
 import '/temporary_provider.dart';
@@ -25,7 +27,19 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
   );
 
   final _logger = Logger();
+  final _remoteConfig = FirebaseRemoteConfig.instance;
   final StreamingSharedPreferences _instance;
+
+  @override
+  Future<Result<InquiredMasterVersion>> getInquiredMasterVersion() async {
+    final inquiredMasterVersion =
+        _remoteConfig.getString('inquired_master_version');
+    return Result.success(
+      InquiredMasterVersion(
+        version: inquiredMasterVersion,
+      ),
+    );
+  }
 
   @override
   Future<Result<CurrentMasterVersion>> getCurrentMasterVersion() async {

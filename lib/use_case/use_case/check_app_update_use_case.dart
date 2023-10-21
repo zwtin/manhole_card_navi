@@ -6,9 +6,7 @@ import '/domain/entity/custom_exception.dart';
 import '/domain/entity/inquired_app_version.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/app_version_repository.dart';
-import '/domain/repository/remote_config_repository.dart';
 import '/infra/repository_impl/app_version_repository_impl.dart';
-import '/infra/repository_impl/remote_config_repository_impl.dart';
 import '/use_case/dto/need_app_update_dto.dart';
 
 final checkAppUpdateUseCaseProvider =
@@ -16,7 +14,6 @@ final checkAppUpdateUseCaseProvider =
   (ref) {
     final checkAppUpdateUseCase = CheckAppUpdateUseCase(
       ref.watch(appVersionRepositoryProvider),
-      ref.watch(remoteConfigRepositoryProvider),
     );
     ref.onDispose(checkAppUpdateUseCase.dispose);
     return checkAppUpdateUseCase;
@@ -26,18 +23,16 @@ final checkAppUpdateUseCaseProvider =
 class CheckAppUpdateUseCase {
   CheckAppUpdateUseCase(
     this._appversionRepository,
-    this._remoteConfigRepository,
   );
 
   final AppVersionRepository _appversionRepository;
-  final RemoteConfigRepository _remoteConfigRepository;
 
   final _logger = Logger();
 
   Future<Result<NeedAppUpdateDTO>> getNeedUpdate() async {
     final result = await Future.wait([
       _appversionRepository.getCurrentAppVersion(),
-      _remoteConfigRepository.getInquiredAppVersion(),
+      _appversionRepository.getInquiredAppVersion(),
     ]);
 
     if (result.whereType<Failure>().isNotEmpty) {

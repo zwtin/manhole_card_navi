@@ -20,14 +20,12 @@ import '/domain/repository/contact_repository.dart';
 import '/domain/repository/image_repository.dart';
 import '/domain/repository/master_version_repository.dart';
 import '/domain/repository/prefecture_repository.dart';
-import '/domain/repository/remote_config_repository.dart';
 import '/domain/repository/volume_repository.dart';
 import '/infra/repository_impl/card_repository_impl.dart';
 import '/infra/repository_impl/contact_repository_impl.dart';
 import '/infra/repository_impl/image_repository_impl.dart';
 import '/infra/repository_impl/master_version_repository_impl.dart';
 import '/infra/repository_impl/prefecture_repository_impl.dart';
-import '/infra/repository_impl/remote_config_repository_impl.dart';
 import '/infra/repository_impl/volume_repository_impl.dart';
 import '/use_case/dto/need_master_update_dto.dart';
 
@@ -40,7 +38,6 @@ final checkMasterUpdateUseCaseProvider =
       ref.watch(imageRepositoryProvider),
       ref.watch(masterVersionRepositoryProvider),
       ref.watch(prefectureRepositoryProvider),
-      ref.watch(remoteConfigRepositoryProvider),
       ref.watch(volumeRepositoryProvider),
     );
     ref.onDispose(checkMasterUpdateUseCase.dispose);
@@ -55,7 +52,6 @@ class CheckMasterUpdateUseCase {
     this._imageRepository,
     this._masterVersionRepository,
     this._prefectureRepository,
-    this._remoteConfigRepository,
     this._volumeRepository,
   );
 
@@ -64,7 +60,6 @@ class CheckMasterUpdateUseCase {
   final ImageRepository _imageRepository;
   final MasterVersionRepository _masterVersionRepository;
   final PrefectureRepository _prefectureRepository;
-  final RemoteConfigRepository _remoteConfigRepository;
   final VolumeRepository _volumeRepository;
 
   final _logger = Logger();
@@ -72,7 +67,7 @@ class CheckMasterUpdateUseCase {
   Future<Result<NeedMasterUpdateDTO>> getNeedMasterUpdate() async {
     final result = await Future.wait([
       _masterVersionRepository.getCurrentMasterVersion(),
-      _remoteConfigRepository.getInquiredMasterVersion(),
+      _masterVersionRepository.getInquiredMasterVersion(),
     ]);
 
     if (result.whereType<Failure>().isNotEmpty) {
@@ -98,7 +93,7 @@ class CheckMasterUpdateUseCase {
 
   Future<Result<void>> updateMaster() async {
     final getInquiredMasterVersionResult =
-        await _remoteConfigRepository.getInquiredMasterVersion();
+        await _masterVersionRepository.getInquiredMasterVersion();
     if (getInquiredMasterVersionResult is Failure) {
       return const Result.failure(
         CustomException(
