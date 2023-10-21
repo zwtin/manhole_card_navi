@@ -7,7 +7,7 @@ import '/app/provider/router_provider.dart';
 import '/app/view/bottom_tab_view.dart';
 import '/app/view/custom_introduction_view.dart';
 import '/domain/entity/result.dart';
-import '/use_case/dto/first_open_dto.dart';
+import '/use_case/dto/is_first_open_dto.dart';
 import '/use_case/dto/need_master_update_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/check_master_update_use_case.dart';
@@ -104,7 +104,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
   }
 
   Future<void> _checkFirstOpen() async {
-    final isFirstOpenResult = await _isFirstOpenUseCase.getIsFirstOpen();
+    final isFirstOpenResult = await _isFirstOpenUseCase.get();
     if (isFirstOpenResult is Failure) {
       _ref.read(alertProvider.notifier).show(
             title: 'エラー',
@@ -116,9 +116,8 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
           );
       return;
     }
-    final dto = (isFirstOpenResult as Success<FirstOpenDTO>).value;
-    await _isFirstOpenUseCase.setIsFirstOpen();
-    if (dto.isFirst) {
+    final dto = (isFirstOpenResult as Success<IsFirstOpenDTO>).value;
+    if (dto.value) {
       await _transitionToCustomIntroductionView();
     } else {
       await _transitionToBottomTabView();

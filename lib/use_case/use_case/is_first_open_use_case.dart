@@ -1,17 +1,17 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/domain/entity/is_first_open.dart';
-import 'package:manhole_card_navi/domain/repository/first_open_repository.dart';
-import 'package:manhole_card_navi/infra/repository_impl/first_open_repository_impl.dart';
-import 'package:manhole_card_navi/use_case/dto/first_open_dto.dart';
 
 import '/domain/entity/custom_exception.dart';
+import '/domain/entity/is_first_open.dart';
 import '/domain/entity/result.dart';
+import '/domain/repository/is_first_open_repository.dart';
+import '/infra/repository_impl/is_first_open_repository_impl.dart';
+import '/use_case/dto/is_first_open_dto.dart';
 
 final isFirstOpenUseCaseProvider = Provider.autoDispose<IsFirstOpenUseCase>(
   (ref) {
     final isFirstOpenUseCase = IsFirstOpenUseCase(
-      ref.watch(firstOpenRepositoryProvider),
+      ref.watch(isFirstOpenRepositoryProvider),
     );
     ref.onDispose(isFirstOpenUseCase.dispose);
     return isFirstOpenUseCase;
@@ -20,15 +20,15 @@ final isFirstOpenUseCaseProvider = Provider.autoDispose<IsFirstOpenUseCase>(
 
 class IsFirstOpenUseCase {
   IsFirstOpenUseCase(
-    this._firstOpenRepository,
+    this._isFirstOpenRepository,
   );
 
-  final FirstOpenRepository _firstOpenRepository;
+  final IsFirstOpenRepository _isFirstOpenRepository;
 
   final _logger = Logger();
 
-  Future<Result<FirstOpenDTO>> getIsFirstOpen() async {
-    final result = await _firstOpenRepository.getIsFirstOpen();
+  Future<Result<IsFirstOpenDTO>> get() async {
+    final result = await _isFirstOpenRepository.get();
     if (result is Failure) {
       return const Result.failure(
         CustomException(
@@ -38,16 +38,15 @@ class IsFirstOpenUseCase {
       );
     }
     final isFirstOpen = (result as Success<IsFirstOpen>).value;
+    if (isFirstOpen.value) {
+      final isNotFirstOpen = isFirstOpen.copyWith(value: false);
+      await _isFirstOpenRepository.set(isFirstOpen: isNotFirstOpen);
+    }
     return Result.success(
-      FirstOpenDTO(
-        isFirst: isFirstOpen.value,
+      IsFirstOpenDTO(
+        value: isFirstOpen.value,
       ),
     );
-  }
-
-  Future<Result<void>> setIsFirstOpen() async {
-    const isNotFirstOpen = IsFirstOpen(value: false);
-    return _firstOpenRepository.setIsFirstOpen(isFirstOpen: isNotFirstOpen);
   }
 
   void dispose() {

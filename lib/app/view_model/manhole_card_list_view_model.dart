@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/app/provider/router_provider.dart';
-import 'package:manhole_card_navi/app/view/setting_view.dart';
+
+import '/app/provider/router_provider.dart';
+import '/app/view/setting_view.dart';
 
 final manholeCardListViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<ManholeCardListViewModel, Key?>(

@@ -5,21 +5,22 @@ import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/is_first_open.dart';
 import '/domain/entity/result.dart';
-import '/domain/repository/first_open_repository.dart';
+import '/domain/repository/is_first_open_repository.dart';
 import '/temporary_provider.dart';
 
-final firstOpenRepositoryProvider = Provider.autoDispose<FirstOpenRepository>(
+final isFirstOpenRepositoryProvider =
+    Provider.autoDispose<IsFirstOpenRepository>(
   (ref) {
-    final firstOpenRepository = FirstOpenRepositoryImpl(
+    final isFirstOpenRepository = IsFirstOpenRepositoryImpl(
       ref.watch(sharedPreferencesProvider),
     );
-    ref.onDispose(firstOpenRepository.dispose);
-    return firstOpenRepository;
+    ref.onDispose(isFirstOpenRepository.dispose);
+    return isFirstOpenRepository;
   },
 );
 
-class FirstOpenRepositoryImpl implements FirstOpenRepository {
-  FirstOpenRepositoryImpl(
+class IsFirstOpenRepositoryImpl implements IsFirstOpenRepository {
+  IsFirstOpenRepositoryImpl(
     this._instance,
   );
 
@@ -27,7 +28,7 @@ class FirstOpenRepositoryImpl implements FirstOpenRepository {
   final StreamingSharedPreferences _instance;
 
   @override
-  Future<Result<IsFirstOpen>> getIsFirstOpen() async {
+  Future<Result<IsFirstOpen>> get() async {
     final isFirstOpen = _instance
         .getBool(
           'is_first_open',
@@ -42,7 +43,7 @@ class FirstOpenRepositoryImpl implements FirstOpenRepository {
   }
 
   @override
-  Future<Result<void>> setIsFirstOpen({
+  Future<Result<void>> set({
     required IsFirstOpen isFirstOpen,
   }) async {
     try {
@@ -66,6 +67,6 @@ class FirstOpenRepositoryImpl implements FirstOpenRepository {
   }
 
   void dispose() {
-    _logger.d('FirstOpenRepositoryImpl dispose');
+    _logger.d('IsFirstOpenRepositoryImpl dispose');
   }
 }
