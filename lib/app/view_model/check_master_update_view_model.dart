@@ -72,9 +72,9 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
           );
       return;
     }
-    final dto =
+    final needMasterUpdateDTO =
         (getNeedMasterUpdateResult as Success<NeedMasterUpdateDTO>).value;
-    if (dto.need) {
+    if (needMasterUpdateDTO.value) {
       isLoading = true;
       notifyListeners();
       final updateMasterResult = await _checkMasterUpdateUseCase.updateMaster();

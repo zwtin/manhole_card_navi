@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$InquiredAppVersion {
-  String get version => throw _privateConstructorUsedError;
+  String get value => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $InquiredAppVersionCopyWith<InquiredAppVersion> get copyWith =>
@@ -29,7 +29,7 @@ abstract class $InquiredAppVersionCopyWith<$Res> {
           InquiredAppVersion value, $Res Function(InquiredAppVersion) then) =
       _$InquiredAppVersionCopyWithImpl<$Res, InquiredAppVersion>;
   @useResult
-  $Res call({String version});
+  $Res call({String value});
 }
 
 /// @nodoc
@@ -45,12 +45,12 @@ class _$InquiredAppVersionCopyWithImpl<$Res, $Val extends InquiredAppVersion>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? version = null,
+    Object? value = null,
   }) {
     return _then(_value.copyWith(
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -64,7 +64,7 @@ abstract class _$$_InquiredAppVersionCopyWith<$Res>
       __$$_InquiredAppVersionCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String version});
+  $Res call({String value});
 }
 
 /// @nodoc
@@ -78,12 +78,12 @@ class __$$_InquiredAppVersionCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? version = null,
+    Object? value = null,
   }) {
     return _then(_$_InquiredAppVersion(
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -92,14 +92,14 @@ class __$$_InquiredAppVersionCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_InquiredAppVersion extends _InquiredAppVersion {
-  const _$_InquiredAppVersion({required this.version}) : super._();
+  const _$_InquiredAppVersion({required this.value}) : super._();
 
   @override
-  final String version;
+  final String value;
 
   @override
   String toString() {
-    return 'InquiredAppVersion(version: $version)';
+    return 'InquiredAppVersion(value: $value)';
   }
 
   @override
@@ -107,11 +107,11 @@ class _$_InquiredAppVersion extends _InquiredAppVersion {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_InquiredAppVersion &&
-            (identical(other.version, version) || other.version == version));
+            (identical(other.value, value) || other.value == value));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, version);
+  int get hashCode => Object.hash(runtimeType, value);
 
   @JsonKey(ignore: true)
   @override
@@ -122,12 +122,12 @@ class _$_InquiredAppVersion extends _InquiredAppVersion {
 }
 
 abstract class _InquiredAppVersion extends InquiredAppVersion {
-  const factory _InquiredAppVersion({required final String version}) =
+  const factory _InquiredAppVersion({required final String value}) =
       _$_InquiredAppVersion;
   const _InquiredAppVersion._() : super._();
 
   @override
-  String get version;
+  String get value;
   @override
   @JsonKey(ignore: true)
   _$$_InquiredAppVersionCopyWith<_$_InquiredAppVersion> get copyWith =>

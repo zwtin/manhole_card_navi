@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$CurrentMasterVersion {
-  String get version => throw _privateConstructorUsedError;
+  String get value => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $CurrentMasterVersionCopyWith<CurrentMasterVersion> get copyWith =>
@@ -29,7 +29,7 @@ abstract class $CurrentMasterVersionCopyWith<$Res> {
           $Res Function(CurrentMasterVersion) then) =
       _$CurrentMasterVersionCopyWithImpl<$Res, CurrentMasterVersion>;
   @useResult
-  $Res call({String version});
+  $Res call({String value});
 }
 
 /// @nodoc
@@ -46,12 +46,12 @@ class _$CurrentMasterVersionCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? version = null,
+    Object? value = null,
   }) {
     return _then(_value.copyWith(
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -65,7 +65,7 @@ abstract class _$$_CurrentMasterVersionCopyWith<$Res>
       __$$_CurrentMasterVersionCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String version});
+  $Res call({String value});
 }
 
 /// @nodoc
@@ -79,12 +79,12 @@ class __$$_CurrentMasterVersionCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? version = null,
+    Object? value = null,
   }) {
     return _then(_$_CurrentMasterVersion(
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -93,14 +93,14 @@ class __$$_CurrentMasterVersionCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_CurrentMasterVersion extends _CurrentMasterVersion {
-  const _$_CurrentMasterVersion({required this.version}) : super._();
+  const _$_CurrentMasterVersion({required this.value}) : super._();
 
   @override
-  final String version;
+  final String value;
 
   @override
   String toString() {
-    return 'CurrentMasterVersion(version: $version)';
+    return 'CurrentMasterVersion(value: $value)';
   }
 
   @override
@@ -108,11 +108,11 @@ class _$_CurrentMasterVersion extends _CurrentMasterVersion {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_CurrentMasterVersion &&
-            (identical(other.version, version) || other.version == version));
+            (identical(other.value, value) || other.value == value));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, version);
+  int get hashCode => Object.hash(runtimeType, value);
 
   @JsonKey(ignore: true)
   @override
@@ -123,12 +123,12 @@ class _$_CurrentMasterVersion extends _CurrentMasterVersion {
 }
 
 abstract class _CurrentMasterVersion extends CurrentMasterVersion {
-  const factory _CurrentMasterVersion({required final String version}) =
+  const factory _CurrentMasterVersion({required final String value}) =
       _$_CurrentMasterVersion;
   const _CurrentMasterVersion._() : super._();
 
   @override
-  String get version;
+  String get value;
   @override
   @JsonKey(ignore: true)
   _$$_CurrentMasterVersionCopyWith<_$_CurrentMasterVersion> get copyWith =>

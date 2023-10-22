@@ -31,7 +31,7 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
   }) async {
     final querySnapshot = await _firestore
         .collection('master')
-        .doc(currentMasterVersion.version)
+        .doc(currentMasterVersion.value)
         .collection('prefectures')
         .get();
     final list = querySnapshot.docs.map(

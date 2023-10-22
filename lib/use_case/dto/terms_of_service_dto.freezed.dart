@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'need_app_update_dto.dart';
+part of 'terms_of_service_dto.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,27 +15,27 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
-mixin _$NeedAppUpdateDTO {
-  bool get value => throw _privateConstructorUsedError;
+mixin _$TermsOfServiceDTO {
+  String get value => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $NeedAppUpdateDTOCopyWith<NeedAppUpdateDTO> get copyWith =>
+  $TermsOfServiceDTOCopyWith<TermsOfServiceDTO> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $NeedAppUpdateDTOCopyWith<$Res> {
-  factory $NeedAppUpdateDTOCopyWith(
-          NeedAppUpdateDTO value, $Res Function(NeedAppUpdateDTO) then) =
-      _$NeedAppUpdateDTOCopyWithImpl<$Res, NeedAppUpdateDTO>;
+abstract class $TermsOfServiceDTOCopyWith<$Res> {
+  factory $TermsOfServiceDTOCopyWith(
+          TermsOfServiceDTO value, $Res Function(TermsOfServiceDTO) then) =
+      _$TermsOfServiceDTOCopyWithImpl<$Res, TermsOfServiceDTO>;
   @useResult
-  $Res call({bool value});
+  $Res call({String value});
 }
 
 /// @nodoc
-class _$NeedAppUpdateDTOCopyWithImpl<$Res, $Val extends NeedAppUpdateDTO>
-    implements $NeedAppUpdateDTOCopyWith<$Res> {
-  _$NeedAppUpdateDTOCopyWithImpl(this._value, this._then);
+class _$TermsOfServiceDTOCopyWithImpl<$Res, $Val extends TermsOfServiceDTO>
+    implements $TermsOfServiceDTOCopyWith<$Res> {
+  _$TermsOfServiceDTOCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -51,28 +51,28 @@ class _$NeedAppUpdateDTOCopyWithImpl<$Res, $Val extends NeedAppUpdateDTO>
       value: null == value
           ? _value.value
           : value // ignore: cast_nullable_to_non_nullable
-              as bool,
+              as String,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$_NeedAppUpdateDTOCopyWith<$Res>
-    implements $NeedAppUpdateDTOCopyWith<$Res> {
-  factory _$$_NeedAppUpdateDTOCopyWith(
-          _$_NeedAppUpdateDTO value, $Res Function(_$_NeedAppUpdateDTO) then) =
-      __$$_NeedAppUpdateDTOCopyWithImpl<$Res>;
+abstract class _$$_TermsOfServiceDTOCopyWith<$Res>
+    implements $TermsOfServiceDTOCopyWith<$Res> {
+  factory _$$_TermsOfServiceDTOCopyWith(_$_TermsOfServiceDTO value,
+          $Res Function(_$_TermsOfServiceDTO) then) =
+      __$$_TermsOfServiceDTOCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({bool value});
+  $Res call({String value});
 }
 
 /// @nodoc
-class __$$_NeedAppUpdateDTOCopyWithImpl<$Res>
-    extends _$NeedAppUpdateDTOCopyWithImpl<$Res, _$_NeedAppUpdateDTO>
-    implements _$$_NeedAppUpdateDTOCopyWith<$Res> {
-  __$$_NeedAppUpdateDTOCopyWithImpl(
-      _$_NeedAppUpdateDTO _value, $Res Function(_$_NeedAppUpdateDTO) _then)
+class __$$_TermsOfServiceDTOCopyWithImpl<$Res>
+    extends _$TermsOfServiceDTOCopyWithImpl<$Res, _$_TermsOfServiceDTO>
+    implements _$$_TermsOfServiceDTOCopyWith<$Res> {
+  __$$_TermsOfServiceDTOCopyWithImpl(
+      _$_TermsOfServiceDTO _value, $Res Function(_$_TermsOfServiceDTO) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -80,33 +80,33 @@ class __$$_NeedAppUpdateDTOCopyWithImpl<$Res>
   $Res call({
     Object? value = null,
   }) {
-    return _then(_$_NeedAppUpdateDTO(
+    return _then(_$_TermsOfServiceDTO(
       value: null == value
           ? _value.value
           : value // ignore: cast_nullable_to_non_nullable
-              as bool,
+              as String,
     ));
   }
 }
 
 /// @nodoc
 
-class _$_NeedAppUpdateDTO extends _NeedAppUpdateDTO {
-  const _$_NeedAppUpdateDTO({required this.value}) : super._();
+class _$_TermsOfServiceDTO extends _TermsOfServiceDTO {
+  const _$_TermsOfServiceDTO({required this.value}) : super._();
 
   @override
-  final bool value;
+  final String value;
 
   @override
   String toString() {
-    return 'NeedAppUpdateDTO(value: $value)';
+    return 'TermsOfServiceDTO(value: $value)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_NeedAppUpdateDTO &&
+            other is _$_TermsOfServiceDTO &&
             (identical(other.value, value) || other.value == value));
   }
 
@@ -116,19 +116,20 @@ class _$_NeedAppUpdateDTO extends _NeedAppUpdateDTO {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_NeedAppUpdateDTOCopyWith<_$_NeedAppUpdateDTO> get copyWith =>
-      __$$_NeedAppUpdateDTOCopyWithImpl<_$_NeedAppUpdateDTO>(this, _$identity);
+  _$$_TermsOfServiceDTOCopyWith<_$_TermsOfServiceDTO> get copyWith =>
+      __$$_TermsOfServiceDTOCopyWithImpl<_$_TermsOfServiceDTO>(
+          this, _$identity);
 }
 
-abstract class _NeedAppUpdateDTO extends NeedAppUpdateDTO {
-  const factory _NeedAppUpdateDTO({required final bool value}) =
-      _$_NeedAppUpdateDTO;
-  const _NeedAppUpdateDTO._() : super._();
+abstract class _TermsOfServiceDTO extends TermsOfServiceDTO {
+  const factory _TermsOfServiceDTO({required final String value}) =
+      _$_TermsOfServiceDTO;
+  const _TermsOfServiceDTO._() : super._();
 
   @override
-  bool get value;
+  String get value;
   @override
   @JsonKey(ignore: true)
-  _$$_NeedAppUpdateDTOCopyWith<_$_NeedAppUpdateDTO> get copyWith =>
+  _$$_TermsOfServiceDTOCopyWith<_$_TermsOfServiceDTO> get copyWith =>
       throw _privateConstructorUsedError;
 }

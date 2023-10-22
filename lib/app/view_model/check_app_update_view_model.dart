@@ -63,8 +63,8 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
             cancelButtonAction: null,
           );
     }
-    final dto = (result as Success<NeedAppUpdateDTO>).value;
-    if (dto.need) {
+    final needAppUpdateDTO = (result as Success<NeedAppUpdateDTO>).value;
+    if (needAppUpdateDTO.value) {
       _ref.read(alertProvider.notifier).show(
             title: 'エラー',
             message: '最新バージョンのアプリをお使いください',

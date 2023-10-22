@@ -39,7 +39,7 @@ class CardRepositoryImpl implements CardRepository {
   }) async {
     final cardsQuerySnapshot = await _firestore
         .collection('master')
-        .doc(currentMasterVersion.version)
+        .doc(currentMasterVersion.value)
         .collection('cards')
         .get();
     final cardList = await Future.wait(
@@ -49,7 +49,7 @@ class CardRepositoryImpl implements CardRepository {
 
           final contactsQuerySnapshot = await _firestore
               .collection('master')
-              .doc(currentMasterVersion.version)
+              .doc(currentMasterVersion.value)
               .collection('cards')
               .doc(cardId)
               .collection('contact_id')

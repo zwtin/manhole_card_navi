@@ -51,7 +51,7 @@ class CheckAppUpdateUseCase {
 
     return Result.success(
       NeedAppUpdateDTO(
-        need: _checkNeedAppUpdate(
+        value: _checkNeedAppUpdate(
           currentAppVersion: currentAppVersion,
           inquiredAppVersion: inquiredAppVersion,
         ),
@@ -64,9 +64,9 @@ class CheckAppUpdateUseCase {
     required InquiredAppVersion inquiredAppVersion,
   }) {
     final currentAppVersionList =
-        currentAppVersion.version.split('.').map(int.parse).toList();
+        currentAppVersion.value.split('.').map(int.parse).toList();
     final inquiredAppVersionList =
-        inquiredAppVersion.version.split('.').map(int.parse).toList();
+        inquiredAppVersion.value.split('.').map(int.parse).toList();
 
     final forceVersionMap = inquiredAppVersionList.asMap();
     for (final index in forceVersionMap.keys) {

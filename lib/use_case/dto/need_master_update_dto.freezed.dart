@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$NeedMasterUpdateDTO {
-  bool get need => throw _privateConstructorUsedError;
+  bool get value => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $NeedMasterUpdateDTOCopyWith<NeedMasterUpdateDTO> get copyWith =>
@@ -29,7 +29,7 @@ abstract class $NeedMasterUpdateDTOCopyWith<$Res> {
           NeedMasterUpdateDTO value, $Res Function(NeedMasterUpdateDTO) then) =
       _$NeedMasterUpdateDTOCopyWithImpl<$Res, NeedMasterUpdateDTO>;
   @useResult
-  $Res call({bool need});
+  $Res call({bool value});
 }
 
 /// @nodoc
@@ -45,12 +45,12 @@ class _$NeedMasterUpdateDTOCopyWithImpl<$Res, $Val extends NeedMasterUpdateDTO>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? need = null,
+    Object? value = null,
   }) {
     return _then(_value.copyWith(
-      need: null == need
-          ? _value.need
-          : need // ignore: cast_nullable_to_non_nullable
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
               as bool,
     ) as $Val);
   }
@@ -64,7 +64,7 @@ abstract class _$$_NeedMasterUpdateDTOCopyWith<$Res>
       __$$_NeedMasterUpdateDTOCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({bool need});
+  $Res call({bool value});
 }
 
 /// @nodoc
@@ -78,12 +78,12 @@ class __$$_NeedMasterUpdateDTOCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? need = null,
+    Object? value = null,
   }) {
     return _then(_$_NeedMasterUpdateDTO(
-      need: null == need
-          ? _value.need
-          : need // ignore: cast_nullable_to_non_nullable
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }
@@ -92,14 +92,14 @@ class __$$_NeedMasterUpdateDTOCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_NeedMasterUpdateDTO extends _NeedMasterUpdateDTO {
-  const _$_NeedMasterUpdateDTO({required this.need}) : super._();
+  const _$_NeedMasterUpdateDTO({required this.value}) : super._();
 
   @override
-  final bool need;
+  final bool value;
 
   @override
   String toString() {
-    return 'NeedMasterUpdateDTO(need: $need)';
+    return 'NeedMasterUpdateDTO(value: $value)';
   }
 
   @override
@@ -107,11 +107,11 @@ class _$_NeedMasterUpdateDTO extends _NeedMasterUpdateDTO {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_NeedMasterUpdateDTO &&
-            (identical(other.need, need) || other.need == need));
+            (identical(other.value, value) || other.value == value));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, need);
+  int get hashCode => Object.hash(runtimeType, value);
 
   @JsonKey(ignore: true)
   @override
@@ -122,12 +122,12 @@ class _$_NeedMasterUpdateDTO extends _NeedMasterUpdateDTO {
 }
 
 abstract class _NeedMasterUpdateDTO extends NeedMasterUpdateDTO {
-  const factory _NeedMasterUpdateDTO({required final bool need}) =
+  const factory _NeedMasterUpdateDTO({required final bool value}) =
       _$_NeedMasterUpdateDTO;
   const _NeedMasterUpdateDTO._() : super._();
 
   @override
-  bool get need;
+  bool get value;
   @override
   @JsonKey(ignore: true)
   _$$_NeedMasterUpdateDTOCopyWith<_$_NeedMasterUpdateDTO> get copyWith =>

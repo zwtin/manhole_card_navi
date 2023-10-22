@@ -31,7 +31,7 @@ class ContactRepositoryImpl implements ContactRepository {
   }) async {
     final querySnapshot = await _firestore
         .collection('master')
-        .doc(currentMasterVersion.version)
+        .doc(currentMasterVersion.value)
         .collection('contacts')
         .get();
     final list = querySnapshot.docs.map(

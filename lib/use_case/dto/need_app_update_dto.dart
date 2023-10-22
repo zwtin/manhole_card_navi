@@ -5,7 +5,7 @@ part 'need_app_update_dto.freezed.dart';
 @freezed
 abstract class NeedAppUpdateDTO with _$NeedAppUpdateDTO {
   const factory NeedAppUpdateDTO({
-    required bool need,
+    required bool value,
   }) = _NeedAppUpdateDTO;
   const NeedAppUpdateDTO._();
 }

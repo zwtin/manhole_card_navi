@@ -86,7 +86,7 @@ class CheckMasterUpdateUseCase {
 
     return Result.success(
       NeedMasterUpdateDTO(
-        need: currentMasterVersion.version != inquiredMasterVersion.version,
+        value: currentMasterVersion.value != inquiredMasterVersion.value,
       ),
     );
   }
@@ -106,7 +106,7 @@ class CheckMasterUpdateUseCase {
         (getInquiredMasterVersionResult as Success<InquiredMasterVersion>)
             .value;
     final currentMasterVersion =
-        CurrentMasterVersion(version: inquiredMasterVersion.version);
+        CurrentMasterVersion(value: inquiredMasterVersion.value);
 
     final result = await Future.wait([
       _updateContactMaster(currentMasterVersion: currentMasterVersion),

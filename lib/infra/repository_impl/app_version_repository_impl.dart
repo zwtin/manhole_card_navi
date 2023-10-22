@@ -33,7 +33,7 @@ class AppVersionRepositoryImpl implements AppVersionRepository {
     final inquiredAppVersion = _remoteConfig.getString('inquired_app_version');
     return Result.success(
       InquiredAppVersion(
-        version: inquiredAppVersion,
+        value: inquiredAppVersion,
       ),
     );
   }
@@ -43,7 +43,7 @@ class AppVersionRepositoryImpl implements AppVersionRepository {
     final version = _packageInfo.version;
     return Result.success(
       CurrentAppVersion(
-        version: version,
+        value: version,
       ),
     );
   }

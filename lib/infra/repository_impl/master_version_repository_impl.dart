@@ -36,7 +36,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
         _remoteConfig.getString('inquired_master_version');
     return Result.success(
       InquiredMasterVersion(
-        version: inquiredMasterVersion,
+        value: inquiredMasterVersion,
       ),
     );
   }
@@ -51,7 +51,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
         .getValue();
     return Result.success(
       CurrentMasterVersion(
-        version: currentMasterVersion,
+        value: currentMasterVersion,
       ),
     );
   }
@@ -62,7 +62,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
   }) async {
     final result = await _instance.setString(
       'current_master_version',
-      currentMasterVersion.version,
+      currentMasterVersion.value,
     );
     if (result) {
       return const Result.success(null);

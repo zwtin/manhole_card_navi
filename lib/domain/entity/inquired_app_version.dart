@@ -5,7 +5,7 @@ part 'inquired_app_version.freezed.dart';
 @freezed
 abstract class InquiredAppVersion with _$InquiredAppVersion {
   const factory InquiredAppVersion({
-    required String version,
+    required String value,
   }) = _InquiredAppVersion;
   const InquiredAppVersion._();
 }

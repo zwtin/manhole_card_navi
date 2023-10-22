@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$CurrentAppVersion {
-  String get version => throw _privateConstructorUsedError;
+  String get value => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $CurrentAppVersionCopyWith<CurrentAppVersion> get copyWith =>
@@ -29,7 +29,7 @@ abstract class $CurrentAppVersionCopyWith<$Res> {
           CurrentAppVersion value, $Res Function(CurrentAppVersion) then) =
       _$CurrentAppVersionCopyWithImpl<$Res, CurrentAppVersion>;
   @useResult
-  $Res call({String version});
+  $Res call({String value});
 }
 
 /// @nodoc
@@ -45,12 +45,12 @@ class _$CurrentAppVersionCopyWithImpl<$Res, $Val extends CurrentAppVersion>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? version = null,
+    Object? value = null,
   }) {
     return _then(_value.copyWith(
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -64,7 +64,7 @@ abstract class _$$_CurrentAppVersionCopyWith<$Res>
       __$$_CurrentAppVersionCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String version});
+  $Res call({String value});
 }
 
 /// @nodoc
@@ -78,12 +78,12 @@ class __$$_CurrentAppVersionCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? version = null,
+    Object? value = null,
   }) {
     return _then(_$_CurrentAppVersion(
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -92,14 +92,14 @@ class __$$_CurrentAppVersionCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_CurrentAppVersion extends _CurrentAppVersion {
-  const _$_CurrentAppVersion({required this.version}) : super._();
+  const _$_CurrentAppVersion({required this.value}) : super._();
 
   @override
-  final String version;
+  final String value;
 
   @override
   String toString() {
-    return 'CurrentAppVersion(version: $version)';
+    return 'CurrentAppVersion(value: $value)';
   }
 
   @override
@@ -107,11 +107,11 @@ class _$_CurrentAppVersion extends _CurrentAppVersion {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_CurrentAppVersion &&
-            (identical(other.version, version) || other.version == version));
+            (identical(other.value, value) || other.value == value));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, version);
+  int get hashCode => Object.hash(runtimeType, value);
 
   @JsonKey(ignore: true)
   @override
@@ -122,12 +122,12 @@ class _$_CurrentAppVersion extends _CurrentAppVersion {
 }
 
 abstract class _CurrentAppVersion extends CurrentAppVersion {
-  const factory _CurrentAppVersion({required final String version}) =
+  const factory _CurrentAppVersion({required final String value}) =
       _$_CurrentAppVersion;
   const _CurrentAppVersion._() : super._();
 
   @override
-  String get version;
+  String get value;
   @override
   @JsonKey(ignore: true)
   _$$_CurrentAppVersionCopyWith<_$_CurrentAppVersion> get copyWith =>
