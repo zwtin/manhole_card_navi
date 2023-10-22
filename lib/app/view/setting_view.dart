@@ -102,7 +102,9 @@ class SettingView extends HookConsumerWidget {
                                 Icons.arrow_forward_ios,
                                 color: Colors.white,
                               ),
-                              onTap: () async {},
+                              onTap: () async {
+                                showLicensePage(context: context);
+                              },
                             ),
                             Container(
                               color: Colors.white,
@@ -121,7 +123,11 @@ class SettingView extends HookConsumerWidget {
                                 Icons.arrow_forward_ios,
                                 color: Colors.white,
                               ),
-                              onTap: () async {},
+                              onTap: () async {
+                                await ref
+                                    .read(settingViewModelProvider(key))
+                                    .onTapLicense();
+                              },
                             ),
                           ],
                         ),

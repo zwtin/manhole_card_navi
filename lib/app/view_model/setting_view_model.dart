@@ -69,6 +69,16 @@ class SettingViewModel extends ChangeNotifier {
         );
   }
 
+  Future<void> onTapLicense() async {
+    await _transitionToLicenseView();
+  }
+
+  Future<void> _transitionToLicenseView() async {
+    await _ref.read(routerProvider(_key).notifier).push(
+          nextWidget: const LicensePage(),
+        );
+  }
+
   @override
   void dispose() {
     super.dispose();
