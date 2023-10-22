@@ -73,6 +73,16 @@ class ManholeCardMapView extends HookConsumerWidget {
               height: 1,
             ),
           ),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.menu,
+              ),
+              onPressed: () {
+                ref.read(manholeCardMapViewModelProvider(key)).onTap();
+              },
+            ),
+          ],
         ),
         body: Column(
           children: [

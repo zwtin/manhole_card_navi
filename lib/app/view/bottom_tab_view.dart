@@ -2,6 +2,7 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:manhole_card_navi/app/view/setting_view.dart';
 
 import '/app/view/manhole_card_list_view.dart';
 import '/app/view/manhole_card_map_view.dart';
@@ -23,10 +24,14 @@ class BottomTabView extends HookConsumerWidget {
     key: UniqueKey(),
   );
 
+  final tab2 = SettingView(
+    key: UniqueKey(),
+  );
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(bottomTabViewModelProvider(key));
-    final controller = useTabController(initialLength: 2)
+    final controller = useTabController(initialLength: 3)
       ..index = viewModel.selectedIndex;
 
     useEffect(
@@ -62,6 +67,10 @@ class BottomTabView extends HookConsumerWidget {
                 icon: Icons.list_alt,
                 title: 'リスト',
               ),
+              TabItem<IconData>(
+                icon: Icons.settings,
+                title: '設定',
+              ),
             ],
           ),
           body: IndexedStack(
@@ -89,6 +98,19 @@ class BottomTabView extends HookConsumerWidget {
                       animation2,
                     ) {
                       return tab1;
+                    },
+                  );
+                },
+              ),
+              Navigator(
+                onGenerateRoute: (settings) {
+                  return PageRouteBuilder<Widget>(
+                    pageBuilder: (
+                      context,
+                      animation1,
+                      animation2,
+                    ) {
+                      return tab2;
                     },
                   );
                 },

@@ -58,6 +58,10 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     fetchDistributionMarker();
   }
 
+  Future<void> onTap() async {
+    _logger.d('ManholeCardMapViewModel');
+  }
+
   Future<void> setupMyLocation() async {
     var permission = await Geolocator.checkPermission();
     myLocationEnabled = permission == LocationPermission.whileInUse ||
