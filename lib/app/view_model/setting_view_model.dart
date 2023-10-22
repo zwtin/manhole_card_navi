@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/app/provider/alert_provider.dart';
 import 'package:manhole_card_navi/app/provider/router_provider.dart';
 import 'package:manhole_card_navi/app/view/terms_of_service_view.dart';
+import 'package:manhole_card_navi/domain/entity/result.dart';
+import 'package:manhole_card_navi/use_case/dto/current_app_version_dto.dart';
+import 'package:manhole_card_navi/use_case/use_case/current_app_version_use_case.dart';
 
 final settingViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<SettingViewModel, Key?>(
@@ -10,6 +14,7 @@ final settingViewModelProvider =
     return SettingViewModel(
       key,
       ref,
+      ref.watch(currentAppVersionUseCaseProvider),
     );
   },
 );
@@ -18,14 +23,38 @@ class SettingViewModel extends ChangeNotifier {
   SettingViewModel(
     this._key,
     this._ref,
+    this._currentAppVersionUseCase,
   );
 
   final Key? _key;
   final Ref _ref;
   final _logger = Logger();
 
+  final CurrentAppVersionUseCase _currentAppVersionUseCase;
+
+  String currentAppVersion = '';
+
   Future<void> onLoad() async {
     _logger.d('SettingViewModel');
+    await _fetchCurrentAppVersion();
+  }
+
+  Future<void> _fetchCurrentAppVersion() async {
+    final result = await _currentAppVersionUseCase.get();
+    if (result is Failure) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: 'アプリバージョンの取得に失敗しました',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {},
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+    }
+    final currentAppVersionDTO =
+        (result as Success<CurrentAppVersionDTO>).value;
+    currentAppVersion = currentAppVersionDTO.value;
+    notifyListeners();
   }
 
   Future<void> onTapTermsOfService() async {

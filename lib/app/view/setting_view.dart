@@ -126,6 +126,17 @@ class SettingView extends HookConsumerWidget {
                           ],
                         ),
                       ),
+                      Container(
+                        height: 24,
+                      ),
+                      Text(
+                        'バージョン ${viewModel.currentAppVersion}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                     ],
                   ),
                 ),
