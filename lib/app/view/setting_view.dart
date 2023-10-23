@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/view_model/setting_view_model.dart';
+import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';
 
@@ -31,9 +32,8 @@ class SettingView extends HookConsumerWidget {
       key: key,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: const TitleLargeBoldText(
             '設定',
-            style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
         body: Stack(
@@ -55,9 +55,8 @@ class SettingView extends HookConsumerWidget {
                         child: Column(
                           children: [
                             ListTile(
-                              title: Text(
+                              title: const TitleMediumBoldText(
                                 '利用規約',
-                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                               trailing: const Icon(
                                 Icons.arrow_forward_ios,
@@ -74,9 +73,8 @@ class SettingView extends HookConsumerWidget {
                               height: 1,
                             ),
                             ListTile(
-                              title: Text(
+                              title: const TitleMediumBoldText(
                                 'プライバシーポリシー',
-                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                               trailing: const Icon(
                                 Icons.arrow_forward_ios,
@@ -91,9 +89,8 @@ class SettingView extends HookConsumerWidget {
                               height: 1,
                             ),
                             ListTile(
-                              title: Text(
+                              title: const TitleMediumBoldText(
                                 'ライセンス',
-                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                               trailing: const Icon(
                                 Icons.arrow_forward_ios,
@@ -111,9 +108,8 @@ class SettingView extends HookConsumerWidget {
                       Container(
                         height: 24,
                       ),
-                      Text(
+                      TitleMediumBoldText(
                         'バージョン ${viewModel.currentAppVersion}',
-                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ],
                   ),

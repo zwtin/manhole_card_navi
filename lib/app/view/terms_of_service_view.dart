@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/view_model/terms_of_service_view_model.dart';
+import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';
 
@@ -31,21 +32,8 @@ class TermsOfServiceView extends HookConsumerWidget {
       key: key,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
+          title: const TitleLargeBoldText(
             '利用規約',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          backgroundColor: ColorName.main,
-          elevation: 0,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(1),
-            child: Container(
-              color: Colors.white24,
-              height: 1,
-            ),
           ),
         ),
         body: Stack(
@@ -63,14 +51,6 @@ class TermsOfServiceView extends HookConsumerWidget {
                 padding: const EdgeInsets.all(8),
                 child: Html(
                   data: viewModel.html,
-                  style: {
-                    'head': Style(color: Colors.white),
-                    'body': Style(color: Colors.white),
-                    'li': Style(
-                      fontSize: FontSize(16),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  },
                 ),
               ),
             ),

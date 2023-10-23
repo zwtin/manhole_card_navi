@@ -3,8 +3,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/view_model/manhole_card_list_view_model.dart';
+import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
-import '/gen/colors.gen.dart';
 
 class ManholeCardListView extends HookConsumerWidget {
   const ManholeCardListView({
@@ -31,21 +31,8 @@ class ManholeCardListView extends HookConsumerWidget {
       key: key,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
+          title: const TitleLargeBoldText(
             'リスト',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          backgroundColor: ColorName.main,
-          elevation: 0,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(1),
-            child: Container(
-              color: Colors.white24,
-              height: 1,
-            ),
           ),
           actions: <Widget>[
             IconButton(
