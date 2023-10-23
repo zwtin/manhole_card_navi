@@ -1,12 +1,12 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/domain/entity/current_app_version.dart';
-import 'package:manhole_card_navi/domain/repository/app_version_repository.dart';
-import 'package:manhole_card_navi/infra/repository_impl/app_version_repository_impl.dart';
-import 'package:manhole_card_navi/use_case/dto/current_app_version_dto.dart';
 
+import '/domain/entity/current_app_version.dart';
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/result.dart';
+import '/domain/repository/app_version_repository.dart';
+import '/infra/repository_impl/app_version_repository_impl.dart';
+import '/use_case/dto/current_app_version_dto.dart';
 
 final currentAppVersionUseCaseProvider =
     Provider.autoDispose<CurrentAppVersionUseCase>(

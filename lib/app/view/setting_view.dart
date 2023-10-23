@@ -81,7 +81,9 @@ class SettingView extends HookConsumerWidget {
                                 color: Colors.white,
                               ),
                               onTap: () async {
-                                showLicensePage(context: context);
+                                await ref
+                                    .read(settingViewModelProvider(key))
+                                    .onTapPrivacyPolicy();
                               },
                             ),
                             Container(

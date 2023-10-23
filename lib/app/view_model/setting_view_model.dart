@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/app/provider/alert_provider.dart';
-import 'package:manhole_card_navi/app/provider/router_provider.dart';
-import 'package:manhole_card_navi/app/view/terms_of_service_view.dart';
-import 'package:manhole_card_navi/domain/entity/result.dart';
-import 'package:manhole_card_navi/use_case/dto/current_app_version_dto.dart';
-import 'package:manhole_card_navi/use_case/use_case/current_app_version_use_case.dart';
+
+import '/app/provider/alert_provider.dart';
+import '/app/provider/router_provider.dart';
+import '/app/view/privacy_policy_view.dart';
+import '/app/view/terms_of_service_view.dart';
+import '/domain/entity/result.dart';
+import '/use_case/dto/current_app_version_dto.dart';
+import '/use_case/use_case/current_app_version_use_case.dart';
 
 final settingViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<SettingViewModel, Key?>(
@@ -64,6 +66,18 @@ class SettingViewModel extends ChangeNotifier {
   Future<void> _transitionToTermsOfServiceView() async {
     await _ref.read(routerProvider(_key).notifier).push(
           nextWidget: TermsOfServiceView(
+            key: UniqueKey(),
+          ),
+        );
+  }
+
+  Future<void> onTapPrivacyPolicy() async {
+    await _transitionToPrivacyPolicyView();
+  }
+
+  Future<void> _transitionToPrivacyPolicyView() async {
+    await _ref.read(routerProvider(_key).notifier).push(
+          nextWidget: PrivacyPolicyView(
             key: UniqueKey(),
           ),
         );

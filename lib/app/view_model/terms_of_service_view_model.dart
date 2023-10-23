@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/use_case/dto/terms_of_service_dto.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/domain/entity/result.dart';
+import '/use_case/dto/terms_of_service_dto.dart';
 import '/use_case/use_case/terms_of_service_use_case.dart';
 
 final termsOfServiceViewModelProvider =
