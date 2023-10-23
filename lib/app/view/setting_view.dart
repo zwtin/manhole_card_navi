@@ -31,21 +31,9 @@ class SettingView extends HookConsumerWidget {
       key: key,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
+          title: Text(
             '設定',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          backgroundColor: ColorName.main,
-          elevation: 0,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(1),
-            child: Container(
-              color: Colors.white24,
-              height: 1,
-            ),
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
         body: Stack(
@@ -62,18 +50,14 @@ class SettingView extends HookConsumerWidget {
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(
                           children: [
                             ListTile(
-                              title: const Text(
+                              title: Text(
                                 '利用規約',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
+                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                               trailing: const Icon(
                                 Icons.arrow_forward_ios,
@@ -90,13 +74,9 @@ class SettingView extends HookConsumerWidget {
                               height: 1,
                             ),
                             ListTile(
-                              title: const Text(
+                              title: Text(
                                 'プライバシーポリシー',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
+                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                               trailing: const Icon(
                                 Icons.arrow_forward_ios,
@@ -111,13 +91,9 @@ class SettingView extends HookConsumerWidget {
                               height: 1,
                             ),
                             ListTile(
-                              title: const Text(
+                              title: Text(
                                 'ライセンス',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
+                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                               trailing: const Icon(
                                 Icons.arrow_forward_ios,
@@ -137,11 +113,7 @@ class SettingView extends HookConsumerWidget {
                       ),
                       Text(
                         'バージョン ${viewModel.currentAppVersion}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ],
                   ),

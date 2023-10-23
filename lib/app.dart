@@ -42,39 +42,65 @@ class App extends HookConsumerWidget {
       },
     );
 
+    final originalTheme = Theme.of(context);
+
     return MaterialApp(
-      theme: ThemeData(
-        appBarTheme: const AppBarTheme(
+      theme: originalTheme.copyWith(
+        appBarTheme: originalTheme.appBarTheme.copyWith(
           color: ColorName.main,
           elevation: 0,
-          shape: UnderlineInputBorder(
+          shape: const UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.white70),
           ),
         ),
-        cardColor: ColorName.main,
-        textTheme: const TextTheme(
-          displayLarge: TextStyle(
+        textTheme: originalTheme.textTheme.copyWith(
+          displayLarge: originalTheme.textTheme.displayLarge?.copyWith(
             color: Colors.white,
           ),
-          displayMedium: TextStyle(
+          displayMedium: originalTheme.textTheme.displayMedium?.copyWith(
             color: Colors.white,
           ),
-          displaySmall: TextStyle(
+          displaySmall: originalTheme.textTheme.displaySmall?.copyWith(
             color: Colors.white,
           ),
-          titleMedium: TextStyle(
+          headlineLarge: originalTheme.textTheme.headlineLarge?.copyWith(
             color: Colors.white,
           ),
-          bodyMedium: TextStyle(
+          headlineMedium: originalTheme.textTheme.headlineMedium?.copyWith(
             color: Colors.white,
           ),
-          titleSmall: TextStyle(
+          headlineSmall: originalTheme.textTheme.headlineSmall?.copyWith(
             color: Colors.white,
           ),
-          bodySmall: TextStyle(
+          titleLarge: originalTheme.textTheme.titleLarge?.copyWith(
+            color: Colors.white,
+          ),
+          titleMedium: originalTheme.textTheme.titleMedium?.copyWith(
+            color: Colors.white,
+          ),
+          titleSmall: originalTheme.textTheme.titleSmall?.copyWith(
+            color: Colors.white,
+          ),
+          bodyLarge: originalTheme.textTheme.bodyLarge?.copyWith(
+            color: Colors.white,
+          ),
+          bodyMedium: originalTheme.textTheme.bodyMedium?.copyWith(
+            color: Colors.white,
+          ),
+          bodySmall: originalTheme.textTheme.bodySmall?.copyWith(
+            color: Colors.white,
+          ),
+          labelLarge: originalTheme.textTheme.labelLarge?.copyWith(
+            color: Colors.white,
+          ),
+          labelMedium: originalTheme.textTheme.labelMedium?.copyWith(
+            color: Colors.white,
+          ),
+          labelSmall: originalTheme.textTheme.labelSmall?.copyWith(
             color: Colors.white,
           ),
         ),
+        cardColor: ColorName.main,
       ),
       home: CheckAppUpdateView(
         key: UniqueKey(),
