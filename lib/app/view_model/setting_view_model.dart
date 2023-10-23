@@ -7,8 +7,8 @@ import '/app/provider/router_provider.dart';
 import '/app/view/privacy_policy_view.dart';
 import '/app/view/terms_of_service_view.dart';
 import '/domain/entity/result.dart';
-import '/use_case/dto/current_app_version_dto.dart';
-import '/use_case/use_case/current_app_version_use_case.dart';
+import '/use_case/dto/app_info_dto.dart';
+import '/use_case/use_case/app_info_use_case.dart';
 
 final settingViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<SettingViewModel, Key?>(
@@ -16,7 +16,7 @@ final settingViewModelProvider =
     return SettingViewModel(
       key,
       ref,
-      ref.watch(currentAppVersionUseCaseProvider),
+      ref.watch(appInfoUseCaseProvider),
     );
   },
 );
@@ -25,37 +25,38 @@ class SettingViewModel extends ChangeNotifier {
   SettingViewModel(
     this._key,
     this._ref,
-    this._currentAppVersionUseCase,
+    this._appInfoUseCase,
   );
 
   final Key? _key;
   final Ref _ref;
   final _logger = Logger();
 
-  final CurrentAppVersionUseCase _currentAppVersionUseCase;
+  final AppInfoUseCase _appInfoUseCase;
 
-  String currentAppVersion = '';
+  String appName = '';
+  String appVersion = '';
 
   Future<void> onLoad() async {
     _logger.d('SettingViewModel');
-    await _fetchCurrentAppVersion();
+    await _fetchAppInfo();
   }
 
-  Future<void> _fetchCurrentAppVersion() async {
-    final result = await _currentAppVersionUseCase.get();
+  Future<void> _fetchAppInfo() async {
+    final result = await _appInfoUseCase.get();
     if (result is Failure) {
       _ref.read(alertProvider.notifier).show(
             title: 'エラー',
-            message: 'アプリバージョンの取得に失敗しました',
+            message: 'アプリ情報の取得に失敗しました',
             okButtonTitle: 'OK',
             okButtonAction: () async {},
             cancelButtonTitle: null,
             cancelButtonAction: null,
           );
     }
-    final currentAppVersionDTO =
-        (result as Success<CurrentAppVersionDTO>).value;
-    currentAppVersion = currentAppVersionDTO.value;
+    final appInfoDTO = (result as Success<AppInfoDTO>).value;
+    appName = appInfoDTO.name;
+    appVersion = appInfoDTO.version;
     notifyListeners();
   }
 
@@ -89,7 +90,11 @@ class SettingViewModel extends ChangeNotifier {
 
   Future<void> _transitionToLicenseView() async {
     await _ref.read(routerProvider(_key).notifier).push(
-          nextWidget: const LicensePage(),
+          nextWidget: LicensePage(
+            applicationName: appName,
+            applicationVersion: appVersion,
+            applicationIcon: const FlutterLogo(),
+          ),
         );
   }
 

@@ -3,24 +3,24 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '/domain/entity/current_app_version.dart';
+import '/domain/entity/app_info.dart';
 import '/domain/entity/inquired_app_version.dart';
 import '/domain/entity/result.dart';
-import '/domain/repository/app_version_repository.dart';
+import '/domain/repository/app_info_repository.dart';
 import '/temporary_provider.dart';
 
-final appVersionRepositoryProvider = Provider.autoDispose<AppVersionRepository>(
+final appInfoRepositoryProvider = Provider.autoDispose<AppInfoRepository>(
   (ref) {
-    final appVersionRepository = AppVersionRepositoryImpl(
+    final appInfoRepository = AppInfoRepositoryImpl(
       ref.watch(packageInfoProvider),
     );
-    ref.onDispose(appVersionRepository.dispose);
-    return appVersionRepository;
+    ref.onDispose(appInfoRepository.dispose);
+    return appInfoRepository;
   },
 );
 
-class AppVersionRepositoryImpl implements AppVersionRepository {
-  AppVersionRepositoryImpl(
+class AppInfoRepositoryImpl implements AppInfoRepository {
+  AppInfoRepositoryImpl(
     this._packageInfo,
   );
 
@@ -39,16 +39,16 @@ class AppVersionRepositoryImpl implements AppVersionRepository {
   }
 
   @override
-  Future<Result<CurrentAppVersion>> getCurrentAppVersion() async {
-    final version = _packageInfo.version;
+  Future<Result<AppInfo>> getAppInfo() async {
     return Result.success(
-      CurrentAppVersion(
-        value: version,
+      AppInfo(
+        name: _packageInfo.appName,
+        version: _packageInfo.version,
       ),
     );
   }
 
   void dispose() {
-    _logger.d('AppVersionRepositoryImpl dispose');
+    _logger.d('AppInfoRepositoryImpl dispose');
   }
 }

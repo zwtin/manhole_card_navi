@@ -111,7 +111,10 @@ class SettingView extends HookConsumerWidget {
                         height: 24,
                       ),
                       TitleMediumBoldText(
-                        'バージョン ${viewModel.currentAppVersion}',
+                        viewModel.appName,
+                      ),
+                      TitleMediumBoldText(
+                        'バージョン ${viewModel.appVersion}',
                       ),
                     ],
                   ),

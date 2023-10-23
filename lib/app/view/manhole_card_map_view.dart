@@ -116,9 +116,8 @@ class ManholeCardMapView extends HookConsumerWidget {
               ),
             ),
             if (viewModel.isShowModal)
-              const SizedBox(
+              Container(
                 height: 400,
-                width: double.infinity,
               ),
           ],
         ),
@@ -183,8 +182,9 @@ class ManholeCardMapView extends HookConsumerWidget {
           isScrollControlled: true,
           context: context,
           builder: (context) {
-            return SizedBox(
+            return Container(
               height: 400,
+              color: ColorName.main,
               child: Column(
                 children: [
                   SizedBox(
@@ -192,8 +192,8 @@ class ManholeCardMapView extends HookConsumerWidget {
                     height: 216.6,
                     child: Container(),
                   ),
-                  const Text('data'),
-                  const Text('data2'),
+                  const BodyMediumRegularText('data'),
+                  const BodyMediumRegularText('data2'),
                   TextButton(
                     onPressed: () async {
                       Navigator.of(context).pop();
@@ -213,7 +213,7 @@ class ManholeCardMapView extends HookConsumerWidget {
                         );
                       }
                     },
-                    child: const Text('Googleマップで開く'),
+                    child: const BodyMediumRegularText('Googleマップで開く'),
                   ),
                 ],
               ),

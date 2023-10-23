@@ -1,8 +1,8 @@
-import '/domain/entity/current_app_version.dart';
+import '/domain/entity/app_info.dart';
 import '/domain/entity/inquired_app_version.dart';
 import '/domain/entity/result.dart';
 
-abstract class AppVersionRepository {
+abstract class AppInfoRepository {
   Future<Result<InquiredAppVersion>> getInquiredAppVersion();
-  Future<Result<CurrentAppVersion>> getCurrentAppVersion();
+  Future<Result<AppInfo>> getAppInfo();
 }
