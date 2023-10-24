@@ -55,7 +55,7 @@ class SettingView extends HookConsumerWidget {
                         child: Column(
                           children: [
                             ListTile(
-                              title: const TitleMediumBoldText(
+                              title: const TitleMediumRegularText(
                                 '利用規約',
                               ),
                               trailing: const Icon(
@@ -73,7 +73,7 @@ class SettingView extends HookConsumerWidget {
                               height: 1,
                             ),
                             ListTile(
-                              title: const TitleMediumBoldText(
+                              title: const TitleMediumRegularText(
                                 'プライバシーポリシー',
                               ),
                               trailing: const Icon(
@@ -91,7 +91,7 @@ class SettingView extends HookConsumerWidget {
                               height: 1,
                             ),
                             ListTile(
-                              title: const TitleMediumBoldText(
+                              title: const TitleMediumRegularText(
                                 'ライセンス',
                               ),
                               trailing: const Icon(
@@ -110,10 +110,10 @@ class SettingView extends HookConsumerWidget {
                       Container(
                         height: 24,
                       ),
-                      TitleMediumBoldText(
+                      TitleMediumRegularText(
                         viewModel.appName,
                       ),
-                      TitleMediumBoldText(
+                      TitleMediumRegularText(
                         'バージョン ${viewModel.appVersion}',
                       ),
                     ],

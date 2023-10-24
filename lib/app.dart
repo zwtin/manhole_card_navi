@@ -101,6 +101,11 @@ class App extends HookConsumerWidget {
           ),
         ),
         cardColor: ColorName.main,
+        dividerColor: Colors.white,
+        expansionTileTheme: originalTheme.expansionTileTheme.copyWith(
+          iconColor: Colors.white,
+          collapsedIconColor: Colors.white,
+        ),
       ),
       home: CheckAppUpdateView(
         key: UniqueKey(),
