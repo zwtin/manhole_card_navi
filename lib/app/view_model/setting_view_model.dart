@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/app/view/license_view.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
@@ -90,10 +91,8 @@ class SettingViewModel extends ChangeNotifier {
 
   Future<void> _transitionToLicenseView() async {
     await _ref.read(routerProvider(_key).notifier).push(
-          nextWidget: LicensePage(
-            applicationName: appName,
-            applicationVersion: appVersion,
-            applicationIcon: const FlutterLogo(),
+          nextWidget: LicenseView(
+            key: UniqueKey(),
           ),
         );
   }
