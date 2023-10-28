@@ -67,7 +67,46 @@ class ManholeCardMapView extends HookConsumerWidget {
                 Icons.menu,
               ),
               onPressed: () {
-                ref.read(manholeCardMapViewModelProvider(key)).onTap();
+                showModalBottomSheet<int>(
+                  context: context,
+                  builder: (modalContext) {
+                    return Container(
+                      color: ColorName.main,
+                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            leading:
+                                const Icon(Icons.edit, color: Colors.white),
+                            title: const TitleMediumRegularText('配布場所マップ'),
+                            trailing: const Icon(Icons.check,
+                                color: ColorName.accent),
+                            onTap: () async {
+                              Navigator.of(modalContext).pop();
+                              ref
+                                  .read(manholeCardMapViewModelProvider(key))
+                                  .onTap();
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(
+                              Icons.settings,
+                              color: Colors.white,
+                            ),
+                            title: const TitleMediumRegularText('マンホールマップ'),
+                            onTap: () async {
+                              Navigator.of(modalContext).pop();
+                              ref
+                                  .read(manholeCardMapViewModelProvider(key))
+                                  .onTap();
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
               },
             ),
           ],
