@@ -105,6 +105,11 @@ class App extends HookConsumerWidget {
         expansionTileTheme: originalTheme.expansionTileTheme.copyWith(
           iconColor: Colors.white,
           collapsedIconColor: Colors.white,
+          shape: const Border(),
+          collapsedShape: const Border(),
+          childrenPadding: EdgeInsets.zero,
+          tilePadding: EdgeInsets.zero,
+          expandedAlignment: Alignment.bottomCenter,
         ),
       ),
       home: CheckAppUpdateView(

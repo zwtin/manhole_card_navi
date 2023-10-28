@@ -91,100 +91,39 @@ class ManholeCardListView extends HookConsumerWidget {
               color: ColorName.main,
             ),
             ListView.separated(
-              itemCount: 3,
-              itemBuilder: (_context, index) {
-                switch (index) {
-                  case 0:
-                    return ExpansionTile(
-                      title: const TitleMediumRegularText('全国'),
-                      shape: const Border(),
-                      children: <Widget>[
-                        const Divider(),
-                        GestureDetector(
-                          onTap: () {
-                            showLicensePage(context: context);
-                          },
-                          child: Container(
-                            height: 100,
-                            color: ColorName.main,
-                            child: const BodyLargeRegularText(
-                              'This is tile number 1',
-                            ),
-                          ),
-                        ),
-                        const Divider(),
-                        Container(
+              itemCount: viewModel.prefecturesViewData.length,
+              itemBuilder: (itemContext, index) {
+                final viewData = viewModel.prefecturesViewData.elementAt(index);
+                final cardWithSeparator = viewData.cards.expand(
+                  (card) {
+                    return [
+                      const Divider(),
+                      GestureDetector(
+                        onTap: () {
+                          showLicensePage(context: context);
+                        },
+                        child: Container(
                           height: 100,
+                          width: double.infinity,
                           color: ColorName.main,
-                          child: const BodyMediumRegularText(
+                          child: const BodyLargeRegularText(
                             'This is tile number 1',
                           ),
                         ),
-                        const Divider(),
-                      ],
-                    );
-                  case 1:
-                    return ExpansionTile(
-                      title: const TitleMediumRegularText('北海道'),
-                      shape: const Border(),
-                      children: <Widget>[
-                        const Divider(),
-                        GestureDetector(
-                          onTap: () {
-                            showLicensePage(context: context);
-                          },
-                          child: Container(
-                            height: 100,
-                            color: ColorName.main,
-                            child: const TitleMediumRegularText(
-                              'This is tile number 1',
-                            ),
-                          ),
-                        ),
-                        const Divider(),
-                        Container(
-                          height: 100,
-                          color: ColorName.main,
-                          child: const TitleMediumRegularText(
-                            'This is tile number 1',
-                          ),
-                        ),
-                        const Divider(),
-                      ],
-                    );
-                  case 2:
-                    return ExpansionTile(
-                      title: const TitleMediumRegularText('埼玉県'),
-                      shape: const Border(),
-                      children: <Widget>[
-                        const Divider(),
-                        GestureDetector(
-                          onTap: () {
-                            showLicensePage(context: context);
-                          },
-                          child: Container(
-                            height: 100,
-                            color: ColorName.main,
-                            child: const TitleMediumRegularText(
-                              'This is tile number 1',
-                            ),
-                          ),
-                        ),
-                        const Divider(),
-                        Container(
-                          height: 100,
-                          color: ColorName.main,
-                          child: const TitleMediumRegularText(
-                            'This is tile number 1',
-                          ),
-                        ),
-                        const Divider(),
-                      ],
-                    );
+                      ),
+                    ];
+                  },
+                ).toList();
+                if (cardWithSeparator.isNotEmpty) {
+                  cardWithSeparator.add(const Divider());
                 }
+                return ExpansionTile(
+                  title: TitleMediumRegularText(viewData.name),
+                  children: cardWithSeparator,
+                );
               },
-              separatorBuilder: (_context, index) {
-                return Divider();
+              separatorBuilder: (separatorContext, index) {
+                return const Divider();
               },
             ),
           ],
