@@ -27,8 +27,18 @@ class AlreadyGetCardQueryServiceImpl implements AlreadyGetCardQueryService {
 
   @override
   Stream<List<AlreadyGetCardDTO>> getStream() {
-    // TODO: implement getStream
-    throw UnimplementedError();
+    return _instance.getStringList(
+      'already_get_cards',
+      defaultValue: [],
+    ).map(
+      (cardIdList) {
+        return cardIdList.map(
+          (cardId) {
+            return AlreadyGetCardDTO(cardId: cardId);
+          },
+        ).toList();
+      },
+    );
   }
 
   void dispose() {
