@@ -3,8 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/app/view_data/list_card_view_data.dart';
-import 'package:manhole_card_navi/app/view_data/list_prefecture_view_data.dart';
+
+import '/app/view_data/list_card_view_data.dart';
+import '/app/view_data/list_prefecture_view_data.dart';
 
 final manholeCardListViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<ManholeCardListViewModel, Key?>(

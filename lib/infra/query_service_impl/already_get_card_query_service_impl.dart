@@ -1,0 +1,37 @@
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logger/logger.dart';
+import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
+
+import '/temporary_provider.dart';
+import '/use_case/dto/already_get_card_dto.dart';
+import '/use_case/query_service/already_get_card_query_service.dart';
+
+final alreadyGetCardQueryServiceProvider =
+    Provider.autoDispose<AlreadyGetCardQueryService>(
+  (ref) {
+    final alreadyGetCardQueryService = AlreadyGetCardQueryServiceImpl(
+      ref.watch(sharedPreferencesProvider),
+    );
+    ref.onDispose(alreadyGetCardQueryService.dispose);
+    return alreadyGetCardQueryService;
+  },
+);
+
+class AlreadyGetCardQueryServiceImpl implements AlreadyGetCardQueryService {
+  AlreadyGetCardQueryServiceImpl(
+    this._instance,
+  );
+
+  final _logger = Logger();
+  final StreamingSharedPreferences _instance;
+
+  @override
+  Stream<List<AlreadyGetCardDTO>> getStream() {
+    // TODO: implement getStream
+    throw UnimplementedError();
+  }
+
+  void dispose() {
+    _logger.d('AlreadyGetCardQueryServiceImpl dispose');
+  }
+}
