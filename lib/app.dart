@@ -107,9 +107,6 @@ class App extends HookConsumerWidget {
           collapsedIconColor: Colors.white,
           shape: const Border(),
           collapsedShape: const Border(),
-          childrenPadding: EdgeInsets.zero,
-          tilePadding: EdgeInsets.zero,
-          expandedAlignment: Alignment.bottomCenter,
         ),
       ),
       home: CheckAppUpdateView(

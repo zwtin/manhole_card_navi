@@ -7,11 +7,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/gen/assets.gen.dart';
+import 'package:uuid/uuid.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/map_modal_provider.dart';
 import '/app/view_data/map_marker_view_data.dart';
+import '/app/view_data/map_markers_view_data.dart';
 import '/app/view_data/map_modal_view_data.dart';
 import '/domain/entity/result.dart';
 import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
@@ -48,7 +51,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     zoom: 12.5,
   );
   bool myLocationEnabled = false;
-  final List<MapMarkerViewData> markersViewData = [];
+  MapMarkersViewData markersViewData = const MapMarkersViewData(list: []);
 
   bool isShowModal = false;
 
@@ -124,70 +127,83 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       return;
     }
     final dtoList = (result as Success<List<MapCardDTO>>).value;
-    markersViewData.clear();
-    for (final dto in dtoList) {
-      final cardImageOrNull = await img.decodeJpgFile(dto.cardImagePath);
-      final pinImageOrNull = await _decodeAsset(dto.pinImagePath);
-      final cardImage = cardImageOrNull!;
-      final pinImage = pinImageOrNull!;
+    const uuid = Uuid();
+    final markersList = await Future.wait(
+      dtoList.map(
+        (dto) async {
+          final cardImageOrNull = await img.decodeJpgFile(dto.imagePath);
+          final String assetPath;
+          switch (dto.distributionState) {
+            case DistributionStateDTO.distributing:
+              assetPath = Assets.images.frameGreen.path;
+            case DistributionStateDTO.stopped:
+              assetPath = Assets.images.frameRed.path;
+            case DistributionStateDTO.notClear:
+              assetPath = Assets.images.frameYellow.path;
+          }
+          final pinImageOrNull = await _decodeAsset(assetPath);
+          final cardImage = cardImageOrNull!;
+          final pinImage = pinImageOrNull!;
 
-      final cardThumbnail = img.copyResize(cardImage, width: 130, height: 180);
-      final pinThumbnail = img.copyResize(pinImage, width: 146, height: 221);
+          final cardThumbnail =
+              img.copyResize(cardImage, width: 130, height: 180);
+          final pinThumbnail =
+              img.copyResize(pinImage, width: 146, height: 221);
 
-      final mergeImage = img.Image(
-        width: 146,
-        height: 221,
-        numChannels: 4,
-      );
-      img.compositeImage(
-        mergeImage,
-        pinThumbnail,
-      );
-      img.compositeImage(
-        mergeImage,
-        cardThumbnail,
-        dstX: 8,
-        dstY: 8,
-      );
-      markersViewData.add(
-        MapMarkerViewData(
-          id: dto.id,
-          icon: img.encodePng(mergeImage).buffer.asUint8List(),
-          latitude: dto.latitude,
-          longitude: dto.longitude,
-        ),
-      );
-    }
+          final mergeImage = img.Image(
+            width: 146,
+            height: 221,
+            numChannels: 4,
+          );
+          img.compositeImage(
+            mergeImage,
+            pinThumbnail,
+          );
+          img.compositeImage(
+            mergeImage,
+            cardThumbnail,
+            dstX: 8,
+            dstY: 8,
+          );
+
+          return MapMarkerViewData(
+            id: uuid.v4(),
+            cardId: dto.id,
+            icon: img.encodePng(mergeImage).buffer.asUint8List(),
+            latitude: dto.latitude,
+            longitude: dto.longitude,
+          );
+        },
+      ).toList(),
+    );
+    markersViewData = MapMarkersViewData(list: markersList);
     notifyListeners();
   }
 
   Future<void> onTapMarker(String markerId) async {
+    final markerViewData = markersViewData.get(markerId);
+    if (markerViewData == null) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: 'カード情報の取得に失敗しました',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {},
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+      return;
+    }
     isShowModal = true;
-    final markerViewData = markersViewData.firstWhere(
-      (element) {
-        return element.id == markerId;
-      },
-    );
+    // モーダルViewDataを取得する処理を実装
     final viewData = MapModalViewData(
-      id: markerId,
+      id: markerViewData.id,
       latitude: markerViewData.latitude,
       longitude: markerViewData.longitude,
     );
+    notifyListeners();
     _ref.read(mapModalProvider.notifier).present(
           viewData: viewData,
         );
-    mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(
-            markerViewData.latitude,
-            markerViewData.longitude,
-          ),
-          zoom: 12.5,
-        ),
-      ),
-    );
-    notifyListeners();
   }
 
   Future<void> onCloseMarkerModal() async {

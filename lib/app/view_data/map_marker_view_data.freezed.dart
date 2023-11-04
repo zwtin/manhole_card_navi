@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MapMarkerViewData {
   String get id => throw _privateConstructorUsedError;
+  String get cardId => throw _privateConstructorUsedError;
   Uint8List get icon => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
@@ -32,7 +33,12 @@ abstract class $MapMarkerViewDataCopyWith<$Res> {
           MapMarkerViewData value, $Res Function(MapMarkerViewData) then) =
       _$MapMarkerViewDataCopyWithImpl<$Res, MapMarkerViewData>;
   @useResult
-  $Res call({String id, Uint8List icon, double latitude, double longitude});
+  $Res call(
+      {String id,
+      String cardId,
+      Uint8List icon,
+      double latitude,
+      double longitude});
 }
 
 /// @nodoc
@@ -49,6 +55,7 @@ class _$MapMarkerViewDataCopyWithImpl<$Res, $Val extends MapMarkerViewData>
   @override
   $Res call({
     Object? id = null,
+    Object? cardId = null,
     Object? icon = null,
     Object? latitude = null,
     Object? longitude = null,
@@ -57,6 +64,10 @@ class _$MapMarkerViewDataCopyWithImpl<$Res, $Val extends MapMarkerViewData>
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      cardId: null == cardId
+          ? _value.cardId
+          : cardId // ignore: cast_nullable_to_non_nullable
               as String,
       icon: null == icon
           ? _value.icon
@@ -82,7 +93,12 @@ abstract class _$$_MapMarkerViewDataCopyWith<$Res>
       __$$_MapMarkerViewDataCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, Uint8List icon, double latitude, double longitude});
+  $Res call(
+      {String id,
+      String cardId,
+      Uint8List icon,
+      double latitude,
+      double longitude});
 }
 
 /// @nodoc
@@ -97,6 +113,7 @@ class __$$_MapMarkerViewDataCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? cardId = null,
     Object? icon = null,
     Object? latitude = null,
     Object? longitude = null,
@@ -105,6 +122,10 @@ class __$$_MapMarkerViewDataCopyWithImpl<$Res>
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      cardId: null == cardId
+          ? _value.cardId
+          : cardId // ignore: cast_nullable_to_non_nullable
               as String,
       icon: null == icon
           ? _value.icon
@@ -127,6 +148,7 @@ class __$$_MapMarkerViewDataCopyWithImpl<$Res>
 class _$_MapMarkerViewData extends _MapMarkerViewData {
   const _$_MapMarkerViewData(
       {required this.id,
+      required this.cardId,
       required this.icon,
       required this.latitude,
       required this.longitude})
@@ -134,6 +156,8 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
 
   @override
   final String id;
+  @override
+  final String cardId;
   @override
   final Uint8List icon;
   @override
@@ -143,7 +167,7 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
 
   @override
   String toString() {
-    return 'MapMarkerViewData(id: $id, icon: $icon, latitude: $latitude, longitude: $longitude)';
+    return 'MapMarkerViewData(id: $id, cardId: $cardId, icon: $icon, latitude: $latitude, longitude: $longitude)';
   }
 
   @override
@@ -152,6 +176,7 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
         (other.runtimeType == runtimeType &&
             other is _$_MapMarkerViewData &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.cardId, cardId) || other.cardId == cardId) &&
             const DeepCollectionEquality().equals(other.icon, icon) &&
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
@@ -160,7 +185,7 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id,
+  int get hashCode => Object.hash(runtimeType, id, cardId,
       const DeepCollectionEquality().hash(icon), latitude, longitude);
 
   @JsonKey(ignore: true)
@@ -174,6 +199,7 @@ class _$_MapMarkerViewData extends _MapMarkerViewData {
 abstract class _MapMarkerViewData extends MapMarkerViewData {
   const factory _MapMarkerViewData(
       {required final String id,
+      required final String cardId,
       required final Uint8List icon,
       required final double latitude,
       required final double longitude}) = _$_MapMarkerViewData;
@@ -181,6 +207,8 @@ abstract class _MapMarkerViewData extends MapMarkerViewData {
 
   @override
   String get id;
+  @override
+  String get cardId;
   @override
   Uint8List get icon;
   @override

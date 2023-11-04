@@ -6,10 +6,16 @@ part 'map_card_dto.freezed.dart';
 abstract class MapCardDTO with _$MapCardDTO {
   const factory MapCardDTO({
     required String id,
-    required String pinImagePath,
-    required String cardImagePath,
+    required String imagePath,
+    required DistributionStateDTO distributionState,
     required double latitude,
     required double longitude,
   }) = _MapCardDTO;
   const MapCardDTO._();
+}
+
+enum DistributionStateDTO {
+  distributing,
+  stopped,
+  notClear,
 }
