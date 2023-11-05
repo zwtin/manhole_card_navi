@@ -58,9 +58,9 @@ class ManholeCardListView extends HookConsumerWidget {
                                 color: ColorName.accent),
                             onTap: () async {
                               Navigator.of(modalContext).pop();
-                              ref
-                                  .read(manholeCardListViewModelProvider(key))
-                                  .onTap();
+                              // ref
+                              //     .read(manholeCardListViewModelProvider(key))
+                              //     .onTap();
                             },
                           ),
                           ListTile(
@@ -71,9 +71,9 @@ class ManholeCardListView extends HookConsumerWidget {
                             title: const TitleMediumRegularText('取得済みのみ'),
                             onTap: () async {
                               Navigator.of(modalContext).pop();
-                              ref
-                                  .read(manholeCardListViewModelProvider(key))
-                                  .onTap();
+                              // ref
+                              //     .read(manholeCardListViewModelProvider(key))
+                              //     .onTap();
                             },
                           ),
                         ],
@@ -93,22 +93,24 @@ class ManholeCardListView extends HookConsumerWidget {
             ListView.separated(
               itemCount: viewModel.prefecturesViewData.length,
               itemBuilder: (itemContext, index) {
-                final viewData =
+                final prefectureViewData =
                     viewModel.prefecturesViewData.getByIndex(index);
-                final cardWithSeparator = viewData.cards.expand(
-                  (card) {
+                final cardWithSeparator = prefectureViewData.cards.expand(
+                  (cardViewData) {
                     return [
                       const Divider(),
                       GestureDetector(
                         onTap: () {
-                          showLicensePage(context: context);
+                          ref
+                              .read(manholeCardListViewModelProvider(key))
+                              .onTap(cardViewData.id);
                         },
                         child: Container(
                           height: 100,
                           width: double.infinity,
                           color: ColorName.main,
-                          child: const BodyLargeRegularText(
-                            'This is tile number 1',
+                          child: Center(
+                            child: Image.memory(cardViewData.icon),
                           ),
                         ),
                       ),
@@ -119,7 +121,7 @@ class ManholeCardListView extends HookConsumerWidget {
                   cardWithSeparator.add(const Divider());
                 }
                 return ExpansionTile(
-                  title: TitleMediumRegularText(viewData.name),
+                  title: TitleMediumRegularText(prefectureViewData.name),
                   children: cardWithSeparator,
                 );
               },
