@@ -3,6 +3,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
 import 'package:manhole_card_navi/app/provider/alert_provider.dart';
+import 'package:manhole_card_navi/app/provider/router_provider.dart';
+import 'package:manhole_card_navi/app/view/detail_view.dart';
 import 'package:manhole_card_navi/app/view_data/list_cards_view_data.dart';
 import 'package:manhole_card_navi/app/view_data/list_prefecture_view_data.dart';
 import 'package:manhole_card_navi/domain/entity/result.dart';
@@ -94,6 +96,16 @@ class ManholeCardListViewModel extends ChangeNotifier {
 
   Future<void> onTap(String cardId) async {
     _logger.d('ManholeCardListViewModel');
+    await _transitionToDetailView(cardId);
+  }
+
+  Future<void> _transitionToDetailView(String cardId) async {
+    await _ref.read(routerProvider(_key).notifier).push(
+          nextWidget: DetailView(
+            key: UniqueKey(),
+            cardId: cardId,
+          ),
+        );
   }
 
   @override
