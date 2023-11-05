@@ -7,7 +7,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/gen/assets.gen.dart';
 import 'package:uuid/uuid.dart';
 
 import '/app/provider/alert_provider.dart';
@@ -17,6 +16,7 @@ import '/app/view_data/map_marker_view_data.dart';
 import '/app/view_data/map_markers_view_data.dart';
 import '/app/view_data/map_modal_view_data.dart';
 import '/domain/entity/result.dart';
+import '/gen/assets.gen.dart';
 import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
 import '/use_case/dto/map_card_dto.dart';
 import '/use_case/query_service/distribution_cards_query_service.dart';

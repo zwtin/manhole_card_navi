@@ -93,7 +93,8 @@ class ManholeCardListView extends HookConsumerWidget {
             ListView.separated(
               itemCount: viewModel.prefecturesViewData.length,
               itemBuilder: (itemContext, index) {
-                final viewData = viewModel.prefecturesViewData.elementAt(index);
+                final viewData =
+                    viewModel.prefecturesViewData.getByIndex(index);
                 final cardWithSeparator = viewData.cards.expand(
                   (card) {
                     return [

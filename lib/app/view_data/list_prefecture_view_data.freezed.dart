@@ -18,7 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ListPrefectureViewData {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  List<ListCardViewData> get cards => throw _privateConstructorUsedError;
+  ListCardsViewData get cards => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ListPrefectureViewDataCopyWith<ListPrefectureViewData> get copyWith =>
@@ -31,7 +31,9 @@ abstract class $ListPrefectureViewDataCopyWith<$Res> {
           $Res Function(ListPrefectureViewData) then) =
       _$ListPrefectureViewDataCopyWithImpl<$Res, ListPrefectureViewData>;
   @useResult
-  $Res call({String id, String name, List<ListCardViewData> cards});
+  $Res call({String id, String name, ListCardsViewData cards});
+
+  $ListCardsViewDataCopyWith<$Res> get cards;
 }
 
 /// @nodoc
@@ -64,8 +66,16 @@ class _$ListPrefectureViewDataCopyWithImpl<$Res,
       cards: null == cards
           ? _value.cards
           : cards // ignore: cast_nullable_to_non_nullable
-              as List<ListCardViewData>,
+              as ListCardsViewData,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ListCardsViewDataCopyWith<$Res> get cards {
+    return $ListCardsViewDataCopyWith<$Res>(_value.cards, (value) {
+      return _then(_value.copyWith(cards: value) as $Val);
+    });
   }
 }
 
@@ -77,7 +87,10 @@ abstract class _$$_ListPrefectureViewDataCopyWith<$Res>
       __$$_ListPrefectureViewDataCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String name, List<ListCardViewData> cards});
+  $Res call({String id, String name, ListCardsViewData cards});
+
+  @override
+  $ListCardsViewDataCopyWith<$Res> get cards;
 }
 
 /// @nodoc
@@ -106,9 +119,9 @@ class __$$_ListPrefectureViewDataCopyWithImpl<$Res>
           : name // ignore: cast_nullable_to_non_nullable
               as String,
       cards: null == cards
-          ? _value._cards
+          ? _value.cards
           : cards // ignore: cast_nullable_to_non_nullable
-              as List<ListCardViewData>,
+              as ListCardsViewData,
     ));
   }
 }
@@ -117,23 +130,15 @@ class __$$_ListPrefectureViewDataCopyWithImpl<$Res>
 
 class _$_ListPrefectureViewData extends _ListPrefectureViewData {
   const _$_ListPrefectureViewData(
-      {required this.id,
-      required this.name,
-      required final List<ListCardViewData> cards})
-      : _cards = cards,
-        super._();
+      {required this.id, required this.name, required this.cards})
+      : super._();
 
   @override
   final String id;
   @override
   final String name;
-  final List<ListCardViewData> _cards;
   @override
-  List<ListCardViewData> get cards {
-    if (_cards is EqualUnmodifiableListView) return _cards;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_cards);
-  }
+  final ListCardsViewData cards;
 
   @override
   String toString() {
@@ -147,12 +152,11 @@ class _$_ListPrefectureViewData extends _ListPrefectureViewData {
             other is _$_ListPrefectureViewData &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            const DeepCollectionEquality().equals(other._cards, _cards));
+            (identical(other.cards, cards) || other.cards == cards));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, name, const DeepCollectionEquality().hash(_cards));
+  int get hashCode => Object.hash(runtimeType, id, name, cards);
 
   @JsonKey(ignore: true)
   @override
@@ -166,7 +170,7 @@ abstract class _ListPrefectureViewData extends ListPrefectureViewData {
   const factory _ListPrefectureViewData(
       {required final String id,
       required final String name,
-      required final List<ListCardViewData> cards}) = _$_ListPrefectureViewData;
+      required final ListCardsViewData cards}) = _$_ListPrefectureViewData;
   const _ListPrefectureViewData._() : super._();
 
   @override
@@ -174,7 +178,7 @@ abstract class _ListPrefectureViewData extends ListPrefectureViewData {
   @override
   String get name;
   @override
-  List<ListCardViewData> get cards;
+  ListCardsViewData get cards;
   @override
   @JsonKey(ignore: true)
   _$$_ListPrefectureViewDataCopyWith<_$_ListPrefectureViewData> get copyWith =>

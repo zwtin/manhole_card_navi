@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
 import '/app/view_data/list_card_view_data.dart';
-import '/app/view_data/list_prefecture_view_data.dart';
+import '/app/view_data/list_prefectures_view_data.dart';
 
 final manholeCardListViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<ManholeCardListViewModel, Key?>(
@@ -27,7 +27,8 @@ class ManholeCardListViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
-  final List<ListPrefectureViewData> prefecturesViewData = [];
+  ListPrefecturesViewData prefecturesViewData =
+      const ListPrefecturesViewData(list: []);
 
   Future<void> onLoad() async {
     _logger.d('ManholeCardListViewModel');
