@@ -4,6 +4,7 @@ import 'package:logger/logger.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
+import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view/license_view.dart';
 import '/app/view/privacy_policy_view.dart';
 import '/app/view/terms_of_service_view.dart';
@@ -40,6 +41,7 @@ class SettingViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _logger.d('SettingViewModel');
+    _ref.read(tabKeyStorageProvider).setTabKey(2, _key);
     await _fetchAppInfo();
   }
 

@@ -12,6 +12,7 @@ import 'package:uuid/uuid.dart';
 import '/app/provider/alert_provider.dart';
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/map_modal_provider.dart';
+import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view_data/map_marker_view_data.dart';
 import '/app/view_data/map_markers_view_data.dart';
 import '/app/view_data/map_modal_view_data.dart';
@@ -57,6 +58,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _logger.d('ManholeCardMapViewModel');
+    _ref.read(tabKeyStorageProvider).setTabKey(0, _key);
     _ref.read(locationPermissionProvider.notifier).request();
     fetchDistributionMarker();
   }

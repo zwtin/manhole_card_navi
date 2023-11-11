@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
 import '/app/provider/router_provider.dart';
+import '/app/provider/tab_key_storage_provider.dart';
 
 final bottomTabViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<BottomTabViewModel, Key?>(
@@ -28,11 +29,13 @@ class BottomTabViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _logger.d('BottomTabViewModel');
+    _ref.read(tabKeyStorageProvider).setBottomTabKey(_key);
   }
 
   void onTap(int index) {
     if (selectedIndex == index) {
-      _ref.read(routerProvider(_key).notifier).popToRoot();
+      final tabKey = _ref.read(tabKeyStorageProvider).getTabKey(selectedIndex);
+      _ref.read(routerProvider(tabKey).notifier).popToRoot();
     } else {
       selectedIndex = index;
       notifyListeners();

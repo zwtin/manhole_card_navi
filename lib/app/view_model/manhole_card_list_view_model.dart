@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/app/provider/alert_provider.dart';
-import 'package:manhole_card_navi/app/provider/router_provider.dart';
-import 'package:manhole_card_navi/app/view/detail_view.dart';
-import 'package:manhole_card_navi/app/view_data/list_cards_view_data.dart';
-import 'package:manhole_card_navi/app/view_data/list_prefecture_view_data.dart';
-import 'package:manhole_card_navi/domain/entity/result.dart';
-import 'package:manhole_card_navi/infra/query_service_impl/list_cards_query_service_impl.dart';
-import 'package:manhole_card_navi/use_case/dto/list_prefecture_dto.dart';
-import 'package:manhole_card_navi/use_case/query_service/list_cards_query_service.dart';
 
+import '/app/provider/alert_provider.dart';
+import '/app/provider/router_provider.dart';
+import '/app/provider/tab_key_storage_provider.dart';
+import '/app/view/detail_view.dart';
 import '/app/view_data/list_card_view_data.dart';
+import '/app/view_data/list_cards_view_data.dart';
+import '/app/view_data/list_prefecture_view_data.dart';
 import '/app/view_data/list_prefectures_view_data.dart';
+import '/domain/entity/result.dart';
+import '/infra/query_service_impl/list_cards_query_service_impl.dart';
+import '/use_case/dto/list_prefecture_dto.dart';
+import '/use_case/query_service/list_cards_query_service.dart';
 
 final manholeCardListViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<ManholeCardListViewModel, Key?>(
@@ -44,6 +45,7 @@ class ManholeCardListViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _logger.d('ManholeCardListViewModel');
+    _ref.read(tabKeyStorageProvider).setTabKey(1, _key);
     fetchCards();
   }
 
