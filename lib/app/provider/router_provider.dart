@@ -20,6 +20,7 @@ class RouterNotifier extends StateNotifier<RouterViewData?> {
       type: TransitionType.push,
       nextWidget: nextWidget,
     );
+    state = null;
   }
 
   Future<void> pushReplacement({
@@ -29,6 +30,7 @@ class RouterNotifier extends StateNotifier<RouterViewData?> {
       type: TransitionType.pushReplacement,
       nextWidget: nextWidget,
     );
+    state = null;
   }
 
   Future<void> present({
@@ -38,18 +40,21 @@ class RouterNotifier extends StateNotifier<RouterViewData?> {
       type: TransitionType.present,
       nextWidget: nextWidget,
     );
+    state = null;
   }
 
   Future<void> pop() async {
     state = const RouterViewData(
       type: TransitionType.pop,
     );
+    state = null;
   }
 
   Future<void> popToRoot() async {
     state = const RouterViewData(
       type: TransitionType.popToRoot,
     );
+    state = null;
   }
 
   void dismiss() {

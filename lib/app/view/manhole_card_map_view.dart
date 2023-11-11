@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -56,6 +57,13 @@ class ManholeCardMapView extends HookConsumerWidget {
 
     return RouterWidget(
       key: key,
+      pop: () {
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        } else {
+          SystemNavigator.pop();
+        }
+      },
       child: Scaffold(
         appBar: AppBar(
           title: const TitleLargeBoldText(

@@ -8,9 +8,11 @@ class RouterWidget extends HookConsumerWidget {
   const RouterWidget({
     super.key,
     required this.child,
+    this.pop,
   });
 
   final Widget child;
+  final void Function()? pop;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +25,7 @@ class RouterWidget extends HookConsumerWidget {
         switch (next?.type) {
           case TransitionType.push:
             if (!context.mounted) {
-              return;
+              break;
             }
             await Navigator.of(context).push(
               MaterialPageRoute<Widget>(
@@ -35,7 +37,7 @@ class RouterWidget extends HookConsumerWidget {
             break;
           case TransitionType.pushReplacement:
             if (!context.mounted) {
-              return;
+              break;
             }
             await Navigator.of(context).pushReplacement(
               PageRouteBuilder<Widget>(
@@ -53,7 +55,7 @@ class RouterWidget extends HookConsumerWidget {
             break;
           case TransitionType.present:
             if (!context.mounted) {
-              return;
+              break;
             }
             await Navigator.of(
               context,
@@ -69,13 +71,17 @@ class RouterWidget extends HookConsumerWidget {
             break;
           case TransitionType.pop:
             if (!context.mounted) {
-              return;
+              break;
             }
-            Navigator.of(context).pop();
+            if (pop != null) {
+              pop!();
+            } else {
+              Navigator.of(context).pop();
+            }
             break;
           case TransitionType.popToRoot:
             if (!context.mounted) {
-              return;
+              break;
             }
             Navigator.of(context).popUntil((route) => route.isFirst);
             break;

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '/app/provider/tab_key_storage_provider.dart';
+import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/view_model/setting_view_model.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
@@ -30,6 +32,15 @@ class SettingView extends HookConsumerWidget {
 
     return RouterWidget(
       key: key,
+      pop: () {
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        } else {
+          final bottomTabKey =
+              ref.read(tabKeyStorageProvider).getBottomTabKey();
+          ref.read(bottomTabViewModelProvider(bottomTabKey)).onTap(0);
+        }
+      },
       child: Scaffold(
         appBar: AppBar(
           title: const TitleLargeBoldText(

@@ -49,73 +49,79 @@ class BottomTabView extends HookConsumerWidget {
     return AlertWidget(
       child: RouterWidget(
         key: key,
-        child: Scaffold(
-          bottomNavigationBar: ConvexAppBar(
-            backgroundColor: ColorName.background,
-            activeColor: ColorName.main,
-            controller: controller,
-            initialActiveIndex: viewModel.selectedIndex,
-            onTap: (index) {
-              ref.read(bottomTabViewModelProvider(key)).onTap(index);
-            },
-            items: const [
-              TabItem<IconData>(
-                icon: Icons.map_outlined,
-                title: 'マップ',
-              ),
-              TabItem<IconData>(
-                icon: Icons.list_alt,
-                title: 'リスト',
-              ),
-              TabItem<IconData>(
-                icon: Icons.settings,
-                title: '設定',
-              ),
-            ],
-          ),
-          body: IndexedStack(
-            index: viewModel.selectedIndex,
-            children: <Widget>[
-              Navigator(
-                onGenerateRoute: (settings) {
-                  return PageRouteBuilder<Widget>(
-                    pageBuilder: (
-                      context,
-                      animation1,
-                      animation2,
-                    ) {
-                      return tab0;
-                    },
-                  );
-                },
-              ),
-              Navigator(
-                onGenerateRoute: (settings) {
-                  return PageRouteBuilder<Widget>(
-                    pageBuilder: (
-                      context,
-                      animation1,
-                      animation2,
-                    ) {
-                      return tab1;
-                    },
-                  );
-                },
-              ),
-              Navigator(
-                onGenerateRoute: (settings) {
-                  return PageRouteBuilder<Widget>(
-                    pageBuilder: (
-                      context,
-                      animation1,
-                      animation2,
-                    ) {
-                      return tab2;
-                    },
-                  );
-                },
-              ),
-            ],
+        child: WillPopScope(
+          onWillPop: () async {
+            ref.read(bottomTabViewModelProvider(key)).pop();
+            return false;
+          },
+          child: Scaffold(
+            bottomNavigationBar: ConvexAppBar(
+              backgroundColor: ColorName.background,
+              activeColor: ColorName.main,
+              controller: controller,
+              initialActiveIndex: viewModel.selectedIndex,
+              onTap: (index) {
+                ref.read(bottomTabViewModelProvider(key)).onTap(index);
+              },
+              items: const [
+                TabItem<IconData>(
+                  icon: Icons.map_outlined,
+                  title: 'マップ',
+                ),
+                TabItem<IconData>(
+                  icon: Icons.list_alt,
+                  title: 'リスト',
+                ),
+                TabItem<IconData>(
+                  icon: Icons.settings,
+                  title: '設定',
+                ),
+              ],
+            ),
+            body: IndexedStack(
+              index: viewModel.selectedIndex,
+              children: <Widget>[
+                Navigator(
+                  onGenerateRoute: (settings) {
+                    return PageRouteBuilder<Widget>(
+                      pageBuilder: (
+                        context,
+                        animation1,
+                        animation2,
+                      ) {
+                        return tab0;
+                      },
+                    );
+                  },
+                ),
+                Navigator(
+                  onGenerateRoute: (settings) {
+                    return PageRouteBuilder<Widget>(
+                      pageBuilder: (
+                        context,
+                        animation1,
+                        animation2,
+                      ) {
+                        return tab1;
+                      },
+                    );
+                  },
+                ),
+                Navigator(
+                  onGenerateRoute: (settings) {
+                    return PageRouteBuilder<Widget>(
+                      pageBuilder: (
+                        context,
+                        animation1,
+                        animation2,
+                      ) {
+                        return tab2;
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

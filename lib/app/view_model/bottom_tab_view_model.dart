@@ -42,6 +42,11 @@ class BottomTabViewModel extends ChangeNotifier {
     }
   }
 
+  void pop() {
+    final tabKey = _ref.read(tabKeyStorageProvider).getTabKey(selectedIndex);
+    _ref.read(routerProvider(tabKey).notifier).pop();
+  }
+
   @override
   void dispose() {
     super.dispose();
