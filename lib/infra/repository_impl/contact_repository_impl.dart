@@ -3,8 +3,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:realm/realm.dart';
 
-import '/domain/entity/current_master_version.dart';
 import '/domain/entity/custom_exception.dart';
+import '/domain/entity/inquired_master_version.dart';
 import '/domain/entity/manhole_card_contact.dart';
 import '/domain/entity/manhole_card_contacts.dart';
 import '/domain/entity/result.dart';
@@ -27,11 +27,11 @@ class ContactRepositoryImpl implements ContactRepository {
 
   @override
   Future<Result<ManholeCardContacts>> fetchMaster({
-    required CurrentMasterVersion currentMasterVersion,
+    required InquiredMasterVersion inquiredMasterVersion,
   }) async {
     final querySnapshot = await _firestore
         .collection('master')
-        .doc(currentMasterVersion.value)
+        .doc(inquiredMasterVersion.value)
         .collection('contacts')
         .get();
     final list = querySnapshot.docs.map(

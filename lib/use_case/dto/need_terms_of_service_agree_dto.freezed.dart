@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'is_first_open_dto.dart';
+part of 'need_terms_of_service_agree_dto.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,27 +15,29 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
-mixin _$IsFirstOpenDTO {
+mixin _$NeedTermsOfServiceAgreeDTO {
   bool get value => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $IsFirstOpenDTOCopyWith<IsFirstOpenDTO> get copyWith =>
-      throw _privateConstructorUsedError;
+  $NeedTermsOfServiceAgreeDTOCopyWith<NeedTermsOfServiceAgreeDTO>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $IsFirstOpenDTOCopyWith<$Res> {
-  factory $IsFirstOpenDTOCopyWith(
-          IsFirstOpenDTO value, $Res Function(IsFirstOpenDTO) then) =
-      _$IsFirstOpenDTOCopyWithImpl<$Res, IsFirstOpenDTO>;
+abstract class $NeedTermsOfServiceAgreeDTOCopyWith<$Res> {
+  factory $NeedTermsOfServiceAgreeDTOCopyWith(NeedTermsOfServiceAgreeDTO value,
+          $Res Function(NeedTermsOfServiceAgreeDTO) then) =
+      _$NeedTermsOfServiceAgreeDTOCopyWithImpl<$Res,
+          NeedTermsOfServiceAgreeDTO>;
   @useResult
   $Res call({bool value});
 }
 
 /// @nodoc
-class _$IsFirstOpenDTOCopyWithImpl<$Res, $Val extends IsFirstOpenDTO>
-    implements $IsFirstOpenDTOCopyWith<$Res> {
-  _$IsFirstOpenDTOCopyWithImpl(this._value, this._then);
+class _$NeedTermsOfServiceAgreeDTOCopyWithImpl<$Res,
+        $Val extends NeedTermsOfServiceAgreeDTO>
+    implements $NeedTermsOfServiceAgreeDTOCopyWith<$Res> {
+  _$NeedTermsOfServiceAgreeDTOCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -57,22 +59,25 @@ class _$IsFirstOpenDTOCopyWithImpl<$Res, $Val extends IsFirstOpenDTO>
 }
 
 /// @nodoc
-abstract class _$$_IsFirstOpenDTOCopyWith<$Res>
-    implements $IsFirstOpenDTOCopyWith<$Res> {
-  factory _$$_IsFirstOpenDTOCopyWith(
-          _$_IsFirstOpenDTO value, $Res Function(_$_IsFirstOpenDTO) then) =
-      __$$_IsFirstOpenDTOCopyWithImpl<$Res>;
+abstract class _$$_NeedTermsOfServiceAgreeDTOCopyWith<$Res>
+    implements $NeedTermsOfServiceAgreeDTOCopyWith<$Res> {
+  factory _$$_NeedTermsOfServiceAgreeDTOCopyWith(
+          _$_NeedTermsOfServiceAgreeDTO value,
+          $Res Function(_$_NeedTermsOfServiceAgreeDTO) then) =
+      __$$_NeedTermsOfServiceAgreeDTOCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({bool value});
 }
 
 /// @nodoc
-class __$$_IsFirstOpenDTOCopyWithImpl<$Res>
-    extends _$IsFirstOpenDTOCopyWithImpl<$Res, _$_IsFirstOpenDTO>
-    implements _$$_IsFirstOpenDTOCopyWith<$Res> {
-  __$$_IsFirstOpenDTOCopyWithImpl(
-      _$_IsFirstOpenDTO _value, $Res Function(_$_IsFirstOpenDTO) _then)
+class __$$_NeedTermsOfServiceAgreeDTOCopyWithImpl<$Res>
+    extends _$NeedTermsOfServiceAgreeDTOCopyWithImpl<$Res,
+        _$_NeedTermsOfServiceAgreeDTO>
+    implements _$$_NeedTermsOfServiceAgreeDTOCopyWith<$Res> {
+  __$$_NeedTermsOfServiceAgreeDTOCopyWithImpl(
+      _$_NeedTermsOfServiceAgreeDTO _value,
+      $Res Function(_$_NeedTermsOfServiceAgreeDTO) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -80,7 +85,7 @@ class __$$_IsFirstOpenDTOCopyWithImpl<$Res>
   $Res call({
     Object? value = null,
   }) {
-    return _then(_$_IsFirstOpenDTO(
+    return _then(_$_NeedTermsOfServiceAgreeDTO(
       value: null == value
           ? _value.value
           : value // ignore: cast_nullable_to_non_nullable
@@ -91,22 +96,22 @@ class __$$_IsFirstOpenDTOCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_IsFirstOpenDTO extends _IsFirstOpenDTO {
-  const _$_IsFirstOpenDTO({required this.value}) : super._();
+class _$_NeedTermsOfServiceAgreeDTO extends _NeedTermsOfServiceAgreeDTO {
+  const _$_NeedTermsOfServiceAgreeDTO({required this.value}) : super._();
 
   @override
   final bool value;
 
   @override
   String toString() {
-    return 'IsFirstOpenDTO(value: $value)';
+    return 'NeedTermsOfServiceAgreeDTO(value: $value)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_IsFirstOpenDTO &&
+            other is _$_NeedTermsOfServiceAgreeDTO &&
             (identical(other.value, value) || other.value == value));
   }
 
@@ -116,19 +121,20 @@ class _$_IsFirstOpenDTO extends _IsFirstOpenDTO {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_IsFirstOpenDTOCopyWith<_$_IsFirstOpenDTO> get copyWith =>
-      __$$_IsFirstOpenDTOCopyWithImpl<_$_IsFirstOpenDTO>(this, _$identity);
+  _$$_NeedTermsOfServiceAgreeDTOCopyWith<_$_NeedTermsOfServiceAgreeDTO>
+      get copyWith => __$$_NeedTermsOfServiceAgreeDTOCopyWithImpl<
+          _$_NeedTermsOfServiceAgreeDTO>(this, _$identity);
 }
 
-abstract class _IsFirstOpenDTO extends IsFirstOpenDTO {
-  const factory _IsFirstOpenDTO({required final bool value}) =
-      _$_IsFirstOpenDTO;
-  const _IsFirstOpenDTO._() : super._();
+abstract class _NeedTermsOfServiceAgreeDTO extends NeedTermsOfServiceAgreeDTO {
+  const factory _NeedTermsOfServiceAgreeDTO({required final bool value}) =
+      _$_NeedTermsOfServiceAgreeDTO;
+  const _NeedTermsOfServiceAgreeDTO._() : super._();
 
   @override
   bool get value;
   @override
   @JsonKey(ignore: true)
-  _$$_IsFirstOpenDTOCopyWith<_$_IsFirstOpenDTO> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$_NeedTermsOfServiceAgreeDTOCopyWith<_$_NeedTermsOfServiceAgreeDTO>
+      get copyWith => throw _privateConstructorUsedError;
 }

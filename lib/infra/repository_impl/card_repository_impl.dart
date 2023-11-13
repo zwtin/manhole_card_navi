@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:realm/realm.dart';
 
-import '/domain/entity/current_master_version.dart';
+import '/domain/entity/inquired_master_version.dart';
 import '/domain/entity/manhole_card.dart';
 import '/domain/entity/manhole_card_contact.dart';
 import '/domain/entity/manhole_card_contacts.dart';
@@ -35,11 +35,11 @@ class CardRepositoryImpl implements CardRepository {
 
   @override
   Future<Result<ManholeCards>> fetchMaster({
-    required CurrentMasterVersion currentMasterVersion,
+    required InquiredMasterVersion inquiredMasterVersion,
   }) async {
     final cardsQuerySnapshot = await _firestore
         .collection('master')
-        .doc(currentMasterVersion.value)
+        .doc(inquiredMasterVersion.value)
         .collection('cards')
         .get();
     final cardList = await Future.wait(
@@ -49,7 +49,7 @@ class CardRepositoryImpl implements CardRepository {
 
           final contactsQuerySnapshot = await _firestore
               .collection('master')
-              .doc(currentMasterVersion.value)
+              .doc(inquiredMasterVersion.value)
               .collection('cards')
               .doc(cardId)
               .collection('contact_id')

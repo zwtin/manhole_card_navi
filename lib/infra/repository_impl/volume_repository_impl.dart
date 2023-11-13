@@ -3,8 +3,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:realm/realm.dart';
 
-import '/domain/entity/current_master_version.dart';
 import '/domain/entity/custom_exception.dart';
+import '/domain/entity/inquired_master_version.dart';
 import '/domain/entity/manhole_card_volume.dart';
 import '/domain/entity/manhole_card_volumes.dart';
 import '/domain/entity/result.dart';
@@ -27,11 +27,11 @@ class VolumeRepositoryImpl implements VolumeRepository {
 
   @override
   Future<Result<ManholeCardVolumes>> fetchMaster({
-    required CurrentMasterVersion currentMasterVersion,
+    required InquiredMasterVersion inquiredMasterVersion,
   }) async {
     final querySnapshot = await _firestore
         .collection('master')
-        .doc(currentMasterVersion.value)
+        .doc(inquiredMasterVersion.value)
         .collection('volumes')
         .get();
     final list = querySnapshot.docs.map(

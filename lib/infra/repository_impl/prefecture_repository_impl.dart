@@ -3,8 +3,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:realm/realm.dart';
 
-import '/domain/entity/current_master_version.dart';
 import '/domain/entity/custom_exception.dart';
+import '/domain/entity/inquired_master_version.dart';
 import '/domain/entity/manhole_card_prefecture.dart';
 import '/domain/entity/manhole_card_prefectures.dart';
 import '/domain/entity/result.dart';
@@ -27,11 +27,11 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
 
   @override
   Future<Result<ManholeCardPrefectures>> fetchMaster({
-    required CurrentMasterVersion currentMasterVersion,
+    required InquiredMasterVersion inquiredMasterVersion,
   }) async {
     final querySnapshot = await _firestore
         .collection('master')
-        .doc(currentMasterVersion.value)
+        .doc(inquiredMasterVersion.value)
         .collection('prefectures')
         .get();
     final list = querySnapshot.docs.map(

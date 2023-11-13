@@ -1,11 +1,11 @@
-import '/domain/entity/current_master_version.dart';
+import '/domain/entity/inquired_master_version.dart';
 import '/domain/entity/manhole_card_volume.dart';
 import '/domain/entity/manhole_card_volumes.dart';
 import '/domain/entity/result.dart';
 
 abstract class VolumeRepository {
   Future<Result<ManholeCardVolumes>> fetchMaster({
-    required CurrentMasterVersion currentMasterVersion,
+    required InquiredMasterVersion inquiredMasterVersion,
   });
   Future<Result<void>> deleteMaster();
   Future<Result<void>> saveMaster({

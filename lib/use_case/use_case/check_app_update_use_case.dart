@@ -45,27 +45,27 @@ class CheckAppUpdateUseCase {
     }
 
     final appInfo = (result.elementAt(0) as Success<AppInfo>).value;
-    final inquiredAppVersion =
+    final inquiredVersion =
         (result.elementAt(1) as Success<InquiredAppVersion>).value;
 
     return Result.success(
       NeedAppUpdateDTO(
-        value: _checkNeedAppUpdate(
+        value: _checkNeedUpdate(
           appInfo: appInfo,
-          inquiredAppVersion: inquiredAppVersion,
+          inquiredVersion: inquiredVersion,
         ),
       ),
     );
   }
 
-  bool _checkNeedAppUpdate({
+  bool _checkNeedUpdate({
     required AppInfo appInfo,
-    required InquiredAppVersion inquiredAppVersion,
+    required InquiredAppVersion inquiredVersion,
   }) {
     final currentAppVersionList =
         appInfo.version.split('.').map(int.parse).toList();
     final inquiredAppVersionList =
-        inquiredAppVersion.value.split('.').map(int.parse).toList();
+        inquiredVersion.value.split('.').map(int.parse).toList();
 
     final forceVersionMap = inquiredAppVersionList.asMap();
     for (final index in forceVersionMap.keys) {

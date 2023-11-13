@@ -64,10 +64,10 @@ class CheckMasterUpdateUseCase {
 
   final _logger = Logger();
 
-  Future<Result<NeedMasterUpdateDTO>> getNeedMasterUpdate() async {
+  Future<Result<NeedMasterUpdateDTO>> getNeedUpdate() async {
     final result = await Future.wait([
-      _masterVersionRepository.getCurrentMasterVersion(),
-      _masterVersionRepository.getInquiredMasterVersion(),
+      _masterVersionRepository.getCurrentVersion(),
+      _masterVersionRepository.getInquiredVersion(),
     ]);
 
     if (result.whereType<Failure>().isNotEmpty) {
@@ -79,22 +79,22 @@ class CheckMasterUpdateUseCase {
       );
     }
 
-    final currentMasterVersion =
+    final currentVersion =
         (result.elementAt(0) as Success<CurrentMasterVersion>).value;
-    final inquiredMasterVersion =
+    final inquiredVersion =
         (result.elementAt(1) as Success<InquiredMasterVersion>).value;
 
     return Result.success(
       NeedMasterUpdateDTO(
-        value: currentMasterVersion.value != inquiredMasterVersion.value,
+        value: currentVersion.value != inquiredVersion.value,
       ),
     );
   }
 
   Future<Result<void>> updateMaster() async {
-    final getInquiredMasterVersionResult =
-        await _masterVersionRepository.getInquiredMasterVersion();
-    if (getInquiredMasterVersionResult is Failure) {
+    final getInquiredVersionResult =
+        await _masterVersionRepository.getInquiredVersion();
+    if (getInquiredVersionResult is Failure) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
@@ -102,17 +102,14 @@ class CheckMasterUpdateUseCase {
         ),
       );
     }
-    final inquiredMasterVersion =
-        (getInquiredMasterVersionResult as Success<InquiredMasterVersion>)
-            .value;
-    final currentMasterVersion =
-        CurrentMasterVersion(value: inquiredMasterVersion.value);
+    final inquiredVersion =
+        (getInquiredVersionResult as Success<InquiredMasterVersion>).value;
 
     final result = await Future.wait([
-      _updateContactMaster(currentMasterVersion: currentMasterVersion),
-      _updateImageMaster(currentMasterVersion: currentMasterVersion),
-      _updatePrefectureMaster(currentMasterVersion: currentMasterVersion),
-      _updateVolumeMaster(currentMasterVersion: currentMasterVersion),
+      _updateContactMaster(inquiredVersion: inquiredVersion),
+      _updateImageMaster(inquiredVersion: inquiredVersion),
+      _updatePrefectureMaster(inquiredVersion: inquiredVersion),
+      _updateVolumeMaster(inquiredVersion: inquiredVersion),
     ]);
 
     if (result.whereType<Failure>().isNotEmpty) {
@@ -125,7 +122,7 @@ class CheckMasterUpdateUseCase {
     }
 
     final updateCardMasterResult =
-        await _updateCardMaster(currentMasterVersion: currentMasterVersion);
+        await _updateCardMaster(inquiredVersion: inquiredVersion);
     if (updateCardMasterResult is Failure) {
       return const Result.failure(
         CustomException(
@@ -135,8 +132,10 @@ class CheckMasterUpdateUseCase {
       );
     }
 
+    final currentMasterVersion =
+        CurrentMasterVersion(value: inquiredVersion.value);
     final setCurrentMasterVersionResult = await _masterVersionRepository
-        .setCurrentMasterVersion(currentMasterVersion: currentMasterVersion);
+        .setCurrentVersion(currentMasterVersion: currentMasterVersion);
     if (setCurrentMasterVersionResult is Failure) {
       return const Result.failure(
         CustomException(
@@ -150,10 +149,10 @@ class CheckMasterUpdateUseCase {
   }
 
   Future<Result<void>> _updateCardMaster({
-    required CurrentMasterVersion currentMasterVersion,
+    required InquiredMasterVersion inquiredVersion,
   }) async {
     final fetchResult = await _cardRepository.fetchMaster(
-      currentMasterVersion: currentMasterVersion,
+      inquiredMasterVersion: inquiredVersion,
     );
     if (fetchResult is Failure) {
       return const Result.failure(
@@ -242,10 +241,10 @@ class CheckMasterUpdateUseCase {
   }
 
   Future<Result<void>> _updateContactMaster({
-    required CurrentMasterVersion currentMasterVersion,
+    required InquiredMasterVersion inquiredVersion,
   }) async {
     final fetchResult = await _contactRepository.fetchMaster(
-      currentMasterVersion: currentMasterVersion,
+      inquiredMasterVersion: inquiredVersion,
     );
     if (fetchResult is Failure) {
       return const Result.failure(
@@ -284,10 +283,10 @@ class CheckMasterUpdateUseCase {
   }
 
   Future<Result<void>> _updateImageMaster({
-    required CurrentMasterVersion currentMasterVersion,
+    required InquiredMasterVersion inquiredVersion,
   }) async {
     final fetchResult = await _imageRepository.fetchMaster(
-      currentMasterVersion: currentMasterVersion,
+      inquiredMasterVersion: inquiredVersion,
     );
     if (fetchResult is Failure) {
       return const Result.failure(
@@ -340,10 +339,10 @@ class CheckMasterUpdateUseCase {
   }
 
   Future<Result<void>> _updatePrefectureMaster({
-    required CurrentMasterVersion currentMasterVersion,
+    required InquiredMasterVersion inquiredVersion,
   }) async {
     final fetchResult = await _prefectureRepository.fetchMaster(
-      currentMasterVersion: currentMasterVersion,
+      inquiredMasterVersion: inquiredVersion,
     );
     if (fetchResult is Failure) {
       return const Result.failure(
@@ -382,10 +381,10 @@ class CheckMasterUpdateUseCase {
   }
 
   Future<Result<void>> _updateVolumeMaster({
-    required CurrentMasterVersion currentMasterVersion,
+    required InquiredMasterVersion inquiredVersion,
   }) async {
     final fetchResult = await _volumeRepository.fetchMaster(
-      currentMasterVersion: currentMasterVersion,
+      inquiredMasterVersion: inquiredVersion,
     );
     if (fetchResult is Failure) {
       return const Result.failure(

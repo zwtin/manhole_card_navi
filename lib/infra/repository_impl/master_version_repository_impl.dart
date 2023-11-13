@@ -31,7 +31,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
   final StreamingSharedPreferences _instance;
 
   @override
-  Future<Result<InquiredMasterVersion>> getInquiredMasterVersion() async {
+  Future<Result<InquiredMasterVersion>> getInquiredVersion() async {
     final inquiredMasterVersion =
         _remoteConfig.getString('inquired_master_version');
     return Result.success(
@@ -42,7 +42,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
   }
 
   @override
-  Future<Result<CurrentMasterVersion>> getCurrentMasterVersion() async {
+  Future<Result<CurrentMasterVersion>> getCurrentVersion() async {
     final currentMasterVersion = _instance
         .getString(
           'current_master_version',
@@ -57,7 +57,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
   }
 
   @override
-  Future<Result<void>> setCurrentMasterVersion({
+  Future<Result<void>> setCurrentVersion({
     required CurrentMasterVersion currentMasterVersion,
   }) async {
     final result = await _instance.setString(

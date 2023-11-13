@@ -7,8 +7,8 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:realm/realm.dart';
 
-import '/domain/entity/current_master_version.dart';
 import '/domain/entity/custom_exception.dart';
+import '/domain/entity/inquired_master_version.dart';
 import '/domain/entity/manhole_card_image.dart';
 import '/domain/entity/manhole_card_images.dart';
 import '/domain/entity/result.dart';
@@ -32,11 +32,11 @@ class ImageRepositoryImpl implements ImageRepository {
 
   @override
   Future<Result<ManholeCardImages>> fetchMaster({
-    required CurrentMasterVersion currentMasterVersion,
+    required InquiredMasterVersion inquiredMasterVersion,
   }) async {
     final querySnapshot = await _firestore
         .collection('master')
-        .doc(currentMasterVersion.value)
+        .doc(inquiredMasterVersion.value)
         .collection('images')
         .get();
     final list = querySnapshot.docs.map(
