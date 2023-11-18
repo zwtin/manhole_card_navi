@@ -5,6 +5,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 
 import '/app/view_model/check_terms_of_service_agree_view_model.dart';
 import '/app/widget/alert_widget.dart';
+import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';
 
@@ -37,8 +38,37 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
           isLoading: viewModel.isLoading,
           color: Colors.grey,
           child: Scaffold(
-            body: Container(
-              color: ColorName.main,
+            appBar: AppBar(
+              title: const TitleLargeBoldText(
+                '同意確認',
+              ),
+            ),
+            body: Stack(
+              children: [
+                Container(
+                  color: ColorName.main,
+                ),
+                Column(
+                  children: [
+                    const BodyMediumRegularText('利用規約とプライバシーポリシーに同意する必要があります。'),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0.0,
+                      ),
+                      onPressed: () async {
+                        await ref
+                            .read(
+                                checkTermsOfServiceAgreeViewModelProvider(key))
+                            .onTapAgreeButton();
+                      },
+                      child: const BodyMediumRegularText('同意する'),
+                    ),
+                  ],
+                )
+              ],
             ),
           ),
         ),

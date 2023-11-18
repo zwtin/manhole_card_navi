@@ -4,11 +4,10 @@ import 'package:logger/logger.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
-import '/app/view/check_master_update_view.dart';
+import '/app/view/bottom_tab_view.dart';
 import '/domain/entity/result.dart';
-import '/use_case/dto/need_app_update_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
-import '/use_case/use_case/check_app_update_use_case.dart';
+import '/use_case/use_case/save_terms_of_service_agree_version_use_case.dart';
 
 final checkTermsOfServiceAgreeViewModelProvider = ChangeNotifierProvider.family
     .autoDispose<CheckTermsOfServiceAgreeViewModel, Key?>(
@@ -17,7 +16,7 @@ final checkTermsOfServiceAgreeViewModelProvider = ChangeNotifierProvider.family
       key,
       ref,
       ref.watch(analyticsUseCaseProvider),
-      ref.watch(checkAppUpdateUseCaseProvider),
+      ref.watch(saveTermsOfServiceAgreeVersionUseCaseProvider),
     );
   },
 );
@@ -27,7 +26,7 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
     this._key,
     this._ref,
     this._analyticsUseCase,
-    this._checkAppUpdateUseCase,
+    this._saveTermsOfServiceAgreeVersionUseCase,
   );
 
   final Key? _key;
@@ -35,48 +34,23 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
   final _logger = Logger();
 
   final AnalyticsUseCase _analyticsUseCase;
-  final CheckAppUpdateUseCase _checkAppUpdateUseCase;
+  final SaveTermsOfServiceAgreeVersionUseCase
+      _saveTermsOfServiceAgreeVersionUseCase;
 
   bool isLoading = false;
 
   Future<void> onLoad() async {
-    _logger.d('CheckAppUpdateViewModel');
-    // await _sendPVEvent();
-    // await _checkNeedUpdate();
+    _logger.d('CheckTermsOfServiceAgreeViewModel');
+    await _sendPVEvent();
   }
 
-  Future<void> _checkNeedUpdate() async {
-    isLoading = true;
-    notifyListeners();
-    final result = await _checkAppUpdateUseCase.getNeedUpdate();
-    isLoading = false;
-    notifyListeners();
+  Future<void> onTapAgreeButton() async {
+    final result = await _agreeTermsOfService();
     if (result is Failure) {
-      _ref.read(alertProvider.notifier).show(
-            title: 'エラー',
-            message: 'アプリバージョンの取得に失敗しました',
-            okButtonTitle: 'OK',
-            okButtonAction: () async {
-              await _checkNeedUpdate();
-            },
-            cancelButtonTitle: null,
-            cancelButtonAction: null,
-          );
+      return;
     }
-    final needAppUpdateDTO = (result as Success<NeedAppUpdateDTO>).value;
-    if (needAppUpdateDTO.value) {
-      _ref.read(alertProvider.notifier).show(
-            title: 'エラー',
-            message: '最新バージョンのアプリをお使いください',
-            okButtonTitle: 'OK',
-            okButtonAction: () async {
-              await _checkNeedUpdate();
-            },
-            cancelButtonTitle: null,
-            cancelButtonAction: null,
-          );
-    } else {
-      await _transitionToCheckMasterUpdateView();
+    if ((result as Success<bool>).value) {
+      await _transitionToBottomTabView();
     }
   }
 
@@ -87,9 +61,31 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
     );
   }
 
-  Future<void> _transitionToCheckMasterUpdateView() async {
+  Future<Result<bool>> _agreeTermsOfService() async {
+    isLoading = true;
+    notifyListeners();
+    final result = await _saveTermsOfServiceAgreeVersionUseCase.save();
+    isLoading = false;
+    notifyListeners();
+    if (result is Failure) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: '同意バージョンの保存に失敗しました',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {
+              await _agreeTermsOfService();
+            },
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+      return Result.failure(Exception());
+    }
+    return const Result.success(true);
+  }
+
+  Future<void> _transitionToBottomTabView() async {
     await _ref.read(routerProvider(_key).notifier).pushReplacement(
-          nextWidget: CheckMasterUpdateView(
+          nextWidget: BottomTabView(
             key: UniqueKey(),
           ),
         );
