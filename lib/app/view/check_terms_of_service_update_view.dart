@@ -38,35 +38,48 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
         child: LoadingOverlay(
           isLoading: viewModel.isLoading,
           color: Colors.grey,
-          child: Scaffold(
-            appBar: AppBar(
-              title: const TitleLargeBoldText(
-                '同意確認',
-              ),
-            ),
-            body: Stack(
-              children: [
-                Container(
-                  color: ColorName.main,
-                ),
-                Column(
-                  children: [
-                    const BodyMediumRegularText('利用規約とプライバシーポリシーが更新されました。'),
-                    const SizedBox(
-                      height: 16,
+          child: viewModel.inquireUpdate
+              ? Scaffold(
+                  appBar: AppBar(
+                    title: const TitleLargeBoldText(
+                      '同意確認',
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0.0,
+                  ),
+                  body: Stack(
+                    children: [
+                      Container(
+                        color: ColorName.main,
                       ),
-                      onPressed: () {},
-                      child: const BodyMediumRegularText('同意する'),
-                    ),
-                  ],
+                      Column(
+                        children: [
+                          const BodyMediumRegularText(
+                              '利用規約とプライバシーポリシーが更新されました。'),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0.0,
+                            ),
+                            onPressed: () async {
+                              await ref
+                                  .read(
+                                      checkTermsOfServiceUpdateViewModelProvider(
+                                          key))
+                                  .onTapAgreeButton();
+                            },
+                            child: const BodyMediumRegularText('同意する'),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 )
-              ],
-            ),
-          ),
+              : Scaffold(
+                  body: Container(
+                    color: ColorName.main,
+                  ),
+                ),
         ),
       ),
     );
