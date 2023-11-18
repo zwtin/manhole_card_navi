@@ -4,14 +4,14 @@ import 'package:logger/logger.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
-import '/app/view/bottom_tab_view.dart';
+import '/app/view/check_terms_of_service_update_view.dart';
 import '/app/view/custom_introduction_view.dart';
 import '/domain/entity/result.dart';
-import '/use_case/dto/is_first_open_dto.dart';
 import '/use_case/dto/need_master_update_dto.dart';
+import '/use_case/dto/need_terms_of_service_agree_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/check_master_update_use_case.dart';
-import '/use_case/use_case/is_first_open_use_case.dart';
+import '/use_case/use_case/check_terms_of_service_agree_use_case.dart';
 
 final checkMasterUpdateViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<CheckMasterUpdateViewModel, Key?>(
@@ -21,7 +21,7 @@ final checkMasterUpdateViewModelProvider =
       ref,
       ref.watch(analyticsUseCaseProvider),
       ref.watch(checkMasterUpdateUseCaseProvider),
-      ref.watch(isFirstOpenUseCaseProvider),
+      ref.watch(checkTermsOfServiceAgreeUseCaseProvider),
     );
   },
 );
@@ -32,7 +32,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
     this._ref,
     this._analyticsUseCase,
     this._checkMasterUpdateUseCase,
-    this._isFirstOpenUseCase,
+    this._checkTermsOfServiceAgreeUseCase,
   );
 
   final Key? _key;
@@ -41,22 +41,43 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
 
   final AnalyticsUseCase _analyticsUseCase;
   final CheckMasterUpdateUseCase _checkMasterUpdateUseCase;
-  final IsFirstOpenUseCase _isFirstOpenUseCase;
+  final CheckTermsOfServiceAgreeUseCase _checkTermsOfServiceAgreeUseCase;
 
   bool isLoading = false;
 
   Future<void> onLoad() async {
     _logger.d('CheckMasterUpdateViewModel');
     await _sendPVEvent();
-    await _checkNeedUpdate();
-    await _checkFirstOpen();
+    final masterResult = await _checkNeedUpdate();
+    if (masterResult is Failure) {
+      return;
+    }
+    if (!(masterResult as Success<bool>).value) {
+      return;
+    }
+    final termsOfServiceResult = await _checkNeedAgree();
+    if (termsOfServiceResult is Failure) {
+      return;
+    }
+    if ((termsOfServiceResult as Success<bool>).value) {
+      await _transitionToCustomIntroductionView();
+    } else {
+      await _transitionToCheckTermsOfSeerviceUpdate();
+    }
   }
 
-  Future<void> _checkNeedUpdate() async {
+  Future<void> _sendPVEvent() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'screen_name': 'check_master_update_view'},
+    );
+  }
+
+  Future<Result<bool>> _checkNeedUpdate() async {
     isLoading = true;
     notifyListeners();
     final getNeedMasterUpdateResult =
-        await _checkMasterUpdateUseCase.getNeedMasterUpdate();
+        await _checkMasterUpdateUseCase.getNeedUpdate();
     isLoading = false;
     notifyListeners();
     if (getNeedMasterUpdateResult is Failure) {
@@ -70,7 +91,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
             cancelButtonTitle: null,
             cancelButtonAction: null,
           );
-      return;
+      return Result.failure(Exception());
     }
     final needMasterUpdateDTO =
         (getNeedMasterUpdateResult as Success<NeedMasterUpdateDTO>).value;
@@ -91,37 +112,35 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
               cancelButtonTitle: null,
               cancelButtonAction: null,
             );
-        return;
+        return Result.failure(Exception());
       }
     }
+    return const Result.success(true);
   }
 
-  Future<void> _sendPVEvent() async {
-    _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {'screen_name': 'check_master_update_view'},
-    );
-  }
-
-  Future<void> _checkFirstOpen() async {
-    final isFirstOpenResult = await _isFirstOpenUseCase.get();
-    if (isFirstOpenResult is Failure) {
+  Future<Result<bool>> _checkNeedAgree() async {
+    isLoading = true;
+    notifyListeners();
+    final getNeedAgreeResult =
+        await _checkTermsOfServiceAgreeUseCase.getNeedAgree();
+    isLoading = false;
+    notifyListeners();
+    if (getNeedAgreeResult is Failure) {
       _ref.read(alertProvider.notifier).show(
             title: 'エラー',
-            message: '起動フラグの確認に失敗しました',
+            message: '利用規約の同意が確認できませんでした',
             okButtonTitle: 'OK',
-            okButtonAction: () async {},
+            okButtonAction: () async {
+              await _checkNeedAgree();
+            },
             cancelButtonTitle: null,
             cancelButtonAction: null,
           );
-      return;
+      return Result.failure(Exception());
     }
-    final dto = (isFirstOpenResult as Success<IsFirstOpenDTO>).value;
-    if (dto.value) {
-      await _transitionToCustomIntroductionView();
-    } else {
-      await _transitionToBottomTabView();
-    }
+    final needTermsOfServiceAgreeDTO =
+        (getNeedAgreeResult as Success<NeedTermsOfServiceAgreeDTO>).value;
+    return Result.success(needTermsOfServiceAgreeDTO.value);
   }
 
   Future<void> _transitionToCustomIntroductionView() async {
@@ -132,9 +151,9 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
         );
   }
 
-  Future<void> _transitionToBottomTabView() async {
+  Future<void> _transitionToCheckTermsOfSeerviceUpdate() async {
     await _ref.read(routerProvider(_key).notifier).pushReplacement(
-          nextWidget: BottomTabView(
+          nextWidget: CheckTermsOfServiceUpdateView(
             key: UniqueKey(),
           ),
         );

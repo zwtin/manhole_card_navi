@@ -3,7 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
 import '/app/provider/router_provider.dart';
-import '/app/view/bottom_tab_view.dart';
+import '/app/view/check_terms_of_service_agree_view.dart';
 
 final customIntroductionViewModelProvider = ChangeNotifierProvider.family
     .autoDispose<CustomIntroductionViewModel, Key?>(
@@ -31,7 +31,7 @@ class CustomIntroductionViewModel extends ChangeNotifier {
 
   Future<void> onDone() async {
     await _ref.read(routerProvider(_key).notifier).pushReplacement(
-          nextWidget: BottomTabView(
+          nextWidget: CheckTermsOfServiceAgreeView(
             key: UniqueKey(),
           ),
         );

@@ -10,10 +10,10 @@ import '/use_case/dto/need_app_update_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/check_app_update_use_case.dart';
 
-final checkAppUpdateViewModelProvider =
-    ChangeNotifierProvider.family.autoDispose<CheckAppUpdateViewModel, Key?>(
+final checkTermsOfServiceUpdateViewModelProvider = ChangeNotifierProvider.family
+    .autoDispose<CheckTermsOfServiceUpdateViewModel, Key?>(
   (ref, key) {
-    return CheckAppUpdateViewModel(
+    return CheckTermsOfServiceUpdateViewModel(
       key,
       ref,
       ref.watch(analyticsUseCaseProvider),
@@ -22,8 +22,8 @@ final checkAppUpdateViewModelProvider =
   },
 );
 
-class CheckAppUpdateViewModel extends ChangeNotifier {
-  CheckAppUpdateViewModel(
+class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
+  CheckTermsOfServiceUpdateViewModel(
     this._key,
     this._ref,
     this._analyticsUseCase,
@@ -41,24 +41,11 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _logger.d('CheckAppUpdateViewModel');
-    await _sendPVEvent();
-    final result = await _checkNeedUpdate();
-    if (result is Failure) {
-      return;
-    }
-    if ((result as Success<bool>).value) {
-      await _transitionToCheckMasterUpdateView();
-    }
+    // await _sendPVEvent();
+    // await _checkNeedUpdate();
   }
 
-  Future<void> _sendPVEvent() async {
-    _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {'screen_name': 'check_app_update_view'},
-    );
-  }
-
-  Future<Result<bool>> _checkNeedUpdate() async {
+  Future<void> _checkNeedUpdate() async {
     isLoading = true;
     notifyListeners();
     final result = await _checkAppUpdateUseCase.getNeedUpdate();
@@ -75,7 +62,6 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
             cancelButtonTitle: null,
             cancelButtonAction: null,
           );
-      return Result.failure(Exception());
     }
     final needAppUpdateDTO = (result as Success<NeedAppUpdateDTO>).value;
     if (needAppUpdateDTO.value) {
@@ -89,9 +75,16 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
             cancelButtonTitle: null,
             cancelButtonAction: null,
           );
-      return const Result.success(false);
+    } else {
+      await _transitionToCheckMasterUpdateView();
     }
-    return const Result.success(true);
+  }
+
+  Future<void> _sendPVEvent() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'screen_name': 'check_app_update_view'},
+    );
   }
 
   Future<void> _transitionToCheckMasterUpdateView() async {
@@ -105,6 +98,6 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
   @override
   void dispose() {
     super.dispose();
-    _logger.d('CheckAppUpdateViewModel dispose');
+    _logger.d('CheckTermsOfServiceUpdateViewModel dispose');
   }
 }
