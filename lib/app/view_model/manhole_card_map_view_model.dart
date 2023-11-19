@@ -1,25 +1,21 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
-import 'package:uuid/uuid.dart';
+import 'package:manhole_card_navi/app/mapper/map_markers_view_data_mapper.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/map_modal_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
-import '/app/view_data/map_marker_view_data.dart';
 import '/app/view_data/map_markers_view_data.dart';
 import '/app/view_data/map_modal_view_data.dart';
 import '/domain/entity/result.dart';
-import '/gen/assets.gen.dart';
+import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
 import '/use_case/dto/map_card_dto.dart';
+import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/query_service/distribution_cards_query_service.dart';
 
 final manholeCardMapViewModelProvider =
@@ -28,6 +24,7 @@ final manholeCardMapViewModelProvider =
     return ManholeCardMapViewModel(
       key,
       ref,
+      ref.watch(alreadyGetCardQueryServiceProvider),
       ref.watch(distributionCardsQueryServiceProvider),
     );
   },
@@ -37,6 +34,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   ManholeCardMapViewModel(
     this._key,
     this._ref,
+    this._alreadyGetCardQueryService,
     this._distributionCardsQueryService,
   );
 
@@ -44,6 +42,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
+  final AlreadyGetCardQueryService _alreadyGetCardQueryService;
   final DistributionCardsQueryService _distributionCardsQueryService;
 
   late GoogleMapController mapController;
@@ -56,11 +55,14 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   bool isShowModal = false;
 
+  final List<MapCardDTO> _cardList = [];
+
   Future<void> onLoad() async {
     _logger.d('ManholeCardMapViewModel');
     _ref.read(tabKeyStorageProvider).setTabKey(0, _key);
     _ref.read(locationPermissionProvider.notifier).request();
-    fetchDistributionMarker();
+    await fetchDistributionMarker();
+    await _listenAlreadyGetCard();
   }
 
   Future<void> onTap() async {
@@ -129,57 +131,18 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       return;
     }
     final dtoList = (result as Success<List<MapCardDTO>>).value;
-    const uuid = Uuid();
-    final markersList = await Future.wait(
-      dtoList.map(
-        (dto) async {
-          final cardImageOrNull = await img.decodeJpgFile(dto.imagePath);
-          final String assetPath;
-          switch (dto.distributionState) {
-            case DistributionStateDTO.distributing:
-              assetPath = Assets.images.frameGreen.path;
-            case DistributionStateDTO.stopped:
-              assetPath = Assets.images.frameRed.path;
-            case DistributionStateDTO.notClear:
-              assetPath = Assets.images.frameYellow.path;
-          }
-          final pinImageOrNull = await _decodeAsset(assetPath);
-          final cardImage = cardImageOrNull!;
-          final pinImage = pinImageOrNull!;
+    _cardList.clear();
+    _cardList.addAll(dtoList);
+  }
 
-          final cardThumbnail =
-              img.copyResize(cardImage, width: 130, height: 180);
-          final pinThumbnail =
-              img.copyResize(pinImage, width: 146, height: 221);
-
-          final mergeImage = img.Image(
-            width: 146,
-            height: 221,
-            numChannels: 4,
-          );
-          img.compositeImage(
-            mergeImage,
-            pinThumbnail,
-          );
-          img.compositeImage(
-            mergeImage,
-            cardThumbnail,
-            dstX: 8,
-            dstY: 8,
-          );
-
-          return MapMarkerViewData(
-            id: uuid.v4(),
-            cardId: dto.id,
-            icon: img.encodePng(mergeImage).buffer.asUint8List(),
-            latitude: dto.latitude,
-            longitude: dto.longitude,
-          );
-        },
-      ).toList(),
-    );
-    markersViewData = MapMarkersViewData(list: markersList);
-    notifyListeners();
+  Future<void> _listenAlreadyGetCard() async {
+    _alreadyGetCardQueryService.getStream().listen((dto) async {
+      markersViewData = await MapMarkersViewDataMapper.convertToViewData(
+        cardDTOList: _cardList,
+        getDTOList: dto,
+      );
+      notifyListeners();
+    });
   }
 
   Future<void> onTapMarker(String markerId) async {
@@ -212,33 +175,6 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     isShowModal = false;
     _ref.read(mapModalProvider.notifier).dismiss();
     notifyListeners();
-  }
-
-  Future<img.Image?> _decodeAsset(String path) async {
-    final data = await rootBundle.load(path);
-
-    final buffer = await ui.ImmutableBuffer.fromUint8List(
-      data.buffer.asUint8List(),
-    );
-
-    final id = await ui.ImageDescriptor.encoded(buffer);
-    final codec = await id.instantiateCodec(
-      targetHeight: id.height,
-      targetWidth: id.width,
-    );
-
-    final fi = await codec.getNextFrame();
-
-    final uiImage = fi.image;
-    final uiBytes = await uiImage.toByteData();
-
-    final image = img.Image.fromBytes(
-      width: id.width,
-      height: id.height,
-      bytes: uiBytes!.buffer,
-      numChannels: 4,
-    );
-    return image;
   }
 
   @override
