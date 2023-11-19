@@ -23,7 +23,7 @@ class DetailView extends HookConsumerWidget {
       () {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) async {
-            await ref.read(detailViewModelProvider(key)).onLoad();
+            await ref.read(detailViewModelProvider(key)).onLoad(cardId);
           },
         );
         return null;
@@ -68,7 +68,11 @@ class DetailView extends HookConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              await ref
+                                  .read(detailViewModelProvider(key))
+                                  .onTap();
+                            },
                             child: const SizedBox(
                               height: 50,
                               child: Center(

@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
+import 'package:manhole_card_navi/infra/mapper/realm_card_mapper.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/inquired_master_version.dart';
@@ -156,6 +158,38 @@ class CardRepositoryImpl implements CardRepository {
     realm.close();
 
     return const Result.success(null);
+  }
+
+  @override
+  Future<Result<ManholeCard>> get({
+    required String id,
+  }) async {
+    var config = Configuration.local([
+      RealmCardDAO.schema,
+      RealmContactDAO.schema,
+      RealmImageDAO.schema,
+      RealmPrefectureDAO.schema,
+      RealmVolumeDAO.schema,
+    ]);
+    var realm = Realm(config);
+
+    final daoOrNull = realm
+        .all<RealmCardDAO>()
+        .query(
+          "id == '$id'",
+        )
+        .firstOrNull;
+    if (daoOrNull == null) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: 'データが見つかりませんでした',
+        ),
+      );
+    }
+    final contact = RealmCardMapper.convertToEntity(dao: daoOrNull);
+    realm.close();
+    return Result.success(contact);
   }
 
   void dispose() {
