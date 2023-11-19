@@ -44,6 +44,45 @@ class DetailView extends HookConsumerWidget {
             Container(
               color: ColorName.main,
             ),
+            SafeArea(
+              child: Column(
+                children: [
+                  const Spacer(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            child: const SizedBox(
+                              height: 50,
+                              child: Center(
+                                child: BodyMediumRegularText('マップで見る'),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            child: const SizedBox(
+                              height: 50,
+                              child: Center(
+                                child: BodyMediumRegularText('取得済みにする'),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/app/view/bottom_tab_view.dart';
-import 'package:manhole_card_navi/use_case/dto/need_terms_of_service_update_dto.dart';
-import 'package:manhole_card_navi/use_case/use_case/check_terms_of_service_update_use_case.dart';
-import 'package:manhole_card_navi/use_case/use_case/save_terms_of_service_agree_version_use_case.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
+import '/app/view/bottom_tab_view.dart';
 import '/domain/entity/result.dart';
+import '/use_case/dto/need_terms_of_service_update_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
+import '/use_case/use_case/check_terms_of_service_update_use_case.dart';
+import '/use_case/use_case/save_terms_of_service_agree_version_use_case.dart';
 
 final checkTermsOfServiceUpdateViewModelProvider = ChangeNotifierProvider.family
     .autoDispose<CheckTermsOfServiceUpdateViewModel, Key?>(

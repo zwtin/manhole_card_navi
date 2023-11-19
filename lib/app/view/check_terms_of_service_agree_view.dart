@@ -55,9 +55,6 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
                       height: 16,
                     ),
                     ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0.0,
-                      ),
                       onPressed: () async {
                         await ref
                             .read(

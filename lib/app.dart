@@ -108,6 +108,11 @@ class App extends HookConsumerWidget {
           shape: const Border(),
           collapsedShape: const Border(),
         ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 0.0,
+          ),
+        ),
       ),
       home: CheckAppUpdateView(
         key: UniqueKey(),

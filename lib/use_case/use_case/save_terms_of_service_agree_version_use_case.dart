@@ -1,9 +1,9 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/domain/entity/agreed_terms_of_service_version.dart';
-import 'package:manhole_card_navi/domain/entity/inquired_terms_of_service_version.dart';
 
+import '/domain/entity/agreed_terms_of_service_version.dart';
 import '/domain/entity/custom_exception.dart';
+import '/domain/entity/inquired_terms_of_service_version.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/terms_of_service_repository.dart';
 import '/infra/repository_impl/terms_of_service_repository_impl.dart';
