@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
+import '/app/provider/tab_key_storage_provider.dart';
+import '/app/view_model/bottom_tab_view_model.dart';
+import '/app/view_model/manhole_card_map_view_model.dart';
 import '/use_case/use_case/already_get_card_use_case.dart';
 
 final detailViewModelProvider =
@@ -36,6 +39,15 @@ class DetailViewModel extends ChangeNotifier {
   ) async {
     _logger.d('DetailViewModel');
     this.cardId = cardId;
+  }
+
+  Future<void> onTapShowInMap() async {
+    final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
+    _ref.read(bottomTabViewModelProvider(bottomTabKey)).onTap(0);
+    final mapTabKey = _ref.read(tabKeyStorageProvider).getTabKey(0);
+    _ref
+        .read(manholeCardMapViewModelProvider(mapTabKey))
+        .showMarkerModal(cardId);
   }
 
   Future<void> onTap() async {

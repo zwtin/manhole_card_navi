@@ -14,9 +14,11 @@ import '/app/view_data/map_modal_view_data.dart';
 import '/domain/entity/result.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
+import '/use_case/dto/card_dto.dart';
 import '/use_case/dto/map_card_dto.dart';
 import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/query_service/distribution_cards_query_service.dart';
+import '/use_case/use_case/card_use_case.dart';
 
 final manholeCardMapViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<ManholeCardMapViewModel, Key?>(
@@ -26,6 +28,7 @@ final manholeCardMapViewModelProvider =
       ref,
       ref.watch(alreadyGetCardQueryServiceProvider),
       ref.watch(distributionCardsQueryServiceProvider),
+      ref.watch(cardUseCaseProvider),
     );
   },
 );
@@ -36,6 +39,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     this._ref,
     this._alreadyGetCardQueryService,
     this._distributionCardsQueryService,
+    this._cardUseCase,
   );
 
   final Key? _key;
@@ -44,6 +48,8 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   final AlreadyGetCardQueryService _alreadyGetCardQueryService;
   final DistributionCardsQueryService _distributionCardsQueryService;
+
+  final CardUseCase _cardUseCase;
 
   late GoogleMapController mapController;
   CameraPosition currentCameraPosition = const CameraPosition(
@@ -158,12 +164,29 @@ class ManholeCardMapViewModel extends ChangeNotifier {
           );
       return;
     }
+    await showMarkerModal(markerViewData.cardId);
+  }
+
+  Future<void> showMarkerModal(String cardId) async {
+    final result = await _cardUseCase.get(id: cardId);
+    if (result is Failure) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: 'カード情報の取得に失敗しました',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {},
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+      return;
+    }
+    final dto = (result as Success<CardDTO>).value;
     isShowModal = true;
     // モーダルViewDataを取得する処理を実装
     final viewData = MapModalViewData(
-      id: markerViewData.id,
-      latitude: markerViewData.latitude,
-      longitude: markerViewData.longitude,
+      id: dto.id,
+      latitude: dto.latitude,
+      longitude: dto.longitude,
     );
     notifyListeners();
     _ref.read(mapModalProvider.notifier).present(

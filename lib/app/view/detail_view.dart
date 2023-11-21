@@ -54,7 +54,11 @@ class DetailView extends HookConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              await ref
+                                  .read(detailViewModelProvider(key))
+                                  .onTapShowInMap();
+                            },
                             child: const SizedBox(
                               height: 50,
                               child: Center(
