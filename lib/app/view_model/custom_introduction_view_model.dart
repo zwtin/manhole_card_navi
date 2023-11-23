@@ -30,7 +30,7 @@ class CustomIntroductionViewModel extends ChangeNotifier {
   }
 
   Future<void> onDone() async {
-    await _ref.read(routerProvider(_key).notifier).pushReplacement(
+    await _ref.read(routerProvider(_key).notifier).push(
           nextWidget: CheckTermsOfServiceAgreeView(
             key: UniqueKey(),
           ),

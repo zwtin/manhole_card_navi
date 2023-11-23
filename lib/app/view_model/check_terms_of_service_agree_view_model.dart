@@ -5,6 +5,8 @@ import 'package:logger/logger.dart';
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/view/bottom_tab_view.dart';
+import '/app/view/privacy_policy_view.dart';
+import '/app/view/terms_of_service_view.dart';
 import '/domain/entity/result.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/save_terms_of_service_agree_version_use_case.dart';
@@ -38,10 +40,23 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
       _saveTermsOfServiceAgreeVersionUseCase;
 
   bool isLoading = false;
+  bool isAgreed = false;
 
   Future<void> onLoad() async {
     _logger.d('CheckTermsOfServiceAgreeViewModel');
     await _sendPVEvent();
+  }
+
+  Future<void> _sendPVEvent() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'screen_name': 'check_app_update_view'},
+    );
+  }
+
+  Future<void> onTapCheckBox() async {
+    isAgreed = !isAgreed;
+    notifyListeners();
   }
 
   Future<void> onTapAgreeButton() async {
@@ -54,14 +69,26 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _sendPVEvent() async {
-    _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {'screen_name': 'check_app_update_view'},
-    );
+  Future<void> onTapTermsOfService() async {
+    await _transitionToTermsOfServiceView();
+  }
+
+  Future<void> onTapPrivacyPolicy() async {
+    await _transitionToPrivacyPolicyView();
   }
 
   Future<Result<bool>> _agreeTermsOfService() async {
+    if (!isAgreed) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: '利用規約とプライバシーポリシーに同意してください',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {},
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+      return Result.failure(Exception());
+    }
     isLoading = true;
     notifyListeners();
     final result = await _saveTermsOfServiceAgreeVersionUseCase.save();
@@ -81,6 +108,22 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
       return Result.failure(Exception());
     }
     return const Result.success(true);
+  }
+
+  Future<void> _transitionToTermsOfServiceView() async {
+    await _ref.read(routerProvider(_key).notifier).push(
+          nextWidget: TermsOfServiceView(
+            key: UniqueKey(),
+          ),
+        );
+  }
+
+  Future<void> _transitionToPrivacyPolicyView() async {
+    await _ref.read(routerProvider(_key).notifier).push(
+          nextWidget: PrivacyPolicyView(
+            key: UniqueKey(),
+          ),
+        );
   }
 
   Future<void> _transitionToBottomTabView() async {

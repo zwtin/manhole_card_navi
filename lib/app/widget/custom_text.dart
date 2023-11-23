@@ -479,3 +479,111 @@ class LabelSmallBoldText extends StatelessWidget {
     );
   }
 }
+
+class TitleLargeRegularLinkText extends StatelessWidget {
+  const TitleLargeRegularLinkText(this.data, {super.key});
+
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      data,
+      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.normal,
+            decoration: TextDecoration.underline,
+            color: Colors.blue,
+          ),
+    );
+  }
+}
+
+class TitleMediumRegularLinkText extends StatelessWidget {
+  const TitleMediumRegularLinkText(this.data, {super.key});
+
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      data,
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.normal,
+            decoration: TextDecoration.underline,
+            color: Colors.blue,
+          ),
+    );
+  }
+}
+
+class TitleSmallRegularLinkText extends StatelessWidget {
+  const TitleSmallRegularLinkText(this.data, {super.key});
+
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      data,
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.normal,
+            decoration: TextDecoration.underline,
+            color: Colors.blue,
+          ),
+    );
+  }
+}
+
+class BodyLargeRegularLinkText extends StatelessWidget {
+  const BodyLargeRegularLinkText(this.data, {super.key});
+
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      data,
+      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.normal,
+            decoration: TextDecoration.underline,
+            color: Colors.blue,
+          ),
+    );
+  }
+}
+
+class BodyMediumRegularLinkText extends StatelessWidget {
+  const BodyMediumRegularLinkText(this.data, {super.key});
+
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      data,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.normal,
+            decoration: TextDecoration.underline,
+            color: Colors.blue,
+          ),
+    );
+  }
+}
+
+class BodySmallRegularLinkText extends StatelessWidget {
+  const BodySmallRegularLinkText(this.data, {super.key});
+
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      data,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.normal,
+            decoration: TextDecoration.underline,
+            color: Colors.blue,
+          ),
+    );
+  }
+}

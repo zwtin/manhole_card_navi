@@ -108,8 +108,20 @@ class App extends HookConsumerWidget {
           shape: const Border(),
           collapsedShape: const Border(),
         ),
+        checkboxTheme: CheckboxThemeData(
+          fillColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.selected)) {
+              return Colors.transparent;
+            }
+            return null;
+          }),
+          side: BorderSide(
+            color: Colors.white,
+          ),
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
+            backgroundColor: ColorName.accent,
             elevation: 0.0,
           ),
         ),
