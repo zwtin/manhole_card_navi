@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/app/view/privacy_policy_view.dart';
+import 'package:manhole_card_navi/app/view/terms_of_service_view.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
@@ -44,9 +46,11 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
 
   bool isLoading = false;
   bool inquireUpdate = false;
+  bool isAgreed = false;
 
   Future<void> onLoad() async {
     _logger.d('CheckTermsOfServiceUpdateViewModel');
+    _sendPVEvent();
     final result = await _checkNeedUpdate();
     if (result is Failure) {
       return;
@@ -59,7 +63,23 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> onTapCheckBox() async {
+    isAgreed = !isAgreed;
+    notifyListeners();
+  }
+
   Future<void> onTapAgreeButton() async {
+    if (!isAgreed) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: '利用規約とプライバシーポリシーに同意してください',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {},
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+      return;
+    }
     final result = await _agreeTermsOfService();
     if (result is Failure) {
       return;
@@ -67,6 +87,14 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
     if ((result as Success<bool>).value) {
       await _transitionToBottomTabView();
     }
+  }
+
+  Future<void> onTapTermsOfService() async {
+    await _transitionToTermsOfServiceView();
+  }
+
+  Future<void> onTapPrivacyPolicy() async {
+    await _transitionToPrivacyPolicyView();
   }
 
   Future<void> _sendPVEvent() async {
@@ -120,6 +148,22 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
       return Result.failure(Exception());
     }
     return const Result.success(true);
+  }
+
+  Future<void> _transitionToTermsOfServiceView() async {
+    await _ref.read(routerProvider(_key).notifier).push(
+          nextWidget: TermsOfServiceView(
+            key: UniqueKey(),
+          ),
+        );
+  }
+
+  Future<void> _transitionToPrivacyPolicyView() async {
+    await _ref.read(routerProvider(_key).notifier).push(
+          nextWidget: PrivacyPolicyView(
+            key: UniqueKey(),
+          ),
+        );
   }
 
   Future<void> _transitionToBottomTabView() async {

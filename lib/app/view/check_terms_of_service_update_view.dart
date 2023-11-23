@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:manhole_card_navi/app/widget/custom_check_box.dart';
 
 import '/app/view_model/check_terms_of_service_update_view_model.dart';
 import '/app/widget/alert_widget.dart';
@@ -50,24 +51,101 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
                       Container(
                         color: ColorName.main,
                       ),
-                      Column(
-                        children: [
-                          const BodyMediumRegularText(
-                              '利用規約とプライバシーポリシーが更新されました。'),
-                          const SizedBox(
-                            height: 16,
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: SafeArea(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const TitleMediumRegularText(
+                                '利用規約とプライバシーポリシーが更新されました。\nアプリを使うためには、再度利用規約とプライバシーポリシーに同意する必要があります。',
+                              ),
+                              const Spacer(),
+                              Row(
+                                children: [
+                                  CustomCheckBox(
+                                    value: viewModel.isAgreed,
+                                    onChanged: (value) async {
+                                      await ref
+                                          .read(
+                                              checkTermsOfServiceUpdateViewModelProvider(
+                                                  key))
+                                          .onTapCheckBox();
+                                    },
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          TextButton(
+                                            onPressed: () async {
+                                              await ref
+                                                  .read(
+                                                      checkTermsOfServiceUpdateViewModelProvider(
+                                                          key))
+                                                  .onTapTermsOfService();
+                                            },
+                                            child:
+                                                const TitleMediumRegularLinkText(
+                                              '利用規約',
+                                            ),
+                                          ),
+                                          const TitleMediumRegularText(
+                                            'と',
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              await ref
+                                                  .read(
+                                                      checkTermsOfServiceUpdateViewModelProvider(
+                                                          key))
+                                                  .onTapPrivacyPolicy();
+                                            },
+                                            child:
+                                                const TitleMediumRegularLinkText(
+                                              'プライバシーポリシー',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 8,
+                                          ),
+                                          TitleMediumRegularText(
+                                            'に同意する',
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 24,
+                              ),
+                              SizedBox(
+                                height: 60,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    await ref
+                                        .read(
+                                            checkTermsOfServiceUpdateViewModelProvider(
+                                                key))
+                                        .onTapAgreeButton();
+                                  },
+                                  child: const TitleMediumRegularText(
+                                    'はじめる',
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              await ref
-                                  .read(
-                                      checkTermsOfServiceUpdateViewModelProvider(
-                                          key))
-                                  .onTapAgreeButton();
-                            },
-                            child: const BodyMediumRegularText('同意する'),
-                          ),
-                        ],
+                        ),
                       )
                     ],
                   ),

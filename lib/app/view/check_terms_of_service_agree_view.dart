@@ -56,6 +56,9 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        const TitleMediumRegularText(
+                          'アプリを使うためには、利用規約とプライバシーポリシーに同意する必要があります。',
+                        ),
                         const Spacer(),
                         Row(
                           children: [
@@ -108,7 +111,9 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
                                     SizedBox(
                                       width: 8,
                                     ),
-                                    TitleMediumRegularText('に同意する'),
+                                    TitleMediumRegularText(
+                                      'に同意する',
+                                    ),
                                   ],
                                 )
                               ],
@@ -120,16 +125,16 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
                         ),
                         SizedBox(
                           height: 60,
-                          child: Expanded(
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                await ref
-                                    .read(
-                                        checkTermsOfServiceAgreeViewModelProvider(
-                                            key))
-                                    .onTapAgreeButton();
-                              },
-                              child: const TitleMediumRegularText('はじめる'),
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await ref
+                                  .read(
+                                      checkTermsOfServiceAgreeViewModelProvider(
+                                          key))
+                                  .onTapAgreeButton();
+                            },
+                            child: const TitleMediumRegularText(
+                              'はじめる',
                             ),
                           ),
                         ),

@@ -60,6 +60,17 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
   }
 
   Future<void> onTapAgreeButton() async {
+    if (!isAgreed) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: '利用規約とプライバシーポリシーに同意してください',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {},
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+      return;
+    }
     final result = await _agreeTermsOfService();
     if (result is Failure) {
       return;
@@ -78,17 +89,6 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
   }
 
   Future<Result<bool>> _agreeTermsOfService() async {
-    if (!isAgreed) {
-      _ref.read(alertProvider.notifier).show(
-            title: 'エラー',
-            message: '利用規約とプライバシーポリシーに同意してください',
-            okButtonTitle: 'OK',
-            okButtonAction: () async {},
-            cancelButtonTitle: null,
-            cancelButtonAction: null,
-          );
-      return Result.failure(Exception());
-    }
     isLoading = true;
     notifyListeners();
     final result = await _saveTermsOfServiceAgreeVersionUseCase.save();
