@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/infra/dao/realm_contact_dao.dart';
+import 'package:manhole_card_navi/infra/dao/realm_prefecture_dao.dart';
+import 'package:manhole_card_navi/infra/dao/realm_volume_dao.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:realm/realm.dart';
 
@@ -28,7 +31,10 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
   Future<Result<List<MapCardDTO>>> fetch() async {
     final config = Configuration.local([
       RealmCardDAO.schema,
+      RealmContactDAO.schema,
       RealmImageDAO.schema,
+      RealmPrefectureDAO.schema,
+      RealmVolumeDAO.schema,
     ]);
     var realm = Realm(config);
 

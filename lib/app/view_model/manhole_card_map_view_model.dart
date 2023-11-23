@@ -3,6 +3,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/app/view_data/map_marker_view_data.dart';
+import 'package:manhole_card_navi/infra/query_service_impl/position_cards_query_service_impl.dart';
+import 'package:manhole_card_navi/use_case/dto/already_get_card_dto.dart';
+import 'package:manhole_card_navi/use_case/query_service/position_cards_query_service.dart';
 
 import '/app/mapper/map_markers_view_data_mapper.dart';
 import '/app/provider/alert_provider.dart';
@@ -28,10 +32,16 @@ final manholeCardMapViewModelProvider =
       ref,
       ref.watch(alreadyGetCardQueryServiceProvider),
       ref.watch(distributionCardsQueryServiceProvider),
+      ref.watch(positionCardsQueryServiceProvider),
       ref.watch(cardUseCaseProvider),
     );
   },
 );
+
+enum MapMarkerState {
+  position,
+  distribution,
+}
 
 class ManholeCardMapViewModel extends ChangeNotifier {
   ManholeCardMapViewModel(
@@ -39,6 +49,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     this._ref,
     this._alreadyGetCardQueryService,
     this._distributionCardsQueryService,
+    this._positionCardsQueryService,
     this._cardUseCase,
   );
 
@@ -48,6 +59,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   final AlreadyGetCardQueryService _alreadyGetCardQueryService;
   final DistributionCardsQueryService _distributionCardsQueryService;
+  final PositionCardsQueryService _positionCardsQueryService;
 
   final CardUseCase _cardUseCase;
 
@@ -59,15 +71,17 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   bool myLocationEnabled = false;
   MapMarkersViewData markersViewData = const MapMarkersViewData(list: []);
 
+  MapMarkerState markerState = MapMarkerState.position;
   bool isShowModal = false;
 
   final List<MapCardDTO> _cardList = [];
+  final List<AlreadyGetCardDTO> _alreadyGetList = [];
 
   Future<void> onLoad() async {
     _logger.d('ManholeCardMapViewModel');
     _ref.read(tabKeyStorageProvider).setTabKey(0, _key);
     _ref.read(locationPermissionProvider.notifier).request();
-    await fetchDistributionMarker();
+    await _fetchMarker();
     await _listenAlreadyGetCard();
   }
 
@@ -123,7 +137,39 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchDistributionMarker() async {
+  Future<void> onChangeMarkerState(MapMarkerState state) async {
+    markerState = state;
+    await _fetchMarker();
+  }
+
+  Future<void> _fetchMarker() async {
+    if (markerState == MapMarkerState.position) {
+      await _fetchPositionMarker();
+    } else if (markerState == MapMarkerState.distribution) {
+      await _fetchDistributionMarker();
+    }
+  }
+
+  Future<void> _fetchPositionMarker() async {
+    final result = await _positionCardsQueryService.fetch();
+    if (result is Failure) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: 'カード情報の取得に失敗しました',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {},
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+      return;
+    }
+    final dtoList = (result as Success<List<MapCardDTO>>).value;
+    _cardList.clear();
+    _cardList.addAll(dtoList);
+    await _resetMarkersViewData();
+  }
+
+  Future<void> _fetchDistributionMarker() async {
     final result = await _distributionCardsQueryService.fetch();
     if (result is Failure) {
       _ref.read(alertProvider.notifier).show(
@@ -139,20 +185,27 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     final dtoList = (result as Success<List<MapCardDTO>>).value;
     _cardList.clear();
     _cardList.addAll(dtoList);
+    await _resetMarkersViewData();
   }
 
   Future<void> _listenAlreadyGetCard() async {
     _alreadyGetCardQueryService.getStream().listen((dto) async {
-      markersViewData = await MapMarkersViewDataMapper.convertToViewData(
-        cardDTOList: _cardList,
-        getDTOList: dto,
-      );
-      notifyListeners();
+      _alreadyGetList.clear();
+      _alreadyGetList.addAll(dto);
+      await _resetMarkersViewData();
     });
   }
 
+  Future<void> _resetMarkersViewData() async {
+    markersViewData = await MapMarkersViewDataMapper.convertToViewData(
+      cardDTOList: _cardList,
+      getDTOList: _alreadyGetList,
+    );
+    notifyListeners();
+  }
+
   Future<void> onTapMarker(String markerId) async {
-    final markerViewData = markersViewData.get(markerId);
+    final markerViewData = markersViewData.getByMarkerId(markerId);
     if (markerViewData == null) {
       _ref.read(alertProvider.notifier).show(
             title: 'エラー',
@@ -164,11 +217,27 @@ class ManholeCardMapViewModel extends ChangeNotifier {
           );
       return;
     }
-    await showMarkerModal(markerViewData.cardId);
+    await _showMarkerModal(markerViewData);
   }
 
-  Future<void> showMarkerModal(String cardId) async {
-    final result = await _cardUseCase.get(id: cardId);
+  Future<void> onTapShowMarkerModalButton(String cardId) async {
+    final markerViewData = markersViewData.getByCardId(cardId);
+    if (markerViewData == null) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: 'カード情報の取得に失敗しました',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {},
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+      return;
+    }
+    await _showMarkerModal(markerViewData);
+  }
+
+  Future<void> _showMarkerModal(MapMarkerViewData viewData) async {
+    final result = await _cardUseCase.get(id: viewData.cardId);
     if (result is Failure) {
       _ref.read(alertProvider.notifier).show(
             title: 'エラー',
@@ -181,16 +250,27 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       return;
     }
     final dto = (result as Success<CardDTO>).value;
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(
+            viewData.latitude,
+            viewData.longitude,
+          ),
+          zoom: 12.5,
+        ),
+      ),
+    );
     isShowModal = true;
     // モーダルViewDataを取得する処理を実装
-    final viewData = MapModalViewData(
+    final modalViewData = MapModalViewData(
       id: dto.id,
-      latitude: dto.latitude,
-      longitude: dto.longitude,
+      latitude: viewData.latitude,
+      longitude: viewData.longitude,
     );
     notifyListeners();
     _ref.read(mapModalProvider.notifier).present(
-          viewData: viewData,
+          viewData: modalViewData,
         );
   }
 

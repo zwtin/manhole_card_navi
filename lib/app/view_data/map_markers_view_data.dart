@@ -21,7 +21,11 @@ abstract class MapMarkersViewData with _$MapMarkersViewData {
     return MapMarkersViewData(list: newList);
   }
 
-  MapMarkerViewData? get(String markerId) {
+  MapMarkerViewData? getByMarkerId(String markerId) {
     return list.where((element) => element.id == markerId).firstOrNull;
+  }
+
+  MapMarkerViewData? getByCardId(String cardId) {
+    return list.where((element) => element.cardId == cardId).firstOrNull;
   }
 }

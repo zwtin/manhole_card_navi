@@ -86,28 +86,41 @@ class ManholeCardMapView extends HookConsumerWidget {
                         children: [
                           ListTile(
                             leading:
-                                const Icon(Icons.edit, color: Colors.white),
-                            title: const TitleMediumRegularText('配布場所マップ'),
-                            trailing: const Icon(Icons.check,
-                                color: ColorName.accent),
+                                viewModel.markerState == MapMarkerState.position
+                                    ? const Icon(
+                                        Icons.check,
+                                        color: ColorName.accent,
+                                      )
+                                    : const SizedBox(
+                                        width: 40,
+                                        height: 40,
+                                      ),
+                            title: const TitleMediumRegularText('蓋マップ'),
                             onTap: () async {
                               Navigator.of(modalContext).pop();
                               ref
                                   .read(manholeCardMapViewModelProvider(key))
-                                  .onTap();
+                                  .onChangeMarkerState(MapMarkerState.position);
                             },
                           ),
                           ListTile(
-                            leading: const Icon(
-                              Icons.settings,
-                              color: Colors.white,
-                            ),
-                            title: const TitleMediumRegularText('マンホールマップ'),
+                            leading: viewModel.markerState ==
+                                    MapMarkerState.distribution
+                                ? const Icon(
+                                    Icons.check,
+                                    color: ColorName.accent,
+                                  )
+                                : const SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                  ),
+                            title: const TitleMediumRegularText('配布場所マップ'),
                             onTap: () async {
                               Navigator.of(modalContext).pop();
                               ref
                                   .read(manholeCardMapViewModelProvider(key))
-                                  .onTap();
+                                  .onChangeMarkerState(
+                                      MapMarkerState.distribution);
                             },
                           ),
                         ],

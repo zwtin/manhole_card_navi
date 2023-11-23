@@ -47,7 +47,7 @@ class DetailViewModel extends ChangeNotifier {
     final mapTabKey = _ref.read(tabKeyStorageProvider).getTabKey(0);
     _ref
         .read(manholeCardMapViewModelProvider(mapTabKey))
-        .showMarkerModal(cardId);
+        .onTapShowMarkerModalButton(cardId);
   }
 
   Future<void> onTap() async {

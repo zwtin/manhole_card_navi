@@ -62,7 +62,7 @@ class DetailView extends HookConsumerWidget {
                             child: const SizedBox(
                               height: 50,
                               child: Center(
-                                child: BodyMediumRegularText('マップで見る'),
+                                child: TitleMediumRegularText('マップで見る'),
                               ),
                             ),
                           ),
@@ -80,7 +80,7 @@ class DetailView extends HookConsumerWidget {
                             child: const SizedBox(
                               height: 50,
                               child: Center(
-                                child: BodyMediumRegularText('取得済みにする'),
+                                child: TitleMediumRegularText('取得済みにする'),
                               ),
                             ),
                           ),
