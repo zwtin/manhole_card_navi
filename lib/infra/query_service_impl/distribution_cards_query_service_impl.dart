@@ -12,7 +12,7 @@ import '/infra/dao/realm_contact_dao.dart';
 import '/infra/dao/realm_image_dao.dart';
 import '/infra/dao/realm_prefecture_dao.dart';
 import '/infra/dao/realm_volume_dao.dart';
-import '/use_case/dto/map_card_dto.dart';
+import '/use_case/dto/map_marker_dto.dart';
 import '/use_case/query_service/distribution_cards_query_service.dart';
 
 final distributionCardsQueryServiceProvider =
@@ -29,7 +29,7 @@ class DistributionCardsQueryServiceImpl
   final _logger = Logger();
 
   @override
-  Future<Result<List<MapCardDTO>>> fetch() async {
+  Future<Result<List<MapMarkerDTO>>> fetch() async {
     final config = Configuration.local([
       RealmCardDAO.schema,
       RealmContactDAO.schema,
@@ -52,7 +52,7 @@ class DistributionCardsQueryServiceImpl
     final appDirectory = await getApplicationDocumentsDirectory();
     final imageDirectory = Directory('${appDirectory.path}/images');
 
-    final dtoList = <MapCardDTO>[];
+    final dtoList = <MapMarkerDTO>[];
     for (final dao in daoList) {
       final DistributionStateDTO distributionState;
       switch (dao.distributionState) {
@@ -69,29 +69,17 @@ class DistributionCardsQueryServiceImpl
           distributionState = DistributionStateDTO.notClear;
           break;
       }
-      final imageDAO = realm
-          .all<RealmImageDAO>()
-          .query(
-            "id == '${dao.image?.id ?? ''}'",
-          )
-          .first;
-      final imagePath = '${imageDirectory.path}/${imageDAO.name}';
+      final imagePath =
+          dao.image == null ? '' : '${imageDirectory.path}/${dao.image!.name}';
 
       for (final contact in dao.contacts) {
-        final contactDAO = realm
-            .all<RealmContactDAO>()
-            .query(
-              "id == '${contact.id}'",
-            )
-            .first;
-
         dtoList.add(
-          MapCardDTO(
-            id: dao.id,
+          MapMarkerDTO(
+            cardId: dao.id,
             imagePath: imagePath,
             distributionState: distributionState,
-            latitude: contactDAO.latitude,
-            longitude: contactDAO.longitude,
+            latitude: contact.latitude,
+            longitude: contact.longitude,
           ),
         );
       }

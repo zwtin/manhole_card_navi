@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:manhole_card_navi/app/widget/custom_check_box.dart';
 
 import '/app/view_model/check_terms_of_service_update_view_model.dart';
 import '/app/widget/alert_widget.dart';
+import '/app/widget/custom_check_box.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';

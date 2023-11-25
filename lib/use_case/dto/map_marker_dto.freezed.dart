@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'map_card_dto.dart';
+part of 'map_marker_dto.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,8 +15,8 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
-mixin _$MapCardDTO {
-  String get id => throw _privateConstructorUsedError;
+mixin _$MapMarkerDTO {
+  String get cardId => throw _privateConstructorUsedError;
   String get imagePath => throw _privateConstructorUsedError;
   DistributionStateDTO get distributionState =>
       throw _privateConstructorUsedError;
@@ -24,18 +24,18 @@ mixin _$MapCardDTO {
   double get longitude => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $MapCardDTOCopyWith<MapCardDTO> get copyWith =>
+  $MapMarkerDTOCopyWith<MapMarkerDTO> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $MapCardDTOCopyWith<$Res> {
-  factory $MapCardDTOCopyWith(
-          MapCardDTO value, $Res Function(MapCardDTO) then) =
-      _$MapCardDTOCopyWithImpl<$Res, MapCardDTO>;
+abstract class $MapMarkerDTOCopyWith<$Res> {
+  factory $MapMarkerDTOCopyWith(
+          MapMarkerDTO value, $Res Function(MapMarkerDTO) then) =
+      _$MapMarkerDTOCopyWithImpl<$Res, MapMarkerDTO>;
   @useResult
   $Res call(
-      {String id,
+      {String cardId,
       String imagePath,
       DistributionStateDTO distributionState,
       double latitude,
@@ -43,9 +43,9 @@ abstract class $MapCardDTOCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$MapCardDTOCopyWithImpl<$Res, $Val extends MapCardDTO>
-    implements $MapCardDTOCopyWith<$Res> {
-  _$MapCardDTOCopyWithImpl(this._value, this._then);
+class _$MapMarkerDTOCopyWithImpl<$Res, $Val extends MapMarkerDTO>
+    implements $MapMarkerDTOCopyWith<$Res> {
+  _$MapMarkerDTOCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -55,16 +55,16 @@ class _$MapCardDTOCopyWithImpl<$Res, $Val extends MapCardDTO>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? cardId = null,
     Object? imagePath = null,
     Object? distributionState = null,
     Object? latitude = null,
     Object? longitude = null,
   }) {
     return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
+      cardId: null == cardId
+          ? _value.cardId
+          : cardId // ignore: cast_nullable_to_non_nullable
               as String,
       imagePath: null == imagePath
           ? _value.imagePath
@@ -87,15 +87,15 @@ class _$MapCardDTOCopyWithImpl<$Res, $Val extends MapCardDTO>
 }
 
 /// @nodoc
-abstract class _$$_MapCardDTOCopyWith<$Res>
-    implements $MapCardDTOCopyWith<$Res> {
-  factory _$$_MapCardDTOCopyWith(
-          _$_MapCardDTO value, $Res Function(_$_MapCardDTO) then) =
-      __$$_MapCardDTOCopyWithImpl<$Res>;
+abstract class _$$_MapMarkerDTOCopyWith<$Res>
+    implements $MapMarkerDTOCopyWith<$Res> {
+  factory _$$_MapMarkerDTOCopyWith(
+          _$_MapMarkerDTO value, $Res Function(_$_MapMarkerDTO) then) =
+      __$$_MapMarkerDTOCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
-      {String id,
+      {String cardId,
       String imagePath,
       DistributionStateDTO distributionState,
       double latitude,
@@ -103,26 +103,26 @@ abstract class _$$_MapCardDTOCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_MapCardDTOCopyWithImpl<$Res>
-    extends _$MapCardDTOCopyWithImpl<$Res, _$_MapCardDTO>
-    implements _$$_MapCardDTOCopyWith<$Res> {
-  __$$_MapCardDTOCopyWithImpl(
-      _$_MapCardDTO _value, $Res Function(_$_MapCardDTO) _then)
+class __$$_MapMarkerDTOCopyWithImpl<$Res>
+    extends _$MapMarkerDTOCopyWithImpl<$Res, _$_MapMarkerDTO>
+    implements _$$_MapMarkerDTOCopyWith<$Res> {
+  __$$_MapMarkerDTOCopyWithImpl(
+      _$_MapMarkerDTO _value, $Res Function(_$_MapMarkerDTO) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? cardId = null,
     Object? imagePath = null,
     Object? distributionState = null,
     Object? latitude = null,
     Object? longitude = null,
   }) {
-    return _then(_$_MapCardDTO(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
+    return _then(_$_MapMarkerDTO(
+      cardId: null == cardId
+          ? _value.cardId
+          : cardId // ignore: cast_nullable_to_non_nullable
               as String,
       imagePath: null == imagePath
           ? _value.imagePath
@@ -146,9 +146,9 @@ class __$$_MapCardDTOCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_MapCardDTO extends _MapCardDTO {
-  const _$_MapCardDTO(
-      {required this.id,
+class _$_MapMarkerDTO extends _MapMarkerDTO {
+  const _$_MapMarkerDTO(
+      {required this.cardId,
       required this.imagePath,
       required this.distributionState,
       required this.latitude,
@@ -156,7 +156,7 @@ class _$_MapCardDTO extends _MapCardDTO {
       : super._();
 
   @override
-  final String id;
+  final String cardId;
   @override
   final String imagePath;
   @override
@@ -168,15 +168,15 @@ class _$_MapCardDTO extends _MapCardDTO {
 
   @override
   String toString() {
-    return 'MapCardDTO(id: $id, imagePath: $imagePath, distributionState: $distributionState, latitude: $latitude, longitude: $longitude)';
+    return 'MapMarkerDTO(cardId: $cardId, imagePath: $imagePath, distributionState: $distributionState, latitude: $latitude, longitude: $longitude)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_MapCardDTO &&
-            (identical(other.id, id) || other.id == id) &&
+            other is _$_MapMarkerDTO &&
+            (identical(other.cardId, cardId) || other.cardId == cardId) &&
             (identical(other.imagePath, imagePath) ||
                 other.imagePath == imagePath) &&
             (identical(other.distributionState, distributionState) ||
@@ -189,26 +189,26 @@ class _$_MapCardDTO extends _MapCardDTO {
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, id, imagePath, distributionState, latitude, longitude);
+      runtimeType, cardId, imagePath, distributionState, latitude, longitude);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_MapCardDTOCopyWith<_$_MapCardDTO> get copyWith =>
-      __$$_MapCardDTOCopyWithImpl<_$_MapCardDTO>(this, _$identity);
+  _$$_MapMarkerDTOCopyWith<_$_MapMarkerDTO> get copyWith =>
+      __$$_MapMarkerDTOCopyWithImpl<_$_MapMarkerDTO>(this, _$identity);
 }
 
-abstract class _MapCardDTO extends MapCardDTO {
-  const factory _MapCardDTO(
-      {required final String id,
+abstract class _MapMarkerDTO extends MapMarkerDTO {
+  const factory _MapMarkerDTO(
+      {required final String cardId,
       required final String imagePath,
       required final DistributionStateDTO distributionState,
       required final double latitude,
-      required final double longitude}) = _$_MapCardDTO;
-  const _MapCardDTO._() : super._();
+      required final double longitude}) = _$_MapMarkerDTO;
+  const _MapMarkerDTO._() : super._();
 
   @override
-  String get id;
+  String get cardId;
   @override
   String get imagePath;
   @override
@@ -219,6 +219,6 @@ abstract class _MapCardDTO extends MapCardDTO {
   double get longitude;
   @override
   @JsonKey(ignore: true)
-  _$$_MapCardDTOCopyWith<_$_MapCardDTO> get copyWith =>
+  _$$_MapMarkerDTOCopyWith<_$_MapMarkerDTO> get copyWith =>
       throw _privateConstructorUsedError;
 }

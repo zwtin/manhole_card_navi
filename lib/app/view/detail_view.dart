@@ -57,7 +57,7 @@ class DetailView extends HookConsumerWidget {
                             onPressed: () async {
                               await ref
                                   .read(detailViewModelProvider(key))
-                                  .onTapShowInMap();
+                                  .onTapCheckWithMapButton();
                             },
                             child: const SizedBox(
                               height: 50,
@@ -75,12 +75,14 @@ class DetailView extends HookConsumerWidget {
                             onPressed: () async {
                               await ref
                                   .read(detailViewModelProvider(key))
-                                  .onTap();
+                                  .onTapAlreadyGetButton();
                             },
-                            child: const SizedBox(
+                            child: SizedBox(
                               height: 50,
                               child: Center(
-                                child: TitleMediumRegularText('取得済みにする'),
+                                child: viewModel.alreadyGet
+                                    ? const TitleMediumRegularText('未取得に戻す')
+                                    : const TitleMediumRegularText('取得済みにする'),
                               ),
                             ),
                           ),

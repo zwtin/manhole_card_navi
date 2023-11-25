@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/app/view/privacy_policy_view.dart';
-import 'package:manhole_card_navi/app/view/terms_of_service_view.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/view/bottom_tab_view.dart';
+import '/app/view/privacy_policy_view.dart';
+import '/app/view/terms_of_service_view.dart';
 import '/domain/entity/result.dart';
 import '/use_case/dto/need_terms_of_service_update_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';

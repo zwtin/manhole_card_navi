@@ -1,17 +1,17 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'map_card_dto.freezed.dart';
+part 'map_marker_dto.freezed.dart';
 
 @freezed
-abstract class MapCardDTO with _$MapCardDTO {
-  const factory MapCardDTO({
-    required String id,
+abstract class MapMarkerDTO with _$MapMarkerDTO {
+  const factory MapMarkerDTO({
+    required String cardId,
     required String imagePath,
     required DistributionStateDTO distributionState,
     required double latitude,
     required double longitude,
-  }) = _MapCardDTO;
-  const MapCardDTO._();
+  }) = _MapMarkerDTO;
+  const MapMarkerDTO._();
 }
 
 enum DistributionStateDTO {

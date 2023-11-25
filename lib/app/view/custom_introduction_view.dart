@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:manhole_card_navi/app/widget/custom_text.dart';
 
 import '/app/view_model/custom_introduction_view_model.dart';
+import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/colors.gen.dart';
 
@@ -119,6 +119,7 @@ class CustomIntroductionView extends HookConsumerWidget {
                 activeColor: ColorName.accent,
                 color: Colors.white,
               ),
+              animationDuration: 200,
             ),
           ),
         ),

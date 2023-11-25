@@ -85,27 +85,25 @@ class ManholeCardMapView extends HookConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           ListTile(
-                            leading:
-                                viewModel.markerState == MapMarkerState.position
-                                    ? const Icon(
-                                        Icons.check,
-                                        color: ColorName.accent,
-                                      )
-                                    : const SizedBox(
-                                        width: 40,
-                                        height: 40,
-                                      ),
+                            leading: viewModel.mapState == MapState.position
+                                ? const Icon(
+                                    Icons.check,
+                                    color: ColorName.accent,
+                                  )
+                                : const SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                  ),
                             title: const TitleMediumRegularText('蓋マップ'),
                             onTap: () async {
                               Navigator.of(modalContext).pop();
                               ref
                                   .read(manholeCardMapViewModelProvider(key))
-                                  .onChangeMarkerState(MapMarkerState.position);
+                                  .onChangeMapState(MapState.position);
                             },
                           ),
                           ListTile(
-                            leading: viewModel.markerState ==
-                                    MapMarkerState.distribution
+                            leading: viewModel.mapState == MapState.distribution
                                 ? const Icon(
                                     Icons.check,
                                     color: ColorName.accent,
@@ -119,8 +117,7 @@ class ManholeCardMapView extends HookConsumerWidget {
                               Navigator.of(modalContext).pop();
                               ref
                                   .read(manholeCardMapViewModelProvider(key))
-                                  .onChangeMarkerState(
-                                      MapMarkerState.distribution);
+                                  .onChangeMapState(MapState.distribution);
                             },
                           ),
                         ],
@@ -136,14 +133,14 @@ class ManholeCardMapView extends HookConsumerWidget {
           children: [
             Flexible(
               child: GoogleMap(
-                initialCameraPosition: viewModel.currentCameraPosition,
+                initialCameraPosition: viewModel.initialCameraPosition,
                 onMapCreated: (controller) async {
                   ref
                       .read(manholeCardMapViewModelProvider(key))
                       .setGoogleMapController(controller);
                   ref
                       .read(manholeCardMapViewModelProvider(key))
-                      .setupMyLocation();
+                      .updateMyLocationEnabled();
                 },
                 mapToolbarEnabled: false,
                 mapType: MapType.normal,
@@ -173,6 +170,11 @@ class ManholeCardMapView extends HookConsumerWidget {
                     );
                   },
                 ).toSet(),
+                onCameraMove: (position) async {
+                  ref
+                      .read(manholeCardMapViewModelProvider(key))
+                      .onCameraMove(position);
+                },
               ),
             ),
             if (viewModel.isShowModal)
@@ -230,7 +232,7 @@ class ManholeCardMapView extends HookConsumerWidget {
       );
     }
 
-    ref.read(manholeCardMapViewModelProvider(key)).setupMyLocation();
+    ref.read(manholeCardMapViewModelProvider(key)).updateMyLocationEnabled();
   }
 
   Future<void> showCardModal(

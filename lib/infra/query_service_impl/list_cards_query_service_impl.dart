@@ -13,7 +13,6 @@ import '/infra/dao/realm_image_dao.dart';
 import '/infra/dao/realm_prefecture_dao.dart';
 import '/infra/dao/realm_volume_dao.dart';
 import '/use_case/dto/list_card_dto.dart';
-import '/use_case/dto/list_prefecture_dto.dart';
 import '/use_case/query_service/list_cards_query_service.dart';
 
 final listCardsQueryServiceProvider =
@@ -29,7 +28,7 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
   final _logger = Logger();
 
   @override
-  Future<Result<List<ListPrefectureDTO>>> fetch() async {
+  Future<Result<List<ListCardDTO>>> fetch() async {
     final config = Configuration.local([
       RealmCardDAO.schema,
       RealmContactDAO.schema,
@@ -53,47 +52,18 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
     final imageDirectory = Directory('${appDirectory.path}/images');
 
     final cardDTOList = cardDAOList.map((dao) {
-      final imageDAO = realm
-          .all<RealmImageDAO>()
-          .query(
-            "id == '${dao.image?.id ?? ''}'",
-          )
-          .first;
-      final imagePath = '${imageDirectory.path}/${imageDAO.name}';
-
       return ListCardDTO(
         id: dao.id,
         name: dao.name,
-        imagePath: imagePath,
+        imagePath: dao.image == null
+            ? ''
+            : '${imageDirectory.path}/${dao.image!.name}',
         prefectureId: dao.prefecture?.id ?? '',
+        prefectureName: dao.prefecture?.name ?? '',
       );
     }).toList();
 
-    final prefectureDAOList = realm.all<RealmPrefectureDAO>();
-    if (prefectureDAOList.isEmpty) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'データが見つかりませんでした',
-        ),
-      );
-    }
-
-    final prefectureDTOList = prefectureDAOList.map(
-      (dao) {
-        return ListPrefectureDTO(
-          id: dao.id,
-          name: dao.name,
-          cards: cardDTOList.where(
-            (element) {
-              return element.prefectureId == dao.id;
-            },
-          ).toList(),
-        );
-      },
-    ).toList();
-
-    return Result.success(prefectureDTOList);
+    return Result.success(cardDTOList);
   }
 
   void dispose() {

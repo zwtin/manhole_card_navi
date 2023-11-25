@@ -8,16 +8,16 @@ import '/app/view_data/map_marker_view_data.dart';
 import '/app/view_data/map_markers_view_data.dart';
 import '/gen/assets.gen.dart';
 import '/use_case/dto/already_get_card_dto.dart';
-import '/use_case/dto/map_card_dto.dart';
+import '/use_case/dto/map_marker_dto.dart';
 
 class MapMarkersViewDataMapper {
   static Future<MapMarkersViewData> convertToViewData({
-    required List<MapCardDTO> cardDTOList,
-    required List<AlreadyGetCardDTO> getDTOList,
+    required List<MapMarkerDTO> mapMarkerDTOList,
+    required List<AlreadyGetCardDTO> getCardDTOList,
   }) async {
     const uuid = Uuid();
     final markersList = await Future.wait(
-      cardDTOList.map(
+      mapMarkerDTOList.map(
         (dto) async {
           final cardImageOrNull = await img.decodeJpgFile(dto.imagePath);
           final String assetPath;
@@ -34,7 +34,7 @@ class MapMarkersViewDataMapper {
           final pinImage = pinImageOrNull!;
 
           img.Image cardThumbnail;
-          if (getDTOList.map((e) => e.cardId).contains(dto.id)) {
+          if (getCardDTOList.map((e) => e.cardId).contains(dto.cardId)) {
             cardThumbnail = img.copyResize(cardImage, width: 130, height: 180);
           } else {
             final tmpCardThumbnail =
@@ -63,7 +63,7 @@ class MapMarkersViewDataMapper {
 
           return MapMarkerViewData(
             id: uuid.v4(),
-            cardId: dto.id,
+            cardId: dto.cardId,
             icon: img.encodePng(mergeImage).buffer.asUint8List(),
             latitude: dto.latitude,
             longitude: dto.longitude,

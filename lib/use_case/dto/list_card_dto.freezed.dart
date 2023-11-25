@@ -20,6 +20,7 @@ mixin _$ListCardDTO {
   String get name => throw _privateConstructorUsedError;
   String get imagePath => throw _privateConstructorUsedError;
   String get prefectureId => throw _privateConstructorUsedError;
+  String get prefectureName => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ListCardDTOCopyWith<ListCardDTO> get copyWith =>
@@ -32,7 +33,12 @@ abstract class $ListCardDTOCopyWith<$Res> {
           ListCardDTO value, $Res Function(ListCardDTO) then) =
       _$ListCardDTOCopyWithImpl<$Res, ListCardDTO>;
   @useResult
-  $Res call({String id, String name, String imagePath, String prefectureId});
+  $Res call(
+      {String id,
+      String name,
+      String imagePath,
+      String prefectureId,
+      String prefectureName});
 }
 
 /// @nodoc
@@ -52,6 +58,7 @@ class _$ListCardDTOCopyWithImpl<$Res, $Val extends ListCardDTO>
     Object? name = null,
     Object? imagePath = null,
     Object? prefectureId = null,
+    Object? prefectureName = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -70,6 +77,10 @@ class _$ListCardDTOCopyWithImpl<$Res, $Val extends ListCardDTO>
           ? _value.prefectureId
           : prefectureId // ignore: cast_nullable_to_non_nullable
               as String,
+      prefectureName: null == prefectureName
+          ? _value.prefectureName
+          : prefectureName // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -82,7 +93,12 @@ abstract class _$$_ListCardDTOCopyWith<$Res>
       __$$_ListCardDTOCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String name, String imagePath, String prefectureId});
+  $Res call(
+      {String id,
+      String name,
+      String imagePath,
+      String prefectureId,
+      String prefectureName});
 }
 
 /// @nodoc
@@ -100,6 +116,7 @@ class __$$_ListCardDTOCopyWithImpl<$Res>
     Object? name = null,
     Object? imagePath = null,
     Object? prefectureId = null,
+    Object? prefectureName = null,
   }) {
     return _then(_$_ListCardDTO(
       id: null == id
@@ -118,6 +135,10 @@ class __$$_ListCardDTOCopyWithImpl<$Res>
           ? _value.prefectureId
           : prefectureId // ignore: cast_nullable_to_non_nullable
               as String,
+      prefectureName: null == prefectureName
+          ? _value.prefectureName
+          : prefectureName // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -129,7 +150,8 @@ class _$_ListCardDTO extends _ListCardDTO {
       {required this.id,
       required this.name,
       required this.imagePath,
-      required this.prefectureId})
+      required this.prefectureId,
+      required this.prefectureName})
       : super._();
 
   @override
@@ -140,10 +162,12 @@ class _$_ListCardDTO extends _ListCardDTO {
   final String imagePath;
   @override
   final String prefectureId;
+  @override
+  final String prefectureName;
 
   @override
   String toString() {
-    return 'ListCardDTO(id: $id, name: $name, imagePath: $imagePath, prefectureId: $prefectureId)';
+    return 'ListCardDTO(id: $id, name: $name, imagePath: $imagePath, prefectureId: $prefectureId, prefectureName: $prefectureName)';
   }
 
   @override
@@ -156,12 +180,14 @@ class _$_ListCardDTO extends _ListCardDTO {
             (identical(other.imagePath, imagePath) ||
                 other.imagePath == imagePath) &&
             (identical(other.prefectureId, prefectureId) ||
-                other.prefectureId == prefectureId));
+                other.prefectureId == prefectureId) &&
+            (identical(other.prefectureName, prefectureName) ||
+                other.prefectureName == prefectureName));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, imagePath, prefectureId);
+  int get hashCode => Object.hash(
+      runtimeType, id, name, imagePath, prefectureId, prefectureName);
 
   @JsonKey(ignore: true)
   @override
@@ -175,7 +201,8 @@ abstract class _ListCardDTO extends ListCardDTO {
       {required final String id,
       required final String name,
       required final String imagePath,
-      required final String prefectureId}) = _$_ListCardDTO;
+      required final String prefectureId,
+      required final String prefectureName}) = _$_ListCardDTO;
   const _ListCardDTO._() : super._();
 
   @override
@@ -186,6 +213,8 @@ abstract class _ListCardDTO extends ListCardDTO {
   String get imagePath;
   @override
   String get prefectureId;
+  @override
+  String get prefectureName;
   @override
   @JsonKey(ignore: true)
   _$$_ListCardDTOCopyWith<_$_ListCardDTO> get copyWith =>
