@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -77,6 +79,8 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final List<MapMarkerDTO> _mapMarkerDTOList = [];
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
   double _zoom = 12.5;
+  late StreamSubscription<List<AlreadyGetCardDTO>>
+      _alreadyGetCardStreamSubscription;
 
   Future<void> onLoad() async {
     _logger.d('ManholeCardMapViewModel');
@@ -258,7 +262,8 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   }
 
   Future<void> _listenAlreadyGetCard() async {
-    _alreadyGetCardQueryService.getStream().listen((dto) async {
+    _alreadyGetCardStreamSubscription =
+        _alreadyGetCardQueryService.getStream().listen((dto) async {
       _alreadyGetCardDTOList.clear();
       _alreadyGetCardDTOList.addAll(dto);
       await _resetMarkersViewData();
@@ -325,5 +330,6 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('ManholeCardMapViewModel dispose');
+    _alreadyGetCardStreamSubscription.cancel();
   }
 }

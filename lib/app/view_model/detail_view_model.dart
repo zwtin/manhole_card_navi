@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/use_case/dto/already_get_card_dto.dart';
 
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
@@ -35,6 +38,8 @@ class DetailViewModel extends ChangeNotifier {
 
   String cardId = '';
   bool alreadyGet = false;
+  late StreamSubscription<List<AlreadyGetCardDTO>>
+      _alreadyGetCardStreamSubscription;
 
   final AlreadyGetCardQueryService _alreadyGetCardQueryService;
 
@@ -66,7 +71,8 @@ class DetailViewModel extends ChangeNotifier {
   }
 
   Future<void> _listenAlreadyGetCard() async {
-    _alreadyGetCardQueryService.getStream().listen(
+    _alreadyGetCardStreamSubscription =
+        _alreadyGetCardQueryService.getStream().listen(
       (dto) {
         alreadyGet = dto.map((e) => e.cardId).contains(cardId);
         notifyListeners();
@@ -86,5 +92,6 @@ class DetailViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('DetailViewModel dispose');
+    _alreadyGetCardStreamSubscription.cancel();
   }
 }

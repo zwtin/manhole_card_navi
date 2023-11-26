@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
@@ -48,6 +50,8 @@ class ManholeCardListViewModel extends ChangeNotifier {
 
   final List<ListCardDTO> _listCardDTOList = [];
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
+  late StreamSubscription<List<AlreadyGetCardDTO>>
+      _alreadyGetCardStreamSubscription;
 
   Future<void> onLoad() async {
     _logger.d('ManholeCardListViewModel');
@@ -78,41 +82,9 @@ class ManholeCardListViewModel extends ChangeNotifier {
     _listCardDTOList.addAll(dto);
   }
 
-  //   final prefectureList = await Future.wait(
-  //     dtoList.map(
-  //       (prefectureDTO) async {
-  //         final cardList = await Future.wait(
-  //           prefectureDTO.cards.map(
-  //             (cardDTO) async {
-  //               final cardImageOrNull =
-  //                   await img.decodeJpgFile(cardDTO.imagePath);
-  //               final cardImage = cardImageOrNull!;
-  //               final cardThumbnail =
-  //                   img.copyResize(cardImage, width: 130, height: 180);
-  //
-  //               return ListCardViewData(
-  //                 id: cardDTO.id,
-  //                 icon: img.encodePng(cardThumbnail).buffer.asUint8List(),
-  //               );
-  //             },
-  //           ),
-  //         );
-  //         return ListPrefectureViewData(
-  //           id: prefectureDTO.id,
-  //           name: prefectureDTO.name.isEmpty ? '全国' : prefectureDTO.name,
-  //           cards: ListCardsViewData(
-  //             list: cardList,
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
-  //   prefecturesViewData = ListPrefecturesViewData(list: prefectureList);
-  //   notifyListeners();
-  // }
-
   Future<void> _listenAlreadyGetCard() async {
-    _alreadyGetCardQueryService.getStream().listen((dto) async {
+    _alreadyGetCardStreamSubscription =
+        _alreadyGetCardQueryService.getStream().listen((dto) async {
       _alreadyGetCardDTOList.clear();
       _alreadyGetCardDTOList.addAll(dto);
       await _resetCardsViewData();
@@ -140,5 +112,6 @@ class ManholeCardListViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('ManholeCardListViewModel dispose');
+    _alreadyGetCardStreamSubscription.cancel();
   }
 }
