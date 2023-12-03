@@ -118,7 +118,7 @@ class ManholeCardListView extends HookConsumerWidget {
                     viewModel.prefecturesViewData.getByIndex(index);
                 final cardWithSeparator = prefectureViewData.cards.expand(
                   (cardViewData) {
-                    return [
+                    return <Widget>[
                       const Divider(),
                       GestureDetector(
                         onTap: () {
@@ -147,7 +147,12 @@ class ManholeCardListView extends HookConsumerWidget {
                                   BodyMediumRegularText(
                                       cardViewData.publicationDate),
                                 ],
-                              )
+                              ),
+                              const Spacer(),
+                              const Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.white,
+                              ),
                             ],
                           ),
                         ),

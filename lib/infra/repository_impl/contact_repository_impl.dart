@@ -89,7 +89,10 @@ class ContactRepositoryImpl implements ContactRepository {
     );
 
     realm.write(() {
-      realm.addAll(realmContacts);
+      realm.addAll(
+        realmContacts,
+        update: true,
+      );
     });
     realm.close();
 

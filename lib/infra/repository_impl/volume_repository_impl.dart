@@ -81,7 +81,10 @@ class VolumeRepositoryImpl implements VolumeRepository {
     );
 
     realm.write(() {
-      realm.addAll(realmVolumes);
+      realm.addAll(
+        realmVolumes,
+        update: true,
+      );
     });
     realm.close();
 

@@ -121,7 +121,10 @@ class ImageRepositoryImpl implements ImageRepository {
     );
 
     realm.write(() {
-      realm.addAll(realmImages);
+      realm.addAll(
+        realmImages,
+        update: true,
+      );
     });
     realm.close();
 

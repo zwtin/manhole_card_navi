@@ -156,7 +156,10 @@ class CardRepositoryImpl implements CardRepository {
     );
 
     realm.write(() {
-      realm.addAll(realmCards);
+      realm.addAll(
+        realmCards,
+        update: true,
+      );
     });
     realm.close();
 

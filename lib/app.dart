@@ -101,7 +101,12 @@ class App extends HookConsumerWidget {
           ),
         ),
         cardColor: ColorName.main,
-        dividerColor: Colors.white,
+        dividerTheme: const DividerThemeData(
+          color: Colors.white,
+          space: 0.0,
+          indent: 0.0,
+          thickness: 0.5,
+        ),
         expansionTileTheme: originalTheme.expansionTileTheme.copyWith(
           iconColor: Colors.white,
           collapsedIconColor: Colors.white,

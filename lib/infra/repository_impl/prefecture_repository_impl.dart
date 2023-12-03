@@ -81,7 +81,10 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
     );
 
     realm.write(() {
-      realm.addAll(realmPrefectures);
+      realm.addAll(
+        realmPrefectures,
+        update: true,
+      );
     });
     realm.close();
 
