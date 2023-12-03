@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/use_case/dto/already_get_card_dto.dart';
 
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/view_model/manhole_card_map_view_model.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
+import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/use_case/already_get_card_use_case.dart';
 

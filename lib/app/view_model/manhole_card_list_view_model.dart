@@ -3,19 +3,19 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/app/mapper/list_prefectures_view_data_mapper.dart';
-import 'package:manhole_card_navi/infra/query_service_impl/already_get_card_query_service_impl.dart';
-import 'package:manhole_card_navi/use_case/dto/already_get_card_dto.dart';
-import 'package:manhole_card_navi/use_case/query_service/already_get_card_query_service.dart';
 
+import '/app/mapper/list_prefectures_view_data_mapper.dart';
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view/detail_view.dart';
 import '/app/view_data/list_prefectures_view_data.dart';
 import '/domain/entity/result.dart';
+import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/infra/query_service_impl/list_cards_query_service_impl.dart';
+import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/dto/list_card_dto.dart';
+import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/query_service/list_cards_query_service.dart';
 
 final manholeCardListViewModelProvider =
@@ -29,6 +29,11 @@ final manholeCardListViewModelProvider =
     );
   },
 );
+
+enum ListState {
+  all,
+  alreadyGet,
+}
 
 class ManholeCardListViewModel extends ChangeNotifier {
   ManholeCardListViewModel(
@@ -53,6 +58,8 @@ class ManholeCardListViewModel extends ChangeNotifier {
   late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
 
+  ListState listState = ListState.all;
+
   Future<void> onLoad() async {
     _logger.d('ManholeCardListViewModel');
     _ref.read(tabKeyStorageProvider).setTabKey(1, _key);
@@ -62,6 +69,11 @@ class ManholeCardListViewModel extends ChangeNotifier {
 
   Future<void> onTap(String cardId) async {
     await _transitionToDetailView(cardId);
+  }
+
+  Future<void> onChangeMapState(ListState newListState) async {
+    listState = newListState;
+    await _resetCardsViewData();
   }
 
   Future<void> _fetchCards() async {
@@ -95,6 +107,7 @@ class ManholeCardListViewModel extends ChangeNotifier {
     prefecturesViewData = await ListPrefecturesViewDataMapper.convertToViewData(
       listCardDTOList: _listCardDTOList,
       getCardDTOList: _alreadyGetCardDTOList,
+      listState: listState,
     );
     notifyListeners();
   }

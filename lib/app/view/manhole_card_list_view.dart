@@ -62,29 +62,39 @@ class ManholeCardListView extends HookConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           ListTile(
-                            leading:
-                                const Icon(Icons.edit, color: Colors.white),
-                            title: const TitleMediumRegularText('全表示'),
-                            trailing: const Icon(Icons.check,
-                                color: ColorName.accent),
+                            leading: viewModel.listState == ListState.all
+                                ? const Icon(
+                                    Icons.check,
+                                    color: ColorName.accent,
+                                  )
+                                : const SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                  ),
+                            title: const TitleMediumRegularText('すべて'),
                             onTap: () async {
                               Navigator.of(modalContext).pop();
-                              // ref
-                              //     .read(manholeCardListViewModelProvider(key))
-                              //     .onTap();
+                              ref
+                                  .read(manholeCardListViewModelProvider(key))
+                                  .onChangeMapState(ListState.all);
                             },
                           ),
                           ListTile(
-                            leading: const Icon(
-                              Icons.settings,
-                              color: Colors.white,
-                            ),
+                            leading: viewModel.listState == ListState.alreadyGet
+                                ? const Icon(
+                                    Icons.check,
+                                    color: ColorName.accent,
+                                  )
+                                : const SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                  ),
                             title: const TitleMediumRegularText('取得済みのみ'),
                             onTap: () async {
                               Navigator.of(modalContext).pop();
-                              // ref
-                              //     .read(manholeCardListViewModelProvider(key))
-                              //     .onTap();
+                              ref
+                                  .read(manholeCardListViewModelProvider(key))
+                                  .onChangeMapState(ListState.alreadyGet);
                             },
                           ),
                         ],
