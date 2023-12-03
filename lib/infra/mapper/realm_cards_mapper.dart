@@ -25,8 +25,10 @@ class RealmCardsMapper {
             distributionState: ManholeCardDistributionState.values.byName(
               element.distributionState,
             ),
+            distributionLinkText: element.distributionLinkText,
+            distributionLinkUrl: element.distributionLinkText,
             distributionText: element.distributionText,
-            distributionUrl: element.distributionUrl,
+            distributionOther: element.distributionOther,
             contacts: RealmContactsMapper.convertToEntity(
               daoList: element.contacts,
             ),
@@ -57,8 +59,10 @@ class RealmCardsMapper {
           element.name,
           element.publicationDate,
           element.distributionState.name,
+          element.distributionLinkText,
+          element.distributionLinkUrl,
           element.distributionText,
-          element.distributionUrl,
+          element.distributionOther,
         );
         dao.image = RealmImageMapper.convertFromEntity(
           entity: element.image,

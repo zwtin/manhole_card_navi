@@ -115,7 +115,7 @@ class App extends HookConsumerWidget {
             }
             return null;
           }),
-          side: BorderSide(
+          side: const BorderSide(
             color: Colors.white,
           ),
         ),
@@ -123,6 +123,13 @@ class App extends HookConsumerWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: ColorName.accent,
             elevation: 0.0,
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         ),
       ),

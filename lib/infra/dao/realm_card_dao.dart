@@ -16,8 +16,10 @@ class _RealmCardDAO {
   late String name;
   late DateTime publicationDate;
   late String distributionState;
+  late String distributionLinkText;
+  late String distributionLinkUrl;
   late String distributionText;
-  late String distributionUrl;
+  late String distributionOther;
   late $RealmImageDAO? image;
   late $RealmPrefectureDAO? prefecture;
   late $RealmVolumeDAO? volume;

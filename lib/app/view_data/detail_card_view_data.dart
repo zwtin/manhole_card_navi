@@ -16,8 +16,10 @@ abstract class DetailCardViewData with _$DetailCardViewData {
     required String volume,
     required String publicationDate,
     required List<DetailContactViewData> contacts,
+    required String distributionLinkText,
+    required String distributionLinkUrl,
     required String distributionText,
-    required String distributionUrl,
+    required String distributionOther,
   }) = _DetailCardViewData;
   const DetailCardViewData._();
 }

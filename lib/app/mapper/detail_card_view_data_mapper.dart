@@ -5,18 +5,25 @@ import '/app/view_data/detail_card_view_data.dart';
 import '/app/view_data/detail_contact_view_data.dart';
 import '/use_case/dto/card_dto.dart';
 
-class DetailViewDataMapper {
+class DetailCardViewDataMapper {
   static Future<DetailCardViewData> convertToViewData({
     required CardDTO cardDTO,
+    required bool alreadyGet,
   }) async {
     final cardImageOrNull = await img.decodeJpgFile(cardDTO.imagePath);
     final cardImage = cardImageOrNull!;
+    img.Image cardThumbnail;
+    if (alreadyGet) {
+      cardThumbnail = cardImage;
+    } else {
+      cardThumbnail = img.grayscale(cardImage);
+    }
 
     final dateFormatter = DateFormat('yyyy/MM/dd');
 
     return DetailCardViewData(
       id: cardDTO.id,
-      icon: img.encodePng(cardImage).buffer.asUint8List(),
+      icon: img.encodePng(cardThumbnail).buffer.asUint8List(),
       name: cardDTO.name,
       prefecture: cardDTO.prefectureName,
       volume: cardDTO.volumeName,
@@ -35,8 +42,10 @@ class DetailViewDataMapper {
           );
         },
       ).toList(),
+      distributionLinkText: cardDTO.distributionLinkText,
+      distributionLinkUrl: cardDTO.distributionLinkUrl,
       distributionText: cardDTO.distributionText,
-      distributionUrl: cardDTO.distributionUrl,
+      distributionOther: cardDTO.distributionOther,
     );
   }
 }

@@ -19,8 +19,10 @@ abstract class CardDTO with _$CardDTO {
     required String volumeName,
     required DateTime publicationDate,
     required DistributionStateDTO distributionState,
+    required String distributionLinkText,
+    required String distributionLinkUrl,
     required String distributionText,
-    required String distributionUrl,
+    required String distributionOther,
     required List<ContactDTO> contacts,
   }) = _CardDTO;
   const CardDTO._();

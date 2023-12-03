@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/use_case/dto/contact_dto.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '/domain/entity/custom_exception.dart';
@@ -76,9 +77,24 @@ class CardUseCase {
         volumeName: card.volume.name,
         publicationDate: card.publicationDate,
         distributionState: distributionState,
+        distributionLinkText: card.distributionLinkText,
+        distributionLinkUrl: card.distributionLinkUrl,
         distributionText: card.distributionText,
-        distributionUrl: card.distributionUrl,
-        contacts: [],
+        distributionOther: card.distributionOther,
+        contacts: card.contacts.map((contact) {
+          return ContactDTO(
+            id: contact.id,
+            name: contact.name,
+            nameUrl: contact.nameUrl,
+            address: contact.address,
+            phoneNumber: contact.phoneNumber,
+            latitude: contact.latitude,
+            longitude: contact.longitude,
+            other: contact.other,
+            time: contact.time,
+            timeOther: contact.timeOther,
+          );
+        }).toList(),
       ),
     );
   }

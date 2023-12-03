@@ -15,8 +15,10 @@ class RealmCardDAO extends _RealmCardDAO
     String name,
     DateTime publicationDate,
     String distributionState,
+    String distributionLinkText,
+    String distributionLinkUrl,
     String distributionText,
-    String distributionUrl, {
+    String distributionOther, {
     RealmImageDAO? image,
     RealmPrefectureDAO? prefecture,
     RealmVolumeDAO? volume,
@@ -28,8 +30,10 @@ class RealmCardDAO extends _RealmCardDAO
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'publicationDate', publicationDate);
     RealmObjectBase.set(this, 'distributionState', distributionState);
+    RealmObjectBase.set(this, 'distributionLinkText', distributionLinkText);
+    RealmObjectBase.set(this, 'distributionLinkUrl', distributionLinkUrl);
     RealmObjectBase.set(this, 'distributionText', distributionText);
-    RealmObjectBase.set(this, 'distributionUrl', distributionUrl);
+    RealmObjectBase.set(this, 'distributionOther', distributionOther);
     RealmObjectBase.set(this, 'image', image);
     RealmObjectBase.set(this, 'prefecture', prefecture);
     RealmObjectBase.set(this, 'volume', volume);
@@ -76,6 +80,20 @@ class RealmCardDAO extends _RealmCardDAO
       RealmObjectBase.set(this, 'distributionState', value);
 
   @override
+  String get distributionLinkText =>
+      RealmObjectBase.get<String>(this, 'distributionLinkText') as String;
+  @override
+  set distributionLinkText(String value) =>
+      RealmObjectBase.set(this, 'distributionLinkText', value);
+
+  @override
+  String get distributionLinkUrl =>
+      RealmObjectBase.get<String>(this, 'distributionLinkUrl') as String;
+  @override
+  set distributionLinkUrl(String value) =>
+      RealmObjectBase.set(this, 'distributionLinkUrl', value);
+
+  @override
   String get distributionText =>
       RealmObjectBase.get<String>(this, 'distributionText') as String;
   @override
@@ -83,11 +101,11 @@ class RealmCardDAO extends _RealmCardDAO
       RealmObjectBase.set(this, 'distributionText', value);
 
   @override
-  String get distributionUrl =>
-      RealmObjectBase.get<String>(this, 'distributionUrl') as String;
+  String get distributionOther =>
+      RealmObjectBase.get<String>(this, 'distributionOther') as String;
   @override
-  set distributionUrl(String value) =>
-      RealmObjectBase.set(this, 'distributionUrl', value);
+  set distributionOther(String value) =>
+      RealmObjectBase.set(this, 'distributionOther', value);
 
   @override
   RealmImageDAO? get image =>
@@ -138,8 +156,10 @@ class RealmCardDAO extends _RealmCardDAO
       SchemaProperty('name', RealmPropertyType.string),
       SchemaProperty('publicationDate', RealmPropertyType.timestamp),
       SchemaProperty('distributionState', RealmPropertyType.string),
+      SchemaProperty('distributionLinkText', RealmPropertyType.string),
+      SchemaProperty('distributionLinkUrl', RealmPropertyType.string),
       SchemaProperty('distributionText', RealmPropertyType.string),
-      SchemaProperty('distributionUrl', RealmPropertyType.string),
+      SchemaProperty('distributionOther', RealmPropertyType.string),
       SchemaProperty('image', RealmPropertyType.object,
           optional: true, linkTarget: 'RealmImageDAO'),
       SchemaProperty('prefecture', RealmPropertyType.object,

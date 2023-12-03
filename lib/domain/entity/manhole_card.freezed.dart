@@ -23,8 +23,10 @@ mixin _$ManholeCard {
   DateTime get publicationDate => throw _privateConstructorUsedError;
   ManholeCardDistributionState get distributionState =>
       throw _privateConstructorUsedError;
+  String get distributionLinkText => throw _privateConstructorUsedError;
+  String get distributionLinkUrl => throw _privateConstructorUsedError;
   String get distributionText => throw _privateConstructorUsedError;
-  String get distributionUrl => throw _privateConstructorUsedError;
+  String get distributionOther => throw _privateConstructorUsedError;
   ManholeCardContacts get contacts => throw _privateConstructorUsedError;
   ManholeCardImage get image => throw _privateConstructorUsedError;
   ManholeCardPrefecture get prefecture => throw _privateConstructorUsedError;
@@ -48,8 +50,10 @@ abstract class $ManholeCardCopyWith<$Res> {
       String name,
       DateTime publicationDate,
       ManholeCardDistributionState distributionState,
+      String distributionLinkText,
+      String distributionLinkUrl,
       String distributionText,
-      String distributionUrl,
+      String distributionOther,
       ManholeCardContacts contacts,
       ManholeCardImage image,
       ManholeCardPrefecture prefecture,
@@ -80,8 +84,10 @@ class _$ManholeCardCopyWithImpl<$Res, $Val extends ManholeCard>
     Object? name = null,
     Object? publicationDate = null,
     Object? distributionState = null,
+    Object? distributionLinkText = null,
+    Object? distributionLinkUrl = null,
     Object? distributionText = null,
-    Object? distributionUrl = null,
+    Object? distributionOther = null,
     Object? contacts = null,
     Object? image = null,
     Object? prefecture = null,
@@ -112,13 +118,21 @@ class _$ManholeCardCopyWithImpl<$Res, $Val extends ManholeCard>
           ? _value.distributionState
           : distributionState // ignore: cast_nullable_to_non_nullable
               as ManholeCardDistributionState,
+      distributionLinkText: null == distributionLinkText
+          ? _value.distributionLinkText
+          : distributionLinkText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionLinkUrl: null == distributionLinkUrl
+          ? _value.distributionLinkUrl
+          : distributionLinkUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       distributionText: null == distributionText
           ? _value.distributionText
           : distributionText // ignore: cast_nullable_to_non_nullable
               as String,
-      distributionUrl: null == distributionUrl
-          ? _value.distributionUrl
-          : distributionUrl // ignore: cast_nullable_to_non_nullable
+      distributionOther: null == distributionOther
+          ? _value.distributionOther
+          : distributionOther // ignore: cast_nullable_to_non_nullable
               as String,
       contacts: null == contacts
           ? _value.contacts
@@ -187,8 +201,10 @@ abstract class _$$_ManholeCardCopyWith<$Res>
       String name,
       DateTime publicationDate,
       ManholeCardDistributionState distributionState,
+      String distributionLinkText,
+      String distributionLinkUrl,
       String distributionText,
-      String distributionUrl,
+      String distributionOther,
       ManholeCardContacts contacts,
       ManholeCardImage image,
       ManholeCardPrefecture prefecture,
@@ -221,8 +237,10 @@ class __$$_ManholeCardCopyWithImpl<$Res>
     Object? name = null,
     Object? publicationDate = null,
     Object? distributionState = null,
+    Object? distributionLinkText = null,
+    Object? distributionLinkUrl = null,
     Object? distributionText = null,
-    Object? distributionUrl = null,
+    Object? distributionOther = null,
     Object? contacts = null,
     Object? image = null,
     Object? prefecture = null,
@@ -253,13 +271,21 @@ class __$$_ManholeCardCopyWithImpl<$Res>
           ? _value.distributionState
           : distributionState // ignore: cast_nullable_to_non_nullable
               as ManholeCardDistributionState,
+      distributionLinkText: null == distributionLinkText
+          ? _value.distributionLinkText
+          : distributionLinkText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionLinkUrl: null == distributionLinkUrl
+          ? _value.distributionLinkUrl
+          : distributionLinkUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       distributionText: null == distributionText
           ? _value.distributionText
           : distributionText // ignore: cast_nullable_to_non_nullable
               as String,
-      distributionUrl: null == distributionUrl
-          ? _value.distributionUrl
-          : distributionUrl // ignore: cast_nullable_to_non_nullable
+      distributionOther: null == distributionOther
+          ? _value.distributionOther
+          : distributionOther // ignore: cast_nullable_to_non_nullable
               as String,
       contacts: null == contacts
           ? _value.contacts
@@ -291,8 +317,10 @@ class _$_ManholeCard extends _ManholeCard {
       required this.name,
       required this.publicationDate,
       required this.distributionState,
+      required this.distributionLinkText,
+      required this.distributionLinkUrl,
       required this.distributionText,
-      required this.distributionUrl,
+      required this.distributionOther,
       required this.contacts,
       required this.image,
       required this.prefecture,
@@ -312,9 +340,13 @@ class _$_ManholeCard extends _ManholeCard {
   @override
   final ManholeCardDistributionState distributionState;
   @override
+  final String distributionLinkText;
+  @override
+  final String distributionLinkUrl;
+  @override
   final String distributionText;
   @override
-  final String distributionUrl;
+  final String distributionOther;
   @override
   final ManholeCardContacts contacts;
   @override
@@ -326,7 +358,7 @@ class _$_ManholeCard extends _ManholeCard {
 
   @override
   String toString() {
-    return 'ManholeCard(id: $id, latitude: $latitude, longitude: $longitude, name: $name, publicationDate: $publicationDate, distributionState: $distributionState, distributionText: $distributionText, distributionUrl: $distributionUrl, contacts: $contacts, image: $image, prefecture: $prefecture, volume: $volume)';
+    return 'ManholeCard(id: $id, latitude: $latitude, longitude: $longitude, name: $name, publicationDate: $publicationDate, distributionState: $distributionState, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther, contacts: $contacts, image: $image, prefecture: $prefecture, volume: $volume)';
   }
 
   @override
@@ -344,10 +376,14 @@ class _$_ManholeCard extends _ManholeCard {
                 other.publicationDate == publicationDate) &&
             (identical(other.distributionState, distributionState) ||
                 other.distributionState == distributionState) &&
+            (identical(other.distributionLinkText, distributionLinkText) ||
+                other.distributionLinkText == distributionLinkText) &&
+            (identical(other.distributionLinkUrl, distributionLinkUrl) ||
+                other.distributionLinkUrl == distributionLinkUrl) &&
             (identical(other.distributionText, distributionText) ||
                 other.distributionText == distributionText) &&
-            (identical(other.distributionUrl, distributionUrl) ||
-                other.distributionUrl == distributionUrl) &&
+            (identical(other.distributionOther, distributionOther) ||
+                other.distributionOther == distributionOther) &&
             (identical(other.contacts, contacts) ||
                 other.contacts == contacts) &&
             (identical(other.image, image) || other.image == image) &&
@@ -365,8 +401,10 @@ class _$_ManholeCard extends _ManholeCard {
       name,
       publicationDate,
       distributionState,
+      distributionLinkText,
+      distributionLinkUrl,
       distributionText,
-      distributionUrl,
+      distributionOther,
       contacts,
       image,
       prefecture,
@@ -387,8 +425,10 @@ abstract class _ManholeCard extends ManholeCard {
       required final String name,
       required final DateTime publicationDate,
       required final ManholeCardDistributionState distributionState,
+      required final String distributionLinkText,
+      required final String distributionLinkUrl,
       required final String distributionText,
-      required final String distributionUrl,
+      required final String distributionOther,
       required final ManholeCardContacts contacts,
       required final ManholeCardImage image,
       required final ManholeCardPrefecture prefecture,
@@ -408,9 +448,13 @@ abstract class _ManholeCard extends ManholeCard {
   @override
   ManholeCardDistributionState get distributionState;
   @override
+  String get distributionLinkText;
+  @override
+  String get distributionLinkUrl;
+  @override
   String get distributionText;
   @override
-  String get distributionUrl;
+  String get distributionOther;
   @override
   ManholeCardContacts get contacts;
   @override

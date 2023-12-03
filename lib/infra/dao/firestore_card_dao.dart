@@ -15,8 +15,10 @@ abstract class FirestoreCardDAO with _$FirestoreCardDAO {
     required String prefectureId,
     required String volumeId,
     required String distributionState,
+    required String distributionLinkText,
+    required String distributionLinkUrl,
     required String distributionText,
-    required String distributionUrl,
+    required String distributionOther,
   }) = _FirestoreCardDAO;
 
   const FirestoreCardDAO._();

@@ -28,8 +28,10 @@ mixin _$CardDTO {
   DateTime get publicationDate => throw _privateConstructorUsedError;
   DistributionStateDTO get distributionState =>
       throw _privateConstructorUsedError;
+  String get distributionLinkText => throw _privateConstructorUsedError;
+  String get distributionLinkUrl => throw _privateConstructorUsedError;
   String get distributionText => throw _privateConstructorUsedError;
-  String get distributionUrl => throw _privateConstructorUsedError;
+  String get distributionOther => throw _privateConstructorUsedError;
   List<ContactDTO> get contacts => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -53,8 +55,10 @@ abstract class $CardDTOCopyWith<$Res> {
       String volumeName,
       DateTime publicationDate,
       DistributionStateDTO distributionState,
+      String distributionLinkText,
+      String distributionLinkUrl,
       String distributionText,
-      String distributionUrl,
+      String distributionOther,
       List<ContactDTO> contacts});
 }
 
@@ -82,8 +86,10 @@ class _$CardDTOCopyWithImpl<$Res, $Val extends CardDTO>
     Object? volumeName = null,
     Object? publicationDate = null,
     Object? distributionState = null,
+    Object? distributionLinkText = null,
+    Object? distributionLinkUrl = null,
     Object? distributionText = null,
-    Object? distributionUrl = null,
+    Object? distributionOther = null,
     Object? contacts = null,
   }) {
     return _then(_value.copyWith(
@@ -131,13 +137,21 @@ class _$CardDTOCopyWithImpl<$Res, $Val extends CardDTO>
           ? _value.distributionState
           : distributionState // ignore: cast_nullable_to_non_nullable
               as DistributionStateDTO,
+      distributionLinkText: null == distributionLinkText
+          ? _value.distributionLinkText
+          : distributionLinkText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionLinkUrl: null == distributionLinkUrl
+          ? _value.distributionLinkUrl
+          : distributionLinkUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       distributionText: null == distributionText
           ? _value.distributionText
           : distributionText // ignore: cast_nullable_to_non_nullable
               as String,
-      distributionUrl: null == distributionUrl
-          ? _value.distributionUrl
-          : distributionUrl // ignore: cast_nullable_to_non_nullable
+      distributionOther: null == distributionOther
+          ? _value.distributionOther
+          : distributionOther // ignore: cast_nullable_to_non_nullable
               as String,
       contacts: null == contacts
           ? _value.contacts
@@ -166,8 +180,10 @@ abstract class _$$_CardDTOCopyWith<$Res> implements $CardDTOCopyWith<$Res> {
       String volumeName,
       DateTime publicationDate,
       DistributionStateDTO distributionState,
+      String distributionLinkText,
+      String distributionLinkUrl,
       String distributionText,
-      String distributionUrl,
+      String distributionOther,
       List<ContactDTO> contacts});
 }
 
@@ -192,8 +208,10 @@ class __$$_CardDTOCopyWithImpl<$Res>
     Object? volumeName = null,
     Object? publicationDate = null,
     Object? distributionState = null,
+    Object? distributionLinkText = null,
+    Object? distributionLinkUrl = null,
     Object? distributionText = null,
-    Object? distributionUrl = null,
+    Object? distributionOther = null,
     Object? contacts = null,
   }) {
     return _then(_$_CardDTO(
@@ -241,13 +259,21 @@ class __$$_CardDTOCopyWithImpl<$Res>
           ? _value.distributionState
           : distributionState // ignore: cast_nullable_to_non_nullable
               as DistributionStateDTO,
+      distributionLinkText: null == distributionLinkText
+          ? _value.distributionLinkText
+          : distributionLinkText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionLinkUrl: null == distributionLinkUrl
+          ? _value.distributionLinkUrl
+          : distributionLinkUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       distributionText: null == distributionText
           ? _value.distributionText
           : distributionText // ignore: cast_nullable_to_non_nullable
               as String,
-      distributionUrl: null == distributionUrl
-          ? _value.distributionUrl
-          : distributionUrl // ignore: cast_nullable_to_non_nullable
+      distributionOther: null == distributionOther
+          ? _value.distributionOther
+          : distributionOther // ignore: cast_nullable_to_non_nullable
               as String,
       contacts: null == contacts
           ? _value._contacts
@@ -272,8 +298,10 @@ class _$_CardDTO extends _CardDTO {
       required this.volumeName,
       required this.publicationDate,
       required this.distributionState,
+      required this.distributionLinkText,
+      required this.distributionLinkUrl,
       required this.distributionText,
-      required this.distributionUrl,
+      required this.distributionOther,
       required final List<ContactDTO> contacts})
       : _contacts = contacts,
         super._();
@@ -301,9 +329,13 @@ class _$_CardDTO extends _CardDTO {
   @override
   final DistributionStateDTO distributionState;
   @override
+  final String distributionLinkText;
+  @override
+  final String distributionLinkUrl;
+  @override
   final String distributionText;
   @override
-  final String distributionUrl;
+  final String distributionOther;
   final List<ContactDTO> _contacts;
   @override
   List<ContactDTO> get contacts {
@@ -314,7 +346,7 @@ class _$_CardDTO extends _CardDTO {
 
   @override
   String toString() {
-    return 'CardDTO(id: $id, name: $name, imagePath: $imagePath, latitude: $latitude, longitude: $longitude, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate, distributionState: $distributionState, distributionText: $distributionText, distributionUrl: $distributionUrl, contacts: $contacts)';
+    return 'CardDTO(id: $id, name: $name, imagePath: $imagePath, latitude: $latitude, longitude: $longitude, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate, distributionState: $distributionState, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther, contacts: $contacts)';
   }
 
   @override
@@ -342,10 +374,14 @@ class _$_CardDTO extends _CardDTO {
                 other.publicationDate == publicationDate) &&
             (identical(other.distributionState, distributionState) ||
                 other.distributionState == distributionState) &&
+            (identical(other.distributionLinkText, distributionLinkText) ||
+                other.distributionLinkText == distributionLinkText) &&
+            (identical(other.distributionLinkUrl, distributionLinkUrl) ||
+                other.distributionLinkUrl == distributionLinkUrl) &&
             (identical(other.distributionText, distributionText) ||
                 other.distributionText == distributionText) &&
-            (identical(other.distributionUrl, distributionUrl) ||
-                other.distributionUrl == distributionUrl) &&
+            (identical(other.distributionOther, distributionOther) ||
+                other.distributionOther == distributionOther) &&
             const DeepCollectionEquality().equals(other._contacts, _contacts));
   }
 
@@ -363,8 +399,10 @@ class _$_CardDTO extends _CardDTO {
       volumeName,
       publicationDate,
       distributionState,
+      distributionLinkText,
+      distributionLinkUrl,
       distributionText,
-      distributionUrl,
+      distributionOther,
       const DeepCollectionEquality().hash(_contacts));
 
   @JsonKey(ignore: true)
@@ -387,8 +425,10 @@ abstract class _CardDTO extends CardDTO {
       required final String volumeName,
       required final DateTime publicationDate,
       required final DistributionStateDTO distributionState,
+      required final String distributionLinkText,
+      required final String distributionLinkUrl,
       required final String distributionText,
-      required final String distributionUrl,
+      required final String distributionOther,
       required final List<ContactDTO> contacts}) = _$_CardDTO;
   const _CardDTO._() : super._();
 
@@ -415,9 +455,13 @@ abstract class _CardDTO extends CardDTO {
   @override
   DistributionStateDTO get distributionState;
   @override
+  String get distributionLinkText;
+  @override
+  String get distributionLinkUrl;
+  @override
   String get distributionText;
   @override
-  String get distributionUrl;
+  String get distributionOther;
   @override
   List<ContactDTO> get contacts;
   @override

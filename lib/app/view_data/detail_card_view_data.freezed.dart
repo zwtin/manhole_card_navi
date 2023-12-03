@@ -24,8 +24,10 @@ mixin _$DetailCardViewData {
   String get publicationDate => throw _privateConstructorUsedError;
   List<DetailContactViewData> get contacts =>
       throw _privateConstructorUsedError;
+  String get distributionLinkText => throw _privateConstructorUsedError;
+  String get distributionLinkUrl => throw _privateConstructorUsedError;
   String get distributionText => throw _privateConstructorUsedError;
-  String get distributionUrl => throw _privateConstructorUsedError;
+  String get distributionOther => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $DetailCardViewDataCopyWith<DetailCardViewData> get copyWith =>
@@ -46,8 +48,10 @@ abstract class $DetailCardViewDataCopyWith<$Res> {
       String volume,
       String publicationDate,
       List<DetailContactViewData> contacts,
+      String distributionLinkText,
+      String distributionLinkUrl,
       String distributionText,
-      String distributionUrl});
+      String distributionOther});
 }
 
 /// @nodoc
@@ -70,8 +74,10 @@ class _$DetailCardViewDataCopyWithImpl<$Res, $Val extends DetailCardViewData>
     Object? volume = null,
     Object? publicationDate = null,
     Object? contacts = null,
+    Object? distributionLinkText = null,
+    Object? distributionLinkUrl = null,
     Object? distributionText = null,
-    Object? distributionUrl = null,
+    Object? distributionOther = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -102,13 +108,21 @@ class _$DetailCardViewDataCopyWithImpl<$Res, $Val extends DetailCardViewData>
           ? _value.contacts
           : contacts // ignore: cast_nullable_to_non_nullable
               as List<DetailContactViewData>,
+      distributionLinkText: null == distributionLinkText
+          ? _value.distributionLinkText
+          : distributionLinkText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionLinkUrl: null == distributionLinkUrl
+          ? _value.distributionLinkUrl
+          : distributionLinkUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       distributionText: null == distributionText
           ? _value.distributionText
           : distributionText // ignore: cast_nullable_to_non_nullable
               as String,
-      distributionUrl: null == distributionUrl
-          ? _value.distributionUrl
-          : distributionUrl // ignore: cast_nullable_to_non_nullable
+      distributionOther: null == distributionOther
+          ? _value.distributionOther
+          : distributionOther // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -130,8 +144,10 @@ abstract class _$$_DetailCardViewDataCopyWith<$Res>
       String volume,
       String publicationDate,
       List<DetailContactViewData> contacts,
+      String distributionLinkText,
+      String distributionLinkUrl,
       String distributionText,
-      String distributionUrl});
+      String distributionOther});
 }
 
 /// @nodoc
@@ -152,8 +168,10 @@ class __$$_DetailCardViewDataCopyWithImpl<$Res>
     Object? volume = null,
     Object? publicationDate = null,
     Object? contacts = null,
+    Object? distributionLinkText = null,
+    Object? distributionLinkUrl = null,
     Object? distributionText = null,
-    Object? distributionUrl = null,
+    Object? distributionOther = null,
   }) {
     return _then(_$_DetailCardViewData(
       id: null == id
@@ -184,13 +202,21 @@ class __$$_DetailCardViewDataCopyWithImpl<$Res>
           ? _value._contacts
           : contacts // ignore: cast_nullable_to_non_nullable
               as List<DetailContactViewData>,
+      distributionLinkText: null == distributionLinkText
+          ? _value.distributionLinkText
+          : distributionLinkText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionLinkUrl: null == distributionLinkUrl
+          ? _value.distributionLinkUrl
+          : distributionLinkUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       distributionText: null == distributionText
           ? _value.distributionText
           : distributionText // ignore: cast_nullable_to_non_nullable
               as String,
-      distributionUrl: null == distributionUrl
-          ? _value.distributionUrl
-          : distributionUrl // ignore: cast_nullable_to_non_nullable
+      distributionOther: null == distributionOther
+          ? _value.distributionOther
+          : distributionOther // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -207,8 +233,10 @@ class _$_DetailCardViewData extends _DetailCardViewData {
       required this.volume,
       required this.publicationDate,
       required final List<DetailContactViewData> contacts,
+      required this.distributionLinkText,
+      required this.distributionLinkUrl,
       required this.distributionText,
-      required this.distributionUrl})
+      required this.distributionOther})
       : _contacts = contacts,
         super._();
 
@@ -233,13 +261,17 @@ class _$_DetailCardViewData extends _DetailCardViewData {
   }
 
   @override
+  final String distributionLinkText;
+  @override
+  final String distributionLinkUrl;
+  @override
   final String distributionText;
   @override
-  final String distributionUrl;
+  final String distributionOther;
 
   @override
   String toString() {
-    return 'DetailCardViewData(id: $id, icon: $icon, name: $name, prefecture: $prefecture, volume: $volume, publicationDate: $publicationDate, contacts: $contacts, distributionText: $distributionText, distributionUrl: $distributionUrl)';
+    return 'DetailCardViewData(id: $id, icon: $icon, name: $name, prefecture: $prefecture, volume: $volume, publicationDate: $publicationDate, contacts: $contacts, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther)';
   }
 
   @override
@@ -256,10 +288,14 @@ class _$_DetailCardViewData extends _DetailCardViewData {
             (identical(other.publicationDate, publicationDate) ||
                 other.publicationDate == publicationDate) &&
             const DeepCollectionEquality().equals(other._contacts, _contacts) &&
+            (identical(other.distributionLinkText, distributionLinkText) ||
+                other.distributionLinkText == distributionLinkText) &&
+            (identical(other.distributionLinkUrl, distributionLinkUrl) ||
+                other.distributionLinkUrl == distributionLinkUrl) &&
             (identical(other.distributionText, distributionText) ||
                 other.distributionText == distributionText) &&
-            (identical(other.distributionUrl, distributionUrl) ||
-                other.distributionUrl == distributionUrl));
+            (identical(other.distributionOther, distributionOther) ||
+                other.distributionOther == distributionOther));
   }
 
   @override
@@ -272,8 +308,10 @@ class _$_DetailCardViewData extends _DetailCardViewData {
       volume,
       publicationDate,
       const DeepCollectionEquality().hash(_contacts),
+      distributionLinkText,
+      distributionLinkUrl,
       distributionText,
-      distributionUrl);
+      distributionOther);
 
   @JsonKey(ignore: true)
   @override
@@ -292,8 +330,10 @@ abstract class _DetailCardViewData extends DetailCardViewData {
       required final String volume,
       required final String publicationDate,
       required final List<DetailContactViewData> contacts,
+      required final String distributionLinkText,
+      required final String distributionLinkUrl,
       required final String distributionText,
-      required final String distributionUrl}) = _$_DetailCardViewData;
+      required final String distributionOther}) = _$_DetailCardViewData;
   const _DetailCardViewData._() : super._();
 
   @override
@@ -311,9 +351,13 @@ abstract class _DetailCardViewData extends DetailCardViewData {
   @override
   List<DetailContactViewData> get contacts;
   @override
+  String get distributionLinkText;
+  @override
+  String get distributionLinkUrl;
+  @override
   String get distributionText;
   @override
-  String get distributionUrl;
+  String get distributionOther;
   @override
   @JsonKey(ignore: true)
   _$$_DetailCardViewDataCopyWith<_$_DetailCardViewData> get copyWith =>

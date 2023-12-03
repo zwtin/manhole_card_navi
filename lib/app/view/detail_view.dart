@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:loading_overlay/loading_overlay.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '/app/view_model/detail_view_model.dart';
 import '/app/widget/custom_text.dart';
@@ -44,54 +46,248 @@ class DetailView extends HookConsumerWidget {
             Container(
               color: ColorName.main,
             ),
-            SafeArea(
-              child: Column(
-                children: [
-                  const Spacer(),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              await ref
-                                  .read(detailViewModelProvider(key))
-                                  .onTapCheckWithMapButton();
-                            },
-                            child: const SizedBox(
-                              height: 50,
-                              child: Center(
-                                child: TitleMediumRegularText('マップで見る'),
-                              ),
+            LoadingOverlay(
+              isLoading: viewModel.isLoading,
+              child: viewModel.isLoading
+                  ? Container()
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          SizedBox(
+                            width: 130,
+                            height: 180,
+                            child: Image.memory(
+                              viewModel.viewData.icon,
                             ),
                           ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              await ref
-                                  .read(detailViewModelProvider(key))
-                                  .onTapAlreadyGetButton();
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  width: 120,
+                                  child: BodyLargeRegularText('名前'),
+                                ),
+                                Flexible(
+                                  child: BodyLargeRegularText(
+                                    viewModel.viewData.name,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  width: 120,
+                                  child: BodyLargeRegularText('都道府県'),
+                                ),
+                                Flexible(
+                                  child: BodyLargeRegularText(
+                                    viewModel.viewData.prefecture,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  width: 120,
+                                  child: BodyLargeRegularText('弾数'),
+                                ),
+                                Flexible(
+                                  child: BodyLargeRegularText(
+                                    viewModel.viewData.volume,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  width: 120,
+                                  child: BodyLargeRegularText('発行年月日'),
+                                ),
+                                Flexible(
+                                  child: BodyLargeRegularText(
+                                    viewModel.viewData.publicationDate,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          ...viewModel.viewData.contacts.map(
+                            (contactViewData) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      width: 120,
+                                      child: BodyLargeRegularText('配布場所'),
+                                    ),
+                                    Flexible(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextButton(
+                                            onPressed: () async {
+                                              final uri = Uri.parse(
+                                                  contactViewData.nameUrl);
+                                              if (await canLaunchUrl(uri)) {
+                                                launchUrl(
+                                                  uri,
+                                                  mode: LaunchMode.inAppWebView,
+                                                );
+                                              }
+                                            },
+                                            child: BodyLargeRegularLinkText(
+                                              contactViewData.name,
+                                            ),
+                                          ),
+                                          BodyLargeRegularText(
+                                            contactViewData.address,
+                                          ),
+                                          BodyLargeRegularText(
+                                            contactViewData.phoneNumber,
+                                          ),
+                                          BodyLargeRegularText(
+                                            contactViewData.other,
+                                          ),
+                                          const SizedBox(
+                                            height: 8,
+                                          ),
+                                          BodyLargeRegularText(
+                                            contactViewData.time,
+                                          ),
+                                          BodyLargeRegularText(
+                                            contactViewData.timeOther,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
-                            child: SizedBox(
-                              height: 50,
-                              child: Center(
-                                child: TitleMediumRegularText(
-                                  viewModel.alreadyGetActionButtonTitle,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  width: 120,
+                                  child: BodyLargeRegularText('在庫状況'),
+                                ),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (viewModel.viewData
+                                          .distributionLinkText.isNotEmpty)
+                                        TextButton(
+                                          onPressed: () async {
+                                            final uri = Uri.parse(viewModel
+                                                .viewData.distributionLinkUrl);
+                                            if (await canLaunchUrl(uri)) {
+                                              launchUrl(
+                                                uri,
+                                                mode: LaunchMode.inAppWebView,
+                                              );
+                                            }
+                                          },
+                                          child: BodyLargeRegularLinkText(
+                                            viewModel
+                                                .viewData.distributionLinkText,
+                                          ),
+                                        ),
+                                      BodyLargeRegularText(
+                                        viewModel.viewData.distributionText,
+                                      ),
+                                      BodyLargeRegularText(
+                                        viewModel.viewData.distributionOther,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 40),
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      await ref
+                                          .read(detailViewModelProvider(key))
+                                          .onTapCheckWithMapButton();
+                                    },
+                                    child: const SizedBox(
+                                      height: 50,
+                                      child: Center(
+                                        child: TitleMediumRegularText('マップで見る'),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              Expanded(
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 40),
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      await ref
+                                          .read(detailViewModelProvider(key))
+                                          .onTapAlreadyGetButton();
+                                    },
+                                    child: SizedBox(
+                                      height: 50,
+                                      child: Center(
+                                        child: TitleMediumRegularText(
+                                          viewModel.alreadyGetActionButtonTitle,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
             ),
           ],
         ),

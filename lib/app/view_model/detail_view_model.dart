@@ -4,12 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
+import '/app/mapper/detail_card_view_data_mapper.dart';
+import '/app/provider/alert_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view_data/detail_card_view_data.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/view_model/manhole_card_map_view_model.dart';
+import '/domain/entity/result.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/use_case/dto/already_get_card_dto.dart';
+import '/use_case/dto/card_dto.dart';
 import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/use_case/already_get_card_use_case.dart';
 import '/use_case/use_case/card_use_case.dart';
@@ -40,7 +44,8 @@ class DetailViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
-  DetailCardViewData? viewData;
+  bool isLoading = true;
+  late DetailCardViewData viewData;
 
   String get alreadyGetActionButtonTitle {
     if (_alreadyGet) {
@@ -51,6 +56,7 @@ class DetailViewModel extends ChangeNotifier {
   }
 
   String _cardId = '';
+  late CardDTO _cardDTO;
   bool _alreadyGet = false;
   late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
@@ -65,6 +71,7 @@ class DetailViewModel extends ChangeNotifier {
   ) async {
     _logger.d('DetailViewModel');
     _cardId = cardId;
+    await _fetch();
     await _listenAlreadyGetCard();
   }
 
@@ -85,14 +92,39 @@ class DetailViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> _fetch() async {
+    final result = await _cardUseCase.get(id: _cardId);
+    if (result is Failure) {
+      _ref.read(alertProvider.notifier).show(
+            title: 'エラー',
+            message: 'カード情報の取得に失敗しました',
+            okButtonTitle: 'OK',
+            okButtonAction: () async {},
+            cancelButtonTitle: null,
+            cancelButtonAction: null,
+          );
+      return;
+    }
+    _cardDTO = (result as Success<CardDTO>).value;
+    isLoading = false;
+  }
+
   Future<void> _listenAlreadyGetCard() async {
     _alreadyGetCardStreamSubscription =
         _alreadyGetCardQueryService.getStream().listen(
-      (dto) {
+      (dto) async {
         _alreadyGet = dto.map((e) => e.cardId).contains(_cardId);
-        notifyListeners();
+        await _resetViewData();
       },
     );
+  }
+
+  Future<void> _resetViewData() async {
+    viewData = await DetailCardViewDataMapper.convertToViewData(
+      cardDTO: _cardDTO,
+      alreadyGet: _alreadyGet,
+    );
+    notifyListeners();
   }
 
   Future<void> _saveCard() async {

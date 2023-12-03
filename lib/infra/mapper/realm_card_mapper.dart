@@ -21,8 +21,10 @@ class RealmCardMapper {
       distributionState: ManholeCardDistributionState.values.byName(
         dao.distributionState,
       ),
+      distributionLinkText: dao.distributionLinkText,
+      distributionLinkUrl: dao.distributionLinkUrl,
       distributionText: dao.distributionText,
-      distributionUrl: dao.distributionUrl,
+      distributionOther: dao.distributionOther,
       contacts: RealmContactsMapper.convertToEntity(
         daoList: dao.contacts,
       ),
