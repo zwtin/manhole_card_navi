@@ -21,6 +21,7 @@ mixin _$ManholeCardContact {
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  String get nameUrl => throw _privateConstructorUsedError;
   String get other => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
   String get time => throw _privateConstructorUsedError;
@@ -43,6 +44,7 @@ abstract class $ManholeCardContactCopyWith<$Res> {
       double latitude,
       double longitude,
       String name,
+      String nameUrl,
       String other,
       String phoneNumber,
       String time,
@@ -67,6 +69,7 @@ class _$ManholeCardContactCopyWithImpl<$Res, $Val extends ManholeCardContact>
     Object? latitude = null,
     Object? longitude = null,
     Object? name = null,
+    Object? nameUrl = null,
     Object? other = null,
     Object? phoneNumber = null,
     Object? time = null,
@@ -92,6 +95,10 @@ class _$ManholeCardContactCopyWithImpl<$Res, $Val extends ManholeCardContact>
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameUrl: null == nameUrl
+          ? _value.nameUrl
+          : nameUrl // ignore: cast_nullable_to_non_nullable
               as String,
       other: null == other
           ? _value.other
@@ -127,6 +134,7 @@ abstract class _$$_ManholeCardContactCopyWith<$Res>
       double latitude,
       double longitude,
       String name,
+      String nameUrl,
       String other,
       String phoneNumber,
       String time,
@@ -149,6 +157,7 @@ class __$$_ManholeCardContactCopyWithImpl<$Res>
     Object? latitude = null,
     Object? longitude = null,
     Object? name = null,
+    Object? nameUrl = null,
     Object? other = null,
     Object? phoneNumber = null,
     Object? time = null,
@@ -174,6 +183,10 @@ class __$$_ManholeCardContactCopyWithImpl<$Res>
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameUrl: null == nameUrl
+          ? _value.nameUrl
+          : nameUrl // ignore: cast_nullable_to_non_nullable
               as String,
       other: null == other
           ? _value.other
@@ -204,6 +217,7 @@ class _$_ManholeCardContact extends _ManholeCardContact {
       required this.latitude,
       required this.longitude,
       required this.name,
+      required this.nameUrl,
       required this.other,
       required this.phoneNumber,
       required this.time,
@@ -221,6 +235,8 @@ class _$_ManholeCardContact extends _ManholeCardContact {
   @override
   final String name;
   @override
+  final String nameUrl;
+  @override
   final String other;
   @override
   final String phoneNumber;
@@ -231,7 +247,7 @@ class _$_ManholeCardContact extends _ManholeCardContact {
 
   @override
   String toString() {
-    return 'ManholeCardContact(address: $address, id: $id, latitude: $latitude, longitude: $longitude, name: $name, other: $other, phoneNumber: $phoneNumber, time: $time, timeOther: $timeOther)';
+    return 'ManholeCardContact(address: $address, id: $id, latitude: $latitude, longitude: $longitude, name: $name, nameUrl: $nameUrl, other: $other, phoneNumber: $phoneNumber, time: $time, timeOther: $timeOther)';
   }
 
   @override
@@ -246,6 +262,7 @@ class _$_ManholeCardContact extends _ManholeCardContact {
             (identical(other.longitude, longitude) ||
                 other.longitude == longitude) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.nameUrl, nameUrl) || other.nameUrl == nameUrl) &&
             (identical(other.other, this.other) || other.other == this.other) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
@@ -256,7 +273,7 @@ class _$_ManholeCardContact extends _ManholeCardContact {
 
   @override
   int get hashCode => Object.hash(runtimeType, address, id, latitude, longitude,
-      name, other, phoneNumber, time, timeOther);
+      name, nameUrl, other, phoneNumber, time, timeOther);
 
   @JsonKey(ignore: true)
   @override
@@ -273,6 +290,7 @@ abstract class _ManholeCardContact extends ManholeCardContact {
       required final double latitude,
       required final double longitude,
       required final String name,
+      required final String nameUrl,
       required final String other,
       required final String phoneNumber,
       required final String time,
@@ -289,6 +307,8 @@ abstract class _ManholeCardContact extends ManholeCardContact {
   double get longitude;
   @override
   String get name;
+  @override
+  String get nameUrl;
   @override
   String get other;
   @override

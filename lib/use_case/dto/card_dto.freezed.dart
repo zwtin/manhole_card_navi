@@ -21,6 +21,16 @@ mixin _$CardDTO {
   String get imagePath => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
+  String get prefectureId => throw _privateConstructorUsedError;
+  String get prefectureName => throw _privateConstructorUsedError;
+  String get volumeId => throw _privateConstructorUsedError;
+  String get volumeName => throw _privateConstructorUsedError;
+  DateTime get publicationDate => throw _privateConstructorUsedError;
+  DistributionStateDTO get distributionState =>
+      throw _privateConstructorUsedError;
+  String get distributionText => throw _privateConstructorUsedError;
+  String get distributionUrl => throw _privateConstructorUsedError;
+  List<ContactDTO> get contacts => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $CardDTOCopyWith<CardDTO> get copyWith => throw _privateConstructorUsedError;
@@ -36,7 +46,16 @@ abstract class $CardDTOCopyWith<$Res> {
       String name,
       String imagePath,
       double latitude,
-      double longitude});
+      double longitude,
+      String prefectureId,
+      String prefectureName,
+      String volumeId,
+      String volumeName,
+      DateTime publicationDate,
+      DistributionStateDTO distributionState,
+      String distributionText,
+      String distributionUrl,
+      List<ContactDTO> contacts});
 }
 
 /// @nodoc
@@ -57,6 +76,15 @@ class _$CardDTOCopyWithImpl<$Res, $Val extends CardDTO>
     Object? imagePath = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? prefectureId = null,
+    Object? prefectureName = null,
+    Object? volumeId = null,
+    Object? volumeName = null,
+    Object? publicationDate = null,
+    Object? distributionState = null,
+    Object? distributionText = null,
+    Object? distributionUrl = null,
+    Object? contacts = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -79,6 +107,42 @@ class _$CardDTOCopyWithImpl<$Res, $Val extends CardDTO>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      prefectureId: null == prefectureId
+          ? _value.prefectureId
+          : prefectureId // ignore: cast_nullable_to_non_nullable
+              as String,
+      prefectureName: null == prefectureName
+          ? _value.prefectureName
+          : prefectureName // ignore: cast_nullable_to_non_nullable
+              as String,
+      volumeId: null == volumeId
+          ? _value.volumeId
+          : volumeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      volumeName: null == volumeName
+          ? _value.volumeName
+          : volumeName // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicationDate: null == publicationDate
+          ? _value.publicationDate
+          : publicationDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      distributionState: null == distributionState
+          ? _value.distributionState
+          : distributionState // ignore: cast_nullable_to_non_nullable
+              as DistributionStateDTO,
+      distributionText: null == distributionText
+          ? _value.distributionText
+          : distributionText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionUrl: null == distributionUrl
+          ? _value.distributionUrl
+          : distributionUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      contacts: null == contacts
+          ? _value.contacts
+          : contacts // ignore: cast_nullable_to_non_nullable
+              as List<ContactDTO>,
     ) as $Val);
   }
 }
@@ -95,7 +159,16 @@ abstract class _$$_CardDTOCopyWith<$Res> implements $CardDTOCopyWith<$Res> {
       String name,
       String imagePath,
       double latitude,
-      double longitude});
+      double longitude,
+      String prefectureId,
+      String prefectureName,
+      String volumeId,
+      String volumeName,
+      DateTime publicationDate,
+      DistributionStateDTO distributionState,
+      String distributionText,
+      String distributionUrl,
+      List<ContactDTO> contacts});
 }
 
 /// @nodoc
@@ -113,6 +186,15 @@ class __$$_CardDTOCopyWithImpl<$Res>
     Object? imagePath = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? prefectureId = null,
+    Object? prefectureName = null,
+    Object? volumeId = null,
+    Object? volumeName = null,
+    Object? publicationDate = null,
+    Object? distributionState = null,
+    Object? distributionText = null,
+    Object? distributionUrl = null,
+    Object? contacts = null,
   }) {
     return _then(_$_CardDTO(
       id: null == id
@@ -135,6 +217,42 @@ class __$$_CardDTOCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      prefectureId: null == prefectureId
+          ? _value.prefectureId
+          : prefectureId // ignore: cast_nullable_to_non_nullable
+              as String,
+      prefectureName: null == prefectureName
+          ? _value.prefectureName
+          : prefectureName // ignore: cast_nullable_to_non_nullable
+              as String,
+      volumeId: null == volumeId
+          ? _value.volumeId
+          : volumeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      volumeName: null == volumeName
+          ? _value.volumeName
+          : volumeName // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicationDate: null == publicationDate
+          ? _value.publicationDate
+          : publicationDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      distributionState: null == distributionState
+          ? _value.distributionState
+          : distributionState // ignore: cast_nullable_to_non_nullable
+              as DistributionStateDTO,
+      distributionText: null == distributionText
+          ? _value.distributionText
+          : distributionText // ignore: cast_nullable_to_non_nullable
+              as String,
+      distributionUrl: null == distributionUrl
+          ? _value.distributionUrl
+          : distributionUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      contacts: null == contacts
+          ? _value._contacts
+          : contacts // ignore: cast_nullable_to_non_nullable
+              as List<ContactDTO>,
     ));
   }
 }
@@ -147,8 +265,18 @@ class _$_CardDTO extends _CardDTO {
       required this.name,
       required this.imagePath,
       required this.latitude,
-      required this.longitude})
-      : super._();
+      required this.longitude,
+      required this.prefectureId,
+      required this.prefectureName,
+      required this.volumeId,
+      required this.volumeName,
+      required this.publicationDate,
+      required this.distributionState,
+      required this.distributionText,
+      required this.distributionUrl,
+      required final List<ContactDTO> contacts})
+      : _contacts = contacts,
+        super._();
 
   @override
   final String id;
@@ -160,10 +288,33 @@ class _$_CardDTO extends _CardDTO {
   final double latitude;
   @override
   final double longitude;
+  @override
+  final String prefectureId;
+  @override
+  final String prefectureName;
+  @override
+  final String volumeId;
+  @override
+  final String volumeName;
+  @override
+  final DateTime publicationDate;
+  @override
+  final DistributionStateDTO distributionState;
+  @override
+  final String distributionText;
+  @override
+  final String distributionUrl;
+  final List<ContactDTO> _contacts;
+  @override
+  List<ContactDTO> get contacts {
+    if (_contacts is EqualUnmodifiableListView) return _contacts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_contacts);
+  }
 
   @override
   String toString() {
-    return 'CardDTO(id: $id, name: $name, imagePath: $imagePath, latitude: $latitude, longitude: $longitude)';
+    return 'CardDTO(id: $id, name: $name, imagePath: $imagePath, latitude: $latitude, longitude: $longitude, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate, distributionState: $distributionState, distributionText: $distributionText, distributionUrl: $distributionUrl, contacts: $contacts)';
   }
 
   @override
@@ -178,12 +329,43 @@ class _$_CardDTO extends _CardDTO {
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
-                other.longitude == longitude));
+                other.longitude == longitude) &&
+            (identical(other.prefectureId, prefectureId) ||
+                other.prefectureId == prefectureId) &&
+            (identical(other.prefectureName, prefectureName) ||
+                other.prefectureName == prefectureName) &&
+            (identical(other.volumeId, volumeId) ||
+                other.volumeId == volumeId) &&
+            (identical(other.volumeName, volumeName) ||
+                other.volumeName == volumeName) &&
+            (identical(other.publicationDate, publicationDate) ||
+                other.publicationDate == publicationDate) &&
+            (identical(other.distributionState, distributionState) ||
+                other.distributionState == distributionState) &&
+            (identical(other.distributionText, distributionText) ||
+                other.distributionText == distributionText) &&
+            (identical(other.distributionUrl, distributionUrl) ||
+                other.distributionUrl == distributionUrl) &&
+            const DeepCollectionEquality().equals(other._contacts, _contacts));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, imagePath, latitude, longitude);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      name,
+      imagePath,
+      latitude,
+      longitude,
+      prefectureId,
+      prefectureName,
+      volumeId,
+      volumeName,
+      publicationDate,
+      distributionState,
+      distributionText,
+      distributionUrl,
+      const DeepCollectionEquality().hash(_contacts));
 
   @JsonKey(ignore: true)
   @override
@@ -198,7 +380,16 @@ abstract class _CardDTO extends CardDTO {
       required final String name,
       required final String imagePath,
       required final double latitude,
-      required final double longitude}) = _$_CardDTO;
+      required final double longitude,
+      required final String prefectureId,
+      required final String prefectureName,
+      required final String volumeId,
+      required final String volumeName,
+      required final DateTime publicationDate,
+      required final DistributionStateDTO distributionState,
+      required final String distributionText,
+      required final String distributionUrl,
+      required final List<ContactDTO> contacts}) = _$_CardDTO;
   const _CardDTO._() : super._();
 
   @override
@@ -211,6 +402,24 @@ abstract class _CardDTO extends CardDTO {
   double get latitude;
   @override
   double get longitude;
+  @override
+  String get prefectureId;
+  @override
+  String get prefectureName;
+  @override
+  String get volumeId;
+  @override
+  String get volumeName;
+  @override
+  DateTime get publicationDate;
+  @override
+  DistributionStateDTO get distributionState;
+  @override
+  String get distributionText;
+  @override
+  String get distributionUrl;
+  @override
+  List<ContactDTO> get contacts;
   @override
   @JsonKey(ignore: true)
   _$$_CardDTOCopyWith<_$_CardDTO> get copyWith =>

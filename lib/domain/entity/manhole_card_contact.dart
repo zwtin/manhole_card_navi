@@ -10,6 +10,7 @@ abstract class ManholeCardContact with _$ManholeCardContact {
     required double latitude,
     required double longitude,
     required String name,
+    required String nameUrl,
     required String other,
     required String phoneNumber,
     required String time,

@@ -42,6 +42,7 @@ class ContactRepositoryImpl implements ContactRepository {
           latitude: doc['latitude'] as double,
           longitude: doc['longitude'] as double,
           name: doc['name'] as String,
+          nameUrl: doc['name_url'] as String,
           other: doc['other'] as String,
           phoneNumber: doc['phone_number'] as String,
           time: doc['time'] as String,

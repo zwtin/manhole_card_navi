@@ -12,7 +12,7 @@ abstract class ListCardDTO with _$ListCardDTO {
     required String prefectureName,
     required String volumeId,
     required String volumeName,
-    required String publicationDate,
+    required DateTime publicationDate,
   }) = _ListCardDTO;
   const ListCardDTO._();
 }

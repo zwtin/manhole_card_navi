@@ -14,6 +14,7 @@ class RealmContactDAO extends $RealmContactDAO
     double latitude,
     double longitude,
     String name,
+    String nameUrl,
     String other,
     String phoneNumber,
     String time,
@@ -24,6 +25,7 @@ class RealmContactDAO extends $RealmContactDAO
     RealmObjectBase.set(this, 'latitude', latitude);
     RealmObjectBase.set(this, 'longitude', longitude);
     RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'nameUrl', nameUrl);
     RealmObjectBase.set(this, 'other', other);
     RealmObjectBase.set(this, 'phoneNumber', phoneNumber);
     RealmObjectBase.set(this, 'time', time);
@@ -58,6 +60,11 @@ class RealmContactDAO extends $RealmContactDAO
   String get name => RealmObjectBase.get<String>(this, 'name') as String;
   @override
   set name(String value) => RealmObjectBase.set(this, 'name', value);
+
+  @override
+  String get nameUrl => RealmObjectBase.get<String>(this, 'nameUrl') as String;
+  @override
+  set nameUrl(String value) => RealmObjectBase.set(this, 'nameUrl', value);
 
   @override
   String get other => RealmObjectBase.get<String>(this, 'other') as String;
@@ -101,6 +108,7 @@ class RealmContactDAO extends $RealmContactDAO
       SchemaProperty('latitude', RealmPropertyType.double),
       SchemaProperty('longitude', RealmPropertyType.double),
       SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('nameUrl', RealmPropertyType.string),
       SchemaProperty('other', RealmPropertyType.string),
       SchemaProperty('phoneNumber', RealmPropertyType.string),
       SchemaProperty('time', RealmPropertyType.string),

@@ -80,9 +80,9 @@ class DetailView extends HookConsumerWidget {
                             child: SizedBox(
                               height: 50,
                               child: Center(
-                                child: viewModel.alreadyGet
-                                    ? const TitleMediumRegularText('未取得に戻す')
-                                    : const TitleMediumRegularText('取得済みにする'),
+                                child: TitleMediumRegularText(
+                                  viewModel.alreadyGetActionButtonTitle,
+                                ),
                               ),
                             ),
                           ),

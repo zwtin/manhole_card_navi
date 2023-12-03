@@ -1,4 +1,5 @@
 import 'package:image/image.dart' as img;
+import 'package:intl/intl.dart';
 
 import '/app/view_data/list_card_view_data.dart';
 import '/app/view_data/list_cards_view_data.dart';
@@ -40,6 +41,8 @@ class ListPrefecturesViewDataMapper {
           final prefectureName = fixedCardDTOList
               .firstWhere((dto) => dto.prefectureId == id)
               .prefectureName;
+          final dateFormatter = DateFormat('yyyy/MM/dd');
+
           final cardList = await Future.wait(
             fixedCardDTOList.where((dto) => dto.prefectureId == id).map(
               (dto) async {
@@ -58,7 +61,7 @@ class ListPrefecturesViewDataMapper {
                       ? '$prefectureName ${dto.name}'
                       : dto.name,
                   volume: dto.volumeName,
-                  publicationDate: dto.publicationDate,
+                  publicationDate: dateFormatter.format(dto.publicationDate),
                 );
               },
             ),

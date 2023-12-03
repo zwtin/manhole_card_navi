@@ -23,7 +23,7 @@ mixin _$ListCardDTO {
   String get prefectureName => throw _privateConstructorUsedError;
   String get volumeId => throw _privateConstructorUsedError;
   String get volumeName => throw _privateConstructorUsedError;
-  String get publicationDate => throw _privateConstructorUsedError;
+  DateTime get publicationDate => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ListCardDTOCopyWith<ListCardDTO> get copyWith =>
@@ -44,7 +44,7 @@ abstract class $ListCardDTOCopyWith<$Res> {
       String prefectureName,
       String volumeId,
       String volumeName,
-      String publicationDate});
+      DateTime publicationDate});
 }
 
 /// @nodoc
@@ -101,7 +101,7 @@ class _$ListCardDTOCopyWithImpl<$Res, $Val extends ListCardDTO>
       publicationDate: null == publicationDate
           ? _value.publicationDate
           : publicationDate // ignore: cast_nullable_to_non_nullable
-              as String,
+              as DateTime,
     ) as $Val);
   }
 }
@@ -122,7 +122,7 @@ abstract class _$$_ListCardDTOCopyWith<$Res>
       String prefectureName,
       String volumeId,
       String volumeName,
-      String publicationDate});
+      DateTime publicationDate});
 }
 
 /// @nodoc
@@ -177,7 +177,7 @@ class __$$_ListCardDTOCopyWithImpl<$Res>
       publicationDate: null == publicationDate
           ? _value.publicationDate
           : publicationDate // ignore: cast_nullable_to_non_nullable
-              as String,
+              as DateTime,
     ));
   }
 }
@@ -211,7 +211,7 @@ class _$_ListCardDTO extends _ListCardDTO {
   @override
   final String volumeName;
   @override
-  final String publicationDate;
+  final DateTime publicationDate;
 
   @override
   String toString() {
@@ -259,7 +259,7 @@ abstract class _ListCardDTO extends ListCardDTO {
       required final String prefectureName,
       required final String volumeId,
       required final String volumeName,
-      required final String publicationDate}) = _$_ListCardDTO;
+      required final DateTime publicationDate}) = _$_ListCardDTO;
   const _ListCardDTO._() : super._();
 
   @override
@@ -277,7 +277,7 @@ abstract class _ListCardDTO extends ListCardDTO {
   @override
   String get volumeName;
   @override
-  String get publicationDate;
+  DateTime get publicationDate;
   @override
   @JsonKey(ignore: true)
   _$$_ListCardDTOCopyWith<_$_ListCardDTO> get copyWith =>

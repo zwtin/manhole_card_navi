@@ -63,6 +63,7 @@ class CardRepositoryImpl implements CardRepository {
               latitude: 0.0,
               longitude: 0.0,
               name: '',
+              nameUrl: '',
               other: '',
               phoneNumber: '',
               time: '',

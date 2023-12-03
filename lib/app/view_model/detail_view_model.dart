@@ -5,12 +5,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
 import '/app/provider/tab_key_storage_provider.dart';
+import '/app/view_data/detail_card_view_data.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/view_model/manhole_card_map_view_model.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/use_case/already_get_card_use_case.dart';
+import '/use_case/use_case/card_use_case.dart';
 
 final detailViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<DetailViewModel, Key?>(
@@ -20,6 +22,7 @@ final detailViewModelProvider =
       ref,
       ref.watch(alreadyGetCardQueryServiceProvider),
       ref.watch(alreadyGetCardUseCaseProvider),
+      ref.watch(cardUseCaseProvider),
     );
   },
 );
@@ -30,26 +33,38 @@ class DetailViewModel extends ChangeNotifier {
     this._ref,
     this._alreadyGetCardQueryService,
     this._alreadyGetCardUseCase,
+    this._cardUseCase,
   );
 
   final Key? _key;
   final Ref _ref;
   final _logger = Logger();
 
-  String cardId = '';
-  bool alreadyGet = false;
+  DetailCardViewData? viewData;
+
+  String get alreadyGetActionButtonTitle {
+    if (_alreadyGet) {
+      return '未取得に戻す';
+    } else {
+      return '取得済みにする';
+    }
+  }
+
+  String _cardId = '';
+  bool _alreadyGet = false;
   late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
 
   final AlreadyGetCardQueryService _alreadyGetCardQueryService;
 
   final AlreadyGetCardUseCase _alreadyGetCardUseCase;
+  final CardUseCase _cardUseCase;
 
   Future<void> onLoad(
     String cardId,
   ) async {
     _logger.d('DetailViewModel');
-    this.cardId = cardId;
+    _cardId = cardId;
     await _listenAlreadyGetCard();
   }
 
@@ -59,11 +74,11 @@ class DetailViewModel extends ChangeNotifier {
     final mapTabKey = _ref.read(tabKeyStorageProvider).getTabKey(0);
     _ref
         .read(manholeCardMapViewModelProvider(mapTabKey))
-        .onTapCheckWithMapButton(cardId);
+        .onTapCheckWithMapButton(_cardId);
   }
 
   Future<void> onTapAlreadyGetButton() async {
-    if (alreadyGet) {
+    if (_alreadyGet) {
       _deleteCard();
     } else {
       _saveCard();
@@ -74,18 +89,18 @@ class DetailViewModel extends ChangeNotifier {
     _alreadyGetCardStreamSubscription =
         _alreadyGetCardQueryService.getStream().listen(
       (dto) {
-        alreadyGet = dto.map((e) => e.cardId).contains(cardId);
+        _alreadyGet = dto.map((e) => e.cardId).contains(_cardId);
         notifyListeners();
       },
     );
   }
 
   Future<void> _saveCard() async {
-    _alreadyGetCardUseCase.save(id: cardId);
+    _alreadyGetCardUseCase.save(id: _cardId);
   }
 
   Future<void> _deleteCard() async {
-    _alreadyGetCardUseCase.delete(id: cardId);
+    _alreadyGetCardUseCase.delete(id: _cardId);
   }
 
   @override

@@ -10,6 +10,7 @@ class $RealmContactDAO {
   late double latitude;
   late double longitude;
   late String name;
+  late String nameUrl;
   late String other;
   late String phoneNumber;
   late String time;
