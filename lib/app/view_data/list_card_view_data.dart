@@ -9,6 +9,9 @@ abstract class ListCardViewData with _$ListCardViewData {
   const factory ListCardViewData({
     required String id,
     required Uint8List icon,
+    required String name,
+    required String volume,
+    required String publicationDate,
   }) = _ListCardViewData;
   const ListCardViewData._();
 }

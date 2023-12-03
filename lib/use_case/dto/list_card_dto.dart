@@ -10,6 +10,9 @@ abstract class ListCardDTO with _$ListCardDTO {
     required String imagePath,
     required String prefectureId,
     required String prefectureName,
+    required String volumeId,
+    required String volumeName,
+    required String publicationDate,
   }) = _ListCardDTO;
   const ListCardDTO._();
 }

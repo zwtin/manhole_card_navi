@@ -117,11 +117,28 @@ class ManholeCardListView extends HookConsumerWidget {
                               .onTap(cardViewData.id);
                         },
                         child: Container(
-                          height: 100,
+                          height: 120,
                           width: double.infinity,
                           color: ColorName.main,
-                          child: Center(
-                            child: Image.memory(cardViewData.icon),
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                          child: Row(
+                            children: [
+                              Image.memory(cardViewData.icon),
+                              const SizedBox(
+                                width: 16,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TitleMediumRegularText(cardViewData.name),
+                                  BodyMediumRegularText(cardViewData.id),
+                                  const Spacer(),
+                                  BodyMediumRegularText(cardViewData.volume),
+                                  BodyMediumRegularText(
+                                      cardViewData.publicationDate),
+                                ],
+                              )
+                            ],
                           ),
                         ),
                       ),

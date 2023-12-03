@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:realm/realm.dart';
@@ -51,6 +52,8 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
     final appDirectory = await getApplicationDocumentsDirectory();
     final imageDirectory = Directory('${appDirectory.path}/images');
 
+    final dateFormatter = DateFormat('yyyy/MM/dd');
+
     final cardDTOList = cardDAOList.map((dao) {
       return ListCardDTO(
         id: dao.id,
@@ -60,6 +63,9 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
             : '${imageDirectory.path}/${dao.image!.name}',
         prefectureId: dao.prefecture?.id ?? '',
         prefectureName: dao.prefecture?.name ?? '',
+        volumeId: dao.volume?.id ?? '',
+        volumeName: dao.volume?.name ?? '',
+        publicationDate: dateFormatter.format(dao.publicationDate),
       );
     }).toList();
 

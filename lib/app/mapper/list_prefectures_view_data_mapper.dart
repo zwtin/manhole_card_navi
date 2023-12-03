@@ -23,6 +23,9 @@ class ListPrefecturesViewDataMapper {
     final prefectureList = await Future.wait(
       prefectureIdList.map(
         (id) async {
+          final prefectureName = listCardDTOList
+              .firstWhere((dto) => dto.prefectureId == id)
+              .prefectureName;
           final cardList = await Future.wait(
             listCardDTOList.where((dto) => dto.prefectureId == id).map(
               (dto) async {
@@ -37,15 +40,18 @@ class ListPrefecturesViewDataMapper {
                 return ListCardViewData(
                   id: dto.id,
                   icon: img.encodePng(cardThumbnail).buffer.asUint8List(),
+                  name: prefectureName.isNotEmpty
+                      ? '$prefectureName ${dto.name}'
+                      : dto.name,
+                  volume: dto.volumeName,
+                  publicationDate: dto.publicationDate,
                 );
               },
             ),
           );
           return ListPrefectureViewData(
             id: id,
-            name: listCardDTOList
-                .firstWhere((dto) => dto.prefectureId == id)
-                .prefectureName,
+            name: prefectureName.isEmpty ? '全国' : prefectureName,
             cards: ListCardsViewData(
               list: cardList,
             ),

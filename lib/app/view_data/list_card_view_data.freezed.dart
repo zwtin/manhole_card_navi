@@ -18,6 +18,9 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ListCardViewData {
   String get id => throw _privateConstructorUsedError;
   Uint8List get icon => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String get volume => throw _privateConstructorUsedError;
+  String get publicationDate => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ListCardViewDataCopyWith<ListCardViewData> get copyWith =>
@@ -30,7 +33,12 @@ abstract class $ListCardViewDataCopyWith<$Res> {
           ListCardViewData value, $Res Function(ListCardViewData) then) =
       _$ListCardViewDataCopyWithImpl<$Res, ListCardViewData>;
   @useResult
-  $Res call({String id, Uint8List icon});
+  $Res call(
+      {String id,
+      Uint8List icon,
+      String name,
+      String volume,
+      String publicationDate});
 }
 
 /// @nodoc
@@ -48,6 +56,9 @@ class _$ListCardViewDataCopyWithImpl<$Res, $Val extends ListCardViewData>
   $Res call({
     Object? id = null,
     Object? icon = null,
+    Object? name = null,
+    Object? volume = null,
+    Object? publicationDate = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -58,6 +69,18 @@ class _$ListCardViewDataCopyWithImpl<$Res, $Val extends ListCardViewData>
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as Uint8List,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      volume: null == volume
+          ? _value.volume
+          : volume // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicationDate: null == publicationDate
+          ? _value.publicationDate
+          : publicationDate // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -70,7 +93,12 @@ abstract class _$$_ListCardViewDataCopyWith<$Res>
       __$$_ListCardViewDataCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, Uint8List icon});
+  $Res call(
+      {String id,
+      Uint8List icon,
+      String name,
+      String volume,
+      String publicationDate});
 }
 
 /// @nodoc
@@ -86,6 +114,9 @@ class __$$_ListCardViewDataCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? icon = null,
+    Object? name = null,
+    Object? volume = null,
+    Object? publicationDate = null,
   }) {
     return _then(_$_ListCardViewData(
       id: null == id
@@ -96,6 +127,18 @@ class __$$_ListCardViewDataCopyWithImpl<$Res>
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as Uint8List,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      volume: null == volume
+          ? _value.volume
+          : volume // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicationDate: null == publicationDate
+          ? _value.publicationDate
+          : publicationDate // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -103,16 +146,28 @@ class __$$_ListCardViewDataCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_ListCardViewData extends _ListCardViewData {
-  const _$_ListCardViewData({required this.id, required this.icon}) : super._();
+  const _$_ListCardViewData(
+      {required this.id,
+      required this.icon,
+      required this.name,
+      required this.volume,
+      required this.publicationDate})
+      : super._();
 
   @override
   final String id;
   @override
   final Uint8List icon;
+  @override
+  final String name;
+  @override
+  final String volume;
+  @override
+  final String publicationDate;
 
   @override
   String toString() {
-    return 'ListCardViewData(id: $id, icon: $icon)';
+    return 'ListCardViewData(id: $id, icon: $icon, name: $name, volume: $volume, publicationDate: $publicationDate)';
   }
 
   @override
@@ -121,12 +176,16 @@ class _$_ListCardViewData extends _ListCardViewData {
         (other.runtimeType == runtimeType &&
             other is _$_ListCardViewData &&
             (identical(other.id, id) || other.id == id) &&
-            const DeepCollectionEquality().equals(other.icon, icon));
+            const DeepCollectionEquality().equals(other.icon, icon) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.volume, volume) || other.volume == volume) &&
+            (identical(other.publicationDate, publicationDate) ||
+                other.publicationDate == publicationDate));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, const DeepCollectionEquality().hash(icon));
+  int get hashCode => Object.hash(runtimeType, id,
+      const DeepCollectionEquality().hash(icon), name, volume, publicationDate);
 
   @JsonKey(ignore: true)
   @override
@@ -138,13 +197,22 @@ class _$_ListCardViewData extends _ListCardViewData {
 abstract class _ListCardViewData extends ListCardViewData {
   const factory _ListCardViewData(
       {required final String id,
-      required final Uint8List icon}) = _$_ListCardViewData;
+      required final Uint8List icon,
+      required final String name,
+      required final String volume,
+      required final String publicationDate}) = _$_ListCardViewData;
   const _ListCardViewData._() : super._();
 
   @override
   String get id;
   @override
   Uint8List get icon;
+  @override
+  String get name;
+  @override
+  String get volume;
+  @override
+  String get publicationDate;
   @override
   @JsonKey(ignore: true)
   _$$_ListCardViewDataCopyWith<_$_ListCardViewData> get copyWith =>

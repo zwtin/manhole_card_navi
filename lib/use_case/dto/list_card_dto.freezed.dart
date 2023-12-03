@@ -21,6 +21,9 @@ mixin _$ListCardDTO {
   String get imagePath => throw _privateConstructorUsedError;
   String get prefectureId => throw _privateConstructorUsedError;
   String get prefectureName => throw _privateConstructorUsedError;
+  String get volumeId => throw _privateConstructorUsedError;
+  String get volumeName => throw _privateConstructorUsedError;
+  String get publicationDate => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ListCardDTOCopyWith<ListCardDTO> get copyWith =>
@@ -38,7 +41,10 @@ abstract class $ListCardDTOCopyWith<$Res> {
       String name,
       String imagePath,
       String prefectureId,
-      String prefectureName});
+      String prefectureName,
+      String volumeId,
+      String volumeName,
+      String publicationDate});
 }
 
 /// @nodoc
@@ -59,6 +65,9 @@ class _$ListCardDTOCopyWithImpl<$Res, $Val extends ListCardDTO>
     Object? imagePath = null,
     Object? prefectureId = null,
     Object? prefectureName = null,
+    Object? volumeId = null,
+    Object? volumeName = null,
+    Object? publicationDate = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -81,6 +90,18 @@ class _$ListCardDTOCopyWithImpl<$Res, $Val extends ListCardDTO>
           ? _value.prefectureName
           : prefectureName // ignore: cast_nullable_to_non_nullable
               as String,
+      volumeId: null == volumeId
+          ? _value.volumeId
+          : volumeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      volumeName: null == volumeName
+          ? _value.volumeName
+          : volumeName // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicationDate: null == publicationDate
+          ? _value.publicationDate
+          : publicationDate // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -98,7 +119,10 @@ abstract class _$$_ListCardDTOCopyWith<$Res>
       String name,
       String imagePath,
       String prefectureId,
-      String prefectureName});
+      String prefectureName,
+      String volumeId,
+      String volumeName,
+      String publicationDate});
 }
 
 /// @nodoc
@@ -117,6 +141,9 @@ class __$$_ListCardDTOCopyWithImpl<$Res>
     Object? imagePath = null,
     Object? prefectureId = null,
     Object? prefectureName = null,
+    Object? volumeId = null,
+    Object? volumeName = null,
+    Object? publicationDate = null,
   }) {
     return _then(_$_ListCardDTO(
       id: null == id
@@ -139,6 +166,18 @@ class __$$_ListCardDTOCopyWithImpl<$Res>
           ? _value.prefectureName
           : prefectureName // ignore: cast_nullable_to_non_nullable
               as String,
+      volumeId: null == volumeId
+          ? _value.volumeId
+          : volumeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      volumeName: null == volumeName
+          ? _value.volumeName
+          : volumeName // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicationDate: null == publicationDate
+          ? _value.publicationDate
+          : publicationDate // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -151,7 +190,10 @@ class _$_ListCardDTO extends _ListCardDTO {
       required this.name,
       required this.imagePath,
       required this.prefectureId,
-      required this.prefectureName})
+      required this.prefectureName,
+      required this.volumeId,
+      required this.volumeName,
+      required this.publicationDate})
       : super._();
 
   @override
@@ -164,10 +206,16 @@ class _$_ListCardDTO extends _ListCardDTO {
   final String prefectureId;
   @override
   final String prefectureName;
+  @override
+  final String volumeId;
+  @override
+  final String volumeName;
+  @override
+  final String publicationDate;
 
   @override
   String toString() {
-    return 'ListCardDTO(id: $id, name: $name, imagePath: $imagePath, prefectureId: $prefectureId, prefectureName: $prefectureName)';
+    return 'ListCardDTO(id: $id, name: $name, imagePath: $imagePath, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate)';
   }
 
   @override
@@ -182,12 +230,18 @@ class _$_ListCardDTO extends _ListCardDTO {
             (identical(other.prefectureId, prefectureId) ||
                 other.prefectureId == prefectureId) &&
             (identical(other.prefectureName, prefectureName) ||
-                other.prefectureName == prefectureName));
+                other.prefectureName == prefectureName) &&
+            (identical(other.volumeId, volumeId) ||
+                other.volumeId == volumeId) &&
+            (identical(other.volumeName, volumeName) ||
+                other.volumeName == volumeName) &&
+            (identical(other.publicationDate, publicationDate) ||
+                other.publicationDate == publicationDate));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, name, imagePath, prefectureId, prefectureName);
+  int get hashCode => Object.hash(runtimeType, id, name, imagePath,
+      prefectureId, prefectureName, volumeId, volumeName, publicationDate);
 
   @JsonKey(ignore: true)
   @override
@@ -202,7 +256,10 @@ abstract class _ListCardDTO extends ListCardDTO {
       required final String name,
       required final String imagePath,
       required final String prefectureId,
-      required final String prefectureName}) = _$_ListCardDTO;
+      required final String prefectureName,
+      required final String volumeId,
+      required final String volumeName,
+      required final String publicationDate}) = _$_ListCardDTO;
   const _ListCardDTO._() : super._();
 
   @override
@@ -215,6 +272,12 @@ abstract class _ListCardDTO extends ListCardDTO {
   String get prefectureId;
   @override
   String get prefectureName;
+  @override
+  String get volumeId;
+  @override
+  String get volumeName;
+  @override
+  String get publicationDate;
   @override
   @JsonKey(ignore: true)
   _$$_ListCardDTOCopyWith<_$_ListCardDTO> get copyWith =>
