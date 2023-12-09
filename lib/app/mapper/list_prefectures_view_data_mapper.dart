@@ -54,7 +54,8 @@ class ListPrefecturesViewDataMapper {
             fixedCardDTOList.where((dto) => dto.prefectureId == id).map(
               (dto) async {
                 final cardImageOrNull = await img.decodeJpgFile(dto.imagePath);
-                final cardImage = cardImageOrNull!;
+                final cardImage =
+                    img.copyResize(cardImageOrNull!, width: 174, height: 241);
                 img.Image cardThumbnail;
                 if (getCardDTOList.map((e) => e.cardId).contains(dto.id)) {
                   cardThumbnail = cardImage;

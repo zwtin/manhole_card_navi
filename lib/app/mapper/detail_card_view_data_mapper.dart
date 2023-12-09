@@ -23,7 +23,7 @@ class DetailCardViewDataMapper {
     final cardDTO = parameter['cardDTO'] as CardDTO;
     final alreadyGet = parameter['alreadyGet'] as bool;
     final cardImageOrNull = await img.decodeJpgFile(cardDTO.imagePath);
-    final cardImage = cardImageOrNull!;
+    final cardImage = img.copyResize(cardImageOrNull!, width: 261, height: 361);
     img.Image cardThumbnail;
     if (alreadyGet) {
       cardThumbnail = cardImage;
