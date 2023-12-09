@@ -11,7 +11,7 @@ abstract class ListCardsViewData with _$ListCardsViewData {
   }) = _ListCardsViewData;
   const ListCardsViewData._();
 
-  Iterable<T> expand<T>(Iterable<T> Function(ListCardViewData) toElements) {
-    return list.expand(toElements);
+  Iterable<T> map<T>(T Function(ListCardViewData) toElement) {
+    return list.map(toElement);
   }
 }

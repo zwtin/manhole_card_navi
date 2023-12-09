@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 import 'package:intl/intl.dart';
 
@@ -10,6 +11,17 @@ class DetailCardViewDataMapper {
     required CardDTO cardDTO,
     required bool alreadyGet,
   }) async {
+    final map = {};
+    map['cardDTO'] = cardDTO;
+    map['alreadyGet'] = alreadyGet;
+    return compute(_convert, map);
+  }
+
+  static Future<DetailCardViewData> _convert(
+    Map<dynamic, dynamic> parameter,
+  ) async {
+    final cardDTO = parameter['cardDTO'] as CardDTO;
+    final alreadyGet = parameter['alreadyGet'] as bool;
     final cardImageOrNull = await img.decodeJpgFile(cardDTO.imagePath);
     final cardImage = cardImageOrNull!;
     img.Image cardThumbnail;

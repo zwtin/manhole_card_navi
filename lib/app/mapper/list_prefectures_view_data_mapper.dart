@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 import 'package:intl/intl.dart';
 
@@ -15,18 +16,27 @@ class ListPrefecturesViewDataMapper {
     required List<AlreadyGetCardDTO> getCardDTOList,
     required ListState listState,
   }) async {
-    final List<ListCardDTO> fixedCardDTOList = [];
-    if (listState == ListState.all) {
-      fixedCardDTOList.addAll(listCardDTOList);
-    } else if (listState == ListState.alreadyGet) {
-      fixedCardDTOList.addAll(
-        listCardDTOList.where(
-          (element) {
-            return getCardDTOList.map((e) => e.cardId).contains(element.id);
-          },
-        ),
-      );
-    }
+    final map = {};
+    map['listCardDTOList'] = listCardDTOList;
+    map['getCardDTOList'] = getCardDTOList;
+    map['listState'] = listState;
+    return compute(_convert, map);
+  }
+
+  static Future<ListPrefecturesViewData> _convert(
+    Map<dynamic, dynamic> parameter,
+  ) async {
+    final listCardDTOList = parameter['listCardDTOList'] as List<ListCardDTO>;
+    final getCardDTOList =
+        parameter['getCardDTOList'] as List<AlreadyGetCardDTO>;
+    final listState = parameter['listState'] as ListState;
+    final List<ListCardDTO> fixedCardDTOList = listState == ListState.all
+        ? listCardDTOList
+        : listCardDTOList.where(
+            (element) {
+              return getCardDTOList.map((e) => e.cardId).contains(element.id);
+            },
+          ).toList();
     final prefectureIdList = fixedCardDTOList
         .map(
           (listCardDTO) {
@@ -35,14 +45,11 @@ class ListPrefecturesViewDataMapper {
         )
         .toSet()
         .toList();
+    final dateFormatter = DateFormat('yyyy/MM/dd');
+
     final prefectureList = await Future.wait(
       prefectureIdList.map(
         (id) async {
-          final prefectureName = fixedCardDTOList
-              .firstWhere((dto) => dto.prefectureId == id)
-              .prefectureName;
-          final dateFormatter = DateFormat('yyyy/MM/dd');
-
           final cardList = await Future.wait(
             fixedCardDTOList.where((dto) => dto.prefectureId == id).map(
               (dto) async {
@@ -57,15 +64,18 @@ class ListPrefecturesViewDataMapper {
                 return ListCardViewData(
                   id: dto.id,
                   icon: img.encodePng(cardThumbnail).buffer.asUint8List(),
-                  name: prefectureName.isNotEmpty
-                      ? '$prefectureName ${dto.name}'
-                      : dto.name,
+                  name: dto.name,
                   volume: dto.volumeName,
                   publicationDate: dateFormatter.format(dto.publicationDate),
                 );
               },
             ),
           );
+
+          final prefectureName = fixedCardDTOList
+              .firstWhere((dto) => dto.prefectureId == id)
+              .prefectureName;
+
           return ListPrefectureViewData(
             id: id,
             name: prefectureName.isEmpty ? '全国' : prefectureName,

@@ -112,35 +112,60 @@ class ManholeCardListView extends HookConsumerWidget {
               color: ColorName.main,
             ),
             ListView.separated(
-              itemCount: viewModel.prefecturesViewData.length,
+              itemCount: viewModel.prefecturesViewData.length + 2,
               itemBuilder: (itemContext, index) {
+                if (index == 0) {
+                  return Container(
+                    color: Colors.white,
+                    height: 0.5,
+                  );
+                }
+                if (index == viewModel.prefecturesViewData.length + 1) {
+                  return Container();
+                }
                 final prefectureViewData =
-                    viewModel.prefecturesViewData.getByIndex(index);
-                final cardWithSeparator = prefectureViewData.cards.expand(
+                    viewModel.prefecturesViewData.getByIndex(index - 1);
+                final cardWithSeparator = prefectureViewData.cards.map(
                   (cardViewData) {
-                    return <Widget>[
-                      const Divider(),
-                      GestureDetector(
-                        onTap: () {
-                          ref
-                              .read(manholeCardListViewModelProvider(key))
-                              .onTap(cardViewData.id);
-                        },
-                        child: Container(
-                          height: 120,
-                          width: double.infinity,
-                          color: ColorName.main,
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                          child: Row(
-                            children: [
-                              Image.memory(cardViewData.icon),
-                              const SizedBox(
-                                width: 16,
-                              ),
-                              Column(
+                    return GestureDetector(
+                      onTap: () {
+                        ref
+                            .read(manholeCardListViewModelProvider(key))
+                            .onTap(cardViewData.id);
+                      },
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            top: BorderSide(
+                              color: Colors.white,
+                              width: 0.5,
+                            ),
+                          ),
+                        ),
+                        height: 120,
+                        width: double.infinity,
+                        // color: ColorName.main,
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                        child: Row(
+                          children: [
+                            Image.memory(cardViewData.icon),
+                            const SizedBox(
+                              width: 16,
+                            ),
+                            Expanded(
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  TitleMediumRegularText(cardViewData.name),
+                                  Text(
+                                    cardViewData.name,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                   BodyMediumRegularText(cardViewData.id),
                                   const Spacer(),
                                   BodyMediumRegularText(cardViewData.volume),
@@ -148,21 +173,17 @@ class ManholeCardListView extends HookConsumerWidget {
                                       cardViewData.publicationDate),
                                 ],
                               ),
-                              const Spacer(),
-                              const Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
+                            ),
+                            const Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.white,
+                            ),
+                          ],
                         ),
                       ),
-                    ];
+                    );
                   },
                 ).toList();
-                if (cardWithSeparator.isNotEmpty) {
-                  cardWithSeparator.add(const Divider());
-                }
                 return ExpansionTile(
                   title: TitleMediumRegularText(prefectureViewData.name),
                   children: cardWithSeparator,

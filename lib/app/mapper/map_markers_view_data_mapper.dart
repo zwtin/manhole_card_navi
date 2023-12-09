@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:uuid/uuid.dart';
@@ -15,21 +16,29 @@ class MapMarkersViewDataMapper {
     required List<MapMarkerDTO> mapMarkerDTOList,
     required List<AlreadyGetCardDTO> getCardDTOList,
   }) async {
+    final assetsMap = await _getAssetMap();
+    final map = {};
+    map['mapMarkerDTOList'] = mapMarkerDTOList;
+    map['getCardDTOList'] = getCardDTOList;
+    map['assetsMap'] = assetsMap;
+    return compute(_convert, map);
+  }
+
+  static Future<MapMarkersViewData> _convert(
+    Map<dynamic, dynamic> parameter,
+  ) async {
+    final mapMarkerDTOList =
+        parameter['mapMarkerDTOList'] as List<MapMarkerDTO>;
+    final getCardDTOList =
+        parameter['getCardDTOList'] as List<AlreadyGetCardDTO>;
+    final assetsMap =
+        parameter['assetsMap'] as Map<DistributionStateDTO, img.Image>;
     const uuid = Uuid();
     final markersList = await Future.wait(
       mapMarkerDTOList.map(
         (dto) async {
           final cardImageOrNull = await img.decodeJpgFile(dto.imagePath);
-          final String assetPath;
-          switch (dto.distributionState) {
-            case DistributionStateDTO.distributing:
-              assetPath = Assets.images.frameGreen.path;
-            case DistributionStateDTO.stopped:
-              assetPath = Assets.images.frameRed.path;
-            case DistributionStateDTO.notClear:
-              assetPath = Assets.images.frameYellow.path;
-          }
-          final pinImageOrNull = await _decodeAsset(assetPath);
+          final pinImageOrNull = assetsMap[dto.distributionState];
           final cardImage = cardImageOrNull!;
           final pinImage = pinImageOrNull!;
 
@@ -72,6 +81,29 @@ class MapMarkersViewDataMapper {
       ).toList(),
     );
     return MapMarkersViewData(list: markersList);
+  }
+
+  static Future<Map<DistributionStateDTO, img.Image>> _getAssetMap() async {
+    final map = <DistributionStateDTO, img.Image>{};
+    await Future.wait(
+      DistributionStateDTO.values.map(
+        (value) async {
+          final String assetPath;
+          switch (value) {
+            case DistributionStateDTO.distributing:
+              assetPath = Assets.images.frameGreen.path;
+            case DistributionStateDTO.stopped:
+              assetPath = Assets.images.frameRed.path;
+            case DistributionStateDTO.notClear:
+              assetPath = Assets.images.frameYellow.path;
+          }
+          final pinImageOrNull = await _decodeAsset(assetPath);
+          final pinImage = pinImageOrNull!;
+          map[value] = pinImage;
+        },
+      ),
+    );
+    return map;
   }
 
   static Future<img.Image?> _decodeAsset(String path) async {
