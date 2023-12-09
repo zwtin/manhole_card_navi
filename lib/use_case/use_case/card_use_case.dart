@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/use_case/dto/contact_dto.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '/domain/entity/custom_exception.dart';
@@ -11,6 +10,7 @@ import '/domain/entity/result.dart';
 import '/domain/repository/card_repository.dart';
 import '/infra/repository_impl/card_repository_impl.dart';
 import '/use_case/dto/card_dto.dart';
+import '/use_case/dto/contact_dto.dart';
 import '/use_case/dto/map_marker_dto.dart';
 
 final cardUseCaseProvider = Provider.autoDispose<CardUseCase>(

@@ -59,10 +59,10 @@ class DistributionCardsQueryServiceImpl
         case 'distributing':
           distributionState = DistributionStateDTO.distributing;
           break;
-        case 'stopped;':
+        case 'stopped':
           distributionState = DistributionStateDTO.stopped;
           break;
-        case 'notClear;':
+        case 'notClear':
           distributionState = DistributionStateDTO.notClear;
           break;
         default:
