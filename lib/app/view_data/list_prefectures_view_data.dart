@@ -20,4 +20,15 @@ abstract class ListPrefecturesViewData with _$ListPrefecturesViewData {
   ListPrefectureViewData? getById(String id) {
     return list.where((element) => element.id == id).firstOrNull;
   }
+
+  ListPrefecturesViewData onExpansionChanged(bool isExpansion, String id) {
+    return ListPrefecturesViewData(
+        list: list.map((prefecture) {
+      if (prefecture.id == id) {
+        return prefecture.copyWith(initialOpen: isExpansion);
+      } else {
+        return prefecture;
+      }
+    }).toList());
+  }
 }

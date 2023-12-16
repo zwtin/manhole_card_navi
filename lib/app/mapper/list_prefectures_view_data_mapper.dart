@@ -127,6 +127,7 @@ class ListPrefecturesViewDataMapper {
             cards: ListCardsViewData(
               list: cardList,
             ),
+            initialOpen: false,
           );
         },
       ),

@@ -187,6 +187,15 @@ class ManholeCardListView extends HookConsumerWidget {
                 return ExpansionTile(
                   title: TitleMediumRegularText(prefectureViewData.name),
                   children: cardWithSeparator,
+                  initiallyExpanded: prefectureViewData.initialOpen,
+                  onExpansionChanged: (isExpansion) async {
+                    await ref
+                        .read(manholeCardListViewModelProvider(key))
+                        .onExpansionChanged(
+                          isExpansion,
+                          prefectureViewData.id,
+                        );
+                  },
                 );
               },
               separatorBuilder: (separatorContext, index) {

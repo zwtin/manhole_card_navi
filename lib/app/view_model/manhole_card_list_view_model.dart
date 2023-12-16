@@ -83,6 +83,12 @@ class ManholeCardListViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> onExpansionChanged(bool isExpansion, String prefectureId) async {
+    prefecturesViewData =
+        prefecturesViewData.onExpansionChanged(isExpansion, prefectureId);
+    notifyListeners();
+  }
+
   Future<void> _fetchCards() async {
     final result = await _listCardsQueryService.fetch();
     if (result is Failure) {
