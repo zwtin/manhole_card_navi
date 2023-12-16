@@ -392,27 +392,60 @@ class ManholeCardMapView extends HookConsumerWidget {
                   const SizedBox(
                     height: 16,
                   ),
-                  Container(
-                    height: 48,
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                    child: StreamBuilder(
-                      stream: viewData.alreadyGet,
-                      builder: (_, snapshot) {
-                        return OutlinedButton(
-                          onPressed: () async {
-                            ref
-                                .read(manholeCardMapViewModelProvider(key))
-                                .onTapAlreadyGetButton(
-                                  viewData.id,
-                                  snapshot.data ?? false,
-                                );
-                          },
-                          child: TitleMediumRegularText(
-                            snapshot.data ?? false ? '未取得に戻す' : '取得済みにする',
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                          child: OutlinedButton(
+                            onPressed: () async {
+                              await ref
+                                  .read(manholeCardMapViewModelProvider(key))
+                                  .onTapDetailButton(viewData.id);
+                            },
+                            child: const SizedBox(
+                              height: 48,
+                              child: Center(
+                                child: TitleMediumRegularText(
+                                  '詳細を見る',
+                                ),
+                              ),
+                            ),
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                          child: StreamBuilder(
+                            stream: viewData.alreadyGet,
+                            builder: (_, snapshot) {
+                              return OutlinedButton(
+                                onPressed: () async {
+                                  ref
+                                      .read(
+                                          manholeCardMapViewModelProvider(key))
+                                      .onTapAlreadyGetButton(
+                                        viewData.id,
+                                        snapshot.data ?? false,
+                                      );
+                                },
+                                child: SizedBox(
+                                  height: 48,
+                                  child: Center(
+                                    child: TitleMediumRegularText(
+                                      snapshot.data ?? false
+                                          ? '未取得に戻す'
+                                          : '取得済みにする',
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(
                     height: 40,

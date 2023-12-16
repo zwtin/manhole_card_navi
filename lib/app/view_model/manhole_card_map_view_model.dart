@@ -5,6 +5,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/app/provider/router_provider.dart';
+import 'package:manhole_card_navi/app/view/detail_view.dart';
 import 'package:manhole_card_navi/use_case/use_case/already_get_card_use_case.dart';
 
 import '/app/mapper/map_markers_view_data_mapper.dart';
@@ -215,6 +217,10 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     await _showMarkerModal(modalViewData);
   }
 
+  Future<void> onTapDetailButton(String cardId) async {
+    await _transitionToDetailView(cardId);
+  }
+
   Future<void> onTapAlreadyGetButton(
     String cardId,
     bool alreadyGet,
@@ -365,6 +371,15 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   Future<void> _deleteCard(String cardId) async {
     _alreadyGetCardUseCase.delete(id: cardId);
+  }
+
+  Future<void> _transitionToDetailView(String cardId) async {
+    await _ref.read(routerProvider(_key).notifier).push(
+          nextWidget: DetailView(
+            key: UniqueKey(),
+            cardId: cardId,
+          ),
+        );
   }
 
   @override
