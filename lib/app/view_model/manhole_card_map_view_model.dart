@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/use_case/use_case/already_get_card_use_case.dart';
 
 import '/app/mapper/map_markers_view_data_mapper.dart';
 import '/app/mapper/map_modal_view_data_mapper.dart';
@@ -35,6 +36,7 @@ final manholeCardMapViewModelProvider =
       ref.watch(alreadyGetCardQueryServiceProvider),
       ref.watch(distributionCardsQueryServiceProvider),
       ref.watch(positionCardsQueryServiceProvider),
+      ref.watch(alreadyGetCardUseCaseProvider),
       ref.watch(cardUseCaseProvider),
     );
   },
@@ -52,6 +54,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     this._alreadyGetCardQueryService,
     this._distributionCardsQueryService,
     this._positionCardsQueryService,
+    this._alreadyGetCardUseCase,
     this._cardUseCase,
   );
 
@@ -63,6 +66,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final DistributionCardsQueryService _distributionCardsQueryService;
   final PositionCardsQueryService _positionCardsQueryService;
 
+  final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   final CardUseCase _cardUseCase;
 
   late GoogleMapController mapController;
@@ -162,6 +166,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
         markerViewData.latitude,
         markerViewData.longitude,
       ),
+      getCardDTOList: _alreadyGetCardQueryService.getStream(),
     );
     await _showMarkerModal(modalViewData);
   }
@@ -205,8 +210,20 @@ class ManholeCardMapViewModel extends ChangeNotifier {
         markerViewData.latitude,
         markerViewData.longitude,
       ),
+      getCardDTOList: _alreadyGetCardQueryService.getStream(),
     );
     await _showMarkerModal(modalViewData);
+  }
+
+  Future<void> onTapAlreadyGetButton(
+    String cardId,
+    bool alreadyGet,
+  ) async {
+    if (alreadyGet) {
+      _deleteCard(cardId);
+    } else {
+      _saveCard(cardId);
+    }
   }
 
   Future<void> onCloseMarkerModal() async {
@@ -340,6 +357,14 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     isShowModal = false;
     _ref.read(mapModalProvider.notifier).dismiss();
     notifyListeners();
+  }
+
+  Future<void> _saveCard(String cardId) async {
+    _alreadyGetCardUseCase.save(id: cardId);
+  }
+
+  Future<void> _deleteCard(String cardId) async {
+    _alreadyGetCardUseCase.delete(id: cardId);
   }
 
   @override

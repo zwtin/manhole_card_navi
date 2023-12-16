@@ -395,11 +395,23 @@ class ManholeCardMapView extends HookConsumerWidget {
                   Container(
                     height: 48,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                    child: OutlinedButton(
-                      onPressed: () async {},
-                      child: const TitleMediumRegularText(
-                        '取得済みにする',
-                      ),
+                    child: StreamBuilder(
+                      stream: viewData.alreadyGet,
+                      builder: (_, snapshot) {
+                        return OutlinedButton(
+                          onPressed: () async {
+                            ref
+                                .read(manholeCardMapViewModelProvider(key))
+                                .onTapAlreadyGetButton(
+                                  viewData.id,
+                                  snapshot.data ?? false,
+                                );
+                          },
+                          child: TitleMediumRegularText(
+                            snapshot.data ?? false ? '未取得に戻す' : '取得済みにする',
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(

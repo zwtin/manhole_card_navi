@@ -16,6 +16,7 @@ abstract class MapModalCardViewData with _$MapModalCardViewData {
     required String distributionOther,
     required double latitude,
     required double longitude,
+    required Stream<bool> alreadyGet,
   }) = _MapModalCardViewData;
   const MapModalCardViewData._();
 }

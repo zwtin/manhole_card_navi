@@ -26,6 +26,7 @@ mixin _$MapModalCardViewData {
   String get distributionOther => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
+  Stream<bool> get alreadyGet => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MapModalCardViewDataCopyWith<MapModalCardViewData> get copyWith =>
@@ -47,7 +48,8 @@ abstract class $MapModalCardViewDataCopyWith<$Res> {
       String distributionText,
       String distributionOther,
       double latitude,
-      double longitude});
+      double longitude,
+      Stream<bool> alreadyGet});
 }
 
 /// @nodoc
@@ -73,6 +75,7 @@ class _$MapModalCardViewDataCopyWithImpl<$Res,
     Object? distributionOther = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? alreadyGet = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -111,6 +114,10 @@ class _$MapModalCardViewDataCopyWithImpl<$Res,
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      alreadyGet: null == alreadyGet
+          ? _value.alreadyGet
+          : alreadyGet // ignore: cast_nullable_to_non_nullable
+              as Stream<bool>,
     ) as $Val);
   }
 }
@@ -132,7 +139,8 @@ abstract class _$$_MapModalCardViewDataCopyWith<$Res>
       String distributionText,
       String distributionOther,
       double latitude,
-      double longitude});
+      double longitude,
+      Stream<bool> alreadyGet});
 }
 
 /// @nodoc
@@ -155,6 +163,7 @@ class __$$_MapModalCardViewDataCopyWithImpl<$Res>
     Object? distributionOther = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? alreadyGet = null,
   }) {
     return _then(_$_MapModalCardViewData(
       id: null == id
@@ -193,6 +202,10 @@ class __$$_MapModalCardViewDataCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      alreadyGet: null == alreadyGet
+          ? _value.alreadyGet
+          : alreadyGet // ignore: cast_nullable_to_non_nullable
+              as Stream<bool>,
     ));
   }
 }
@@ -209,7 +222,8 @@ class _$_MapModalCardViewData extends _MapModalCardViewData {
       required this.distributionText,
       required this.distributionOther,
       required this.latitude,
-      required this.longitude})
+      required this.longitude,
+      required this.alreadyGet})
       : _contacts = contacts,
         super._();
 
@@ -237,10 +251,12 @@ class _$_MapModalCardViewData extends _MapModalCardViewData {
   final double latitude;
   @override
   final double longitude;
+  @override
+  final Stream<bool> alreadyGet;
 
   @override
   String toString() {
-    return 'MapModalCardViewData(id: $id, name: $name, contacts: $contacts, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther, latitude: $latitude, longitude: $longitude)';
+    return 'MapModalCardViewData(id: $id, name: $name, contacts: $contacts, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther, latitude: $latitude, longitude: $longitude, alreadyGet: $alreadyGet)';
   }
 
   @override
@@ -262,7 +278,9 @@ class _$_MapModalCardViewData extends _MapModalCardViewData {
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
-                other.longitude == longitude));
+                other.longitude == longitude) &&
+            (identical(other.alreadyGet, alreadyGet) ||
+                other.alreadyGet == alreadyGet));
   }
 
   @override
@@ -276,7 +294,8 @@ class _$_MapModalCardViewData extends _MapModalCardViewData {
       distributionText,
       distributionOther,
       latitude,
-      longitude);
+      longitude,
+      alreadyGet);
 
   @JsonKey(ignore: true)
   @override
@@ -296,7 +315,8 @@ abstract class _MapModalCardViewData extends MapModalCardViewData {
       required final String distributionText,
       required final String distributionOther,
       required final double latitude,
-      required final double longitude}) = _$_MapModalCardViewData;
+      required final double longitude,
+      required final Stream<bool> alreadyGet}) = _$_MapModalCardViewData;
   const _MapModalCardViewData._() : super._();
 
   @override
@@ -317,6 +337,8 @@ abstract class _MapModalCardViewData extends MapModalCardViewData {
   double get latitude;
   @override
   double get longitude;
+  @override
+  Stream<bool> get alreadyGet;
   @override
   @JsonKey(ignore: true)
   _$$_MapModalCardViewDataCopyWith<_$_MapModalCardViewData> get copyWith =>
