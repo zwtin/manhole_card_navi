@@ -15,11 +15,15 @@ class MapMarkersViewDataMapper {
   static Future<MapMarkersViewData> convertToViewData({
     required List<MapMarkerDTO> mapMarkerDTOList,
     required List<AlreadyGetCardDTO> getCardDTOList,
+    required List<AlreadyGetCardDTO> originalGetCardDTOList,
+    required MapMarkersViewData originalViewData,
   }) async {
     final assetsMap = await _getAssetMap();
     final map = {};
     map['mapMarkerDTOList'] = mapMarkerDTOList;
     map['getCardDTOList'] = getCardDTOList;
+    map['originalGetCardDTOList'] = originalGetCardDTOList;
+    map['originalViewData'] = originalViewData;
     map['assetsMap'] = assetsMap;
     return compute(_convert, map);
   }
@@ -31,12 +35,46 @@ class MapMarkersViewDataMapper {
         parameter['mapMarkerDTOList'] as List<MapMarkerDTO>;
     final getCardDTOList =
         parameter['getCardDTOList'] as List<AlreadyGetCardDTO>;
+    final originalGetCardDTOList =
+        parameter['originalGetCardDTOList'] as List<AlreadyGetCardDTO>;
+    final originalViewData =
+        parameter['originalViewData'] as MapMarkersViewData;
     final assetsMap =
         parameter['assetsMap'] as Map<DistributionStateDTO, img.Image>;
     const uuid = Uuid();
     final markersList = await Future.wait(
       mapMarkerDTOList.map(
         (dto) async {
+          if (getCardDTOList.map((e) => e.cardId).contains(dto.cardId) &&
+              originalGetCardDTOList
+                  .map((e) => e.cardId)
+                  .contains(dto.cardId) &&
+              originalViewData.getByCardId(dto.cardId) != null) {
+            final original = originalViewData.getByCardId(dto.cardId)!;
+
+            return MapMarkerViewData(
+              id: uuid.v4(),
+              cardId: dto.cardId,
+              icon: original.icon,
+              latitude: dto.latitude,
+              longitude: dto.longitude,
+            );
+          }
+          if (!getCardDTOList.map((e) => e.cardId).contains(dto.cardId) &&
+              !originalGetCardDTOList
+                  .map((e) => e.cardId)
+                  .contains(dto.cardId) &&
+              originalViewData.getByCardId(dto.cardId) != null) {
+            final original = originalViewData.getByCardId(dto.cardId)!;
+
+            return MapMarkerViewData(
+              id: uuid.v4(),
+              cardId: dto.cardId,
+              icon: original.icon,
+              latitude: dto.latitude,
+              longitude: dto.longitude,
+            );
+          }
           final cardImageOrNull = await img.decodeJpgFile(dto.imagePath);
           final pinImageOrNull = assetsMap[dto.distributionState];
           final cardImage = cardImageOrNull!;

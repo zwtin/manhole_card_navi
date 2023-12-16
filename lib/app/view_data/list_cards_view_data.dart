@@ -14,4 +14,8 @@ abstract class ListCardsViewData with _$ListCardsViewData {
   Iterable<T> map<T>(T Function(ListCardViewData) toElement) {
     return list.map(toElement);
   }
+
+  ListCardViewData? getById(String id) {
+    return list.where((element) => element.id == id).firstOrNull;
+  }
 }

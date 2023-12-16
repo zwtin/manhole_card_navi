@@ -76,7 +76,8 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   MapState mapState = MapState.position;
   bool isShowModal = false;
 
-  final List<MapMarkerDTO> _mapMarkerDTOList = [];
+  final List<MapMarkerDTO> _positionMarkerDTOList = [];
+  final List<MapMarkerDTO> _distributionMarkerDTOList = [];
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
   double _zoom = 12.5;
   late StreamSubscription<List<AlreadyGetCardDTO>>
@@ -222,10 +223,21 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     } else if (mapState == MapState.distribution) {
       await _fetchDistributionMarker();
     }
-    await _resetMarkersViewData();
+    markersViewData = await MapMarkersViewDataMapper.convertToViewData(
+      mapMarkerDTOList: mapState == MapState.position
+          ? _positionMarkerDTOList
+          : _distributionMarkerDTOList,
+      getCardDTOList: _alreadyGetCardDTOList,
+      originalGetCardDTOList: _alreadyGetCardDTOList,
+      originalViewData: markersViewData,
+    );
+    notifyListeners();
   }
 
   Future<void> _fetchPositionMarker() async {
+    if (_positionMarkerDTOList.isNotEmpty) {
+      return;
+    }
     final result = await _positionCardsQueryService.fetch();
     if (result is Failure) {
       _ref.read(alertProvider.notifier).show(
@@ -239,11 +251,14 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       return;
     }
     final dtoList = (result as Success<List<MapMarkerDTO>>).value;
-    _mapMarkerDTOList.clear();
-    _mapMarkerDTOList.addAll(dtoList);
+    _positionMarkerDTOList.clear();
+    _positionMarkerDTOList.addAll(dtoList);
   }
 
   Future<void> _fetchDistributionMarker() async {
+    if (_distributionMarkerDTOList.isNotEmpty) {
+      return;
+    }
     final result = await _distributionCardsQueryService.fetch();
     if (result is Failure) {
       _ref.read(alertProvider.notifier).show(
@@ -257,25 +272,26 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       return;
     }
     final dtoList = (result as Success<List<MapMarkerDTO>>).value;
-    _mapMarkerDTOList.clear();
-    _mapMarkerDTOList.addAll(dtoList);
+    _distributionMarkerDTOList.clear();
+    _distributionMarkerDTOList.addAll(dtoList);
   }
 
   Future<void> _listenAlreadyGetCard() async {
     _alreadyGetCardStreamSubscription =
-        _alreadyGetCardQueryService.getStream().listen((dto) async {
-      _alreadyGetCardDTOList.clear();
-      _alreadyGetCardDTOList.addAll(dto);
-      await _resetMarkersViewData();
-    });
-  }
+        _alreadyGetCardQueryService.getStream().listen((dtoList) async {
+      markersViewData = await MapMarkersViewDataMapper.convertToViewData(
+        mapMarkerDTOList: mapState == MapState.position
+            ? _positionMarkerDTOList
+            : _distributionMarkerDTOList,
+        getCardDTOList: dtoList,
+        originalGetCardDTOList: _alreadyGetCardDTOList,
+        originalViewData: markersViewData,
+      );
+      notifyListeners();
 
-  Future<void> _resetMarkersViewData() async {
-    markersViewData = await MapMarkersViewDataMapper.convertToViewData(
-      mapMarkerDTOList: _mapMarkerDTOList,
-      getCardDTOList: _alreadyGetCardDTOList,
-    );
-    notifyListeners();
+      _alreadyGetCardDTOList.clear();
+      _alreadyGetCardDTOList.addAll(dtoList);
+    });
   }
 
   Future<void> _moveToCurrentLocation(bool animation) async {

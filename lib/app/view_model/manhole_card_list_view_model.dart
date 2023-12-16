@@ -73,7 +73,14 @@ class ManholeCardListViewModel extends ChangeNotifier {
 
   Future<void> onChangeMapState(ListState newListState) async {
     listState = newListState;
-    await _resetCardsViewData();
+    prefecturesViewData = await ListPrefecturesViewDataMapper.convertToViewData(
+      listCardDTOList: _listCardDTOList,
+      getCardDTOList: _alreadyGetCardDTOList,
+      listState: listState,
+      originalGetCardDTOList: _alreadyGetCardDTOList,
+      originalViewData: prefecturesViewData,
+    );
+    notifyListeners();
   }
 
   Future<void> _fetchCards() async {
@@ -96,20 +103,20 @@ class ManholeCardListViewModel extends ChangeNotifier {
 
   Future<void> _listenAlreadyGetCard() async {
     _alreadyGetCardStreamSubscription =
-        _alreadyGetCardQueryService.getStream().listen((dto) async {
-      _alreadyGetCardDTOList.clear();
-      _alreadyGetCardDTOList.addAll(dto);
-      await _resetCardsViewData();
-    });
-  }
+        _alreadyGetCardQueryService.getStream().listen((dtoList) async {
+      prefecturesViewData =
+          await ListPrefecturesViewDataMapper.convertToViewData(
+        listCardDTOList: _listCardDTOList,
+        getCardDTOList: dtoList,
+        listState: listState,
+        originalGetCardDTOList: _alreadyGetCardDTOList,
+        originalViewData: prefecturesViewData,
+      );
+      notifyListeners();
 
-  Future<void> _resetCardsViewData() async {
-    prefecturesViewData = await ListPrefecturesViewDataMapper.convertToViewData(
-      listCardDTOList: _listCardDTOList,
-      getCardDTOList: _alreadyGetCardDTOList,
-      listState: listState,
-    );
-    notifyListeners();
+      _alreadyGetCardDTOList.clear();
+      _alreadyGetCardDTOList.addAll(dtoList);
+    });
   }
 
   Future<void> _transitionToDetailView(String cardId) async {

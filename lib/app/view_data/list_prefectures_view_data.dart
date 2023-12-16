@@ -16,4 +16,8 @@ abstract class ListPrefecturesViewData with _$ListPrefecturesViewData {
   ListPrefectureViewData getByIndex(int index) {
     return list.elementAt(index);
   }
+
+  ListPrefectureViewData? getById(String id) {
+    return list.where((element) => element.id == id).firstOrNull;
+  }
 }

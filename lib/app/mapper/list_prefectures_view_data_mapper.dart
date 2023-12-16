@@ -15,11 +15,15 @@ class ListPrefecturesViewDataMapper {
     required List<ListCardDTO> listCardDTOList,
     required List<AlreadyGetCardDTO> getCardDTOList,
     required ListState listState,
+    required List<AlreadyGetCardDTO> originalGetCardDTOList,
+    required ListPrefecturesViewData originalViewData,
   }) async {
     final map = {};
     map['listCardDTOList'] = listCardDTOList;
     map['getCardDTOList'] = getCardDTOList;
     map['listState'] = listState;
+    map['originalGetCardDTOList'] = originalGetCardDTOList;
+    map['originalViewData'] = originalViewData;
     return compute(_convert, map);
   }
 
@@ -30,6 +34,11 @@ class ListPrefecturesViewDataMapper {
     final getCardDTOList =
         parameter['getCardDTOList'] as List<AlreadyGetCardDTO>;
     final listState = parameter['listState'] as ListState;
+    final originalGetCardDTOList =
+        parameter['originalGetCardDTOList'] as List<AlreadyGetCardDTO>;
+    final originalViewData =
+        parameter['originalViewData'] as ListPrefecturesViewData;
+
     final List<ListCardDTO> fixedCardDTOList = listState == ListState.all
         ? listCardDTOList
         : listCardDTOList.where(
@@ -53,6 +62,41 @@ class ListPrefecturesViewDataMapper {
           final cardList = await Future.wait(
             fixedCardDTOList.where((dto) => dto.prefectureId == id).map(
               (dto) async {
+                if (getCardDTOList.map((e) => e.cardId).contains(dto.id) &&
+                    originalGetCardDTOList
+                        .map((e) => e.cardId)
+                        .contains(dto.id) &&
+                    originalViewData.getById(id)?.cards.getById(dto.id) !=
+                        null) {
+                  final original =
+                      originalViewData.getById(id)!.cards.getById(dto.id)!;
+
+                  return ListCardViewData(
+                    id: dto.id,
+                    icon: original.icon,
+                    name: dto.name,
+                    volume: dto.volumeName,
+                    publicationDate: dateFormatter.format(dto.publicationDate),
+                  );
+                }
+                if (!getCardDTOList.map((e) => e.cardId).contains(dto.id) &&
+                    !originalGetCardDTOList
+                        .map((e) => e.cardId)
+                        .contains(dto.id) &&
+                    originalViewData.getById(id)?.cards.getById(dto.id) !=
+                        null) {
+                  final original =
+                      originalViewData.getById(id)!.cards.getById(dto.id)!;
+
+                  return ListCardViewData(
+                    id: dto.id,
+                    icon: original.icon,
+                    name: dto.name,
+                    volume: dto.volumeName,
+                    publicationDate: dateFormatter.format(dto.publicationDate),
+                  );
+                }
+
                 final cardImageOrNull = await img.decodeJpgFile(dto.imagePath);
                 final cardImage =
                     img.copyResize(cardImageOrNull!, width: 174, height: 241);
