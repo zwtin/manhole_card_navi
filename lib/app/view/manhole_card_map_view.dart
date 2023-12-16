@@ -178,8 +178,8 @@ class ManholeCardMapView extends HookConsumerWidget {
               ),
             ),
             if (viewModel.isShowModal)
-              Container(
-                height: 320,
+              const SizedBox(
+                height: 300, // 適した値を取得するのが難しいので、仮値
               ),
           ],
         ),
@@ -245,10 +245,10 @@ class ManholeCardMapView extends HookConsumerWidget {
           context: context,
           builder: (context) {
             return Container(
-              height: 320,
               color: ColorName.main,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(
@@ -362,13 +362,11 @@ class ManholeCardMapView extends HookConsumerWidget {
                       ],
                     ),
                   ),
-                  const Spacer(),
                   Container(
                     height: 48,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                     child: ElevatedButton(
                       onPressed: () async {
-                        Navigator.of(context).pop();
                         final uri = Uri(
                           scheme: 'https',
                           host: 'www.google.com',
