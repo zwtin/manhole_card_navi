@@ -137,6 +137,11 @@ class App extends HookConsumerWidget {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(color: Colors.white),
+          ),
+        ),
       ),
       home: CheckAppUpdateView(
         key: UniqueKey(),

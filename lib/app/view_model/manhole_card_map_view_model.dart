@@ -13,7 +13,7 @@ import '/app/provider/location_permission_provider.dart';
 import '/app/provider/map_modal_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view_data/map_markers_view_data.dart';
-import '/app/view_data/map_modal_view_data.dart';
+import '/app/view_data/map_modal_card_view_data.dart';
 import '/domain/entity/result.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
@@ -330,7 +330,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _showMarkerModal(MapModalViewData viewData) async {
+  Future<void> _showMarkerModal(MapModalCardViewData viewData) async {
     isShowModal = true;
     _ref.read(mapModalProvider.notifier).present(viewData: viewData);
     notifyListeners();

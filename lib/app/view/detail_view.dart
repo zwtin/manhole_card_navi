@@ -287,8 +287,8 @@ class DetailView extends HookConsumerWidget {
                               children: [
                                 Expanded(
                                   child: Container(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        16, 0, 16, 30),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(16, 0, 16, 0),
                                     child: ElevatedButton(
                                       onPressed: () async {
                                         await ref
@@ -296,7 +296,7 @@ class DetailView extends HookConsumerWidget {
                                             .onTapCheckWithMapButton();
                                       },
                                       child: const SizedBox(
-                                        height: 50,
+                                        height: 48,
                                         child: Center(
                                           child:
                                               TitleMediumRegularText('マップで見る'),
@@ -307,8 +307,8 @@ class DetailView extends HookConsumerWidget {
                                 ),
                                 Expanded(
                                   child: Container(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        16, 0, 16, 30),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(16, 0, 16, 0),
                                     child: ElevatedButton(
                                       onPressed: () async {
                                         await ref
@@ -316,7 +316,7 @@ class DetailView extends HookConsumerWidget {
                                             .onTapAlreadyGetButton();
                                       },
                                       child: SizedBox(
-                                        height: 50,
+                                        height: 48,
                                         child: Center(
                                           child: TitleMediumRegularText(
                                             viewModel
@@ -328,6 +328,9 @@ class DetailView extends HookConsumerWidget {
                                   ),
                                 ),
                               ],
+                            ),
+                            const SizedBox(
+                              height: 40,
                             ),
                           ],
                         ),

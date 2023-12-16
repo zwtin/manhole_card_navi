@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/map_modal_provider.dart';
-import '/app/view_data/map_modal_view_data.dart';
+import '/app/view_data/map_modal_card_view_data.dart';
 import '/app/view_model/manhole_card_map_view_model.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
@@ -179,7 +179,7 @@ class ManholeCardMapView extends HookConsumerWidget {
             ),
             if (viewModel.isShowModal)
               Container(
-                height: 400,
+                height: 320,
               ),
           ],
         ),
@@ -238,44 +238,174 @@ class ManholeCardMapView extends HookConsumerWidget {
   Future<void> showCardModal(
     WidgetRef ref,
     BuildContext context,
-    MapModalViewData viewData,
+    MapModalCardViewData viewData,
   ) async {
     final _ = await showModalBottomSheet(
           isScrollControlled: true,
           context: context,
           builder: (context) {
             return Container(
-              height: 400,
+              height: 320,
               color: ColorName.main,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(
-                    width: 155.1,
-                    height: 216.6,
-                    child: Container(),
+                  const SizedBox(
+                    height: 16,
                   ),
-                  const BodyMediumRegularText('data'),
-                  const BodyMediumRegularText('data2'),
-                  TextButton(
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      final uri = Uri(
-                        scheme: 'https',
-                        host: 'www.google.com',
-                        path: '/maps/search/',
-                        queryParameters: {
-                          'api': '1',
-                          'query': '${viewData.latitude},${viewData.longitude}',
-                        },
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 120,
+                          child: BodyLargeRegularText('名前'),
+                        ),
+                        Flexible(
+                          child: BodyLargeRegularText(
+                            viewData.name,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ...viewData.contacts.map(
+                    (contactViewData) {
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          16,
+                          8,
+                          16,
+                          8,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 120,
+                              child: BodyLargeRegularText('配布場所'),
+                            ),
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (contactViewData.nameUrl.isNotEmpty)
+                                    TextButton(
+                                      onPressed: () async {
+                                        final uri =
+                                            Uri.parse(contactViewData.nameUrl);
+                                        if (await canLaunchUrl(uri)) {
+                                          launchUrl(
+                                            uri,
+                                            mode: LaunchMode.inAppWebView,
+                                          );
+                                        }
+                                      },
+                                      child: BodyLargeRegularLinkText(
+                                        contactViewData.name,
+                                      ),
+                                    ),
+                                  if (contactViewData.nameUrl.isEmpty)
+                                    BodyLargeRegularText(
+                                      contactViewData.name,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       );
-                      if (await canLaunchUrl(uri)) {
-                        launchUrl(
-                          uri,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      }
                     },
-                    child: const BodyMediumRegularText('Googleマップで開く'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 120,
+                          child: BodyLargeRegularText('在庫状況'),
+                        ),
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (viewData.distributionLinkText.isNotEmpty)
+                                TextButton(
+                                  onPressed: () async {
+                                    final uri =
+                                        Uri.parse(viewData.distributionLinkUrl);
+                                    if (await canLaunchUrl(uri)) {
+                                      launchUrl(
+                                        uri,
+                                        mode: LaunchMode.inAppWebView,
+                                      );
+                                    }
+                                  },
+                                  child: BodyLargeRegularLinkText(
+                                    viewData.distributionLinkText,
+                                  ),
+                                ),
+                              BodyLargeRegularText(
+                                viewData.distributionText,
+                              ),
+                              BodyLargeRegularText(
+                                viewData.distributionOther,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    height: 48,
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                        final uri = Uri(
+                          scheme: 'https',
+                          host: 'www.google.com',
+                          path: '/maps/search/',
+                          queryParameters: {
+                            'api': '1',
+                            'query':
+                                '${viewData.latitude},${viewData.longitude}',
+                          },
+                        );
+                        if (await canLaunchUrl(uri)) {
+                          launchUrl(
+                            uri,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        }
+                      },
+                      child: const TitleMediumRegularText(
+                        'Google マップで開く',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Container(
+                    height: 48,
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                    child: OutlinedButton(
+                      onPressed: () async {},
+                      child: const TitleMediumRegularText(
+                        '取得済みにする',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 40,
                   ),
                 ],
               ),
