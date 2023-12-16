@@ -149,7 +149,11 @@ class DetailView extends HookConsumerWidget {
                                   (contactViewData) {
                                     return Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                          16, 8, 16, 8),
+                                        16,
+                                        8,
+                                        16,
+                                        8,
+                                      ),
                                       child: Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -164,25 +168,32 @@ class DetailView extends HookConsumerWidget {
                                                   CrossAxisAlignment.start,
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                TextButton(
-                                                  onPressed: () async {
-                                                    final uri = Uri.parse(
-                                                        contactViewData
-                                                            .nameUrl);
-                                                    if (await canLaunchUrl(
-                                                        uri)) {
-                                                      launchUrl(
-                                                        uri,
-                                                        mode: LaunchMode
-                                                            .inAppWebView,
-                                                      );
-                                                    }
-                                                  },
-                                                  child:
-                                                      BodyLargeRegularLinkText(
+                                                if (contactViewData
+                                                    .nameUrl.isNotEmpty)
+                                                  TextButton(
+                                                    onPressed: () async {
+                                                      final uri = Uri.parse(
+                                                          contactViewData
+                                                              .nameUrl);
+                                                      if (await canLaunchUrl(
+                                                          uri)) {
+                                                        launchUrl(
+                                                          uri,
+                                                          mode: LaunchMode
+                                                              .inAppWebView,
+                                                        );
+                                                      }
+                                                    },
+                                                    child:
+                                                        BodyLargeRegularLinkText(
+                                                      contactViewData.name,
+                                                    ),
+                                                  ),
+                                                if (contactViewData
+                                                    .nameUrl.isEmpty)
+                                                  BodyLargeRegularText(
                                                     contactViewData.name,
                                                   ),
-                                                ),
                                                 BodyLargeRegularText(
                                                   contactViewData.address,
                                                 ),
@@ -269,7 +280,7 @@ class DetailView extends HookConsumerWidget {
                         Column(
                           children: [
                             const Divider(),
-                            SizedBox(
+                            const SizedBox(
                               height: 8,
                             ),
                             Row(
