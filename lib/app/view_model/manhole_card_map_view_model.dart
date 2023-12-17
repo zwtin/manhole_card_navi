@@ -75,7 +75,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   late GoogleMapController mapController;
   CameraPosition initialCameraPosition = const CameraPosition(
     target: LatLng(35.680212, 139.757669),
-    zoom: 12.5,
+    zoom: 11.5,
   );
   bool myLocationEnabled = false;
   MapMarkersViewData markersViewData = const MapMarkersViewData(list: []);
@@ -86,7 +86,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final List<MapMarkerDTO> _positionMarkerDTOList = [];
   final List<MapMarkerDTO> _distributionMarkerDTOList = [];
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
-  double _zoom = 12.5;
+  double _zoom = 11.5;
   late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
 
