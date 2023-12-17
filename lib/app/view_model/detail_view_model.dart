@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/app/provider/party_animation_provider.dart';
 
 import '/app/mapper/detail_card_view_data_mapper.dart';
 import '/app/provider/alert_provider.dart';
@@ -134,6 +135,7 @@ class DetailViewModel extends ChangeNotifier {
 
   Future<void> _saveCard() async {
     _alreadyGetCardUseCase.save(id: _cardId);
+    _ref.read(partyAnimationProvider.notifier).start();
   }
 
   Future<void> _deleteCard() async {

@@ -20,6 +20,7 @@ class DetailView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(detailViewModelProvider(key));
+    final animationController = useAnimationController();
 
     useEffect(
       () {
