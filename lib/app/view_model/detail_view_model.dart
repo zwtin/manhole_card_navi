@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/app/provider/router_provider.dart';
 
 import '/app/mapper/detail_card_view_data_mapper.dart';
 import '/app/provider/alert_provider.dart';
@@ -92,6 +93,10 @@ class DetailViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> onTapImage() async {
+    await _transitionToImageDetailView();
+  }
+
   Future<void> _fetch() async {
     final result = await _cardUseCase.get(id: _cardId);
     if (result is Failure) {
@@ -133,6 +138,13 @@ class DetailViewModel extends ChangeNotifier {
 
   Future<void> _deleteCard() async {
     _alreadyGetCardUseCase.delete(id: _cardId);
+  }
+
+  Future<void> _transitionToImageDetailView() async {
+    await _ref.read(routerProvider(_key).notifier).presentImage(
+          imageData: viewData.icon,
+          imageTag: viewData.id,
+        );
   }
 
   @override

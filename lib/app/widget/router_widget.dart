@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/provider/router_provider.dart';
 import '/app/view_data/router_view_data.dart';
+import '/app/widget/fade_in_route.dart';
 
 class RouterWidget extends HookConsumerWidget {
   const RouterWidget({
@@ -66,6 +67,18 @@ class RouterWidget extends HookConsumerWidget {
                   return next?.nextWidget ?? Container();
                 },
                 fullscreenDialog: true,
+              ),
+            );
+            break;
+          case TransitionType.image:
+            if (!context.mounted) {
+              break;
+            }
+            await Navigator.of(context, rootNavigator: true).push(
+              FadeInRoute(
+                widget: next?.nextWidget ?? Container(),
+                onTransitionCompleted: null,
+                onTransitionDismissed: null,
               ),
             );
             break;
