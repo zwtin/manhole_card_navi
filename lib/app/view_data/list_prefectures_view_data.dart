@@ -13,6 +13,8 @@ abstract class ListPrefecturesViewData with _$ListPrefecturesViewData {
 
   int get length => list.length;
 
+  bool get isEmpty => list.isEmpty;
+
   ListPrefectureViewData getByIndex(int index) {
     return list.elementAt(index);
   }

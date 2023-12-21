@@ -111,26 +111,27 @@ class ManholeCardListView extends HookConsumerWidget {
             Container(
               color: ColorName.main,
             ),
-            ListView.separated(
-              itemCount: viewModel.prefecturesViewData.where(
-                    (prefectureViewData) {
-                      return !prefectureViewData.cards.where(
-                        (card) {
-                          return !card.isHidden;
-                        },
-                      ).isEmpty;
+            viewModel.prefecturesViewData.where(
+              (prefectureViewData) {
+                return !prefectureViewData.cards.where(
+                  (card) {
+                    return !card.isHidden;
+                  },
+                ).isEmpty;
+              },
+            ).isEmpty
+                ? ListView.builder(
+                    itemBuilder: (itemContext, index) {
+                      return const SizedBox(
+                        height: 250,
+                        child: Center(
+                            child: TitleMediumRegularText('表示できるデータがありません')),
+                      );
                     },
-                  ).length +
-                  2,
-              itemBuilder: (itemContext, index) {
-                if (index == 0) {
-                  return Container(
-                    color: Colors.white,
-                    height: 0.5,
-                  );
-                }
-                if (index ==
-                    viewModel.prefecturesViewData.where(
+                    itemCount: 1,
+                  )
+                : ListView.separated(
+                    itemCount: viewModel.prefecturesViewData.where(
                           (prefectureViewData) {
                             return !prefectureViewData.cards.where(
                               (card) {
@@ -139,99 +140,120 @@ class ManholeCardListView extends HookConsumerWidget {
                             ).isEmpty;
                           },
                         ).length +
-                        1) {
-                  return Container();
-                }
-                final prefectureViewData = viewModel.prefecturesViewData.where(
-                  (prefectureViewData) {
-                    return !prefectureViewData.cards.where(
-                      (card) {
-                        return !card.isHidden;
-                      },
-                    ).isEmpty;
-                  },
-                ).getByIndex(index - 1);
-                final cardWithSeparator = prefectureViewData.cards.where(
-                  (cardViewData) {
-                    return !cardViewData.isHidden;
-                  },
-                ).map(
-                  (cardViewData) {
-                    return GestureDetector(
-                      onTap: () {
-                        ref
-                            .read(manholeCardListViewModelProvider(key))
-                            .onTap(cardViewData.id);
-                      },
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            top: BorderSide(
-                              color: Colors.white,
-                              width: 0.5,
-                            ),
-                          ),
-                        ),
-                        height: 120,
-                        width: double.infinity,
-                        // color: ColorName.main,
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                        child: Row(
-                          children: [
-                            Image.memory(cardViewData.icon),
-                            const SizedBox(
-                              width: 16,
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    cardViewData.name,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                    overflow: TextOverflow.ellipsis,
+                        2,
+                    itemBuilder: (itemContext, index) {
+                      if (index == 0) {
+                        return Container(
+                          color: Colors.white,
+                          height: 0.5,
+                        );
+                      }
+                      if (index ==
+                          viewModel.prefecturesViewData.where(
+                                (prefectureViewData) {
+                                  return !prefectureViewData.cards.where(
+                                    (card) {
+                                      return !card.isHidden;
+                                    },
+                                  ).isEmpty;
+                                },
+                              ).length +
+                              1) {
+                        return Container();
+                      }
+                      final prefectureViewData =
+                          viewModel.prefecturesViewData.where(
+                        (prefectureViewData) {
+                          return !prefectureViewData.cards.where(
+                            (card) {
+                              return !card.isHidden;
+                            },
+                          ).isEmpty;
+                        },
+                      ).getByIndex(index - 1);
+                      final cardWithSeparator = prefectureViewData.cards.where(
+                        (cardViewData) {
+                          return !cardViewData.isHidden;
+                        },
+                      ).map(
+                        (cardViewData) {
+                          return GestureDetector(
+                            onTap: () {
+                              ref
+                                  .read(manholeCardListViewModelProvider(key))
+                                  .onTap(cardViewData.id);
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  top: BorderSide(
+                                    color: Colors.white,
+                                    width: 0.5,
                                   ),
-                                  BodyMediumRegularText(cardViewData.id),
-                                  const Spacer(),
-                                  BodyMediumRegularText(cardViewData.volume),
-                                  BodyMediumRegularText(
-                                      cardViewData.publicationDate),
+                                ),
+                              ),
+                              height: 120,
+                              width: double.infinity,
+                              // color: ColorName.main,
+                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                              child: Row(
+                                children: [
+                                  Image.memory(cardViewData.icon),
+                                  const SizedBox(
+                                    width: 16,
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          cardViewData.name,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.normal,
+                                              ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        BodyMediumRegularText(cardViewData.id),
+                                        const Spacer(),
+                                        BodyMediumRegularText(
+                                            cardViewData.volume),
+                                        BodyMediumRegularText(
+                                            cardViewData.publicationDate),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.white,
+                                  ),
                                 ],
                               ),
                             ),
-                            const Icon(
-                              Icons.arrow_forward_ios,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ).toList();
-                return ExpansionTile(
-                  title: TitleMediumRegularText(prefectureViewData.name),
-                  initiallyExpanded: prefectureViewData.initiallyExpanded,
-                  onExpansionChanged: (expanded) async {
-                    await ref
-                        .read(manholeCardListViewModelProvider(key))
-                        .onExpandedChanged(
-                          expanded,
-                          prefectureViewData.id,
-                        );
-                  },
-                  children: cardWithSeparator,
-                );
-              },
-              separatorBuilder: (separatorContext, index) {
-                return const Divider();
-              },
-            ),
+                          );
+                        },
+                      ).toList();
+                      return ExpansionTile(
+                        title: TitleMediumRegularText(prefectureViewData.name),
+                        initiallyExpanded: prefectureViewData.initiallyExpanded,
+                        onExpansionChanged: (expanded) async {
+                          await ref
+                              .read(manholeCardListViewModelProvider(key))
+                              .onExpandedChanged(
+                                expanded,
+                                prefectureViewData.id,
+                              );
+                        },
+                        children: cardWithSeparator,
+                      );
+                    },
+                    separatorBuilder: (separatorContext, index) {
+                      return const Divider();
+                    },
+                  ),
           ],
         ),
       ),
