@@ -9,7 +9,6 @@ import '/app/view/privacy_policy_view.dart';
 import '/app/view/terms_of_service_view.dart';
 import '/domain/entity/result.dart';
 import '/use_case/dto/need_terms_of_service_update_dto.dart';
-import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/check_terms_of_service_update_use_case.dart';
 import '/use_case/use_case/save_terms_of_service_agree_version_use_case.dart';
 
@@ -19,7 +18,6 @@ final checkTermsOfServiceUpdateViewModelProvider = ChangeNotifierProvider.family
     return CheckTermsOfServiceUpdateViewModel(
       key,
       ref,
-      ref.watch(analyticsUseCaseProvider),
       ref.watch(checkTermsOfServiceUpdateUseCaseProvider),
       ref.watch(saveTermsOfServiceAgreeVersionUseCaseProvider),
     );
@@ -30,7 +28,6 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
   CheckTermsOfServiceUpdateViewModel(
     this._key,
     this._ref,
-    this._analyticsUseCase,
     this._checkTermsOfServiceUpdateUseCase,
     this._saveTermsOfServiceAgreeVersionUseCase,
   );
@@ -39,7 +36,6 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
-  final AnalyticsUseCase _analyticsUseCase;
   final CheckTermsOfServiceUpdateUseCase _checkTermsOfServiceUpdateUseCase;
   final SaveTermsOfServiceAgreeVersionUseCase
       _saveTermsOfServiceAgreeVersionUseCase;
@@ -50,7 +46,6 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _logger.d('CheckTermsOfServiceUpdateViewModel');
-    _sendPVEvent();
     final result = await _checkNeedUpdate();
     if (result is Failure) {
       return;
@@ -95,13 +90,6 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
 
   Future<void> onTapPrivacyPolicy() async {
     await _transitionToPrivacyPolicyView();
-  }
-
-  Future<void> _sendPVEvent() async {
-    _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {'screen_name': 'check_app_update_view'},
-    );
   }
 
   Future<Result<bool>> _checkNeedUpdate() async {

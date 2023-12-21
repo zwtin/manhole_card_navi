@@ -125,7 +125,7 @@ class ManholeCardListView extends HookConsumerWidget {
                       return const SizedBox(
                         height: 250,
                         child: Center(
-                            child: TitleMediumRegularText('表示できるデータがありません')),
+                            child: BodyMediumRegularText('表示できるデータがありません')),
                       );
                     },
                     itemCount: 1,

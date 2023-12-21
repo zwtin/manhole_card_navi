@@ -7,7 +7,6 @@ import '/app/provider/router_provider.dart';
 import '/app/view/check_master_update_view.dart';
 import '/domain/entity/result.dart';
 import '/use_case/dto/need_app_update_dto.dart';
-import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/check_app_update_use_case.dart';
 
 final checkAppUpdateViewModelProvider =
@@ -16,7 +15,6 @@ final checkAppUpdateViewModelProvider =
     return CheckAppUpdateViewModel(
       key,
       ref,
-      ref.watch(analyticsUseCaseProvider),
       ref.watch(checkAppUpdateUseCaseProvider),
     );
   },
@@ -26,7 +24,6 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
   CheckAppUpdateViewModel(
     this._key,
     this._ref,
-    this._analyticsUseCase,
     this._checkAppUpdateUseCase,
   );
 
@@ -34,14 +31,12 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
-  final AnalyticsUseCase _analyticsUseCase;
   final CheckAppUpdateUseCase _checkAppUpdateUseCase;
 
   bool isLoading = false;
 
   Future<void> onLoad() async {
     _logger.d('CheckAppUpdateViewModel');
-    await _sendPVEvent();
     final result = await _checkNeedUpdate();
     if (result is Failure) {
       return;
@@ -49,13 +44,6 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
     if ((result as Success<bool>).value) {
       await _transitionToCheckMasterUpdateView();
     }
-  }
-
-  Future<void> _sendPVEvent() async {
-    _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {'screen_name': 'check_app_update_view'},
-    );
   }
 
   Future<Result<bool>> _checkNeedUpdate() async {
