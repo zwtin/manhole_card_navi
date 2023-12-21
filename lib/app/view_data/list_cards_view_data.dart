@@ -18,4 +18,13 @@ abstract class ListCardsViewData with _$ListCardsViewData {
   ListCardViewData? getById(String id) {
     return list.where((element) => element.id == id).firstOrNull;
   }
+
+  ListCardsViewData where(bool Function(ListCardViewData) test) {
+    final filteredList = list.where(test).toList();
+    return ListCardsViewData(list: filteredList);
+  }
+
+  bool get isEmpty {
+    return list.isEmpty;
+  }
 }

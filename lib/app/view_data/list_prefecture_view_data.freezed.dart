@@ -19,7 +19,7 @@ mixin _$ListPrefectureViewData {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   ListCardsViewData get cards => throw _privateConstructorUsedError;
-  bool get initialOpen => throw _privateConstructorUsedError;
+  bool get initiallyExpanded => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ListPrefectureViewDataCopyWith<ListPrefectureViewData> get copyWith =>
@@ -33,7 +33,10 @@ abstract class $ListPrefectureViewDataCopyWith<$Res> {
       _$ListPrefectureViewDataCopyWithImpl<$Res, ListPrefectureViewData>;
   @useResult
   $Res call(
-      {String id, String name, ListCardsViewData cards, bool initialOpen});
+      {String id,
+      String name,
+      ListCardsViewData cards,
+      bool initiallyExpanded});
 
   $ListCardsViewDataCopyWith<$Res> get cards;
 }
@@ -55,7 +58,7 @@ class _$ListPrefectureViewDataCopyWithImpl<$Res,
     Object? id = null,
     Object? name = null,
     Object? cards = null,
-    Object? initialOpen = null,
+    Object? initiallyExpanded = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -70,9 +73,9 @@ class _$ListPrefectureViewDataCopyWithImpl<$Res,
           ? _value.cards
           : cards // ignore: cast_nullable_to_non_nullable
               as ListCardsViewData,
-      initialOpen: null == initialOpen
-          ? _value.initialOpen
-          : initialOpen // ignore: cast_nullable_to_non_nullable
+      initiallyExpanded: null == initiallyExpanded
+          ? _value.initiallyExpanded
+          : initiallyExpanded // ignore: cast_nullable_to_non_nullable
               as bool,
     ) as $Val);
   }
@@ -95,7 +98,10 @@ abstract class _$$_ListPrefectureViewDataCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String id, String name, ListCardsViewData cards, bool initialOpen});
+      {String id,
+      String name,
+      ListCardsViewData cards,
+      bool initiallyExpanded});
 
   @override
   $ListCardsViewDataCopyWith<$Res> get cards;
@@ -116,7 +122,7 @@ class __$$_ListPrefectureViewDataCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? cards = null,
-    Object? initialOpen = null,
+    Object? initiallyExpanded = null,
   }) {
     return _then(_$_ListPrefectureViewData(
       id: null == id
@@ -131,9 +137,9 @@ class __$$_ListPrefectureViewDataCopyWithImpl<$Res>
           ? _value.cards
           : cards // ignore: cast_nullable_to_non_nullable
               as ListCardsViewData,
-      initialOpen: null == initialOpen
-          ? _value.initialOpen
-          : initialOpen // ignore: cast_nullable_to_non_nullable
+      initiallyExpanded: null == initiallyExpanded
+          ? _value.initiallyExpanded
+          : initiallyExpanded // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }
@@ -146,7 +152,7 @@ class _$_ListPrefectureViewData extends _ListPrefectureViewData {
       {required this.id,
       required this.name,
       required this.cards,
-      required this.initialOpen})
+      required this.initiallyExpanded})
       : super._();
 
   @override
@@ -156,11 +162,11 @@ class _$_ListPrefectureViewData extends _ListPrefectureViewData {
   @override
   final ListCardsViewData cards;
   @override
-  final bool initialOpen;
+  final bool initiallyExpanded;
 
   @override
   String toString() {
-    return 'ListPrefectureViewData(id: $id, name: $name, cards: $cards, initialOpen: $initialOpen)';
+    return 'ListPrefectureViewData(id: $id, name: $name, cards: $cards, initiallyExpanded: $initiallyExpanded)';
   }
 
   @override
@@ -171,12 +177,13 @@ class _$_ListPrefectureViewData extends _ListPrefectureViewData {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.cards, cards) || other.cards == cards) &&
-            (identical(other.initialOpen, initialOpen) ||
-                other.initialOpen == initialOpen));
+            (identical(other.initiallyExpanded, initiallyExpanded) ||
+                other.initiallyExpanded == initiallyExpanded));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, cards, initialOpen);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, cards, initiallyExpanded);
 
   @JsonKey(ignore: true)
   @override
@@ -191,7 +198,7 @@ abstract class _ListPrefectureViewData extends ListPrefectureViewData {
       {required final String id,
       required final String name,
       required final ListCardsViewData cards,
-      required final bool initialOpen}) = _$_ListPrefectureViewData;
+      required final bool initiallyExpanded}) = _$_ListPrefectureViewData;
   const _ListPrefectureViewData._() : super._();
 
   @override
@@ -201,7 +208,7 @@ abstract class _ListPrefectureViewData extends ListPrefectureViewData {
   @override
   ListCardsViewData get cards;
   @override
-  bool get initialOpen;
+  bool get initiallyExpanded;
   @override
   @JsonKey(ignore: true)
   _$$_ListPrefectureViewDataCopyWith<_$_ListPrefectureViewData> get copyWith =>

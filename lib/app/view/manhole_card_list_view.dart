@@ -112,7 +112,16 @@ class ManholeCardListView extends HookConsumerWidget {
               color: ColorName.main,
             ),
             ListView.separated(
-              itemCount: viewModel.prefecturesViewData.length + 2,
+              itemCount: viewModel.prefecturesViewData.where(
+                    (prefectureViewData) {
+                      return !prefectureViewData.cards.where(
+                        (card) {
+                          return !card.isHidden;
+                        },
+                      ).isEmpty;
+                    },
+                  ).length +
+                  2,
               itemBuilder: (itemContext, index) {
                 if (index == 0) {
                   return Container(
@@ -120,12 +129,33 @@ class ManholeCardListView extends HookConsumerWidget {
                     height: 0.5,
                   );
                 }
-                if (index == viewModel.prefecturesViewData.length + 1) {
+                if (index ==
+                    viewModel.prefecturesViewData.where(
+                          (prefectureViewData) {
+                            return !prefectureViewData.cards.where(
+                              (card) {
+                                return !card.isHidden;
+                              },
+                            ).isEmpty;
+                          },
+                        ).length +
+                        1) {
                   return Container();
                 }
-                final prefectureViewData =
-                    viewModel.prefecturesViewData.getByIndex(index - 1);
-                final cardWithSeparator = prefectureViewData.cards.map(
+                final prefectureViewData = viewModel.prefecturesViewData.where(
+                  (prefectureViewData) {
+                    return !prefectureViewData.cards.where(
+                      (card) {
+                        return !card.isHidden;
+                      },
+                    ).isEmpty;
+                  },
+                ).getByIndex(index - 1);
+                final cardWithSeparator = prefectureViewData.cards.where(
+                  (cardViewData) {
+                    return !cardViewData.isHidden;
+                  },
+                ).map(
                   (cardViewData) {
                     return GestureDetector(
                       onTap: () {
@@ -186,16 +216,16 @@ class ManholeCardListView extends HookConsumerWidget {
                 ).toList();
                 return ExpansionTile(
                   title: TitleMediumRegularText(prefectureViewData.name),
-                  children: cardWithSeparator,
-                  initiallyExpanded: prefectureViewData.initialOpen,
-                  onExpansionChanged: (isExpansion) async {
+                  initiallyExpanded: prefectureViewData.initiallyExpanded,
+                  onExpansionChanged: (expanded) async {
                     await ref
                         .read(manholeCardListViewModelProvider(key))
-                        .onExpansionChanged(
-                          isExpansion,
+                        .onExpandedChanged(
+                          expanded,
                           prefectureViewData.id,
                         );
                   },
+                  children: cardWithSeparator,
                 );
               },
               separatorBuilder: (separatorContext, index) {

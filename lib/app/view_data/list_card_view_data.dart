@@ -12,6 +12,7 @@ abstract class ListCardViewData with _$ListCardViewData {
     required String name,
     required String volume,
     required String publicationDate,
+    required bool isHidden,
   }) = _ListCardViewData;
   const ListCardViewData._();
 }

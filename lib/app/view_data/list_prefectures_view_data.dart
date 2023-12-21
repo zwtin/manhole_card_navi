@@ -21,11 +21,16 @@ abstract class ListPrefecturesViewData with _$ListPrefecturesViewData {
     return list.where((element) => element.id == id).firstOrNull;
   }
 
-  ListPrefecturesViewData onExpansionChanged(bool isExpansion, String id) {
+  ListPrefecturesViewData where(bool Function(ListPrefectureViewData) test) {
+    final filteredList = list.where(test).toList();
+    return ListPrefecturesViewData(list: filteredList);
+  }
+
+  ListPrefecturesViewData onExpandedChanged(bool initiallyExpanded, String id) {
     return ListPrefecturesViewData(
         list: list.map((prefecture) {
       if (prefecture.id == id) {
-        return prefecture.copyWith(initialOpen: isExpansion);
+        return prefecture.copyWith(initiallyExpanded: initiallyExpanded);
       } else {
         return prefecture;
       }

@@ -39,14 +39,7 @@ class ListPrefecturesViewDataMapper {
     final originalViewData =
         parameter['originalViewData'] as ListPrefecturesViewData;
 
-    final List<ListCardDTO> fixedCardDTOList = listState == ListState.all
-        ? listCardDTOList
-        : listCardDTOList.where(
-            (element) {
-              return getCardDTOList.map((e) => e.cardId).contains(element.id);
-            },
-          ).toList();
-    final prefectureIdList = fixedCardDTOList
+    final prefectureIdList = listCardDTOList
         .map(
           (listCardDTO) {
             return listCardDTO.prefectureId;
@@ -60,7 +53,7 @@ class ListPrefecturesViewDataMapper {
       prefectureIdList.map(
         (id) async {
           final cardList = await Future.wait(
-            fixedCardDTOList.where((dto) => dto.prefectureId == id).map(
+            listCardDTOList.where((dto) => dto.prefectureId == id).map(
               (dto) async {
                 if (getCardDTOList.map((e) => e.cardId).contains(dto.id) &&
                     originalGetCardDTOList
@@ -71,12 +64,19 @@ class ListPrefecturesViewDataMapper {
                   final original =
                       originalViewData.getById(id)!.cards.getById(dto.id)!;
 
+                  bool isHidden = false;
+                  if (listState == ListState.alreadyGet) {
+                    isHidden =
+                        !getCardDTOList.map((e) => e.cardId).contains(dto.id);
+                  }
+
                   return ListCardViewData(
                     id: dto.id,
                     icon: original.icon,
                     name: dto.name,
                     volume: dto.volumeName,
                     publicationDate: dateFormatter.format(dto.publicationDate),
+                    isHidden: isHidden,
                   );
                 }
                 if (!getCardDTOList.map((e) => e.cardId).contains(dto.id) &&
@@ -88,12 +88,19 @@ class ListPrefecturesViewDataMapper {
                   final original =
                       originalViewData.getById(id)!.cards.getById(dto.id)!;
 
+                  bool isHidden = false;
+                  if (listState == ListState.alreadyGet) {
+                    isHidden =
+                        !getCardDTOList.map((e) => e.cardId).contains(dto.id);
+                  }
+
                   return ListCardViewData(
                     id: dto.id,
                     icon: original.icon,
                     name: dto.name,
                     volume: dto.volumeName,
                     publicationDate: dateFormatter.format(dto.publicationDate),
+                    isHidden: isHidden,
                   );
                 }
 
@@ -106,18 +113,26 @@ class ListPrefecturesViewDataMapper {
                 } else {
                   cardThumbnail = img.grayscale(cardImage);
                 }
+
+                bool isHidden = false;
+                if (listState == ListState.alreadyGet) {
+                  isHidden =
+                      !getCardDTOList.map((e) => e.cardId).contains(dto.id);
+                }
+
                 return ListCardViewData(
                   id: dto.id,
                   icon: img.encodePng(cardThumbnail).buffer.asUint8List(),
                   name: dto.name,
                   volume: dto.volumeName,
                   publicationDate: dateFormatter.format(dto.publicationDate),
+                  isHidden: isHidden,
                 );
               },
             ),
           );
 
-          final prefectureName = fixedCardDTOList
+          final prefectureName = listCardDTOList
               .firstWhere((dto) => dto.prefectureId == id)
               .prefectureName;
 
@@ -127,7 +142,7 @@ class ListPrefecturesViewDataMapper {
             cards: ListCardsViewData(
               list: cardList,
             ),
-            initialOpen: false,
+            initiallyExpanded: false,
           );
         },
       ),
