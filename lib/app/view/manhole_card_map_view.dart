@@ -243,6 +243,10 @@ class ManholeCardMapView extends HookConsumerWidget {
     final _ = await showModalBottomSheet(
           isScrollControlled: true,
           context: context,
+          showDragHandle: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+          ),
           builder: (context) {
             return Container(
               color: ColorName.main,
@@ -251,11 +255,8 @@ class ManholeCardMapView extends HookConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(
-                    height: 16,
-                  ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -276,9 +277,9 @@ class ManholeCardMapView extends HookConsumerWidget {
                       return Padding(
                         padding: const EdgeInsets.fromLTRB(
                           16,
-                          8,
+                          0,
                           16,
-                          8,
+                          16,
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,7 +322,7 @@ class ManholeCardMapView extends HookConsumerWidget {
                     },
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

@@ -142,6 +142,9 @@ class App extends HookConsumerWidget {
             side: const BorderSide(color: Colors.white),
           ),
         ),
+        bottomSheetTheme: const BottomSheetThemeData(
+          backgroundColor: ColorName.main,
+        ),
       ),
       home: CheckAppUpdateView(
         key: UniqueKey(),
