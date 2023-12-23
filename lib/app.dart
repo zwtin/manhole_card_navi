@@ -144,6 +144,10 @@ class App extends HookConsumerWidget {
         ),
         bottomSheetTheme: const BottomSheetThemeData(
           backgroundColor: ColorName.main,
+          showDragHandle: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+          ),
         ),
       ),
       home: CheckAppUpdateView(

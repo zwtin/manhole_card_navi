@@ -80,7 +80,7 @@ class ManholeCardMapView extends HookConsumerWidget {
                   builder: (modalContext) {
                     return Container(
                       color: ColorName.main,
-                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 16),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 30),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -243,10 +243,6 @@ class ManholeCardMapView extends HookConsumerWidget {
     final _ = await showModalBottomSheet(
           isScrollControlled: true,
           context: context,
-          showDragHandle: true,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
-          ),
           builder: (context) {
             return Container(
               color: ColorName.main,

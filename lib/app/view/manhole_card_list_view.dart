@@ -57,7 +57,7 @@ class ManholeCardListView extends HookConsumerWidget {
                   builder: (modalContext) {
                     return Container(
                       color: ColorName.main,
-                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 16),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 30),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
