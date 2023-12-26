@@ -133,11 +133,13 @@ class ManholeCardListView extends HookConsumerWidget {
             ).isEmpty
                 ? ListView.builder(
                     itemBuilder: (itemContext, index) {
-                      return const SizedBox(
-                        height: 250,
-                        child: Center(
-                          child: BodyMediumText(
-                            '表示できるデータがありません',
+                      return const SafeArea(
+                        child: SizedBox(
+                          height: 250,
+                          child: Center(
+                            child: BodyMediumText(
+                              '表示できるデータがありません',
+                            ),
                           ),
                         ),
                       );
@@ -208,42 +210,43 @@ class ManholeCardListView extends HookConsumerWidget {
                               ),
                               height: 120,
                               width: double.infinity,
-                              // color: ColorName.main,
                               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                              child: Row(
-                                children: [
-                                  Image.memory(cardViewData.icon),
-                                  const SizedBox(
-                                    width: 16,
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        TitleMediumText(
-                                          cardViewData.name,
-                                          fontWeight: FontWeight.bold,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        BodyMediumText(
-                                          cardViewData.id,
-                                        ),
-                                        const Spacer(),
-                                        BodyMediumText(
-                                          cardViewData.volume,
-                                        ),
-                                        BodyMediumText(
-                                          cardViewData.publicationDate,
-                                        ),
-                                      ],
+                              child: SafeArea(
+                                child: Row(
+                                  children: [
+                                    Image.memory(cardViewData.icon),
+                                    const SizedBox(
+                                      width: 16,
                                     ),
-                                  ),
-                                  const Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: ColorName.icon,
-                                  ),
-                                ],
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          TitleMediumText(
+                                            cardViewData.name,
+                                            fontWeight: FontWeight.bold,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          BodyMediumText(
+                                            cardViewData.id,
+                                          ),
+                                          const Spacer(),
+                                          BodyMediumText(
+                                            cardViewData.volume,
+                                          ),
+                                          BodyMediumText(
+                                            cardViewData.publicationDate,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: ColorName.icon,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           );
