@@ -38,18 +38,19 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
         key: key,
         child: LoadingOverlay(
           isLoading: viewModel.isLoading,
-          color: Colors.grey,
+          color: ColorName.screenBackground,
           child: viewModel.inquireUpdate
               ? Scaffold(
                   appBar: AppBar(
-                    title: const TitleLargeBoldText(
+                    title: const TitleLargeText(
                       '同意確認',
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   body: Stack(
                     children: [
                       Container(
-                        color: ColorName.main,
+                        color: ColorName.screenBackground,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -58,7 +59,7 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              const TitleMediumRegularText(
+                              const TitleMediumText(
                                 '利用規約とプライバシーポリシーが更新されました。\nアプリを使うためには、再度利用規約とプライバシーポリシーに同意する必要があります。',
                               ),
                               const Spacer(),
@@ -88,12 +89,11 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
                                                           key))
                                                   .onTapTermsOfService();
                                             },
-                                            child:
-                                                const TitleMediumRegularLinkText(
+                                            child: const TitleMediumLinkText(
                                               '利用規約',
                                             ),
                                           ),
-                                          const TitleMediumRegularText(
+                                          const TitleMediumText(
                                             'と',
                                           ),
                                           TextButton(
@@ -104,23 +104,15 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
                                                           key))
                                                   .onTapPrivacyPolicy();
                                             },
-                                            child:
-                                                const TitleMediumRegularLinkText(
+                                            child: const TitleMediumLinkText(
                                               'プライバシーポリシー',
                                             ),
                                           ),
                                         ],
                                       ),
-                                      const Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 8,
-                                          ),
-                                          TitleMediumRegularText(
-                                            'に同意する',
-                                          ),
-                                        ],
-                                      )
+                                      const TitleMediumText(
+                                        'に同意する',
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -138,8 +130,9 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
                                                 key))
                                         .onTapAgreeButton();
                                   },
-                                  child: const TitleMediumRegularText(
+                                  child: const TitleMediumText(
                                     'はじめる',
+                                    color: ColorName.contentsBackground,
                                   ),
                                 ),
                               ),
@@ -152,7 +145,7 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
                 )
               : Scaffold(
                   body: Container(
-                    color: ColorName.main,
+                    color: ColorName.screenBackground,
                   ),
                 ),
         ),

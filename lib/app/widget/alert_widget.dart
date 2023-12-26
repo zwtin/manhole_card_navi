@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:manhole_card_navi/app/widget/custom_text.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '/app/provider/alert_provider.dart';
@@ -28,26 +29,46 @@ class AlertWidget extends HookConsumerWidget {
 
           final cancelButtonViewData = next.cancelButtonViewData;
           if (cancelButtonViewData != null) {
-            buttons.add(DialogButton(
-              onPressed: () async {
-                ref.read(alertProvider.notifier).dismiss();
-                await cancelButtonViewData.action();
-              },
-              color: ColorName.main,
-              child: Text(cancelButtonViewData.title),
-            ));
+            buttons.add(
+              DialogButton(
+                onPressed: () async {
+                  ref.read(alertProvider.notifier).dismiss();
+                  await cancelButtonViewData.action();
+                },
+                color: Colors.transparent,
+                highlightColor: ColorName.primary.withOpacity(0.3),
+                splashColor: ColorName.primary.withOpacity(0.3),
+                border: const Border.fromBorderSide(
+                  BorderSide(
+                    color: ColorName.primary,
+                    width: 2,
+                  ),
+                ),
+                child: TitleMediumText(
+                  cancelButtonViewData.title,
+                  color: ColorName.primary,
+                ),
+              ),
+            );
           }
 
           final okButtonViewData = next.okButtonViewData;
           if (okButtonViewData != null) {
-            buttons.add(DialogButton(
-              onPressed: () async {
-                ref.read(alertProvider.notifier).dismiss();
-                await okButtonViewData.action();
-              },
-              color: ColorName.main,
-              child: Text(okButtonViewData.title),
-            ));
+            buttons.add(
+              DialogButton(
+                onPressed: () async {
+                  ref.read(alertProvider.notifier).dismiss();
+                  await okButtonViewData.action();
+                },
+                color: ColorName.primary,
+                highlightColor: ColorName.contentsBackground.withOpacity(0.3),
+                splashColor: ColorName.contentsBackground.withOpacity(0.3),
+                child: TitleMediumText(
+                  okButtonViewData.title,
+                  color: ColorName.contentsBackground,
+                ),
+              ),
+            );
           }
 
           await Alert(

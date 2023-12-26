@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manhole_card_navi/gen/colors.gen.dart';
 
 class CustomCheckBox extends StatelessWidget {
   const CustomCheckBox({
@@ -23,7 +24,7 @@ class CustomCheckBox extends StatelessWidget {
               height: 18,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Colors.white,
+                  color: ColorName.icon,
                   width: 2,
                 ),
               ),
@@ -31,7 +32,7 @@ class CustomCheckBox extends StatelessWidget {
           ),
         ),
         Checkbox(
-          checkColor: Colors.white,
+          checkColor: ColorName.icon,
           fillColor: MaterialStateProperty.resolveWith(
             (states) {
               return Colors.transparent;

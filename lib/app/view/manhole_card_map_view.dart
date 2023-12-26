@@ -66,8 +66,9 @@ class ManholeCardMapView extends HookConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const TitleLargeBoldText(
+          title: const TitleLargeText(
             'マップ',
+            fontWeight: FontWeight.bold,
           ),
           actions: <Widget>[
             IconButton(
@@ -78,49 +79,59 @@ class ManholeCardMapView extends HookConsumerWidget {
                 showModalBottomSheet<int>(
                   context: context,
                   builder: (modalContext) {
-                    return Container(
-                      color: ColorName.main,
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 30),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ListTile(
-                            leading: viewModel.mapState == MapState.position
-                                ? const Icon(
-                                    Icons.check,
-                                    color: ColorName.accent,
-                                  )
-                                : const SizedBox(
-                                    width: 40,
-                                    height: 40,
-                                  ),
-                            title: const TitleMediumRegularText('蓋マップ'),
-                            onTap: () async {
-                              Navigator.of(modalContext).pop();
-                              ref
-                                  .read(manholeCardMapViewModelProvider(key))
-                                  .onChangeMapState(MapState.position);
-                            },
-                          ),
-                          ListTile(
-                            leading: viewModel.mapState == MapState.distribution
-                                ? const Icon(
-                                    Icons.check,
-                                    color: ColorName.accent,
-                                  )
-                                : const SizedBox(
-                                    width: 40,
-                                    height: 40,
-                                  ),
-                            title: const TitleMediumRegularText('配布場所マップ'),
-                            onTap: () async {
-                              Navigator.of(modalContext).pop();
-                              ref
-                                  .read(manholeCardMapViewModelProvider(key))
-                                  .onChangeMapState(MapState.distribution);
-                            },
-                          ),
-                        ],
+                    return SingleChildScrollView(
+                      child: SafeArea(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              leading: viewModel.mapState == MapState.position
+                                  ? const Icon(
+                                      Icons.check,
+                                      color: ColorName.primary,
+                                    )
+                                  : const SizedBox(
+                                      width: 40,
+                                      height: 40,
+                                    ),
+                              title: const TitleMediumText(
+                                '蓋マップ',
+                              ),
+                              tileColor: Colors.transparent,
+                              onTap: () async {
+                                Navigator.of(modalContext).pop();
+                                ref
+                                    .read(manholeCardMapViewModelProvider(key))
+                                    .onChangeMapState(MapState.position);
+                              },
+                            ),
+                            ListTile(
+                              leading:
+                                  viewModel.mapState == MapState.distribution
+                                      ? const Icon(
+                                          Icons.check,
+                                          color: ColorName.primary,
+                                        )
+                                      : const SizedBox(
+                                          width: 40,
+                                          height: 40,
+                                        ),
+                              title: const TitleMediumText(
+                                '配布場所マップ',
+                              ),
+                              tileColor: Colors.transparent,
+                              onTap: () async {
+                                Navigator.of(modalContext).pop();
+                                ref
+                                    .read(manholeCardMapViewModelProvider(key))
+                                    .onChangeMapState(MapState.distribution);
+                              },
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -129,58 +140,65 @@ class ManholeCardMapView extends HookConsumerWidget {
             ),
           ],
         ),
-        body: Column(
+        body: Stack(
           children: [
-            Flexible(
-              child: GoogleMap(
-                initialCameraPosition: viewModel.initialCameraPosition,
-                onMapCreated: (controller) async {
-                  ref
-                      .read(manholeCardMapViewModelProvider(key))
-                      .setGoogleMapController(controller);
-                  ref
-                      .read(manholeCardMapViewModelProvider(key))
-                      .updateMyLocationEnabled();
-                },
-                mapToolbarEnabled: false,
-                mapType: MapType.normal,
-                rotateGesturesEnabled: false,
-                zoomControlsEnabled: false,
-                tiltGesturesEnabled: false,
-                myLocationEnabled: viewModel.myLocationEnabled,
-                myLocationButtonEnabled: false,
-                markers: viewModel.markersViewData.map(
-                  (viewData) {
-                    return Marker(
-                      markerId: MarkerId(
-                        viewData.id,
-                      ),
-                      icon: BitmapDescriptor.fromBytes(
-                        viewData.icon,
-                      ),
-                      position: LatLng(
-                        viewData.latitude,
-                        viewData.longitude,
-                      ),
-                      onTap: () {
-                        ref
-                            .read(manholeCardMapViewModelProvider(key))
-                            .onTapMarker(viewData.id);
-                      },
-                    );
-                  },
-                ).toSet(),
-                onCameraMove: (position) async {
-                  ref
-                      .read(manholeCardMapViewModelProvider(key))
-                      .onCameraMove(position);
-                },
-              ),
+            Container(
+              color: ColorName.screenBackground,
             ),
-            if (viewModel.isShowModal)
-              const SizedBox(
-                height: 300, // 適した値を取得するのが難しいので、仮値
-              ),
+            Column(
+              children: [
+                Flexible(
+                  child: GoogleMap(
+                    initialCameraPosition: viewModel.initialCameraPosition,
+                    onMapCreated: (controller) async {
+                      ref
+                          .read(manholeCardMapViewModelProvider(key))
+                          .setGoogleMapController(controller);
+                      ref
+                          .read(manholeCardMapViewModelProvider(key))
+                          .updateMyLocationEnabled();
+                    },
+                    mapToolbarEnabled: false,
+                    mapType: MapType.normal,
+                    rotateGesturesEnabled: false,
+                    zoomControlsEnabled: false,
+                    tiltGesturesEnabled: false,
+                    myLocationEnabled: viewModel.myLocationEnabled,
+                    myLocationButtonEnabled: false,
+                    markers: viewModel.markersViewData.map(
+                      (viewData) {
+                        return Marker(
+                          markerId: MarkerId(
+                            viewData.id,
+                          ),
+                          icon: BitmapDescriptor.fromBytes(
+                            viewData.icon,
+                          ),
+                          position: LatLng(
+                            viewData.latitude,
+                            viewData.longitude,
+                          ),
+                          onTap: () {
+                            ref
+                                .read(manholeCardMapViewModelProvider(key))
+                                .onTapMarker(viewData.id);
+                          },
+                        );
+                      },
+                    ).toSet(),
+                    onCameraMove: (position) async {
+                      ref
+                          .read(manholeCardMapViewModelProvider(key))
+                          .onCameraMove(position);
+                    },
+                  ),
+                ),
+                if (viewModel.isShowModal)
+                  const SizedBox(
+                    height: 300, // 適した値を取得するのが難しいので、仮値
+                  ),
+              ],
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -189,12 +207,12 @@ class ManholeCardMapView extends HookConsumerWidget {
                 .read(manholeCardMapViewModelProvider(key))
                 .onTapCurrentLocationButton();
           },
-          backgroundColor: ColorName.main,
-          foregroundColor: ColorName.background,
+          backgroundColor: ColorName.contentsBackground,
+          foregroundColor: ColorName.icon,
           shape: const CircleBorder(
             side: BorderSide(
-              color: ColorName.background,
-              width: 3,
+              color: ColorName.icon,
+              width: 2,
             ),
           ),
           elevation: 0.0,
@@ -244,210 +262,220 @@ class ManholeCardMapView extends HookConsumerWidget {
           isScrollControlled: true,
           context: context,
           builder: (context) {
-            return Container(
-              color: ColorName.main,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          width: 120,
-                          child: BodyLargeRegularText('名前'),
-                        ),
-                        Flexible(
-                          child: BodyLargeRegularText(
-                            viewData.name,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ...viewData.contacts.map(
-                    (contactViewData) {
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          16,
-                          0,
-                          16,
-                          16,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(
-                              width: 120,
-                              child: BodyLargeRegularText('配布場所'),
+            return SingleChildScrollView(
+              child: SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            width: 120,
+                            child: BodyLargeText(
+                              '名前',
                             ),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (contactViewData.nameUrl.isNotEmpty)
-                                    TextButton(
-                                      onPressed: () async {
-                                        final uri =
-                                            Uri.parse(contactViewData.nameUrl);
-                                        if (await canLaunchUrl(uri)) {
-                                          launchUrl(
-                                            uri,
-                                            mode: LaunchMode.inAppWebView,
-                                          );
-                                        }
-                                      },
-                                      child: BodyLargeRegularLinkText(
+                          ),
+                          Flexible(
+                            child: BodyLargeText(
+                              viewData.name,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ...viewData.contacts.map(
+                      (contactViewData) {
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            16,
+                            0,
+                            16,
+                            16,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                width: 120,
+                                child: BodyLargeText(
+                                  '配布場所',
+                                ),
+                              ),
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (contactViewData.nameUrl.isNotEmpty)
+                                      TextButton(
+                                        onPressed: () async {
+                                          final uri = Uri.parse(
+                                              contactViewData.nameUrl);
+                                          if (await canLaunchUrl(uri)) {
+                                            launchUrl(
+                                              uri,
+                                              mode: LaunchMode.inAppWebView,
+                                            );
+                                          }
+                                        },
+                                        child: BodyLargeLinkText(
+                                          contactViewData.name,
+                                        ),
+                                      ),
+                                    if (contactViewData.nameUrl.isEmpty)
+                                      BodyLargeText(
                                         contactViewData.name,
                                       ),
-                                    ),
-                                  if (contactViewData.nameUrl.isEmpty)
-                                    BodyLargeRegularText(
-                                      contactViewData.name,
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          width: 120,
-                          child: BodyLargeRegularText('在庫状況'),
-                        ),
-                        Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (viewData.distributionLinkText.isNotEmpty)
-                                TextButton(
-                                  onPressed: () async {
-                                    final uri =
-                                        Uri.parse(viewData.distributionLinkUrl);
-                                    if (await canLaunchUrl(uri)) {
-                                      launchUrl(
-                                        uri,
-                                        mode: LaunchMode.inAppWebView,
-                                      );
-                                    }
-                                  },
-                                  child: BodyLargeRegularLinkText(
-                                    viewData.distributionLinkText,
-                                  ),
+                                  ],
                                 ),
-                              BodyLargeRegularText(
-                                viewData.distributionText,
-                              ),
-                              BodyLargeRegularText(
-                                viewData.distributionOther,
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 48,
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final uri = Uri(
-                          scheme: 'https',
-                          host: 'www.google.com',
-                          path: '/maps/search/',
-                          queryParameters: {
-                            'api': '1',
-                            'query':
-                                '${viewData.latitude},${viewData.longitude}',
-                          },
                         );
-                        if (await canLaunchUrl(uri)) {
-                          launchUrl(
-                            uri,
-                            mode: LaunchMode.externalApplication,
-                          );
-                        }
                       },
-                      child: const TitleMediumRegularText(
-                        'Google マップで開く',
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            width: 120,
+                            child: BodyLargeText(
+                              '在庫状況',
+                            ),
+                          ),
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (viewData.distributionLinkText.isNotEmpty)
+                                  TextButton(
+                                    onPressed: () async {
+                                      final uri = Uri.parse(
+                                          viewData.distributionLinkUrl);
+                                      if (await canLaunchUrl(uri)) {
+                                        launchUrl(
+                                          uri,
+                                          mode: LaunchMode.inAppWebView,
+                                        );
+                                      }
+                                    },
+                                    child: BodyLargeLinkText(
+                                      viewData.distributionLinkText,
+                                    ),
+                                  ),
+                                BodyLargeText(
+                                  viewData.distributionText,
+                                ),
+                                BodyLargeText(
+                                  viewData.distributionOther,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                          child: OutlinedButton(
-                            onPressed: () async {
-                              await ref
-                                  .read(manholeCardMapViewModelProvider(key))
-                                  .onTapDetailButton(viewData.id);
+                    Container(
+                      height: 48,
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final uri = Uri(
+                            scheme: 'https',
+                            host: 'www.google.com',
+                            path: '/maps/search/',
+                            queryParameters: {
+                              'api': '1',
+                              'query':
+                                  '${viewData.latitude},${viewData.longitude}',
                             },
-                            child: const SizedBox(
-                              height: 48,
-                              child: Center(
-                                child: TitleMediumRegularText(
-                                  '詳細を見る',
+                          );
+                          if (await canLaunchUrl(uri)) {
+                            launchUrl(
+                              uri,
+                              mode: LaunchMode.externalApplication,
+                            );
+                          }
+                        },
+                        child: const TitleMediumText(
+                          'Google マップで開く',
+                          color: ColorName.contentsBackground,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                            child: OutlinedButton(
+                              onPressed: () async {
+                                await ref
+                                    .read(manholeCardMapViewModelProvider(key))
+                                    .onTapDetailButton(viewData.id);
+                              },
+                              child: const SizedBox(
+                                height: 48,
+                                child: Center(
+                                  child: TitleMediumText(
+                                    '詳細を見る',
+                                    color: ColorName.primary,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                          child: StreamBuilder(
-                            stream: viewData.alreadyGet,
-                            builder: (_, snapshot) {
-                              return OutlinedButton(
-                                onPressed: () async {
-                                  ref
-                                      .read(
-                                          manholeCardMapViewModelProvider(key))
-                                      .onTapAlreadyGetButton(
-                                        viewData.id,
-                                        snapshot.data ?? false,
-                                      );
-                                },
-                                child: SizedBox(
-                                  height: 48,
-                                  child: Center(
-                                    child: TitleMediumRegularText(
-                                      snapshot.data ?? false
-                                          ? '未取得に戻す'
-                                          : '取得済みにする',
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                            child: StreamBuilder(
+                              stream: viewData.alreadyGet,
+                              builder: (_, snapshot) {
+                                return OutlinedButton(
+                                  onPressed: () async {
+                                    ref
+                                        .read(manholeCardMapViewModelProvider(
+                                            key))
+                                        .onTapAlreadyGetButton(
+                                          viewData.id,
+                                          snapshot.data ?? false,
+                                        );
+                                  },
+                                  child: SizedBox(
+                                    height: 48,
+                                    child: Center(
+                                      child: TitleMediumText(
+                                        snapshot.data ?? false
+                                            ? '未取得に戻す'
+                                            : '取得済みにする',
+                                        color: ColorName.primary,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                ],
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                  ],
+                ),
               ),
             );
           },

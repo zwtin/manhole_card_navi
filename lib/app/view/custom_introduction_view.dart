@@ -30,7 +30,7 @@ class CustomIntroductionView extends HookConsumerWidget {
     return RouterWidget(
       key: key,
       child: Container(
-        color: ColorName.main,
+        color: ColorName.screenBackground,
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(
@@ -43,22 +43,40 @@ class CustomIntroductionView extends HookConsumerWidget {
               key: key,
               pages: [
                 PageViewModel(
-                  titleWidget: const TitleLargeBoldText('ようこそ！'),
-                  bodyWidget:
-                      const TitleMediumRegularText('マンホールカード集めをもっと楽しもう！'),
-                  image: Image.asset('assets/images/frame_green.png'),
+                  titleWidget: const TitleLargeText(
+                    'ようこそ！',
+                    fontWeight: FontWeight.bold,
+                  ),
+                  bodyWidget: const TitleMediumText(
+                    'マンホールカード集めをもっと楽しもう！',
+                  ),
+                  image: Image.asset(
+                    'assets/images/frame_green.png',
+                  ),
                 ),
                 PageViewModel(
-                  titleWidget: const TitleLargeBoldText('近所のマンホールを探そう！'),
-                  bodyWidget: const TitleMediumRegularText(
-                      '枠の色でカードが配布中かわかります。\n\n緑色: 配布中\n赤色: 配布停止\n黄色: 不明'),
-                  image: Image.asset('assets/images/frame_yellow.png'),
+                  titleWidget: const TitleLargeText(
+                    '近所のマンホールを探そう！',
+                    fontWeight: FontWeight.bold,
+                  ),
+                  bodyWidget: const TitleMediumText(
+                    '枠の色でカードが配布中かわかります。\n\n緑色: 配布中\n赤色: 配布停止\n黄色: 不明',
+                  ),
+                  image: Image.asset(
+                    'assets/images/frame_yellow.png',
+                  ),
                 ),
                 PageViewModel(
-                  titleWidget: const TitleLargeBoldText('取得済みカードをチェック！'),
-                  bodyWidget: const TitleMediumRegularText(
-                      'カードの色で取得済みかわかります。\n\nカラー: 取得済み\nグレー: 未取得'),
-                  image: Image.asset('assets/images/frame_red.png'),
+                  titleWidget: const TitleLargeText(
+                    '取得済みカードをチェック！',
+                    fontWeight: FontWeight.bold,
+                  ),
+                  bodyWidget: const TitleMediumText(
+                    'カードの色で取得済みかわかります。\n\nカラー: 取得済み\nグレー: 未取得',
+                  ),
+                  image: Image.asset(
+                    'assets/images/frame_red.png',
+                  ),
                 ),
               ],
               showNextButton: true,
@@ -67,13 +85,15 @@ class CustomIntroductionView extends HookConsumerWidget {
               done: const Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TitleMediumRegularText('OK!'),
+                  TitleMediumText(
+                    'OK!',
+                  ),
                   SizedBox(
                     width: 8,
                   ),
                   Icon(
                     Icons.check,
-                    color: Colors.white,
+                    color: ColorName.icon,
                   ),
                 ],
               ),
@@ -85,7 +105,9 @@ class CustomIntroductionView extends HookConsumerWidget {
               next: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const TitleMediumRegularText('次へ'),
+                  const TitleMediumText(
+                    '次へ',
+                  ),
                   const SizedBox(
                     width: 4,
                   ),
@@ -93,7 +115,7 @@ class CustomIntroductionView extends HookConsumerWidget {
                     scale: 0.75,
                     child: const Icon(
                       Icons.arrow_forward_ios,
-                      color: Colors.white,
+                      color: ColorName.icon,
                     ),
                   ),
                 ],
@@ -105,19 +127,21 @@ class CustomIntroductionView extends HookConsumerWidget {
                     scale: 0.75,
                     child: const Icon(
                       Icons.arrow_back_ios,
-                      color: Colors.white,
+                      color: ColorName.icon,
                     ),
                   ),
                   const SizedBox(
                     width: 4,
                   ),
-                  const TitleMediumRegularText('前へ'),
+                  const TitleMediumText(
+                    '前へ',
+                  ),
                 ],
               ),
-              globalBackgroundColor: ColorName.main,
+              globalBackgroundColor: ColorName.screenBackground,
               dotsDecorator: const DotsDecorator(
-                activeColor: ColorName.accent,
-                color: Colors.white,
+                activeColor: ColorName.primary,
+                color: ColorName.icon,
               ),
               animationDuration: 200,
             ),

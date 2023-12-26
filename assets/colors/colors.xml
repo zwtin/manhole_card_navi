@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="main">#90CAF9</color>
-    <color name="accent">#1565C0</color>
-    <color name="background">#795548</color>
+    <color name="primary">#FF9800</color>
+    <color name="secondary">#86B6F6</color>
+    <color name="attention">#e74c3c</color>
+    <color name="positiveText">#000000</color>
+    <color name="icon">#666666</color>
+    <color name="border">#AAAAAA</color>
+    <color name="contentsBackground">#FFFFFF</color>
+    <color name="screenBackground">#EEEEEE</color>
+
     <color name="distributing">#2ecc71</color>
     <color name="stopped">#e74c3c</color>
     <color name="notClear">#f1c40f</color>

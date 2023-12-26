@@ -1,588 +1,561 @@
 import 'package:flutter/material.dart';
 
-class DisplayLargeRegularText extends StatelessWidget {
-  const DisplayLargeRegularText(this.data, {super.key});
+class DisplayLargeText extends StatelessWidget {
+  const DisplayLargeText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.displayLarge?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class DisplayMediumRegularText extends StatelessWidget {
-  const DisplayMediumRegularText(this.data, {super.key});
+class DisplayMediumText extends StatelessWidget {
+  const DisplayMediumText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.displayMedium?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class DisplaySmallRegularText extends StatelessWidget {
-  const DisplaySmallRegularText(this.data, {super.key});
+class DisplaySmallText extends StatelessWidget {
+  const DisplaySmallText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.displaySmall?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class HeadlineLargeRegularText extends StatelessWidget {
-  const HeadlineLargeRegularText(this.data, {super.key});
+class HeadlineLargeText extends StatelessWidget {
+  const HeadlineLargeText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class HeadlineMediumRegularText extends StatelessWidget {
-  const HeadlineMediumRegularText(this.data, {super.key});
+class HeadlineMediumText extends StatelessWidget {
+  const HeadlineMediumText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class HeadlineSmallRegularText extends StatelessWidget {
-  const HeadlineSmallRegularText(this.data, {super.key});
+class HeadlineSmallText extends StatelessWidget {
+  const HeadlineSmallText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class TitleLargeRegularText extends StatelessWidget {
-  const TitleLargeRegularText(this.data, {super.key});
+class TitleLargeText extends StatelessWidget {
+  const TitleLargeText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class TitleMediumRegularText extends StatelessWidget {
-  const TitleMediumRegularText(this.data, {super.key});
+class TitleMediumText extends StatelessWidget {
+  const TitleMediumText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class TitleSmallRegularText extends StatelessWidget {
-  const TitleSmallRegularText(this.data, {super.key});
+class TitleSmallText extends StatelessWidget {
+  const TitleSmallText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class BodyLargeRegularText extends StatelessWidget {
-  const BodyLargeRegularText(this.data, {super.key});
+class BodyLargeText extends StatelessWidget {
+  const BodyLargeText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class BodyMediumRegularText extends StatelessWidget {
-  const BodyMediumRegularText(this.data, {super.key});
+class BodyMediumText extends StatelessWidget {
+  const BodyMediumText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class BodySmallRegularText extends StatelessWidget {
-  const BodySmallRegularText(this.data, {super.key});
+class BodySmallText extends StatelessWidget {
+  const BodySmallText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class LabelLargeRegularText extends StatelessWidget {
-  const LabelLargeRegularText(this.data, {super.key});
+class LabelLargeText extends StatelessWidget {
+  const LabelLargeText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class LabelMediumRegularText extends StatelessWidget {
-  const LabelMediumRegularText(this.data, {super.key});
+class LabelMediumText extends StatelessWidget {
+  const LabelMediumText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class LabelSmallRegularText extends StatelessWidget {
-  const LabelSmallRegularText(this.data, {super.key});
+class LabelSmallText extends StatelessWidget {
+  const LabelSmallText(
+    this.data, {
+    this.color,
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final Color? color;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            fontWeight: FontWeight.normal,
+            color: color,
+            fontWeight: fontWeight,
+            overflow: overflow,
           ),
     );
   }
 }
 
-class DisplayLargeBoldText extends StatelessWidget {
-  const DisplayLargeBoldText(this.data, {super.key});
+class TitleLargeLinkText extends StatelessWidget {
+  const TitleLargeLinkText(
+    this.data, {
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.displayLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-    );
-  }
-}
-
-class DisplayMediumBoldText extends StatelessWidget {
-  const DisplayMediumBoldText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.displayMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-    );
-  }
-}
-
-class DisplaySmallBoldText extends StatelessWidget {
-  const DisplaySmallBoldText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.displaySmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-    );
-  }
-}
-
-class HeadlineLargeBoldText extends StatelessWidget {
-  const HeadlineLargeBoldText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-    );
-  }
-}
-
-class HeadlineMediumBoldText extends StatelessWidget {
-  const HeadlineMediumBoldText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-    );
-  }
-}
-
-class HeadlineSmallBoldText extends StatelessWidget {
-  const HeadlineSmallBoldText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-    );
-  }
-}
-
-class TitleLargeBoldText extends StatelessWidget {
-  const TitleLargeBoldText(this.data, {super.key});
-
-  final String data;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+            color: Colors.blue,
+            fontWeight: fontWeight,
+            overflow: overflow,
+            decoration: TextDecoration.underline,
           ),
     );
   }
 }
 
-class TitleMediumBoldText extends StatelessWidget {
-  const TitleMediumBoldText(this.data, {super.key});
+class TitleMediumLinkText extends StatelessWidget {
+  const TitleMediumLinkText(
+    this.data, {
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            color: Colors.blue,
+            fontWeight: fontWeight,
+            overflow: overflow,
+            decoration: TextDecoration.underline,
           ),
     );
   }
 }
 
-class TitleSmallBoldText extends StatelessWidget {
-  const TitleSmallBoldText(this.data, {super.key});
+class TitleSmallLinkText extends StatelessWidget {
+  const TitleSmallLinkText(
+    this.data, {
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
+            color: Colors.blue,
+            fontWeight: fontWeight,
+            overflow: overflow,
+            decoration: TextDecoration.underline,
           ),
     );
   }
 }
 
-class BodyLargeBoldText extends StatelessWidget {
-  const BodyLargeBoldText(this.data, {super.key});
+class BodyLargeLinkText extends StatelessWidget {
+  const BodyLargeLinkText(
+    this.data, {
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+            color: Colors.blue,
+            fontWeight: fontWeight,
+            overflow: overflow,
+            decoration: TextDecoration.underline,
           ),
     );
   }
 }
 
-class BodyMediumBoldText extends StatelessWidget {
-  const BodyMediumBoldText(this.data, {super.key});
+class BodyMediumLinkText extends StatelessWidget {
+  const BodyMediumLinkText(
+    this.data, {
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            color: Colors.blue,
+            fontWeight: fontWeight,
+            overflow: overflow,
+            decoration: TextDecoration.underline,
           ),
     );
   }
 }
 
-class BodySmallBoldText extends StatelessWidget {
-  const BodySmallBoldText(this.data, {super.key});
+class BodySmallLinkText extends StatelessWidget {
+  const BodySmallLinkText(
+    this.data, {
+    this.fontWeight,
+    this.overflow,
+    super.key,
+  });
 
   final String data;
+  final FontWeight? fontWeight;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       data,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-    );
-  }
-}
-
-class LabelLargeBoldText extends StatelessWidget {
-  const LabelLargeBoldText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-    );
-  }
-}
-
-class LabelMediumBoldText extends StatelessWidget {
-  const LabelMediumBoldText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-    );
-  }
-}
-
-class LabelSmallBoldText extends StatelessWidget {
-  const LabelSmallBoldText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-    );
-  }
-}
-
-class TitleLargeRegularLinkText extends StatelessWidget {
-  const TitleLargeRegularLinkText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.normal,
-            decoration: TextDecoration.underline,
             color: Colors.blue,
-          ),
-    );
-  }
-}
-
-class TitleMediumRegularLinkText extends StatelessWidget {
-  const TitleMediumRegularLinkText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.normal,
+            fontWeight: fontWeight,
+            overflow: overflow,
             decoration: TextDecoration.underline,
-            color: Colors.blue,
-          ),
-    );
-  }
-}
-
-class TitleSmallRegularLinkText extends StatelessWidget {
-  const TitleSmallRegularLinkText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.normal,
-            decoration: TextDecoration.underline,
-            color: Colors.blue,
-          ),
-    );
-  }
-}
-
-class BodyLargeRegularLinkText extends StatelessWidget {
-  const BodyLargeRegularLinkText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.normal,
-            decoration: TextDecoration.underline,
-            color: Colors.blue,
-          ),
-    );
-  }
-}
-
-class BodyMediumRegularLinkText extends StatelessWidget {
-  const BodyMediumRegularLinkText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.normal,
-            decoration: TextDecoration.underline,
-            color: Colors.blue,
-          ),
-    );
-  }
-}
-
-class BodySmallRegularLinkText extends StatelessWidget {
-  const BodySmallRegularLinkText(this.data, {super.key});
-
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      data,
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontWeight: FontWeight.normal,
-            decoration: TextDecoration.underline,
-            color: Colors.blue,
           ),
     );
   }

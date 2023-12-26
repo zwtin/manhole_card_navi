@@ -37,16 +37,18 @@ class DetailView extends HookConsumerWidget {
       key: key,
       child: Scaffold(
         appBar: AppBar(
-          title: const TitleLargeBoldText(
+          title: const TitleLargeText(
             '詳細',
+            fontWeight: FontWeight.bold,
           ),
         ),
         body: Stack(
           children: [
             Container(
-              color: ColorName.main,
+              color: ColorName.screenBackground,
             ),
             LoadingOverlay(
+              color: ColorName.screenBackground,
               isLoading: viewModel.isLoading,
               child: viewModel.isLoading
                   ? Container()
@@ -88,10 +90,12 @@ class DetailView extends HookConsumerWidget {
                                     children: [
                                       const SizedBox(
                                         width: 120,
-                                        child: BodyLargeRegularText('名前'),
+                                        child: BodyLargeText(
+                                          '名前',
+                                        ),
                                       ),
                                       Flexible(
-                                        child: BodyLargeRegularText(
+                                        child: BodyLargeText(
                                           viewModel.viewData.name,
                                         ),
                                       ),
@@ -107,10 +111,12 @@ class DetailView extends HookConsumerWidget {
                                     children: [
                                       const SizedBox(
                                         width: 120,
-                                        child: BodyLargeRegularText('都道府県'),
+                                        child: BodyLargeText(
+                                          '都道府県',
+                                        ),
                                       ),
                                       Flexible(
-                                        child: BodyLargeRegularText(
+                                        child: BodyLargeText(
                                           viewModel.viewData.prefecture,
                                         ),
                                       ),
@@ -126,10 +132,12 @@ class DetailView extends HookConsumerWidget {
                                     children: [
                                       const SizedBox(
                                         width: 120,
-                                        child: BodyLargeRegularText('弾数'),
+                                        child: BodyLargeText(
+                                          '弾数',
+                                        ),
                                       ),
                                       Flexible(
-                                        child: BodyLargeRegularText(
+                                        child: BodyLargeText(
                                           viewModel.viewData.volume,
                                         ),
                                       ),
@@ -145,10 +153,12 @@ class DetailView extends HookConsumerWidget {
                                     children: [
                                       const SizedBox(
                                         width: 120,
-                                        child: BodyLargeRegularText('発行年月日'),
+                                        child: BodyLargeText(
+                                          '発行年月日',
+                                        ),
                                       ),
                                       Flexible(
-                                        child: BodyLargeRegularText(
+                                        child: BodyLargeText(
                                           viewModel.viewData.publicationDate,
                                         ),
                                       ),
@@ -170,7 +180,9 @@ class DetailView extends HookConsumerWidget {
                                         children: [
                                           const SizedBox(
                                             width: 120,
-                                            child: BodyLargeRegularText('配布場所'),
+                                            child: BodyLargeText(
+                                              '配布場所',
+                                            ),
                                           ),
                                           Flexible(
                                             child: Column(
@@ -194,32 +206,31 @@ class DetailView extends HookConsumerWidget {
                                                         );
                                                       }
                                                     },
-                                                    child:
-                                                        BodyLargeRegularLinkText(
+                                                    child: BodyLargeLinkText(
                                                       contactViewData.name,
                                                     ),
                                                   ),
                                                 if (contactViewData
                                                     .nameUrl.isEmpty)
-                                                  BodyLargeRegularText(
+                                                  BodyLargeText(
                                                     contactViewData.name,
                                                   ),
-                                                BodyLargeRegularText(
+                                                BodyLargeText(
                                                   contactViewData.address,
                                                 ),
-                                                BodyLargeRegularText(
+                                                BodyLargeText(
                                                   contactViewData.phoneNumber,
                                                 ),
-                                                BodyLargeRegularText(
+                                                BodyLargeText(
                                                   contactViewData.other,
                                                 ),
                                                 const SizedBox(
                                                   height: 8,
                                                 ),
-                                                BodyLargeRegularText(
+                                                BodyLargeText(
                                                   contactViewData.time,
                                                 ),
-                                                BodyLargeRegularText(
+                                                BodyLargeText(
                                                   contactViewData.timeOther,
                                                 ),
                                               ],
@@ -239,7 +250,7 @@ class DetailView extends HookConsumerWidget {
                                     children: [
                                       const SizedBox(
                                         width: 120,
-                                        child: BodyLargeRegularText('在庫状況'),
+                                        child: BodyLargeText('在庫状況'),
                                       ),
                                       Flexible(
                                         child: Column(
@@ -264,16 +275,16 @@ class DetailView extends HookConsumerWidget {
                                                     );
                                                   }
                                                 },
-                                                child: BodyLargeRegularLinkText(
+                                                child: BodyLargeLinkText(
                                                   viewModel.viewData
                                                       .distributionLinkText,
                                                 ),
                                               ),
-                                            BodyLargeRegularText(
+                                            BodyLargeText(
                                               viewModel
                                                   .viewData.distributionText,
                                             ),
-                                            BodyLargeRegularText(
+                                            BodyLargeText(
                                               viewModel
                                                   .viewData.distributionOther,
                                             ),
@@ -308,8 +319,10 @@ class DetailView extends HookConsumerWidget {
                                       child: const SizedBox(
                                         height: 48,
                                         child: Center(
-                                          child:
-                                              TitleMediumRegularText('マップで見る'),
+                                          child: TitleMediumText(
+                                            'マップで見る',
+                                            color: ColorName.contentsBackground,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -328,9 +341,10 @@ class DetailView extends HookConsumerWidget {
                                       child: SizedBox(
                                         height: 48,
                                         child: Center(
-                                          child: TitleMediumRegularText(
+                                          child: TitleMediumText(
                                             viewModel
                                                 .alreadyGetActionButtonTitle,
+                                            color: ColorName.contentsBackground,
                                           ),
                                         ),
                                       ),

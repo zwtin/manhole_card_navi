@@ -32,14 +32,15 @@ class TermsOfServiceView extends HookConsumerWidget {
       key: key,
       child: Scaffold(
         appBar: AppBar(
-          title: const TitleLargeBoldText(
+          title: const TitleLargeText(
             '利用規約',
+            fontWeight: FontWeight.bold,
           ),
         ),
         body: Stack(
           children: [
             Container(
-              color: ColorName.main,
+              color: ColorName.screenBackground,
             ),
             SingleChildScrollView(
               padding: EdgeInsets.only(

@@ -79,8 +79,9 @@ class BottomTabView extends HookConsumerWidget {
           },
           child: Scaffold(
             bottomNavigationBar: ConvexAppBar(
-              backgroundColor: ColorName.background,
-              activeColor: ColorName.main,
+              color: ColorName.icon,
+              backgroundColor: ColorName.contentsBackground,
+              activeColor: ColorName.primary,
               controller: controller,
               initialActiveIndex: viewModel.selectedIndex,
               onTap: (index) {

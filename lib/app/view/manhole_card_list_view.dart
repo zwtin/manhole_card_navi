@@ -43,8 +43,9 @@ class ManholeCardListView extends HookConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const TitleLargeBoldText(
+          title: const TitleLargeText(
             'リスト',
+            fontWeight: FontWeight.bold,
           ),
           actions: <Widget>[
             IconButton(
@@ -55,49 +56,59 @@ class ManholeCardListView extends HookConsumerWidget {
                 showModalBottomSheet<int>(
                   context: context,
                   builder: (modalContext) {
-                    return Container(
-                      color: ColorName.main,
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 30),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ListTile(
-                            leading: viewModel.listState == ListState.all
-                                ? const Icon(
-                                    Icons.check,
-                                    color: ColorName.accent,
-                                  )
-                                : const SizedBox(
-                                    width: 40,
-                                    height: 40,
-                                  ),
-                            title: const TitleMediumRegularText('すべて'),
-                            onTap: () async {
-                              Navigator.of(modalContext).pop();
-                              ref
-                                  .read(manholeCardListViewModelProvider(key))
-                                  .onChangeMapState(ListState.all);
-                            },
-                          ),
-                          ListTile(
-                            leading: viewModel.listState == ListState.alreadyGet
-                                ? const Icon(
-                                    Icons.check,
-                                    color: ColorName.accent,
-                                  )
-                                : const SizedBox(
-                                    width: 40,
-                                    height: 40,
-                                  ),
-                            title: const TitleMediumRegularText('取得済みのみ'),
-                            onTap: () async {
-                              Navigator.of(modalContext).pop();
-                              ref
-                                  .read(manholeCardListViewModelProvider(key))
-                                  .onChangeMapState(ListState.alreadyGet);
-                            },
-                          ),
-                        ],
+                    return SingleChildScrollView(
+                      child: SafeArea(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              leading: viewModel.listState == ListState.all
+                                  ? const Icon(
+                                      Icons.check,
+                                      color: ColorName.primary,
+                                    )
+                                  : const SizedBox(
+                                      width: 40,
+                                      height: 40,
+                                    ),
+                              title: const TitleMediumText(
+                                'すべて',
+                              ),
+                              tileColor: Colors.transparent,
+                              onTap: () async {
+                                Navigator.of(modalContext).pop();
+                                ref
+                                    .read(manholeCardListViewModelProvider(key))
+                                    .onChangeMapState(ListState.all);
+                              },
+                            ),
+                            ListTile(
+                              leading:
+                                  viewModel.listState == ListState.alreadyGet
+                                      ? const Icon(
+                                          Icons.check,
+                                          color: ColorName.primary,
+                                        )
+                                      : const SizedBox(
+                                          width: 40,
+                                          height: 40,
+                                        ),
+                              title: const TitleMediumText(
+                                '取得済みのみ',
+                              ),
+                              tileColor: Colors.transparent,
+                              onTap: () async {
+                                Navigator.of(modalContext).pop();
+                                ref
+                                    .read(manholeCardListViewModelProvider(key))
+                                    .onChangeMapState(ListState.alreadyGet);
+                              },
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -109,7 +120,7 @@ class ManholeCardListView extends HookConsumerWidget {
         body: Stack(
           children: [
             Container(
-              color: ColorName.main,
+              color: ColorName.screenBackground,
             ),
             viewModel.prefecturesViewData.where(
               (prefectureViewData) {
@@ -125,7 +136,10 @@ class ManholeCardListView extends HookConsumerWidget {
                       return const SizedBox(
                         height: 250,
                         child: Center(
-                            child: BodyMediumRegularText('表示できるデータがありません')),
+                          child: BodyMediumText(
+                            '表示できるデータがありません',
+                          ),
+                        ),
                       );
                     },
                     itemCount: 1,
@@ -144,7 +158,7 @@ class ManholeCardListView extends HookConsumerWidget {
                     itemBuilder: (itemContext, index) {
                       if (index == 0) {
                         return Container(
-                          color: Colors.white,
+                          color: ColorName.border,
                           height: 0.5,
                         );
                       }
@@ -187,7 +201,7 @@ class ManholeCardListView extends HookConsumerWidget {
                               decoration: const BoxDecoration(
                                 border: Border(
                                   top: BorderSide(
-                                    color: Colors.white,
+                                    color: ColorName.border,
                                     width: 0.5,
                                   ),
                                 ),
@@ -207,28 +221,27 @@ class ManholeCardListView extends HookConsumerWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
+                                        TitleMediumText(
                                           cardViewData.name,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.normal,
-                                              ),
+                                          fontWeight: FontWeight.bold,
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                        BodyMediumRegularText(cardViewData.id),
+                                        BodyMediumText(
+                                          cardViewData.id,
+                                        ),
                                         const Spacer(),
-                                        BodyMediumRegularText(
-                                            cardViewData.volume),
-                                        BodyMediumRegularText(
-                                            cardViewData.publicationDate),
+                                        BodyMediumText(
+                                          cardViewData.volume,
+                                        ),
+                                        BodyMediumText(
+                                          cardViewData.publicationDate,
+                                        ),
                                       ],
                                     ),
                                   ),
                                   const Icon(
                                     Icons.arrow_forward_ios,
-                                    color: Colors.white,
+                                    color: ColorName.icon,
                                   ),
                                 ],
                               ),
@@ -237,7 +250,9 @@ class ManholeCardListView extends HookConsumerWidget {
                         },
                       ).toList();
                       return ExpansionTile(
-                        title: TitleMediumRegularText(prefectureViewData.name),
+                        title: TitleMediumText(
+                          prefectureViewData.name,
+                        ),
                         initiallyExpanded: prefectureViewData.initiallyExpanded,
                         onExpansionChanged: (expanded) async {
                           await ref

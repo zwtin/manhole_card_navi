@@ -37,17 +37,18 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
         key: key,
         child: LoadingOverlay(
           isLoading: viewModel.isLoading,
-          color: Colors.grey,
+          color: ColorName.screenBackground,
           child: Scaffold(
             appBar: AppBar(
-              title: const TitleLargeBoldText(
+              title: const TitleLargeText(
                 '同意確認',
+                fontWeight: FontWeight.bold,
               ),
             ),
             body: Stack(
               children: [
                 Container(
-                  color: ColorName.main,
+                  color: ColorName.screenBackground,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -56,7 +57,7 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const TitleMediumRegularText(
+                        const TitleMediumText(
                           'アプリを使うためには、利用規約とプライバシーポリシーに同意する必要があります。',
                         ),
                         const Spacer(),
@@ -85,11 +86,11 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
                                                     key))
                                             .onTapTermsOfService();
                                       },
-                                      child: const TitleMediumRegularLinkText(
+                                      child: const TitleMediumLinkText(
                                         '利用規約',
                                       ),
                                     ),
-                                    const TitleMediumRegularText(
+                                    const TitleMediumText(
                                       'と',
                                     ),
                                     TextButton(
@@ -100,22 +101,15 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
                                                     key))
                                             .onTapPrivacyPolicy();
                                       },
-                                      child: const TitleMediumRegularLinkText(
+                                      child: const TitleMediumLinkText(
                                         'プライバシーポリシー',
                                       ),
                                     ),
                                   ],
                                 ),
-                                const Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 8,
-                                    ),
-                                    TitleMediumRegularText(
-                                      'に同意する',
-                                    ),
-                                  ],
-                                )
+                                const TitleMediumText(
+                                  'に同意する',
+                                ),
                               ],
                             ),
                           ],
@@ -133,8 +127,9 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
                                           key))
                                   .onTapAgreeButton();
                             },
-                            child: const TitleMediumRegularText(
+                            child: const TitleMediumText(
                               'はじめる',
+                              color: ColorName.contentsBackground,
                             ),
                           ),
                         ),

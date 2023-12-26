@@ -33,10 +33,10 @@ class CheckAppUpdateView extends HookConsumerWidget {
         key: key,
         child: LoadingOverlay(
           isLoading: viewModel.isLoading,
-          color: Colors.grey,
+          color: ColorName.screenBackground,
           child: Scaffold(
             body: Container(
-              color: ColorName.main,
+              color: ColorName.screenBackground,
             ),
           ),
         ),
