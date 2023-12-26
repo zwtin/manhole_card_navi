@@ -34,14 +34,14 @@ class ColorName {
   /// Color: #000000
   static const Color positiveText = Color(0xFF000000);
 
-  /// Color: #FF9800
-  static const Color primary = Color(0xFFFF9800);
+  /// Color: #86B6F6
+  static const Color primary = Color(0xFF86B6F6);
 
   /// Color: #EEEEEE
   static const Color screenBackground = Color(0xFFEEEEEE);
 
-  /// Color: #86B6F6
-  static const Color secondary = Color(0xFF86B6F6);
+  /// Color: #176B87
+  static const Color secondary = Color(0xFF176B87);
 
   /// Color: #e74c3c
   static const Color stopped = Color(0xFFE74C3C);
