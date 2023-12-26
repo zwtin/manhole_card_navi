@@ -6,7 +6,6 @@ import 'package:logger/logger.dart';
 
 import '/app/mapper/detail_card_view_data_mapper.dart';
 import '/app/provider/alert_provider.dart';
-import '/app/provider/party_animation_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view_data/detail_card_view_data.dart';
@@ -135,7 +134,6 @@ class DetailViewModel extends ChangeNotifier {
 
   Future<void> _saveCard() async {
     _alreadyGetCardUseCase.save(id: _cardId);
-    _ref.read(partyAnimationProvider.notifier).start();
   }
 
   Future<void> _deleteCard() async {

@@ -11,7 +11,6 @@ import '/app/mapper/map_modal_view_data_mapper.dart';
 import '/app/provider/alert_provider.dart';
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/map_modal_provider.dart';
-import '/app/provider/party_animation_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view/detail_view.dart';
@@ -368,7 +367,6 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   Future<void> _saveCard(String cardId) async {
     _alreadyGetCardUseCase.save(id: cardId);
-    _ref.read(partyAnimationProvider.notifier).start();
   }
 
   Future<void> _deleteCard(String cardId) async {
