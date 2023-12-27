@@ -86,9 +86,9 @@ class ManholeCardMapView extends HookConsumerWidget {
                           children: [
                             ListTile(
                               leading: viewModel.mapState == MapState.position
-                                  ? const Icon(
+                                  ? Icon(
                                       Icons.check,
-                                      color: ColorName.primary,
+                                      color: Theme.of(context).primaryColor,
                                     )
                                   : const SizedBox(
                                       width: 40,
@@ -108,9 +108,9 @@ class ManholeCardMapView extends HookConsumerWidget {
                             ListTile(
                               leading:
                                   viewModel.mapState == MapState.distribution
-                                      ? const Icon(
+                                      ? Icon(
                                           Icons.check,
-                                          color: ColorName.primary,
+                                          color: Theme.of(context).primaryColor,
                                         )
                                       : const SizedBox(
                                           width: 40,
@@ -208,10 +208,10 @@ class ManholeCardMapView extends HookConsumerWidget {
                 .onTapCurrentLocationButton();
           },
           backgroundColor: ColorName.contentsBackground,
-          foregroundColor: ColorName.icon,
-          shape: const CircleBorder(
+          foregroundColor: Theme.of(context).iconTheme.color,
+          shape: CircleBorder(
             side: BorderSide(
-              color: ColorName.icon,
+              color: Theme.of(context).iconTheme.color ?? Colors.transparent,
               width: 2,
             ),
           ),
@@ -425,12 +425,12 @@ class ManholeCardMapView extends HookConsumerWidget {
                                     .read(manholeCardMapViewModelProvider(key))
                                     .onTapDetailButton(viewData.id);
                               },
-                              child: const SizedBox(
+                              child: SizedBox(
                                 height: 48,
                                 child: Center(
                                   child: TitleMediumText(
                                     '詳細を見る',
-                                    color: ColorName.primary,
+                                    color: Theme.of(context).primaryColor,
                                   ),
                                 ),
                               ),
@@ -460,7 +460,7 @@ class ManholeCardMapView extends HookConsumerWidget {
                                         snapshot.data ?? false
                                             ? '未取得に戻す'
                                             : '取得済みにする',
-                                        color: ColorName.primary,
+                                        color: Theme.of(context).primaryColor,
                                       ),
                                     ),
                                   ),

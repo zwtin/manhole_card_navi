@@ -93,7 +93,6 @@ class CustomIntroductionView extends HookConsumerWidget {
                   ),
                   Icon(
                     Icons.check,
-                    color: ColorName.icon,
                   ),
                 ],
               ),
@@ -115,7 +114,6 @@ class CustomIntroductionView extends HookConsumerWidget {
                     scale: 0.75,
                     child: const Icon(
                       Icons.arrow_forward_ios,
-                      color: ColorName.icon,
                     ),
                   ),
                 ],
@@ -127,7 +125,6 @@ class CustomIntroductionView extends HookConsumerWidget {
                     scale: 0.75,
                     child: const Icon(
                       Icons.arrow_back_ios,
-                      color: ColorName.icon,
                     ),
                   ),
                   const SizedBox(
@@ -139,9 +136,8 @@ class CustomIntroductionView extends HookConsumerWidget {
                 ],
               ),
               globalBackgroundColor: ColorName.screenBackground,
-              dotsDecorator: const DotsDecorator(
-                activeColor: ColorName.primary,
-                color: ColorName.icon,
+              dotsDecorator: DotsDecorator(
+                color: Theme.of(context).iconTheme.color ?? Colors.grey,
               ),
               animationDuration: 200,
             ),

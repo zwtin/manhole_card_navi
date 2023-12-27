@@ -63,9 +63,9 @@ class ManholeCardListView extends HookConsumerWidget {
                           children: [
                             ListTile(
                               leading: viewModel.listState == ListState.all
-                                  ? const Icon(
+                                  ? Icon(
                                       Icons.check,
-                                      color: ColorName.primary,
+                                      color: Theme.of(context).primaryColor,
                                     )
                                   : const SizedBox(
                                       width: 40,
@@ -85,9 +85,9 @@ class ManholeCardListView extends HookConsumerWidget {
                             ListTile(
                               leading:
                                   viewModel.listState == ListState.alreadyGet
-                                      ? const Icon(
+                                      ? Icon(
                                           Icons.check,
-                                          color: ColorName.primary,
+                                          color: Theme.of(context).primaryColor,
                                         )
                                       : const SizedBox(
                                           width: 40,
@@ -160,7 +160,7 @@ class ManholeCardListView extends HookConsumerWidget {
                     itemBuilder: (itemContext, index) {
                       if (index == 0) {
                         return Container(
-                          color: ColorName.border,
+                          color: Theme.of(context).dividerColor,
                           height: 0.5,
                         );
                       }
@@ -200,10 +200,10 @@ class ManholeCardListView extends HookConsumerWidget {
                                   .onTap(cardViewData.id);
                             },
                             child: Container(
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 border: Border(
                                   top: BorderSide(
-                                    color: ColorName.border,
+                                    color: Theme.of(context).dividerColor,
                                     width: 0.5,
                                   ),
                                 ),
@@ -243,7 +243,6 @@ class ManholeCardListView extends HookConsumerWidget {
                                     ),
                                     const Icon(
                                       Icons.arrow_forward_ios,
-                                      color: ColorName.icon,
                                     ),
                                   ],
                                 ),

@@ -62,7 +62,7 @@ class SettingView extends HookConsumerWidget {
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: ColorName.border,
+                            color: Theme.of(context).dividerColor,
                           ),
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -77,7 +77,6 @@ class SettingView extends HookConsumerWidget {
                                 tileColor: ColorName.contentsBackground,
                                 trailing: const Icon(
                                   Icons.arrow_forward_ios,
-                                  color: ColorName.icon,
                                 ),
                                 onTap: () async {
                                   await ref
@@ -91,7 +90,7 @@ class SettingView extends HookConsumerWidget {
                                 ),
                               ),
                               Container(
-                                color: ColorName.border,
+                                color: Theme.of(context).dividerColor,
                                 height: 1,
                               ),
                               ListTile(
@@ -101,7 +100,6 @@ class SettingView extends HookConsumerWidget {
                                 tileColor: ColorName.contentsBackground,
                                 trailing: const Icon(
                                   Icons.arrow_forward_ios,
-                                  color: ColorName.icon,
                                 ),
                                 onTap: () async {
                                   await ref
@@ -110,7 +108,7 @@ class SettingView extends HookConsumerWidget {
                                 },
                               ),
                               Container(
-                                color: ColorName.border,
+                                color: Theme.of(context).dividerColor,
                                 height: 1,
                               ),
                               ListTile(
@@ -120,7 +118,6 @@ class SettingView extends HookConsumerWidget {
                                 tileColor: ColorName.contentsBackground,
                                 trailing: const Icon(
                                   Icons.arrow_forward_ios,
-                                  color: ColorName.icon,
                                 ),
                                 onTap: () async {
                                   await ref

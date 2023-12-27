@@ -42,81 +42,88 @@ class App extends HookConsumerWidget {
       },
     );
 
-    final originalTheme = Theme.of(context);
-
     return MaterialApp(
-      theme: originalTheme.copyWith(
-        appBarTheme: originalTheme.appBarTheme.copyWith(
-          color: ColorName.contentsBackground,
-          elevation: 0,
-          iconTheme: const IconThemeData(
-            color: ColorName.icon,
-          ),
+      theme: Theme.of(context).copyWith(
+        appBarTheme: Theme.of(context).appBarTheme.copyWith(
+              color: ColorName.contentsBackground,
+              elevation: 0,
+              iconTheme: const IconThemeData(
+                color: ColorName.icon,
+              ),
+            ),
+        textTheme: Theme.of(context).textTheme.copyWith(
+              displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    color: ColorName.positiveText,
+                  ),
+              displayMedium:
+                  Theme.of(context).textTheme.displayMedium?.copyWith(
+                        color: ColorName.positiveText,
+                      ),
+              displaySmall: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: ColorName.positiveText,
+                  ),
+              headlineLarge:
+                  Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        color: ColorName.positiveText,
+                      ),
+              headlineMedium:
+                  Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: ColorName.positiveText,
+                      ),
+              headlineSmall:
+                  Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: ColorName.positiveText,
+                      ),
+              titleLarge: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: ColorName.positiveText,
+                  ),
+              titleMedium: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: ColorName.positiveText,
+                  ),
+              titleSmall: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: ColorName.positiveText,
+                  ),
+              bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: ColorName.positiveText,
+                  ),
+              bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: ColorName.positiveText,
+                  ),
+              bodySmall: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: ColorName.positiveText,
+                  ),
+              labelLarge: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: ColorName.positiveText,
+                  ),
+              labelMedium: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: ColorName.positiveText,
+                  ),
+              labelSmall: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: ColorName.positiveText,
+                  ),
+            ),
+        primaryColor: ColorName.primary,
+        iconTheme: const IconThemeData(
+          color: ColorName.icon,
         ),
-        // textTheme: originalTheme.textTheme.copyWith(
-        // displayLarge: originalTheme.textTheme.displayLarge?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // displayMedium: originalTheme.textTheme.displayMedium?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // displaySmall: originalTheme.textTheme.displaySmall?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // headlineLarge: originalTheme.textTheme.headlineLarge?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // headlineMedium: originalTheme.textTheme.headlineMedium?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // headlineSmall: originalTheme.textTheme.headlineSmall?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // titleLarge: originalTheme.textTheme.titleLarge?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // titleMedium: originalTheme.textTheme.titleMedium?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // titleSmall: originalTheme.textTheme.titleSmall?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // bodyLarge: originalTheme.textTheme.bodyLarge?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // bodyMedium: originalTheme.textTheme.bodyMedium?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // bodySmall: originalTheme.textTheme.bodySmall?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // labelLarge: originalTheme.textTheme.labelLarge?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // labelMedium: originalTheme.textTheme.labelMedium?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // labelSmall: originalTheme.textTheme.labelSmall?.copyWith(
-        //   color: Colors.white,
-        // ),
-        // ),
         cardColor: ColorName.screenBackground,
-        listTileTheme: originalTheme.listTileTheme.copyWith(
-          tileColor: ColorName.contentsBackground,
-        ),
+        listTileTheme: Theme.of(context).listTileTheme.copyWith(
+              tileColor: ColorName.contentsBackground,
+            ),
         dividerTheme: const DividerThemeData(
           color: ColorName.border,
           space: 0.0,
           indent: 0.0,
           thickness: 0.5,
         ),
-        expansionTileTheme: originalTheme.expansionTileTheme.copyWith(
-          backgroundColor: Colors.white,
-          iconColor: Colors.black,
-          collapsedIconColor: Colors.black,
-          shape: const Border(),
-          collapsedShape: const Border(),
-        ),
+        dividerColor: ColorName.border,
+        expansionTileTheme: Theme.of(context).expansionTileTheme.copyWith(
+              backgroundColor: ColorName.contentsBackground,
+              iconColor: ColorName.icon,
+              collapsedIconColor: ColorName.icon,
+              shape: const Border(),
+              collapsedShape: const Border(),
+            ),
         checkboxTheme: CheckboxThemeData(
           fillColor: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.selected)) {
@@ -130,9 +137,9 @@ class App extends HookConsumerWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            textStyle: originalTheme.textTheme.titleLarge?.copyWith(
-              color: Colors.white,
-            ),
+            textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: ColorName.contentsBackground,
+                ),
             backgroundColor: ColorName.primary,
             elevation: 0.0,
           ),
