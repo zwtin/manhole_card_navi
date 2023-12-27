@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:manhole_card_navi/app/widget/custom_text.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '/app/provider/alert_provider.dart';
+import '/app/widget/custom_text.dart';
 
 class AlertWidget extends HookConsumerWidget {
   const AlertWidget({

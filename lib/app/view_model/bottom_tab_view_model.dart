@@ -3,13 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/app/provider/party_animation_provider.dart';
-import 'package:manhole_card_navi/infra/query_service_impl/already_get_card_query_service_impl.dart';
-import 'package:manhole_card_navi/use_case/dto/already_get_card_dto.dart';
-import 'package:manhole_card_navi/use_case/query_service/already_get_card_query_service.dart';
 
+import '/app/provider/party_animation_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
+import '/domain/entity/result.dart';
+import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
+import '/use_case/dto/already_get_card_dto.dart';
+import '/use_case/query_service/already_get_card_query_service.dart';
 
 final bottomTabViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<BottomTabViewModel, Key?>(
@@ -44,6 +45,7 @@ class BottomTabViewModel extends ChangeNotifier {
   Future<void> onLoad() async {
     _logger.d('BottomTabViewModel');
     _ref.read(tabKeyStorageProvider).setBottomTabKey(_key);
+    await _initAlreadyGetCardDTOList();
     await _listenAlreadyGetCard();
   }
 
@@ -65,12 +67,25 @@ class BottomTabViewModel extends ChangeNotifier {
   Future<void> _listenAlreadyGetCard() async {
     _alreadyGetCardStreamSubscription =
         _alreadyGetCardQueryService.getStream().listen((dtoList) async {
+      if (_alreadyGetCardDTOList.length == dtoList.length) {
+        return;
+      }
       if (_alreadyGetCardDTOList.length < dtoList.length) {
         _ref.read(partyAnimationProvider.notifier).start();
       }
       _alreadyGetCardDTOList.clear();
       _alreadyGetCardDTOList.addAll(dtoList);
     });
+  }
+
+  Future<void> _initAlreadyGetCardDTOList() async {
+    final result = await _alreadyGetCardQueryService.get();
+    if (result is Failure) {
+      return;
+    }
+    final dtoList = (result as Success<List<AlreadyGetCardDTO>>).value;
+    _alreadyGetCardDTOList.clear();
+    _alreadyGetCardDTOList.addAll(dtoList);
   }
 
   @override

@@ -2,6 +2,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
+import '/domain/entity/result.dart';
 import '/temporary_provider.dart';
 import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/query_service/already_get_card_query_service.dart';
@@ -24,6 +25,24 @@ class AlreadyGetCardQueryServiceImpl implements AlreadyGetCardQueryService {
 
   final _logger = Logger();
   final StreamingSharedPreferences _instance;
+
+  @override
+  Future<Result<List<AlreadyGetCardDTO>>> get() async {
+    return Result.success(
+      _instance
+          .getStringList(
+            'already_get_cards',
+            defaultValue: [],
+          )
+          .getValue()
+          .map(
+            (cardId) {
+              return AlreadyGetCardDTO(cardId: cardId);
+            },
+          )
+          .toList(),
+    );
+  }
 
   @override
   Stream<List<AlreadyGetCardDTO>> getStream() {
