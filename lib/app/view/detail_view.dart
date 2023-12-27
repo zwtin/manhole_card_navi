@@ -7,7 +7,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '/app/view_model/detail_view_model.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
-import '/gen/colors.gen.dart';
 
 class DetailView extends HookConsumerWidget {
   const DetailView({
@@ -316,12 +315,14 @@ class DetailView extends HookConsumerWidget {
                                             .read(detailViewModelProvider(key))
                                             .onTapCheckWithMapButton();
                                       },
-                                      child: const SizedBox(
+                                      child: SizedBox(
                                         height: 48,
                                         child: Center(
                                           child: TitleMediumText(
                                             'マップで見る',
-                                            color: ColorName.contentsBackground,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surface,
                                           ),
                                         ),
                                       ),
@@ -344,7 +345,9 @@ class DetailView extends HookConsumerWidget {
                                           child: TitleMediumText(
                                             viewModel
                                                 .alreadyGetActionButtonTitle,
-                                            color: ColorName.contentsBackground,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surface,
                                           ),
                                         ),
                                       ),

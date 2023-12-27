@@ -12,7 +12,6 @@ import '/app/view_data/map_modal_card_view_data.dart';
 import '/app/view_model/manhole_card_map_view_model.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
-import '/gen/colors.gen.dart';
 
 class ManholeCardMapView extends HookConsumerWidget {
   const ManholeCardMapView({
@@ -207,7 +206,7 @@ class ManholeCardMapView extends HookConsumerWidget {
                 .read(manholeCardMapViewModelProvider(key))
                 .onTapCurrentLocationButton();
           },
-          backgroundColor: ColorName.contentsBackground,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           foregroundColor: Theme.of(context).iconTheme.color,
           shape: CircleBorder(
             side: BorderSide(
@@ -405,9 +404,9 @@ class ManholeCardMapView extends HookConsumerWidget {
                             );
                           }
                         },
-                        child: const TitleMediumText(
+                        child: TitleMediumText(
                           'Google マップで開く',
-                          color: ColorName.contentsBackground,
+                          color: Theme.of(context).colorScheme.surface,
                         ),
                       ),
                     ),

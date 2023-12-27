@@ -8,7 +8,6 @@ import '/app/widget/alert_widget.dart';
 import '/app/widget/custom_check_box.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
-import '/gen/colors.gen.dart';
 
 class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
   const CheckTermsOfServiceUpdateView({
@@ -130,9 +129,10 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
                                                 key))
                                         .onTapAgreeButton();
                                   },
-                                  child: const TitleMediumText(
+                                  child: TitleMediumText(
                                     'はじめる',
-                                    color: ColorName.contentsBackground,
+                                    color:
+                                        Theme.of(context).colorScheme.surface,
                                   ),
                                 ),
                               ),

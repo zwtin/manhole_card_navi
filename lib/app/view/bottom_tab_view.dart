@@ -11,7 +11,6 @@ import '/app/view/setting_view.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/widget/alert_widget.dart';
 import '/app/widget/router_widget.dart';
-import '/gen/colors.gen.dart';
 
 class BottomTabView extends HookConsumerWidget {
   BottomTabView({
@@ -80,7 +79,7 @@ class BottomTabView extends HookConsumerWidget {
           child: Scaffold(
             bottomNavigationBar: ConvexAppBar(
               color: Theme.of(context).iconTheme.color,
-              backgroundColor: ColorName.contentsBackground,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               activeColor: Theme.of(context).primaryColor,
               controller: controller,
               initialActiveIndex: viewModel.selectedIndex,

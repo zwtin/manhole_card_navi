@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:manhole_card_navi/gen/colors.gen.dart';
 
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
@@ -74,7 +73,6 @@ class SettingView extends HookConsumerWidget {
                                 title: const TitleMediumText(
                                   '利用規約',
                                 ),
-                                tileColor: ColorName.contentsBackground,
                                 trailing: const Icon(
                                   Icons.arrow_forward_ios,
                                 ),
@@ -97,7 +95,6 @@ class SettingView extends HookConsumerWidget {
                                 title: const TitleMediumText(
                                   'プライバシーポリシー',
                                 ),
-                                tileColor: ColorName.contentsBackground,
                                 trailing: const Icon(
                                   Icons.arrow_forward_ios,
                                 ),
@@ -115,7 +112,6 @@ class SettingView extends HookConsumerWidget {
                                 title: const TitleMediumText(
                                   'ライセンス',
                                 ),
-                                tileColor: ColorName.contentsBackground,
                                 trailing: const Icon(
                                   Icons.arrow_forward_ios,
                                 ),

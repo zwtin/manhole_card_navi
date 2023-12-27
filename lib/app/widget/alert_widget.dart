@@ -4,7 +4,6 @@ import 'package:manhole_card_navi/app/widget/custom_text.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '/app/provider/alert_provider.dart';
-import '/gen/colors.gen.dart';
 
 class AlertWidget extends HookConsumerWidget {
   const AlertWidget({
@@ -36,17 +35,17 @@ class AlertWidget extends HookConsumerWidget {
                   await cancelButtonViewData.action();
                 },
                 color: Colors.transparent,
-                highlightColor: ColorName.primary.withOpacity(0.3),
-                splashColor: ColorName.primary.withOpacity(0.3),
-                border: const Border.fromBorderSide(
+                highlightColor: Theme.of(context).primaryColor.withOpacity(0.3),
+                splashColor: Theme.of(context).primaryColor.withOpacity(0.3),
+                border: Border.fromBorderSide(
                   BorderSide(
-                    color: ColorName.primary,
+                    color: Theme.of(context).primaryColor,
                     width: 2,
                   ),
                 ),
                 child: TitleMediumText(
                   cancelButtonViewData.title,
-                  color: ColorName.primary,
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
             );
@@ -60,12 +59,14 @@ class AlertWidget extends HookConsumerWidget {
                   ref.read(alertProvider.notifier).dismiss();
                   await okButtonViewData.action();
                 },
-                color: ColorName.primary,
-                highlightColor: ColorName.contentsBackground.withOpacity(0.3),
-                splashColor: ColorName.contentsBackground.withOpacity(0.3),
+                color: Theme.of(context).primaryColor,
+                highlightColor:
+                    Theme.of(context).colorScheme.surface.withOpacity(0.3),
+                splashColor:
+                    Theme.of(context).colorScheme.surface.withOpacity(0.3),
                 child: TitleMediumText(
                   okButtonViewData.title,
-                  color: ColorName.contentsBackground,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
               ),
             );
