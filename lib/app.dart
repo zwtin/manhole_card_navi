@@ -45,115 +45,115 @@ class App extends HookConsumerWidget {
     return MaterialApp(
       theme: Theme.of(context).copyWith(
         appBarTheme: Theme.of(context).appBarTheme.copyWith(
-              color: ColorName.contentsBackground,
+              color: ColorName.lightContentsBackground,
               elevation: 0,
               iconTheme: const IconThemeData(
-                color: ColorName.icon,
+                color: ColorName.lightIcon,
               ),
             ),
         textTheme: Theme.of(context).textTheme.copyWith(
               displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(
-                    color: ColorName.positiveText,
+                    color: ColorName.lightPositiveText,
                   ),
               displayMedium:
                   Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: ColorName.positiveText,
+                        color: ColorName.lightPositiveText,
                       ),
               displaySmall: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    color: ColorName.positiveText,
+                    color: ColorName.lightPositiveText,
                   ),
               headlineLarge:
                   Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        color: ColorName.positiveText,
+                        color: ColorName.lightPositiveText,
                       ),
               headlineMedium:
                   Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: ColorName.positiveText,
+                        color: ColorName.lightPositiveText,
                       ),
               headlineSmall:
                   Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: ColorName.positiveText,
+                        color: ColorName.lightPositiveText,
                       ),
               titleLarge: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: ColorName.positiveText,
+                    color: ColorName.lightPositiveText,
                   ),
               titleMedium: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: ColorName.positiveText,
+                    color: ColorName.lightPositiveText,
                   ),
               titleSmall: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: ColorName.positiveText,
+                    color: ColorName.lightPositiveText,
                   ),
               bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: ColorName.positiveText,
+                    color: ColorName.lightPositiveText,
                   ),
               bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: ColorName.positiveText,
+                    color: ColorName.lightPositiveText,
                   ),
               bodySmall: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: ColorName.positiveText,
+                    color: ColorName.lightPositiveText,
                   ),
               labelLarge: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: ColorName.positiveText,
+                    color: ColorName.lightPositiveText,
                   ),
               labelMedium: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: ColorName.positiveText,
+                    color: ColorName.lightPositiveText,
                   ),
               labelSmall: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: ColorName.positiveText,
+                    color: ColorName.lightPositiveText,
                   ),
             ),
-        primaryColor: ColorName.primary,
+        primaryColor: ColorName.lightPrimary,
         colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: ColorName.primary,
-              background: ColorName.screenBackground,
-              surface: ColorName.contentsBackground,
+              primary: ColorName.lightPrimary,
+              background: ColorName.lightScreenBackground,
+              surface: ColorName.lightContentsBackground,
             ),
         iconTheme: const IconThemeData(
-          color: ColorName.icon,
+          color: ColorName.lightIcon,
         ),
-        cardColor: ColorName.screenBackground,
+        cardColor: ColorName.lightScreenBackground,
         listTileTheme: Theme.of(context).listTileTheme.copyWith(
-              tileColor: ColorName.contentsBackground,
+              tileColor: ColorName.lightContentsBackground,
             ),
         dividerTheme: const DividerThemeData(
-          color: ColorName.border,
+          color: ColorName.lightBorder,
           space: 0.0,
           indent: 0.0,
           thickness: 0.5,
         ),
-        dividerColor: ColorName.border,
+        dividerColor: ColorName.lightBorder,
         expansionTileTheme: Theme.of(context).expansionTileTheme.copyWith(
-              backgroundColor: ColorName.contentsBackground,
-              iconColor: ColorName.icon,
-              collapsedIconColor: ColorName.icon,
+              backgroundColor: ColorName.lightContentsBackground,
+              iconColor: ColorName.lightIcon,
+              collapsedIconColor: ColorName.lightIcon,
               shape: const Border(),
               collapsedShape: const Border(),
             ),
         checkboxTheme: CheckboxThemeData(
           fillColor: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.selected)) {
-              return ColorName.icon;
+              return ColorName.lightIcon;
             }
             return null;
           }),
           side: const BorderSide(
-            color: ColorName.icon,
+            color: ColorName.lightIcon,
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: ColorName.contentsBackground,
+                  color: ColorName.lightContentsBackground,
                 ),
-            backgroundColor: ColorName.primary,
+            backgroundColor: ColorName.lightPrimary,
             elevation: 0.0,
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-            foregroundColor: ColorName.primary,
+            foregroundColor: ColorName.lightPrimary,
             side: const BorderSide(
-              color: ColorName.primary,
+              color: ColorName.lightPrimary,
               width: 2,
             ),
           ),
@@ -163,20 +163,155 @@ class App extends HookConsumerWidget {
             padding: EdgeInsets.zero,
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            foregroundColor: ColorName.icon,
+            foregroundColor: ColorName.lightIcon,
           ),
         ),
         bottomSheetTheme: const BottomSheetThemeData(
-          backgroundColor: ColorName.screenBackground,
+          backgroundColor: ColorName.lightScreenBackground,
           showDragHandle: true,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
           ),
         ),
         progressIndicatorTheme: const ProgressIndicatorThemeData(
-          color: ColorName.primary,
+          color: ColorName.lightPrimary,
         ),
       ),
+      darkTheme: Theme.of(context).copyWith(
+        appBarTheme: Theme.of(context).appBarTheme.copyWith(
+              color: ColorName.darkContentsBackground,
+              elevation: 0,
+              iconTheme: const IconThemeData(
+                color: ColorName.darkIcon,
+              ),
+            ),
+        textTheme: Theme.of(context).textTheme.copyWith(
+              displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    color: ColorName.darkPositiveText,
+                  ),
+              displayMedium:
+                  Theme.of(context).textTheme.displayMedium?.copyWith(
+                        color: ColorName.darkPositiveText,
+                      ),
+              displaySmall: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: ColorName.darkPositiveText,
+                  ),
+              headlineLarge:
+                  Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        color: ColorName.darkPositiveText,
+                      ),
+              headlineMedium:
+                  Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: ColorName.darkPositiveText,
+                      ),
+              headlineSmall:
+                  Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: ColorName.darkPositiveText,
+                      ),
+              titleLarge: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: ColorName.darkPositiveText,
+                  ),
+              titleMedium: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: ColorName.darkPositiveText,
+                  ),
+              titleSmall: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: ColorName.darkPositiveText,
+                  ),
+              bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: ColorName.darkPositiveText,
+                  ),
+              bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: ColorName.darkPositiveText,
+                  ),
+              bodySmall: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: ColorName.darkPositiveText,
+                  ),
+              labelLarge: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: ColorName.darkPositiveText,
+                  ),
+              labelMedium: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: ColorName.darkPositiveText,
+                  ),
+              labelSmall: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: ColorName.darkPositiveText,
+                  ),
+            ),
+        primaryColor: ColorName.darkPrimary,
+        colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: ColorName.darkPrimary,
+              background: ColorName.darkScreenBackground,
+              surface: ColorName.darkContentsBackground,
+            ),
+        iconTheme: const IconThemeData(
+          color: ColorName.darkIcon,
+        ),
+        cardColor: ColorName.darkScreenBackground,
+        listTileTheme: Theme.of(context).listTileTheme.copyWith(
+              tileColor: ColorName.darkContentsBackground,
+            ),
+        dividerTheme: const DividerThemeData(
+          color: ColorName.darkBorder,
+          space: 0.0,
+          indent: 0.0,
+          thickness: 0.5,
+        ),
+        dividerColor: ColorName.darkBorder,
+        expansionTileTheme: Theme.of(context).expansionTileTheme.copyWith(
+              backgroundColor: ColorName.darkContentsBackground,
+              iconColor: ColorName.darkIcon,
+              collapsedIconColor: ColorName.darkIcon,
+              shape: const Border(),
+              collapsedShape: const Border(),
+            ),
+        checkboxTheme: CheckboxThemeData(
+          fillColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.selected)) {
+              return ColorName.darkIcon;
+            }
+            return null;
+          }),
+          side: const BorderSide(
+            color: ColorName.darkIcon,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: ColorName.darkContentsBackground,
+                ),
+            backgroundColor: ColorName.darkPrimary,
+            elevation: 0.0,
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: ColorName.darkPrimary,
+            side: const BorderSide(
+              color: ColorName.darkPrimary,
+              width: 2,
+            ),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            foregroundColor: ColorName.darkIcon,
+          ),
+        ),
+        bottomSheetTheme: const BottomSheetThemeData(
+          backgroundColor: ColorName.darkScreenBackground,
+          showDragHandle: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+          ),
+        ),
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: ColorName.darkPrimary,
+        ),
+      ),
+      themeMode: ThemeMode.system,
       home: CheckAppUpdateView(
         key: UniqueKey(),
       ),

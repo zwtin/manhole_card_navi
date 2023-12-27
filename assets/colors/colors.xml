@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#86B6F6</color>
-    <color name="secondary">#176B87</color>
-    <color name="attention">#e74c3c</color>
-    <color name="positiveText">#000000</color>
-    <color name="icon">#666666</color>
-    <color name="border">#AAAAAA</color>
-    <color name="contentsBackground">#FFFFFF</color>
-    <color name="screenBackground">#EEEEEE</color>
+    <color name="lightPrimary">#86B6F6</color>
+    <color name="lightSecondary">#176B87</color>
+    <color name="lightAttention">#e74c3c</color>
+    <color name="lightPositiveText">#000000</color>
+    <color name="lightIcon">#666666</color>
+    <color name="lightBorder">#AAAAAA</color>
+    <color name="lightContentsBackground">#FFFFFF</color>
+    <color name="lightScreenBackground">#EEEEEE</color>
+
+    <color name="darkPrimary">#86B6F6</color>
+    <color name="darkSecondary">#176B87</color>
+    <color name="darkAttention">#e74c3c</color>
+    <color name="darkPositiveText">#000000</color>
+    <color name="darkIcon">#666666</color>
+    <color name="darkBorder">#AAAAAA</color>
+    <color name="darkContentsBackground">#FFFFFF</color>
+    <color name="darkScreenBackground">#EEEEEE</color>
 
     <color name="distributing">#2ecc71</color>
     <color name="stopped">#e74c3c</color>

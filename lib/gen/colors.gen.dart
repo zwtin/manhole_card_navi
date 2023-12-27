@@ -14,34 +14,58 @@ class ColorName {
   ColorName._();
 
   /// Color: #e74c3c
-  static const Color attention = Color(0xFFE74C3C);
+  static const Color darkAttention = Color(0xFFE74C3C);
 
   /// Color: #AAAAAA
-  static const Color border = Color(0xFFAAAAAA);
+  static const Color darkBorder = Color(0xFFAAAAAA);
 
   /// Color: #FFFFFF
-  static const Color contentsBackground = Color(0xFFFFFFFF);
+  static const Color darkContentsBackground = Color(0xFFFFFFFF);
+
+  /// Color: #666666
+  static const Color darkIcon = Color(0xFF666666);
+
+  /// Color: #000000
+  static const Color darkPositiveText = Color(0xFF000000);
+
+  /// Color: #86B6F6
+  static const Color darkPrimary = Color(0xFF86B6F6);
+
+  /// Color: #EEEEEE
+  static const Color darkScreenBackground = Color(0xFFEEEEEE);
+
+  /// Color: #176B87
+  static const Color darkSecondary = Color(0xFF176B87);
 
   /// Color: #2ecc71
   static const Color distributing = Color(0xFF2ECC71);
 
+  /// Color: #e74c3c
+  static const Color lightAttention = Color(0xFFE74C3C);
+
+  /// Color: #AAAAAA
+  static const Color lightBorder = Color(0xFFAAAAAA);
+
+  /// Color: #FFFFFF
+  static const Color lightContentsBackground = Color(0xFFFFFFFF);
+
   /// Color: #666666
-  static const Color icon = Color(0xFF666666);
+  static const Color lightIcon = Color(0xFF666666);
+
+  /// Color: #000000
+  static const Color lightPositiveText = Color(0xFF000000);
+
+  /// Color: #86B6F6
+  static const Color lightPrimary = Color(0xFF86B6F6);
+
+  /// Color: #EEEEEE
+  static const Color lightScreenBackground = Color(0xFFEEEEEE);
+
+  /// Color: #176B87
+  static const Color lightSecondary = Color(0xFF176B87);
 
   /// Color: #f1c40f
   static const Color notClear = Color(0xFFF1C40F);
-
-  /// Color: #000000
-  static const Color positiveText = Color(0xFF000000);
-
-  /// Color: #86B6F6
-  static const Color primary = Color(0xFF86B6F6);
-
-  /// Color: #EEEEEE
-  static const Color screenBackground = Color(0xFFEEEEEE);
-
-  /// Color: #176B87
-  static const Color secondary = Color(0xFF176B87);
 
   /// Color: #e74c3c
   static const Color stopped = Color(0xFFE74C3C);
