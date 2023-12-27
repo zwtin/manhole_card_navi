@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/use_case/use_case/push_notification_use_case.dart';
 
 import '/app/provider/party_animation_provider.dart';
 import '/app/provider/router_provider.dart';
@@ -19,6 +20,7 @@ final bottomTabViewModelProvider =
       key,
       ref,
       ref.watch(alreadyGetCardQueryServiceProvider),
+      ref.watch(pushNotificationUseCaseProvider),
     );
   },
 );
@@ -28,6 +30,7 @@ class BottomTabViewModel extends ChangeNotifier {
     this._key,
     this._ref,
     this._alreadyGetCardQueryService,
+    this._pushNotificationUseCase,
   );
 
   final Key? _key;
@@ -35,6 +38,8 @@ class BottomTabViewModel extends ChangeNotifier {
   final _logger = Logger();
 
   final AlreadyGetCardQueryService _alreadyGetCardQueryService;
+
+  final PushNotificationUseCase _pushNotificationUseCase;
 
   int selectedIndex = 0;
 
@@ -47,6 +52,7 @@ class BottomTabViewModel extends ChangeNotifier {
     _ref.read(tabKeyStorageProvider).setBottomTabKey(_key);
     await _initAlreadyGetCardDTOList();
     await _listenAlreadyGetCard();
+    await _requestPushNotificationPermission();
   }
 
   void onTap(int index) {
@@ -86,6 +92,10 @@ class BottomTabViewModel extends ChangeNotifier {
     final dtoList = (result as Success<List<AlreadyGetCardDTO>>).value;
     _alreadyGetCardDTOList.clear();
     _alreadyGetCardDTOList.addAll(dtoList);
+  }
+
+  Future<void> _requestPushNotificationPermission() async {
+    await _pushNotificationUseCase.requestPermission();
   }
 
   @override
