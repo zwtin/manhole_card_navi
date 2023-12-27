@@ -76,12 +76,31 @@ class AlertWidget extends HookConsumerWidget {
             context: context,
             title: next.title,
             desc: next.message,
-            style: const AlertStyle(
+            style: AlertStyle(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              alertBorder: RoundedRectangleBorder(
+                side: BorderSide(
+                  color: Theme.of(context).dividerColor,
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
               animationType: AnimationType.grow,
               isCloseButton: false,
               isOverlayTapDismiss: false,
               overlayColor: Colors.black54,
               alertElevation: 0,
+              titleStyle: Theme.of(context).textTheme.titleLarge ??
+                  const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
+                    fontStyle: FontStyle.normal,
+                  ),
+              descStyle: Theme.of(context).textTheme.titleMedium ??
+                  const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
+                    fontStyle: FontStyle.normal,
+                  ),
             ),
             buttons: buttons,
             onWillPopActive: true,
