@@ -73,8 +73,9 @@ class SettingView extends HookConsumerWidget {
                                 title: const TitleMediumText(
                                   '利用規約',
                                 ),
-                                trailing: const Icon(
+                                trailing: Icon(
                                   Icons.arrow_forward_ios,
+                                  color: Theme.of(context).iconTheme.color,
                                 ),
                                 onTap: () async {
                                   await ref
@@ -95,8 +96,9 @@ class SettingView extends HookConsumerWidget {
                                 title: const TitleMediumText(
                                   'プライバシーポリシー',
                                 ),
-                                trailing: const Icon(
+                                trailing: Icon(
                                   Icons.arrow_forward_ios,
+                                  color: Theme.of(context).iconTheme.color,
                                 ),
                                 onTap: () async {
                                   await ref
@@ -112,8 +114,9 @@ class SettingView extends HookConsumerWidget {
                                 title: const TitleMediumText(
                                   'ライセンス',
                                 ),
-                                trailing: const Icon(
+                                trailing: Icon(
                                   Icons.arrow_forward_ios,
+                                  color: Theme.of(context).iconTheme.color,
                                 ),
                                 onTap: () async {
                                   await ref
