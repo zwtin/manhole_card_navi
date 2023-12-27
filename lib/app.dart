@@ -169,6 +169,7 @@ class App extends HookConsumerWidget {
         bottomSheetTheme: const BottomSheetThemeData(
           backgroundColor: ColorName.lightScreenBackground,
           showDragHandle: true,
+          dragHandleColor: ColorName.lightIcon,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
           ),
@@ -303,6 +304,7 @@ class App extends HookConsumerWidget {
         bottomSheetTheme: const BottomSheetThemeData(
           backgroundColor: ColorName.darkScreenBackground,
           showDragHandle: true,
+          dragHandleColor: ColorName.darkIcon,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
           ),

@@ -13,10 +13,10 @@
     <color name="darkSecondary">#176B87</color>
     <color name="darkAttention">#e74c3c</color>
     <color name="darkPositiveText">#FFFFFF</color>
-    <color name="darkIcon">#888888</color>
-    <color name="darkBorder">#55555</color>
-    <color name="darkContentsBackground">#111111</color>
-    <color name="darkScreenBackground">#000000</color>
+    <color name="darkIcon">#CCCCCC</color>
+    <color name="darkBorder">#999999</color>
+    <color name="darkContentsBackground">#222222</color>
+    <color name="darkScreenBackground">#333333</color>
 
     <color name="distributing">#2ecc71</color>
     <color name="stopped">#e74c3c</color>

@@ -16,14 +16,14 @@ class ColorName {
   /// Color: #e74c3c
   static const Color darkAttention = Color(0xFFE74C3C);
 
-  /// Color: #55555
-  static const Color darkBorder = Color(0x55555);
+  /// Color: #999999
+  static const Color darkBorder = Color(0xFF999999);
 
-  /// Color: #111111
-  static const Color darkContentsBackground = Color(0xFF111111);
+  /// Color: #222222
+  static const Color darkContentsBackground = Color(0xFF222222);
 
-  /// Color: #888888
-  static const Color darkIcon = Color(0xFF888888);
+  /// Color: #CCCCCC
+  static const Color darkIcon = Color(0xFFCCCCCC);
 
   /// Color: #FFFFFF
   static const Color darkPositiveText = Color(0xFFFFFFFF);
@@ -31,8 +31,8 @@ class ColorName {
   /// Color: #86B6F6
   static const Color darkPrimary = Color(0xFF86B6F6);
 
-  /// Color: #000000
-  static const Color darkScreenBackground = Color(0xFF000000);
+  /// Color: #333333
+  static const Color darkScreenBackground = Color(0xFF333333);
 
   /// Color: #176B87
   static const Color darkSecondary = Color(0xFF176B87);
