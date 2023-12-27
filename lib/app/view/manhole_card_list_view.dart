@@ -7,7 +7,6 @@ import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/view_model/manhole_card_list_view_model.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
-import '/gen/colors.gen.dart';
 
 class ManholeCardListView extends HookConsumerWidget {
   const ManholeCardListView({
@@ -120,7 +119,7 @@ class ManholeCardListView extends HookConsumerWidget {
         body: Stack(
           children: [
             Container(
-              color: ColorName.screenBackground,
+              color: Theme.of(context).colorScheme.background,
             ),
             viewModel.prefecturesViewData.where(
               (prefectureViewData) {

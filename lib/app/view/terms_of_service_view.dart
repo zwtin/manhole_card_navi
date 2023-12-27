@@ -6,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '/app/view_model/terms_of_service_view_model.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
-import '/gen/colors.gen.dart';
 
 class TermsOfServiceView extends HookConsumerWidget {
   const TermsOfServiceView({
@@ -40,7 +39,7 @@ class TermsOfServiceView extends HookConsumerWidget {
         body: Stack(
           children: [
             Container(
-              color: ColorName.screenBackground,
+              color: Theme.of(context).colorScheme.background,
             ),
             SingleChildScrollView(
               padding: EdgeInsets.only(

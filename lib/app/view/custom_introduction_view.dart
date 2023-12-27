@@ -6,7 +6,6 @@ import 'package:introduction_screen/introduction_screen.dart';
 import '/app/view_model/custom_introduction_view_model.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
-import '/gen/colors.gen.dart';
 
 class CustomIntroductionView extends HookConsumerWidget {
   const CustomIntroductionView({super.key});
@@ -30,7 +29,7 @@ class CustomIntroductionView extends HookConsumerWidget {
     return RouterWidget(
       key: key,
       child: Container(
-        color: ColorName.screenBackground,
+        color: Theme.of(context).colorScheme.background,
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(
@@ -135,7 +134,7 @@ class CustomIntroductionView extends HookConsumerWidget {
                   ),
                 ],
               ),
-              globalBackgroundColor: ColorName.screenBackground,
+              globalBackgroundColor: Theme.of(context).colorScheme.background,
               dotsDecorator: DotsDecorator(
                 color: Theme.of(context).iconTheme.color ?? Colors.grey,
               ),

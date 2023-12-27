@@ -37,7 +37,7 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
         key: key,
         child: LoadingOverlay(
           isLoading: viewModel.isLoading,
-          color: ColorName.screenBackground,
+          color: Theme.of(context).colorScheme.background,
           child: Scaffold(
             appBar: AppBar(
               title: const TitleLargeText(
@@ -48,7 +48,7 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
             body: Stack(
               children: [
                 Container(
-                  color: ColorName.screenBackground,
+                  color: Theme.of(context).colorScheme.background,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),

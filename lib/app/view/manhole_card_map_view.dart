@@ -143,7 +143,7 @@ class ManholeCardMapView extends HookConsumerWidget {
         body: Stack(
           children: [
             Container(
-              color: ColorName.screenBackground,
+              color: Theme.of(context).colorScheme.background,
             ),
             Column(
               children: [

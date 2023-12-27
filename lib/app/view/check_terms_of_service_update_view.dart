@@ -38,7 +38,7 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
         key: key,
         child: LoadingOverlay(
           isLoading: viewModel.isLoading,
-          color: ColorName.screenBackground,
+          color: Theme.of(context).colorScheme.background,
           child: viewModel.inquireUpdate
               ? Scaffold(
                   appBar: AppBar(
@@ -50,7 +50,7 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
                   body: Stack(
                     children: [
                       Container(
-                        color: ColorName.screenBackground,
+                        color: Theme.of(context).colorScheme.background,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -145,7 +145,7 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
                 )
               : Scaffold(
                   body: Container(
-                    color: ColorName.screenBackground,
+                    color: Theme.of(context).colorScheme.background,
                   ),
                 ),
         ),

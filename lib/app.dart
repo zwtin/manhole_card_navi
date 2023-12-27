@@ -103,6 +103,11 @@ class App extends HookConsumerWidget {
                   ),
             ),
         primaryColor: ColorName.primary,
+        colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: ColorName.primary,
+              background: ColorName.screenBackground,
+              surface: ColorName.contentsBackground,
+            ),
         iconTheme: const IconThemeData(
           color: ColorName.icon,
         ),

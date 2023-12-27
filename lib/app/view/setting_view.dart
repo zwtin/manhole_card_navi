@@ -51,7 +51,7 @@ class SettingView extends HookConsumerWidget {
         body: Stack(
           children: [
             Container(
-              color: ColorName.screenBackground,
+              color: Theme.of(context).colorScheme.background,
             ),
             SingleChildScrollView(
               child: SafeArea(

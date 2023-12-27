@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:manhole_card_navi/gen/colors.gen.dart';
 
 import '/app/view_model/license_view_model.dart';
 import '/app/widget/router_widget.dart';
@@ -31,9 +30,9 @@ class LicenseView extends HookConsumerWidget {
       key: key,
       child: Theme(
         data: Theme.of(context).copyWith(
-          cardColor: ColorName.screenBackground,
-          listTileTheme: const ListTileThemeData(
-            tileColor: ColorName.screenBackground,
+          cardColor: Theme.of(context).colorScheme.background,
+          listTileTheme: ListTileThemeData(
+            tileColor: Theme.of(context).colorScheme.background,
           ),
         ),
         child: LicensePage(

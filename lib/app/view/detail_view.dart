@@ -45,10 +45,10 @@ class DetailView extends HookConsumerWidget {
         body: Stack(
           children: [
             Container(
-              color: ColorName.screenBackground,
+              color: Theme.of(context).colorScheme.background,
             ),
             LoadingOverlay(
-              color: ColorName.screenBackground,
+              color: Theme.of(context).colorScheme.background,
               isLoading: viewModel.isLoading,
               child: viewModel.isLoading
                   ? Container()
