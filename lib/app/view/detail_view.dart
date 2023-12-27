@@ -60,19 +60,17 @@ class DetailView extends HookConsumerWidget {
                                 const SizedBox(
                                   height: 16,
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        MediaQuery.of(context).size.width / 3.2,
-                                  ),
-                                  child: GestureDetector(
-                                    onTap: () async {
-                                      await ref
-                                          .read(detailViewModelProvider(key))
-                                          .onTapImage();
-                                    },
-                                    child: Hero(
-                                      tag: viewModel.viewData.id,
+                                GestureDetector(
+                                  onTap: () async {
+                                    await ref
+                                        .read(detailViewModelProvider(key))
+                                        .onTapImage();
+                                  },
+                                  child: Hero(
+                                    tag: viewModel.viewData.id,
+                                    child: SizedBox(
+                                      width: 130,
+                                      height: 180,
                                       child: Image.memory(
                                         viewModel.viewData.icon,
                                       ),
