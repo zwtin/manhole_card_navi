@@ -56,11 +56,14 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const TitleMediumText(
-                          'アプリを使うためには、利用規約とプライバシーポリシーに同意する必要があります。',
+                        const Center(
+                          child: TitleMediumText(
+                            'アプリを使うためには、利用規約とプライバシーポリシーに同意する必要があります。',
+                          ),
                         ),
                         const Spacer(),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             CustomCheckBox(
                               value: viewModel.isAgreed,

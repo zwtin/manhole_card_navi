@@ -58,11 +58,14 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              const TitleMediumText(
-                                '利用規約とプライバシーポリシーが更新されました。\nアプリを使うためには、再度利用規約とプライバシーポリシーに同意する必要があります。',
+                              const Center(
+                                child: TitleMediumText(
+                                  '利用規約とプライバシーポリシーが更新されました。\nアプリを使うためには、再度利用規約とプライバシーポリシーに同意する必要があります。',
+                                ),
                               ),
                               const Spacer(),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   CustomCheckBox(
                                     value: viewModel.isAgreed,
