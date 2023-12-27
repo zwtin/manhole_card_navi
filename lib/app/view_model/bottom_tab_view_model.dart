@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
@@ -54,6 +55,7 @@ class BottomTabViewModel extends ChangeNotifier {
     await _initAlreadyGetCardDTOList();
     await _listenAlreadyGetCard();
     await _requestPushNotificationPermission();
+    await _removeAppBadge();
   }
 
   void onTap(int index) {
@@ -98,6 +100,10 @@ class BottomTabViewModel extends ChangeNotifier {
   Future<void> _requestPushNotificationPermission() async {
     await _pushNotificationUseCase.requestPermission();
     _ref.read(locationPermissionProvider.notifier).request();
+  }
+
+  Future<void> _removeAppBadge() async {
+    FlutterAppBadger.removeBadge();
   }
 
   @override
