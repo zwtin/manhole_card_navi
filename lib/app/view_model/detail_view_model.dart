@@ -80,6 +80,7 @@ class DetailViewModel extends ChangeNotifier {
     final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
     _ref.read(bottomTabViewModelProvider(bottomTabKey)).onTap(0);
     final mapTabKey = _ref.read(tabKeyStorageProvider).getTabKey(0);
+    _ref.read(routerProvider(mapTabKey).notifier).popToRoot();
     _ref
         .read(manholeCardMapViewModelProvider(mapTabKey))
         .onTapCheckWithMapButton(_cardId);
@@ -93,8 +94,8 @@ class DetailViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> onTapImage() async {
-    await _transitionToImageDetailView();
+  Future<void> onTapImage(String heroTag) async {
+    await _transitionToImageDetailView(heroTag);
   }
 
   Future<void> _fetch() async {
@@ -140,10 +141,10 @@ class DetailViewModel extends ChangeNotifier {
     _alreadyGetCardUseCase.delete(id: _cardId);
   }
 
-  Future<void> _transitionToImageDetailView() async {
+  Future<void> _transitionToImageDetailView(String heroTag) async {
     await _ref.read(routerProvider(_key).notifier).presentImage(
           imageData: viewData.icon,
-          imageTag: viewData.id,
+          imageTag: heroTag,
         );
   }
 

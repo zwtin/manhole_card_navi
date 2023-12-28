@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 
 import '/app/view_model/detail_view_model.dart';
 import '/app/widget/custom_text.dart';
@@ -60,22 +61,27 @@ class DetailView extends HookConsumerWidget {
                                 const SizedBox(
                                   height: 16,
                                 ),
-                                GestureDetector(
-                                  onTap: () async {
-                                    await ref
-                                        .read(detailViewModelProvider(key))
-                                        .onTapImage();
-                                  },
-                                  child: Hero(
-                                    tag: viewModel.viewData.id,
-                                    child: SizedBox(
-                                      width: 130,
-                                      height: 180,
-                                      child: Image.memory(
-                                        viewModel.viewData.icon,
+                                Builder(
+                                  builder: (context) {
+                                    final heroTag = const Uuid().v4();
+                                    return GestureDetector(
+                                      onTap: () async {
+                                        await ref
+                                            .read(detailViewModelProvider(key))
+                                            .onTapImage(heroTag);
+                                      },
+                                      child: Hero(
+                                        tag: heroTag,
+                                        child: SizedBox(
+                                          width: 130,
+                                          height: 180,
+                                          child: Image.memory(
+                                            viewModel.viewData.icon,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  },
                                 ),
                                 const SizedBox(
                                   height: 16,
