@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/app/view/custom_introduction_view.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
@@ -61,6 +62,19 @@ class SettingViewModel extends ChangeNotifier {
     appName = appInfoDTO.name;
     appVersion = appInfoDTO.version;
     notifyListeners();
+  }
+
+  Future<void> onTapHowToUse() async {
+    await _transitionToCustomIntroductionView();
+  }
+
+  Future<void> _transitionToCustomIntroductionView() async {
+    await _ref.read(routerProvider(_key).notifier).push(
+          nextWidget: CustomIntroductionView(
+            key: UniqueKey(),
+            isTutorial: false,
+          ),
+        );
   }
 
   Future<void> onTapTermsOfService() async {

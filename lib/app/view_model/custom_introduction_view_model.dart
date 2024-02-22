@@ -25,16 +25,33 @@ class CustomIntroductionViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
-  Future<void> onLoad() async {
+  bool _isTutorial = false;
+
+  Future<void> onLoad(
+    bool isTutorial,
+  ) async {
     _logger.d('CustomIntroductionViewModel');
+    _isTutorial = isTutorial;
   }
 
   Future<void> onDone() async {
+    if (_isTutorial) {
+      await _transitionToCheckTermsOfServiceAgreeView();
+    } else {
+      await _transitionToPreviousView();
+    }
+  }
+
+  Future<void> _transitionToCheckTermsOfServiceAgreeView() async {
     await _ref.read(routerProvider(_key).notifier).push(
           nextWidget: CheckTermsOfServiceAgreeView(
             key: UniqueKey(),
           ),
         );
+  }
+
+  Future<void> _transitionToPreviousView() async {
+    await _ref.read(routerProvider(_key).notifier).pop();
   }
 
   @override

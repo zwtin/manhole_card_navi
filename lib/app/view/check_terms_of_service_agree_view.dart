@@ -124,7 +124,7 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
                           height: 24,
                         ),
                         SizedBox(
-                          height: 60,
+                          height: 48,
                           child: ElevatedButton(
                             onPressed: () async {
                               await ref
@@ -138,6 +138,9 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
                               color: Theme.of(context).colorScheme.surface,
                             ),
                           ),
+                        ),
+                        const SizedBox(
+                          height: 16,
                         ),
                       ],
                     ),

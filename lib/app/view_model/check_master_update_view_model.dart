@@ -135,6 +135,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
     await _ref.read(routerProvider(_key).notifier).pushReplacement(
           nextWidget: CustomIntroductionView(
             key: UniqueKey(),
+            isTutorial: true,
           ),
         );
   }

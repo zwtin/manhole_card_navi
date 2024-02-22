@@ -71,6 +71,44 @@ class SettingView extends HookConsumerWidget {
                             children: [
                               ListTile(
                                 title: const TitleMediumText(
+                                  'アプリの使い方',
+                                ),
+                                trailing: Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Theme.of(context).iconTheme.color,
+                                ),
+                                onTap: () async {
+                                  await ref
+                                      .read(settingViewModelProvider(key))
+                                      .onTapHowToUse();
+                                },
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(16.0),
+                                    bottom: Radius.circular(16.0),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Column(
+                            children: [
+                              ListTile(
+                                title: const TitleMediumText(
                                   '利用規約',
                                 ),
                                 trailing: Icon(
@@ -133,7 +171,7 @@ class SettingView extends HookConsumerWidget {
                           ),
                         ),
                       ),
-                      Container(
+                      const SizedBox(
                         height: 24,
                       ),
                       TitleMediumText(

@@ -9,7 +9,12 @@ import '/app/widget/router_widget.dart';
 import '/gen/assets.gen.dart';
 
 class CustomIntroductionView extends HookConsumerWidget {
-  const CustomIntroductionView({super.key});
+  const CustomIntroductionView({
+    super.key,
+    required this.isTutorial,
+  });
+
+  final bool isTutorial;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,7 +24,9 @@ class CustomIntroductionView extends HookConsumerWidget {
       () {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) async {
-            await ref.read(customIntroductionViewModelProvider(key)).onLoad();
+            await ref
+                .read(customIntroductionViewModelProvider(key))
+                .onLoad(isTutorial);
           },
         );
         return null;
@@ -29,16 +36,16 @@ class CustomIntroductionView extends HookConsumerWidget {
 
     return RouterWidget(
       key: key,
-      child: Container(
-        color: Theme.of(context).colorScheme.background,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              8.0,
-              16.0,
-              8.0,
-              0.0,
-            ),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const TitleLargeText(
+            'アプリの使い方',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        body: Container(
+          color: Theme.of(context).colorScheme.background,
+          child: SafeArea(
             child: IntroductionScreen(
               key: key,
               pages: [
@@ -134,6 +141,8 @@ class CustomIntroductionView extends HookConsumerWidget {
                 color: Theme.of(context).iconTheme.color ?? Colors.grey,
               ),
               animationDuration: 200,
+              bodyPadding: const EdgeInsets.only(top: 16),
+              controlsPosition: const Position(left: 8, right: 8, bottom: 32),
             ),
           ),
         ),
