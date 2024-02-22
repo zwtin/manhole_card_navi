@@ -28,9 +28,32 @@ class $AssetsImagesGen {
   AssetGenImage get frameYellow =>
       const AssetGenImage('assets/images/frame_yellow.png');
 
+  /// File path: assets/images/terms.jpg
+  AssetGenImage get terms => const AssetGenImage('assets/images/terms.jpg');
+
+  /// File path: assets/images/tutorial_1.jpg
+  AssetGenImage get tutorial1 =>
+      const AssetGenImage('assets/images/tutorial_1.jpg');
+
+  /// File path: assets/images/tutorial_2.png
+  AssetGenImage get tutorial2 =>
+      const AssetGenImage('assets/images/tutorial_2.png');
+
+  /// File path: assets/images/tutorial_3.png
+  AssetGenImage get tutorial3 =>
+      const AssetGenImage('assets/images/tutorial_3.png');
+
   /// List of all assets
-  List<AssetGenImage> get values =>
-      [frameGray, frameGreen, frameRed, frameYellow];
+  List<AssetGenImage> get values => [
+        frameGray,
+        frameGreen,
+        frameRed,
+        frameYellow,
+        terms,
+        tutorial1,
+        tutorial2,
+        tutorial3
+      ];
 }
 
 class $AssetsLottiesGen {

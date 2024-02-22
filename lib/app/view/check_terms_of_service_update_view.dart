@@ -8,6 +8,7 @@ import '/app/widget/alert_widget.dart';
 import '/app/widget/custom_check_box.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
+import '/gen/assets.gen.dart';
 
 class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
   const CheckTermsOfServiceUpdateView({
@@ -61,7 +62,14 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget {
                               const TitleMediumText(
                                 '利用規約とプライバシーポリシーが更新されました。\nアプリを使うためには、再度利用規約とプライバシーポリシーに同意する必要があります。',
                               ),
-                              const Spacer(),
+                              const Spacer(
+                                flex: 1,
+                              ),
+                              Assets.images.terms
+                                  .image(width: 300, height: 300),
+                              const Spacer(
+                                flex: 2,
+                              ),
                               Row(
                                 children: [
                                   CustomCheckBox(

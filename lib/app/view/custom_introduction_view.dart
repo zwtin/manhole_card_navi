@@ -6,6 +6,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import '/app/view_model/custom_introduction_view_model.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
+import '/gen/assets.gen.dart';
 
 class CustomIntroductionView extends HookConsumerWidget {
   const CustomIntroductionView({super.key});
@@ -49,9 +50,7 @@ class CustomIntroductionView extends HookConsumerWidget {
                   bodyWidget: const TitleMediumText(
                     'マンホールカード集めをもっと楽しもう！',
                   ),
-                  image: Image.asset(
-                    'assets/images/frame_green.png',
-                  ),
+                  image: Assets.images.tutorial1.image(),
                 ),
                 PageViewModel(
                   titleWidget: const TitleLargeText(
@@ -61,9 +60,7 @@ class CustomIntroductionView extends HookConsumerWidget {
                   bodyWidget: const TitleMediumText(
                     '枠の色でカードが配布中かわかります。\n\n緑色: 配布中\n赤色: 配布停止\n黄色: 不明',
                   ),
-                  image: Image.asset(
-                    'assets/images/frame_yellow.png',
-                  ),
+                  image: Assets.images.tutorial2.image(),
                 ),
                 PageViewModel(
                   titleWidget: const TitleLargeText(
@@ -73,9 +70,7 @@ class CustomIntroductionView extends HookConsumerWidget {
                   bodyWidget: const TitleMediumText(
                     'カードの色で取得済みかわかります。\n\nカラー: 取得済み\nグレー: 未取得',
                   ),
-                  image: Image.asset(
-                    'assets/images/frame_red.png',
-                  ),
+                  image: Assets.images.tutorial3.image(),
                 ),
               ],
               showNextButton: true,
