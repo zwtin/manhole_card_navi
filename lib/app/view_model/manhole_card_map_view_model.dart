@@ -70,6 +70,17 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   final CardUseCase _cardUseCase;
 
+  String get navigationTitle {
+    switch (mapState) {
+      case MapState.distribution:
+        return '配布場所マップ';
+      case MapState.position:
+        return '蓋マップ';
+      default:
+        return '';
+    }
+  }
+
   late GoogleMapController mapController;
   CameraPosition initialCameraPosition = const CameraPosition(
     target: LatLng(35.680212, 139.757669),
@@ -78,7 +89,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   bool myLocationEnabled = false;
   MapMarkersViewData markersViewData = const MapMarkersViewData(list: []);
 
-  MapState mapState = MapState.position;
+  MapState mapState = MapState.distribution;
   bool isShowModal = false;
 
   final List<MapMarkerDTO> _positionMarkerDTOList = [];

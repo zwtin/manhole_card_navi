@@ -65,8 +65,8 @@ class ManholeCardMapView extends HookConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const TitleLargeText(
-            'マップ',
+          title: TitleLargeText(
+            viewModel.navigationTitle,
             fontWeight: FontWeight.bold,
           ),
           actions: <Widget>[
@@ -83,27 +83,6 @@ class ManholeCardMapView extends HookConsumerWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            ListTile(
-                              leading: viewModel.mapState == MapState.position
-                                  ? Icon(
-                                      Icons.check,
-                                      color: Theme.of(context).primaryColor,
-                                    )
-                                  : const SizedBox(
-                                      width: 40,
-                                      height: 40,
-                                    ),
-                              title: const TitleMediumText(
-                                '蓋マップ',
-                              ),
-                              tileColor: Colors.transparent,
-                              onTap: () async {
-                                Navigator.of(modalContext).pop();
-                                ref
-                                    .read(manholeCardMapViewModelProvider(key))
-                                    .onChangeMapState(MapState.position);
-                              },
-                            ),
                             ListTile(
                               leading:
                                   viewModel.mapState == MapState.distribution
@@ -124,6 +103,27 @@ class ManholeCardMapView extends HookConsumerWidget {
                                 ref
                                     .read(manholeCardMapViewModelProvider(key))
                                     .onChangeMapState(MapState.distribution);
+                              },
+                            ),
+                            ListTile(
+                              leading: viewModel.mapState == MapState.position
+                                  ? Icon(
+                                      Icons.check,
+                                      color: Theme.of(context).primaryColor,
+                                    )
+                                  : const SizedBox(
+                                      width: 40,
+                                      height: 40,
+                                    ),
+                              title: const TitleMediumText(
+                                '蓋マップ',
+                              ),
+                              tileColor: Colors.transparent,
+                              onTap: () async {
+                                Navigator.of(modalContext).pop();
+                                ref
+                                    .read(manholeCardMapViewModelProvider(key))
+                                    .onChangeMapState(MapState.position);
                               },
                             ),
                             const SizedBox(

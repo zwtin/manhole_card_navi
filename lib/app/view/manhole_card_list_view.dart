@@ -42,8 +42,8 @@ class ManholeCardListView extends HookConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const TitleLargeText(
-            'リスト',
+          title: TitleLargeText(
+            viewModel.navigationTitle,
             fontWeight: FontWeight.bold,
           ),
           actions: <Widget>[

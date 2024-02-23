@@ -58,6 +58,17 @@ class ManholeCardListViewModel extends ChangeNotifier {
   late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
 
+  String get navigationTitle {
+    switch (listState) {
+      case ListState.all:
+        return 'すべて';
+      case ListState.alreadyGet:
+        return '取得済みのみ';
+      default:
+        return '';
+    }
+  }
+
   ListState listState = ListState.all;
 
   Future<void> onLoad() async {
