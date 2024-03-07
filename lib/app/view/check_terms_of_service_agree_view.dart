@@ -6,11 +6,13 @@ import 'package:loading_overlay/loading_overlay.dart';
 import '/app/view_model/check_terms_of_service_agree_view_model.dart';
 import '/app/widget/alert_widget.dart';
 import '/app/widget/custom_check_box.dart';
+import '/app/widget/custom_navigator_observer.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/assets.gen.dart';
 
-class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
+class CheckTermsOfServiceAgreeView extends HookConsumerWidget
+    implements PvSendable {
   const CheckTermsOfServiceAgreeView({
     super.key,
   });
@@ -152,5 +154,10 @@ class CheckTermsOfServiceAgreeView extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  @override
+  Future<void> sendPV(Ref ref) async {
+    ref.read(checkTermsOfServiceAgreeViewModelProvider(key)).sendPV();
   }
 }

@@ -9,6 +9,7 @@ import '/app/view/custom_introduction_view.dart';
 import '/domain/entity/result.dart';
 import '/use_case/dto/need_master_update_dto.dart';
 import '/use_case/dto/need_terms_of_service_agree_dto.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/check_master_update_use_case.dart';
 import '/use_case/use_case/check_terms_of_service_agree_use_case.dart';
 
@@ -18,6 +19,7 @@ final checkMasterUpdateViewModelProvider =
     return CheckMasterUpdateViewModel(
       key,
       ref,
+      ref.watch(analyticsUseCaseProvider),
       ref.watch(checkMasterUpdateUseCaseProvider),
       ref.watch(checkTermsOfServiceAgreeUseCaseProvider),
     );
@@ -28,6 +30,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
   CheckMasterUpdateViewModel(
     this._key,
     this._ref,
+    this._analyticsUseCase,
     this._checkMasterUpdateUseCase,
     this._checkTermsOfServiceAgreeUseCase,
   );
@@ -36,6 +39,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
+  final AnalyticsUseCase _analyticsUseCase;
   final CheckMasterUpdateUseCase _checkMasterUpdateUseCase;
   final CheckTermsOfServiceAgreeUseCase _checkTermsOfServiceAgreeUseCase;
 
@@ -59,6 +63,13 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
     } else {
       await _transitionToCheckTermsOfSeerviceUpdate();
     }
+  }
+
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'name': 'check_master_update_view'},
+    );
   }
 
   Future<Result<bool>> _checkNeedUpdate() async {

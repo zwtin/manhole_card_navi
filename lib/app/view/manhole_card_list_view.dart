@@ -5,10 +5,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/view_model/manhole_card_list_view_model.dart';
+import '/app/widget/custom_navigator_observer.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 
-class ManholeCardListView extends HookConsumerWidget {
+class ManholeCardListView extends HookConsumerWidget implements PvSendable {
   const ManholeCardListView({
     super.key,
   });
@@ -274,5 +275,10 @@ class ManholeCardListView extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  @override
+  Future<void> sendPV(Ref ref) async {
+    ref.read(manholeCardListViewModelProvider(key)).sendPV();
   }
 }

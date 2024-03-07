@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import '/app/provider/alert_provider.dart';
 import '/domain/entity/result.dart';
 import '/use_case/dto/terms_of_service_dto.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/terms_of_service_use_case.dart';
 
 final termsOfServiceViewModelProvider =
@@ -13,6 +14,7 @@ final termsOfServiceViewModelProvider =
     return TermsOfServiceViewModel(
       key,
       ref,
+      ref.watch(analyticsUseCaseProvider),
       ref.watch(termsOfServiceUseCaseProvider),
     );
   },
@@ -22,6 +24,7 @@ class TermsOfServiceViewModel extends ChangeNotifier {
   TermsOfServiceViewModel(
     this._key,
     this._ref,
+    this._analyticsUseCase,
     this._termsOfServiceUseCase,
   );
 
@@ -29,12 +32,20 @@ class TermsOfServiceViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
+  final AnalyticsUseCase _analyticsUseCase;
   final TermsOfServiceUseCase _termsOfServiceUseCase;
 
   String html = '';
 
   Future<void> onLoad() async {
     await _fetchTermsOfService();
+  }
+
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'name': 'terms_of_service_view'},
+    );
   }
 
   Future<void> _fetchTermsOfService() async {

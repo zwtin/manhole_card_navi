@@ -4,30 +4,24 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
+import '/app/provider/custom_navigator_observer_provider.dart';
 import '/app/provider/party_animation_provider.dart';
 import '/app/view/manhole_card_list_view.dart';
 import '/app/view/manhole_card_map_view.dart';
 import '/app/view/setting_view.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/widget/alert_widget.dart';
+import '/app/widget/custom_navigator_observer.dart';
+import '/app/widget/custom_route.dart';
 import '/app/widget/router_widget.dart';
 
-class BottomTabView extends HookConsumerWidget {
+class BottomTabView extends HookConsumerWidget implements PvSendable {
   BottomTabView({
     super.key,
   });
-
-  final tab0 = ManholeCardMapView(
-    key: UniqueKey(),
-  );
-
-  final tab1 = ManholeCardListView(
-    key: UniqueKey(),
-  );
-
-  final tab2 = SettingView(
-    key: UniqueKey(),
-  );
+  final tab0Key = UniqueKey();
+  final tab1Key = UniqueKey();
+  final tab2Key = UniqueKey();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,6 +34,33 @@ class BottomTabView extends HookConsumerWidget {
           ref.read(partyAnimationProvider.notifier).finish();
         }
       });
+    final tab0 = ManholeCardMapView(
+      key: tab0Key,
+    );
+
+    final tab1 = ManholeCardListView(
+      key: tab1Key,
+    );
+
+    final tab2 = SettingView(
+      key: tab2Key,
+    );
+
+    final navigatorObserver0 = ref.watch(
+      customNavigatorObserverProvider(
+        tab0Key,
+      ),
+    );
+    final navigatorObserver1 = ref.watch(
+      customNavigatorObserverProvider(
+        tab1Key,
+      ),
+    );
+    final navigatorObserver2 = ref.watch(
+      customNavigatorObserverProvider(
+        tab2Key,
+      ),
+    );
 
     useEffect(
       () {
@@ -108,7 +129,8 @@ class BottomTabView extends HookConsumerWidget {
                   children: <Widget>[
                     Navigator(
                       onGenerateRoute: (settings) {
-                        return PageRouteBuilder<Widget>(
+                        return CustomPageRouteBuilder<Widget>(
+                          result: tab0,
                           pageBuilder: (
                             context,
                             animation1,
@@ -118,10 +140,14 @@ class BottomTabView extends HookConsumerWidget {
                           },
                         );
                       },
+                      observers: [
+                        navigatorObserver0,
+                      ],
                     ),
                     Navigator(
                       onGenerateRoute: (settings) {
-                        return PageRouteBuilder<Widget>(
+                        return CustomPageRouteBuilder<Widget>(
+                          result: tab1,
                           pageBuilder: (
                             context,
                             animation1,
@@ -131,10 +157,14 @@ class BottomTabView extends HookConsumerWidget {
                           },
                         );
                       },
+                      observers: [
+                        navigatorObserver1,
+                      ],
                     ),
                     Navigator(
                       onGenerateRoute: (settings) {
-                        return PageRouteBuilder<Widget>(
+                        return CustomPageRouteBuilder<Widget>(
+                          result: tab2,
                           pageBuilder: (
                             context,
                             animation1,
@@ -144,6 +174,9 @@ class BottomTabView extends HookConsumerWidget {
                           },
                         );
                       },
+                      observers: [
+                        navigatorObserver2,
+                      ],
                     ),
                   ],
                 ),
@@ -182,5 +215,10 @@ class BottomTabView extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  @override
+  Future<void> sendPV(Ref ref) async {
+    ref.read(bottomTabViewModelProvider(key)).sendPV();
   }
 }

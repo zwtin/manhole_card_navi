@@ -4,10 +4,11 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/view_model/privacy_policy_view_model.dart';
+import '/app/widget/custom_navigator_observer.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 
-class PrivacyPolicyView extends HookConsumerWidget {
+class PrivacyPolicyView extends HookConsumerWidget implements PvSendable {
   const PrivacyPolicyView({
     super.key,
   });
@@ -58,5 +59,10 @@ class PrivacyPolicyView extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  @override
+  Future<void> sendPV(Ref ref) async {
+    ref.read(privacyPolicyViewModelProvider(key)).sendPV();
   }
 }

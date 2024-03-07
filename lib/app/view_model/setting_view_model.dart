@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/app/view/custom_introduction_view.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
+import '/app/view/custom_introduction_view.dart';
 import '/app/view/license_view.dart';
 import '/app/view/privacy_policy_view.dart';
 import '/app/view/terms_of_service_view.dart';
 import '/domain/entity/result.dart';
 import '/use_case/dto/app_info_dto.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/app_info_use_case.dart';
 
 final settingViewModelProvider =
@@ -19,6 +20,7 @@ final settingViewModelProvider =
     return SettingViewModel(
       key,
       ref,
+      ref.watch(analyticsUseCaseProvider),
       ref.watch(appInfoUseCaseProvider),
     );
   },
@@ -28,6 +30,7 @@ class SettingViewModel extends ChangeNotifier {
   SettingViewModel(
     this._key,
     this._ref,
+    this._analyticsUseCase,
     this._appInfoUseCase,
   );
 
@@ -35,6 +38,7 @@ class SettingViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
+  final AnalyticsUseCase _analyticsUseCase;
   final AppInfoUseCase _appInfoUseCase;
 
   String appName = '';
@@ -44,6 +48,13 @@ class SettingViewModel extends ChangeNotifier {
     _logger.d('SettingViewModel');
     _ref.read(tabKeyStorageProvider).setTabKey(2, _key);
     await _fetchAppInfo();
+  }
+
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'name': 'setting_view'},
+    );
   }
 
   Future<void> _fetchAppInfo() async {

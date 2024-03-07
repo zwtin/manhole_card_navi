@@ -4,6 +4,7 @@ import 'package:logger/logger.dart';
 
 import '/app/provider/router_provider.dart';
 import '/app/view/check_terms_of_service_agree_view.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 
 final customIntroductionViewModelProvider = ChangeNotifierProvider.family
     .autoDispose<CustomIntroductionViewModel, Key?>(
@@ -11,6 +12,7 @@ final customIntroductionViewModelProvider = ChangeNotifierProvider.family
     return CustomIntroductionViewModel(
       key,
       ref,
+      ref.watch(analyticsUseCaseProvider),
     );
   },
 );
@@ -19,11 +21,14 @@ class CustomIntroductionViewModel extends ChangeNotifier {
   CustomIntroductionViewModel(
     this._key,
     this._ref,
+    this._analyticsUseCase,
   );
 
   final Key? _key;
   final Ref _ref;
   final _logger = Logger();
+
+  final AnalyticsUseCase _analyticsUseCase;
 
   bool _isTutorial = false;
 
@@ -40,6 +45,13 @@ class CustomIntroductionViewModel extends ChangeNotifier {
     } else {
       await _transitionToPreviousView();
     }
+  }
+
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'name': 'custom_introduction_view'},
+    );
   }
 
   Future<void> _transitionToCheckTermsOfServiceAgreeView() async {

@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/provider/router_provider.dart';
 import '/app/view_data/router_view_data.dart';
+import '/app/widget/custom_route.dart';
 import '/app/widget/fade_in_route.dart';
 
 class RouterWidget extends HookConsumerWidget {
@@ -22,32 +23,36 @@ class RouterWidget extends HookConsumerWidget {
       (
         previous,
         next,
-      ) async {
+      ) {
         switch (next?.type) {
           case TransitionType.push:
-            if (!context.mounted) {
+            final nextWidget = next?.nextWidget;
+            if (nextWidget == null) {
               break;
             }
-            await Navigator.of(context).push(
-              MaterialPageRoute<Widget>(
+            Navigator.of(context).push(
+              CustomMaterialPageRoute(
+                result: nextWidget,
                 builder: (context) {
-                  return next?.nextWidget ?? Container();
+                  return nextWidget;
                 },
               ),
             );
             break;
           case TransitionType.pushReplacement:
-            if (!context.mounted) {
+            final nextWidget = next?.nextWidget;
+            if (nextWidget == null) {
               break;
             }
-            await Navigator.of(context).pushReplacement(
-              PageRouteBuilder<Widget>(
+            Navigator.of(context).pushReplacement(
+              CustomPageRouteBuilder(
+                result: nextWidget,
                 pageBuilder: (
                   newContext,
                   animation1,
                   animation2,
                 ) {
-                  return next?.nextWidget ?? Container();
+                  return nextWidget;
                 },
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
@@ -55,37 +60,37 @@ class RouterWidget extends HookConsumerWidget {
             );
             break;
           case TransitionType.present:
-            if (!context.mounted) {
+            final nextWidget = next?.nextWidget;
+            if (nextWidget == null) {
               break;
             }
-            await Navigator.of(
+            Navigator.of(
               context,
               rootNavigator: true,
             ).push(
-              MaterialPageRoute<Widget>(
+              CustomMaterialPageRoute(
+                result: nextWidget,
                 builder: (context) {
-                  return next?.nextWidget ?? Container();
+                  return nextWidget;
                 },
                 fullscreenDialog: true,
               ),
             );
             break;
           case TransitionType.image:
-            if (!context.mounted) {
+            final nextWidget = next?.nextWidget;
+            if (nextWidget == null) {
               break;
             }
-            await Navigator.of(context, rootNavigator: true).push(
+            Navigator.of(context, rootNavigator: true).push(
               FadeInRoute(
-                widget: next?.nextWidget ?? Container(),
+                widget: nextWidget,
                 onTransitionCompleted: null,
                 onTransitionDismissed: null,
               ),
             );
             break;
           case TransitionType.pop:
-            if (!context.mounted) {
-              break;
-            }
             if (pop != null) {
               pop!();
             } else {
@@ -93,9 +98,6 @@ class RouterWidget extends HookConsumerWidget {
             }
             break;
           case TransitionType.popToRoot:
-            if (!context.mounted) {
-              break;
-            }
             Navigator.of(context).popUntil((route) => route.isFirst);
             break;
           default:

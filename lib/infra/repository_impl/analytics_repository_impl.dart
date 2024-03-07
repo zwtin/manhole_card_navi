@@ -36,6 +36,18 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
     }
   }
 
+  @override
+  Future<Result<void>> sendAppOpen() async {
+    try {
+      if (F.appFlavor == Flavor.development) {
+        _analytics.logAppOpen();
+      }
+      return const Result.success(null);
+    } on Exception catch (exception) {
+      return Result.failure(exception);
+    }
+  }
+
   void dispose() {
     _logger.d('AnalyticsRepositoryImpl dispose');
   }

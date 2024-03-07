@@ -5,10 +5,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/view_model/setting_view_model.dart';
+import '/app/widget/custom_navigator_observer.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 
-class SettingView extends HookConsumerWidget {
+class SettingView extends HookConsumerWidget implements PvSendable {
   const SettingView({
     super.key,
   });
@@ -189,5 +190,10 @@ class SettingView extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  @override
+  Future<void> sendPV(Ref ref) async {
+    ref.read(settingViewModelProvider(key)).sendPV();
   }
 }

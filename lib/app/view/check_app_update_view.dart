@@ -5,9 +5,10 @@ import 'package:loading_overlay/loading_overlay.dart';
 
 import '/app/view_model/check_app_update_view_model.dart';
 import '/app/widget/alert_widget.dart';
+import '/app/widget/custom_navigator_observer.dart';
 import '/app/widget/router_widget.dart';
 
-class CheckAppUpdateView extends HookConsumerWidget {
+class CheckAppUpdateView extends HookConsumerWidget implements PvSendable {
   const CheckAppUpdateView({
     super.key,
   });
@@ -41,5 +42,10 @@ class CheckAppUpdateView extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  @override
+  Future<void> sendPV(Ref ref) async {
+    ref.read(checkAppUpdateViewModelProvider(key)).sendPV();
   }
 }

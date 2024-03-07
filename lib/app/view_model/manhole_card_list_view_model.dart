@@ -17,6 +17,7 @@ import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/dto/list_card_dto.dart';
 import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/query_service/list_cards_query_service.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 
 final manholeCardListViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<ManholeCardListViewModel, Key?>(
@@ -25,6 +26,7 @@ final manholeCardListViewModelProvider =
       key,
       ref,
       ref.watch(alreadyGetCardQueryServiceProvider),
+      ref.watch(analyticsUseCaseProvider),
       ref.watch(listCardsQueryServiceProvider),
     );
   },
@@ -40,6 +42,7 @@ class ManholeCardListViewModel extends ChangeNotifier {
     this._key,
     this._ref,
     this._alreadyGetCardQueryService,
+    this._analyticsUseCase,
     this._listCardsQueryService,
   );
 
@@ -48,16 +51,16 @@ class ManholeCardListViewModel extends ChangeNotifier {
   final _logger = Logger();
 
   final AlreadyGetCardQueryService _alreadyGetCardQueryService;
+
+  final AnalyticsUseCase _analyticsUseCase;
   final ListCardsQueryService _listCardsQueryService;
 
   ListPrefecturesViewData prefecturesViewData =
       const ListPrefecturesViewData(list: []);
-
   final List<ListCardDTO> _listCardDTOList = [];
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
-  late StreamSubscription<List<AlreadyGetCardDTO>>
+  StreamSubscription<List<AlreadyGetCardDTO>>?
       _alreadyGetCardStreamSubscription;
-
   String get navigationTitle {
     switch (listState) {
       case ListState.all:
@@ -103,6 +106,13 @@ class ManholeCardListViewModel extends ChangeNotifier {
       prefectureId,
     );
     notifyListeners();
+  }
+
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'name': 'manhole_card_list_view'},
+    );
   }
 
   Future<void> _fetchCards() async {
@@ -154,6 +164,6 @@ class ManholeCardListViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('ManholeCardListViewModel dispose');
-    _alreadyGetCardStreamSubscription.cancel();
+    _alreadyGetCardStreamSubscription?.cancel();
   }
 }

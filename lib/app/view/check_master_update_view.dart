@@ -5,9 +5,10 @@ import 'package:loading_overlay/loading_overlay.dart';
 
 import '/app/view_model/check_master_update_view_model.dart';
 import '/app/widget/alert_widget.dart';
+import '/app/widget/custom_navigator_observer.dart';
 import '/app/widget/router_widget.dart';
 
-class CheckMasterUpdateView extends HookConsumerWidget {
+class CheckMasterUpdateView extends HookConsumerWidget implements PvSendable {
   const CheckMasterUpdateView({
     super.key,
   });
@@ -41,5 +42,10 @@ class CheckMasterUpdateView extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  @override
+  Future<void> sendPV(Ref ref) async {
+    ref.read(checkMasterUpdateViewModelProvider(key)).sendPV();
   }
 }

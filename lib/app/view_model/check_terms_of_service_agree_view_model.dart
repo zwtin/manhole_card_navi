@@ -8,6 +8,7 @@ import '/app/view/bottom_tab_view.dart';
 import '/app/view/privacy_policy_view.dart';
 import '/app/view/terms_of_service_view.dart';
 import '/domain/entity/result.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/save_terms_of_service_agree_version_use_case.dart';
 
 final checkTermsOfServiceAgreeViewModelProvider = ChangeNotifierProvider.family
@@ -16,6 +17,7 @@ final checkTermsOfServiceAgreeViewModelProvider = ChangeNotifierProvider.family
     return CheckTermsOfServiceAgreeViewModel(
       key,
       ref,
+      ref.watch(analyticsUseCaseProvider),
       ref.watch(saveTermsOfServiceAgreeVersionUseCaseProvider),
     );
   },
@@ -25,6 +27,7 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
   CheckTermsOfServiceAgreeViewModel(
     this._key,
     this._ref,
+    this._analyticsUseCase,
     this._saveTermsOfServiceAgreeVersionUseCase,
   );
 
@@ -32,6 +35,7 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
+  final AnalyticsUseCase _analyticsUseCase;
   final SaveTermsOfServiceAgreeVersionUseCase
       _saveTermsOfServiceAgreeVersionUseCase;
 
@@ -74,6 +78,13 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
 
   Future<void> onTapPrivacyPolicy() async {
     await _transitionToPrivacyPolicyView();
+  }
+
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'name': 'check_terms_of_service_agree_view'},
+    );
   }
 
   Future<Result<bool>> _agreeTermsOfService() async {

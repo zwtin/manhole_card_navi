@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import '/app/provider/alert_provider.dart';
 import '/domain/entity/result.dart';
 import '/use_case/dto/privacy_policy_dto.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/privacy_policy_use_case.dart';
 
 final privacyPolicyViewModelProvider =
@@ -13,6 +14,7 @@ final privacyPolicyViewModelProvider =
     return PrivacyPolicyViewModel(
       key,
       ref,
+      ref.watch(analyticsUseCaseProvider),
       ref.watch(privacyPolicyUseCaseProvider),
     );
   },
@@ -22,6 +24,7 @@ class PrivacyPolicyViewModel extends ChangeNotifier {
   PrivacyPolicyViewModel(
     this._key,
     this._ref,
+    this._analyticsUseCase,
     this._privacyPolicyUseCase,
   );
 
@@ -29,12 +32,20 @@ class PrivacyPolicyViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
+  final AnalyticsUseCase _analyticsUseCase;
   final PrivacyPolicyUseCase _privacyPolicyUseCase;
 
   String html = '';
 
   Future<void> onLoad() async {
     await _fetchPrivacyPolicy();
+  }
+
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'name': 'privacy_policy_view'},
+    );
   }
 
   Future<void> _fetchPrivacyPolicy() async {

@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import '/app/provider/alert_provider.dart';
 import '/domain/entity/result.dart';
 import '/use_case/dto/app_info_dto.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/app_info_use_case.dart';
 
 final licenseViewModelProvider =
@@ -13,6 +14,7 @@ final licenseViewModelProvider =
     return LicenseViewModel(
       key,
       ref,
+      ref.watch(analyticsUseCaseProvider),
       ref.watch(appInfoUseCaseProvider),
     );
   },
@@ -22,6 +24,7 @@ class LicenseViewModel extends ChangeNotifier {
   LicenseViewModel(
     this._key,
     this._ref,
+    this._analyticsUseCase,
     this._appInfoUseCase,
   );
 
@@ -29,6 +32,7 @@ class LicenseViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
+  final AnalyticsUseCase _analyticsUseCase;
   final AppInfoUseCase _appInfoUseCase;
 
   String appName = '';
@@ -37,6 +41,13 @@ class LicenseViewModel extends ChangeNotifier {
   Future<void> onLoad() async {
     _logger.d('LicenseViewModel');
     await _fetchAppInfo();
+  }
+
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'name': 'license_view'},
+    );
   }
 
   Future<void> _fetchAppInfo() async {

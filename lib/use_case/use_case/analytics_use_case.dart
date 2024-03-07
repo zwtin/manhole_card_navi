@@ -33,6 +33,10 @@ class AnalyticsUseCase {
     return _analyticsRepository.sendEvent(analyticsEvent: event);
   }
 
+  Future<Result<void>> sendOpen() async {
+    return _analyticsRepository.sendAppOpen();
+  }
+
   void dispose() {
     _logger.d('AnalyticsUseCase dispose');
   }

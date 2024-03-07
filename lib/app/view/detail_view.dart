@@ -6,10 +6,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 import '/app/view_model/detail_view_model.dart';
+import '/app/widget/custom_navigator_observer.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 
-class DetailView extends HookConsumerWidget {
+class DetailView extends HookConsumerWidget implements PvSendable {
   const DetailView({
     super.key,
     required this.cardId,
@@ -374,5 +375,10 @@ class DetailView extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  @override
+  Future<void> sendPV(Ref ref) async {
+    ref.read(detailViewModelProvider(key)).sendPV();
   }
 }

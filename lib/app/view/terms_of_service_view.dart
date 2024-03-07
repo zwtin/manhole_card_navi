@@ -4,10 +4,11 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/view_model/terms_of_service_view_model.dart';
+import '/app/widget/custom_navigator_observer.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 
-class TermsOfServiceView extends HookConsumerWidget {
+class TermsOfServiceView extends HookConsumerWidget implements PvSendable {
   const TermsOfServiceView({
     super.key,
   });
@@ -58,5 +59,10 @@ class TermsOfServiceView extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  @override
+  Future<void> sendPV(Ref ref) async {
+    ref.read(termsOfServiceViewModelProvider(key)).sendPV();
   }
 }

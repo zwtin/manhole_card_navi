@@ -17,6 +17,7 @@ import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/dto/card_dto.dart';
 import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/use_case/already_get_card_use_case.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/card_use_case.dart';
 
 final detailViewModelProvider =
@@ -27,6 +28,7 @@ final detailViewModelProvider =
       ref,
       ref.watch(alreadyGetCardQueryServiceProvider),
       ref.watch(alreadyGetCardUseCaseProvider),
+      ref.watch(analyticsUseCaseProvider),
       ref.watch(cardUseCaseProvider),
     );
   },
@@ -38,6 +40,7 @@ class DetailViewModel extends ChangeNotifier {
     this._ref,
     this._alreadyGetCardQueryService,
     this._alreadyGetCardUseCase,
+    this._analyticsUseCase,
     this._cardUseCase,
   );
 
@@ -45,9 +48,14 @@ class DetailViewModel extends ChangeNotifier {
   final Ref _ref;
   final _logger = Logger();
 
+  final AlreadyGetCardQueryService _alreadyGetCardQueryService;
+
+  final AlreadyGetCardUseCase _alreadyGetCardUseCase;
+  final AnalyticsUseCase _analyticsUseCase;
+  final CardUseCase _cardUseCase;
+
   bool isLoading = true;
   late DetailCardViewData viewData;
-
   String get alreadyGetActionButtonTitle {
     if (_alreadyGet) {
       return '未取得に戻す';
@@ -59,13 +67,8 @@ class DetailViewModel extends ChangeNotifier {
   String _cardId = '';
   late CardDTO _cardDTO;
   bool _alreadyGet = false;
-  late StreamSubscription<List<AlreadyGetCardDTO>>
+  StreamSubscription<List<AlreadyGetCardDTO>>?
       _alreadyGetCardStreamSubscription;
-
-  final AlreadyGetCardQueryService _alreadyGetCardQueryService;
-
-  final AlreadyGetCardUseCase _alreadyGetCardUseCase;
-  final CardUseCase _cardUseCase;
 
   Future<void> onLoad(
     String cardId,
@@ -96,6 +99,13 @@ class DetailViewModel extends ChangeNotifier {
 
   Future<void> onTapImage(String heroTag) async {
     await _transitionToImageDetailView(heroTag);
+  }
+
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'name': 'detail_view'},
+    );
   }
 
   Future<void> _fetch() async {
@@ -152,6 +162,6 @@ class DetailViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('DetailViewModel dispose');
-    _alreadyGetCardStreamSubscription.cancel();
+    _alreadyGetCardStreamSubscription?.cancel();
   }
 }

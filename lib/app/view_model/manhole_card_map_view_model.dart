@@ -26,6 +26,7 @@ import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/query_service/distribution_cards_query_service.dart';
 import '/use_case/query_service/position_cards_query_service.dart';
 import '/use_case/use_case/already_get_card_use_case.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/card_use_case.dart';
 
 final manholeCardMapViewModelProvider =
@@ -38,6 +39,7 @@ final manholeCardMapViewModelProvider =
       ref.watch(distributionCardsQueryServiceProvider),
       ref.watch(positionCardsQueryServiceProvider),
       ref.watch(alreadyGetCardUseCaseProvider),
+      ref.watch(analyticsUseCaseProvider),
       ref.watch(cardUseCaseProvider),
     );
   },
@@ -56,6 +58,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     this._distributionCardsQueryService,
     this._positionCardsQueryService,
     this._alreadyGetCardUseCase,
+    this._analyticsUseCase,
     this._cardUseCase,
   );
 
@@ -68,6 +71,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final PositionCardsQueryService _positionCardsQueryService;
 
   final AlreadyGetCardUseCase _alreadyGetCardUseCase;
+  final AnalyticsUseCase _analyticsUseCase;
   final CardUseCase _cardUseCase;
 
   String get navigationTitle {
@@ -88,15 +92,13 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   );
   bool myLocationEnabled = false;
   MapMarkersViewData markersViewData = const MapMarkersViewData(list: []);
-
   MapState mapState = MapState.distribution;
   bool isShowModal = false;
-
   final List<MapMarkerDTO> _positionMarkerDTOList = [];
   final List<MapMarkerDTO> _distributionMarkerDTOList = [];
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
   double _zoom = 11.5;
-  late StreamSubscription<List<AlreadyGetCardDTO>>
+  StreamSubscription<List<AlreadyGetCardDTO>>?
       _alreadyGetCardStreamSubscription;
 
   Future<void> onLoad() async {
@@ -249,6 +251,13 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     _zoom = position.zoom;
   }
 
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'name': 'manhole_card_map_view'},
+    );
+  }
+
   Future<void> _fetchMarker() async {
     if (mapState == MapState.position) {
       await _fetchPositionMarker();
@@ -395,6 +404,6 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('ManholeCardMapViewModel dispose');
-    _alreadyGetCardStreamSubscription.cancel();
+    _alreadyGetCardStreamSubscription?.cancel();
   }
 }

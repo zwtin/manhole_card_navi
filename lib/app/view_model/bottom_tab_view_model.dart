@@ -5,6 +5,7 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
+import '/app/provider/custom_navigator_observer_provider.dart';
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/party_animation_provider.dart';
 import '/app/provider/router_provider.dart';
@@ -13,6 +14,7 @@ import '/domain/entity/result.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/query_service/already_get_card_query_service.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/push_notification_use_case.dart';
 
 final bottomTabViewModelProvider =
@@ -22,6 +24,7 @@ final bottomTabViewModelProvider =
       key,
       ref,
       ref.watch(alreadyGetCardQueryServiceProvider),
+      ref.watch(analyticsUseCaseProvider),
       ref.watch(pushNotificationUseCaseProvider),
     );
   },
@@ -32,6 +35,7 @@ class BottomTabViewModel extends ChangeNotifier {
     this._key,
     this._ref,
     this._alreadyGetCardQueryService,
+    this._analyticsUseCase,
     this._pushNotificationUseCase,
   );
 
@@ -41,11 +45,11 @@ class BottomTabViewModel extends ChangeNotifier {
 
   final AlreadyGetCardQueryService _alreadyGetCardQueryService;
 
+  final AnalyticsUseCase _analyticsUseCase;
   final PushNotificationUseCase _pushNotificationUseCase;
 
   int selectedIndex = 0;
-
-  late StreamSubscription<List<AlreadyGetCardDTO>>
+  StreamSubscription<List<AlreadyGetCardDTO>>?
       _alreadyGetCardStreamSubscription;
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
 
@@ -65,12 +69,21 @@ class BottomTabViewModel extends ChangeNotifier {
     } else {
       selectedIndex = index;
       notifyListeners();
+      final tabKey = _ref.read(tabKeyStorageProvider).getTabKey(selectedIndex);
+      _ref.read(customNavigatorObserverProvider(tabKey)).sendPV();
     }
   }
 
   void pop() {
     final tabKey = _ref.read(tabKeyStorageProvider).getTabKey(selectedIndex);
     _ref.read(routerProvider(tabKey).notifier).pop();
+  }
+
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {'name': 'bottom_tab_view'},
+    );
   }
 
   Future<void> _listenAlreadyGetCard() async {
@@ -110,6 +123,6 @@ class BottomTabViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('BottomTabViewModel dispose');
-    _alreadyGetCardStreamSubscription.cancel();
+    _alreadyGetCardStreamSubscription?.cancel();
   }
 }

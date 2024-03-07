@@ -10,10 +10,11 @@ import '/app/provider/location_permission_provider.dart';
 import '/app/provider/map_modal_provider.dart';
 import '/app/view_data/map_modal_card_view_data.dart';
 import '/app/view_model/manhole_card_map_view_model.dart';
+import '/app/widget/custom_navigator_observer.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 
-class ManholeCardMapView extends HookConsumerWidget {
+class ManholeCardMapView extends HookConsumerWidget implements PvSendable {
   const ManholeCardMapView({
     super.key,
   });
@@ -481,5 +482,10 @@ class ManholeCardMapView extends HookConsumerWidget {
         ) ??
         false;
     ref.read(manholeCardMapViewModelProvider(key)).onCloseMarkerModal();
+  }
+
+  @override
+  Future<void> sendPV(Ref ref) async {
+    ref.read(manholeCardMapViewModelProvider(key)).sendPV();
   }
 }
