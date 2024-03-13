@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'map_modal_card_view_data.dart';
+part of 'modal_card_view_data.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,48 +15,44 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
-mixin _$MapModalCardViewData {
+mixin _$ModalCardViewData {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  List<MapModalContactViewData> get contacts =>
-      throw _privateConstructorUsedError;
+  List<ModalContactViewData> get contacts => throw _privateConstructorUsedError;
   String get distributionLinkText => throw _privateConstructorUsedError;
   String get distributionLinkUrl => throw _privateConstructorUsedError;
   String get distributionText => throw _privateConstructorUsedError;
   String get distributionOther => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
-  Stream<bool> get alreadyGet => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $MapModalCardViewDataCopyWith<MapModalCardViewData> get copyWith =>
+  $ModalCardViewDataCopyWith<ModalCardViewData> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $MapModalCardViewDataCopyWith<$Res> {
-  factory $MapModalCardViewDataCopyWith(MapModalCardViewData value,
-          $Res Function(MapModalCardViewData) then) =
-      _$MapModalCardViewDataCopyWithImpl<$Res, MapModalCardViewData>;
+abstract class $ModalCardViewDataCopyWith<$Res> {
+  factory $ModalCardViewDataCopyWith(
+          ModalCardViewData value, $Res Function(ModalCardViewData) then) =
+      _$ModalCardViewDataCopyWithImpl<$Res, ModalCardViewData>;
   @useResult
   $Res call(
       {String id,
       String name,
-      List<MapModalContactViewData> contacts,
+      List<ModalContactViewData> contacts,
       String distributionLinkText,
       String distributionLinkUrl,
       String distributionText,
       String distributionOther,
       double latitude,
-      double longitude,
-      Stream<bool> alreadyGet});
+      double longitude});
 }
 
 /// @nodoc
-class _$MapModalCardViewDataCopyWithImpl<$Res,
-        $Val extends MapModalCardViewData>
-    implements $MapModalCardViewDataCopyWith<$Res> {
-  _$MapModalCardViewDataCopyWithImpl(this._value, this._then);
+class _$ModalCardViewDataCopyWithImpl<$Res, $Val extends ModalCardViewData>
+    implements $ModalCardViewDataCopyWith<$Res> {
+  _$ModalCardViewDataCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -75,7 +71,6 @@ class _$MapModalCardViewDataCopyWithImpl<$Res,
     Object? distributionOther = null,
     Object? latitude = null,
     Object? longitude = null,
-    Object? alreadyGet = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -89,7 +84,7 @@ class _$MapModalCardViewDataCopyWithImpl<$Res,
       contacts: null == contacts
           ? _value.contacts
           : contacts // ignore: cast_nullable_to_non_nullable
-              as List<MapModalContactViewData>,
+              as List<ModalContactViewData>,
       distributionLinkText: null == distributionLinkText
           ? _value.distributionLinkText
           : distributionLinkText // ignore: cast_nullable_to_non_nullable
@@ -114,41 +109,36 @@ class _$MapModalCardViewDataCopyWithImpl<$Res,
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
-      alreadyGet: null == alreadyGet
-          ? _value.alreadyGet
-          : alreadyGet // ignore: cast_nullable_to_non_nullable
-              as Stream<bool>,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$_MapModalCardViewDataCopyWith<$Res>
-    implements $MapModalCardViewDataCopyWith<$Res> {
-  factory _$$_MapModalCardViewDataCopyWith(_$_MapModalCardViewData value,
-          $Res Function(_$_MapModalCardViewData) then) =
-      __$$_MapModalCardViewDataCopyWithImpl<$Res>;
+abstract class _$$_ModalCardViewDataCopyWith<$Res>
+    implements $ModalCardViewDataCopyWith<$Res> {
+  factory _$$_ModalCardViewDataCopyWith(_$_ModalCardViewData value,
+          $Res Function(_$_ModalCardViewData) then) =
+      __$$_ModalCardViewDataCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
       {String id,
       String name,
-      List<MapModalContactViewData> contacts,
+      List<ModalContactViewData> contacts,
       String distributionLinkText,
       String distributionLinkUrl,
       String distributionText,
       String distributionOther,
       double latitude,
-      double longitude,
-      Stream<bool> alreadyGet});
+      double longitude});
 }
 
 /// @nodoc
-class __$$_MapModalCardViewDataCopyWithImpl<$Res>
-    extends _$MapModalCardViewDataCopyWithImpl<$Res, _$_MapModalCardViewData>
-    implements _$$_MapModalCardViewDataCopyWith<$Res> {
-  __$$_MapModalCardViewDataCopyWithImpl(_$_MapModalCardViewData _value,
-      $Res Function(_$_MapModalCardViewData) _then)
+class __$$_ModalCardViewDataCopyWithImpl<$Res>
+    extends _$ModalCardViewDataCopyWithImpl<$Res, _$_ModalCardViewData>
+    implements _$$_ModalCardViewDataCopyWith<$Res> {
+  __$$_ModalCardViewDataCopyWithImpl(
+      _$_ModalCardViewData _value, $Res Function(_$_ModalCardViewData) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -163,9 +153,8 @@ class __$$_MapModalCardViewDataCopyWithImpl<$Res>
     Object? distributionOther = null,
     Object? latitude = null,
     Object? longitude = null,
-    Object? alreadyGet = null,
   }) {
-    return _then(_$_MapModalCardViewData(
+    return _then(_$_ModalCardViewData(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -177,7 +166,7 @@ class __$$_MapModalCardViewDataCopyWithImpl<$Res>
       contacts: null == contacts
           ? _value._contacts
           : contacts // ignore: cast_nullable_to_non_nullable
-              as List<MapModalContactViewData>,
+              as List<ModalContactViewData>,
       distributionLinkText: null == distributionLinkText
           ? _value.distributionLinkText
           : distributionLinkText // ignore: cast_nullable_to_non_nullable
@@ -202,28 +191,23 @@ class __$$_MapModalCardViewDataCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
-      alreadyGet: null == alreadyGet
-          ? _value.alreadyGet
-          : alreadyGet // ignore: cast_nullable_to_non_nullable
-              as Stream<bool>,
     ));
   }
 }
 
 /// @nodoc
 
-class _$_MapModalCardViewData extends _MapModalCardViewData {
-  const _$_MapModalCardViewData(
+class _$_ModalCardViewData extends _ModalCardViewData {
+  const _$_ModalCardViewData(
       {required this.id,
       required this.name,
-      required final List<MapModalContactViewData> contacts,
+      required final List<ModalContactViewData> contacts,
       required this.distributionLinkText,
       required this.distributionLinkUrl,
       required this.distributionText,
       required this.distributionOther,
       required this.latitude,
-      required this.longitude,
-      required this.alreadyGet})
+      required this.longitude})
       : _contacts = contacts,
         super._();
 
@@ -231,9 +215,9 @@ class _$_MapModalCardViewData extends _MapModalCardViewData {
   final String id;
   @override
   final String name;
-  final List<MapModalContactViewData> _contacts;
+  final List<ModalContactViewData> _contacts;
   @override
-  List<MapModalContactViewData> get contacts {
+  List<ModalContactViewData> get contacts {
     if (_contacts is EqualUnmodifiableListView) return _contacts;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_contacts);
@@ -251,19 +235,17 @@ class _$_MapModalCardViewData extends _MapModalCardViewData {
   final double latitude;
   @override
   final double longitude;
-  @override
-  final Stream<bool> alreadyGet;
 
   @override
   String toString() {
-    return 'MapModalCardViewData(id: $id, name: $name, contacts: $contacts, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther, latitude: $latitude, longitude: $longitude, alreadyGet: $alreadyGet)';
+    return 'ModalCardViewData(id: $id, name: $name, contacts: $contacts, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther, latitude: $latitude, longitude: $longitude)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_MapModalCardViewData &&
+            other is _$_ModalCardViewData &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             const DeepCollectionEquality().equals(other._contacts, _contacts) &&
@@ -278,9 +260,7 @@ class _$_MapModalCardViewData extends _MapModalCardViewData {
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
-                other.longitude == longitude) &&
-            (identical(other.alreadyGet, alreadyGet) ||
-                other.alreadyGet == alreadyGet));
+                other.longitude == longitude));
   }
 
   @override
@@ -294,37 +274,35 @@ class _$_MapModalCardViewData extends _MapModalCardViewData {
       distributionText,
       distributionOther,
       latitude,
-      longitude,
-      alreadyGet);
+      longitude);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_MapModalCardViewDataCopyWith<_$_MapModalCardViewData> get copyWith =>
-      __$$_MapModalCardViewDataCopyWithImpl<_$_MapModalCardViewData>(
+  _$$_ModalCardViewDataCopyWith<_$_ModalCardViewData> get copyWith =>
+      __$$_ModalCardViewDataCopyWithImpl<_$_ModalCardViewData>(
           this, _$identity);
 }
 
-abstract class _MapModalCardViewData extends MapModalCardViewData {
-  const factory _MapModalCardViewData(
+abstract class _ModalCardViewData extends ModalCardViewData {
+  const factory _ModalCardViewData(
       {required final String id,
       required final String name,
-      required final List<MapModalContactViewData> contacts,
+      required final List<ModalContactViewData> contacts,
       required final String distributionLinkText,
       required final String distributionLinkUrl,
       required final String distributionText,
       required final String distributionOther,
       required final double latitude,
-      required final double longitude,
-      required final Stream<bool> alreadyGet}) = _$_MapModalCardViewData;
-  const _MapModalCardViewData._() : super._();
+      required final double longitude}) = _$_ModalCardViewData;
+  const _ModalCardViewData._() : super._();
 
   @override
   String get id;
   @override
   String get name;
   @override
-  List<MapModalContactViewData> get contacts;
+  List<ModalContactViewData> get contacts;
   @override
   String get distributionLinkText;
   @override
@@ -338,9 +316,7 @@ abstract class _MapModalCardViewData extends MapModalCardViewData {
   @override
   double get longitude;
   @override
-  Stream<bool> get alreadyGet;
-  @override
   @JsonKey(ignore: true)
-  _$$_MapModalCardViewDataCopyWith<_$_MapModalCardViewData> get copyWith =>
+  _$$_ModalCardViewDataCopyWith<_$_ModalCardViewData> get copyWith =>
       throw _privateConstructorUsedError;
 }

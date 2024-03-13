@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '/app/provider/custom_navigator_observer_provider.dart';
 import '/app/view/check_app_update_view.dart';
 import '/app_view_model.dart';
 import '/gen/colors.gen.dart';
@@ -14,8 +13,6 @@ class App extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final navigationObserver = ref.watch(customNavigatorObserverProvider(key));
-
     useEffect(
       () {
         WidgetsBinding.instance.addPostFrameCallback(
@@ -317,12 +314,19 @@ class App extends HookConsumerWidget {
         ),
       ),
       themeMode: ThemeMode.system,
-      home: CheckAppUpdateView(
-        key: UniqueKey(),
-      ),
-      navigatorObservers: [
-        navigationObserver,
-      ],
+      onGenerateRoute: (settings) {
+        return PageRouteBuilder<Widget>(
+          pageBuilder: (
+            context,
+            animation1,
+            animation2,
+          ) {
+            return CheckAppUpdateView(
+              key: UniqueKey(),
+            );
+          },
+        );
+      },
     );
   }
 }

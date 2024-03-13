@@ -99,7 +99,9 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
   Future<void> sendPV() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
-      parameters: {'name': 'check_terms_of_service_update_view'},
+      parameters: {
+        'screen_name': 'check_terms_of_service_update_view',
+      },
     );
   }
 

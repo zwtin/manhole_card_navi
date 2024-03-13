@@ -4,12 +4,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 import '/app/view_model/custom_introduction_view_model.dart';
-import '/app/widget/custom_navigator_observer.dart';
+import '/app/widget/common_widget.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/assets.gen.dart';
 
-class CustomIntroductionView extends HookConsumerWidget implements PvSendable {
+class CustomIntroductionView extends CommonWidget {
   const CustomIntroductionView({
     super.key,
     required this.isTutorial,
@@ -37,6 +37,7 @@ class CustomIntroductionView extends HookConsumerWidget implements PvSendable {
 
     return RouterWidget(
       key: key,
+      parent: this,
       child: Scaffold(
         appBar: AppBar(
           title: const TitleLargeText(
@@ -152,7 +153,10 @@ class CustomIntroductionView extends HookConsumerWidget implements PvSendable {
   }
 
   @override
-  Future<void> sendPV(Ref ref) async {
+  Future<void> sendPV(WidgetRef ref) async {
     ref.read(customIntroductionViewModelProvider(key)).sendPV();
   }
+
+  @override
+  Future<void> onCloseModal(WidgetRef ref) async {}
 }

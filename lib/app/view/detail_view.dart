@@ -6,11 +6,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 import '/app/view_model/detail_view_model.dart';
-import '/app/widget/custom_navigator_observer.dart';
+import '/app/widget/common_widget.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 
-class DetailView extends HookConsumerWidget implements PvSendable {
+class DetailView extends CommonWidget {
   const DetailView({
     super.key,
     required this.cardId,
@@ -36,6 +36,7 @@ class DetailView extends HookConsumerWidget implements PvSendable {
 
     return RouterWidget(
       key: key,
+      parent: this,
       child: Scaffold(
         appBar: AppBar(
           title: const TitleLargeText(
@@ -378,7 +379,10 @@ class DetailView extends HookConsumerWidget implements PvSendable {
   }
 
   @override
-  Future<void> sendPV(Ref ref) async {
+  Future<void> sendPV(WidgetRef ref) async {
     ref.read(detailViewModelProvider(key)).sendPV();
   }
+
+  @override
+  Future<void> onCloseModal(WidgetRef ref) async {}
 }

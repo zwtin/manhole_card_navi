@@ -44,7 +44,9 @@ class TermsOfServiceViewModel extends ChangeNotifier {
   Future<void> sendPV() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
-      parameters: {'name': 'terms_of_service_view'},
+      parameters: {
+        'screen_name': 'terms_of_service_view',
+      },
     );
   }
 

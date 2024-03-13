@@ -1,17 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/app/mapper/modal_card_view_data_mapper.dart';
+import 'package:manhole_card_navi/app/provider/alert_provider.dart';
+import 'package:manhole_card_navi/domain/entity/result.dart';
 
-import '/app/mapper/detail_card_view_data_mapper.dart';
-import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
-import '/app/provider/tab_key_storage_provider.dart';
-import '/app/view_data/detail_card_view_data.dart';
-import '/app/view_model/bottom_tab_view_model.dart';
-import '/app/view_model/manhole_card_map_view_model.dart';
-import '/domain/entity/result.dart';
+import '/app/view/detail_view.dart';
+import '/app/view_data/modal_card_view_data.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/dto/card_dto.dart';
@@ -20,10 +19,10 @@ import '/use_case/use_case/already_get_card_use_case.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/card_use_case.dart';
 
-final detailViewModelProvider =
-    ChangeNotifierProvider.family.autoDispose<DetailViewModel, Key?>(
+final cardModalViewModelProvider =
+    ChangeNotifierProvider.family.autoDispose<CardModalViewModel, Key?>(
   (ref, key) {
-    return DetailViewModel(
+    return CardModalViewModel(
       key,
       ref,
       ref.watch(alreadyGetCardQueryServiceProvider),
@@ -34,8 +33,8 @@ final detailViewModelProvider =
   },
 );
 
-class DetailViewModel extends ChangeNotifier {
-  DetailViewModel(
+class CardModalViewModel extends ChangeNotifier {
+  CardModalViewModel(
     this._key,
     this._ref,
     this._alreadyGetCardQueryService,
@@ -55,7 +54,7 @@ class DetailViewModel extends ChangeNotifier {
   final CardUseCase _cardUseCase;
 
   bool isLoading = true;
-  late DetailCardViewData viewData;
+  late ModalCardViewData viewData;
   String get alreadyGetActionButtonTitle {
     if (_alreadyGet) {
       return '未取得に戻す';
@@ -65,6 +64,7 @@ class DetailViewModel extends ChangeNotifier {
   }
 
   String _cardId = '';
+  late LatLng _position;
   late CardDTO _cardDTO;
   bool _alreadyGet = false;
   StreamSubscription<List<AlreadyGetCardDTO>>?
@@ -72,21 +72,22 @@ class DetailViewModel extends ChangeNotifier {
 
   Future<void> onLoad(
     String cardId,
+    LatLng position,
   ) async {
-    _logger.d('DetailViewModel');
+    _logger.d('CardModalViewModel');
     _cardId = cardId;
+    _position = position;
     await _fetch();
     await _listenAlreadyGetCard();
   }
 
-  Future<void> onTapCheckWithMapButton() async {
-    final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
-    _ref.read(bottomTabViewModelProvider(bottomTabKey)).onTap(0);
-    final mapTabKey = _ref.read(tabKeyStorageProvider).getTabKey(0);
-    _ref.read(routerProvider(mapTabKey).notifier).popToRoot();
-    _ref
-        .read(manholeCardMapViewModelProvider(mapTabKey))
-        .onTapCheckWithMapButton(_cardId);
+  Future<void> sendPV() async {
+    _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {
+        'screen_name': 'card_modal_view',
+      },
+    );
   }
 
   Future<void> onTapAlreadyGetButton() async {
@@ -95,20 +96,6 @@ class DetailViewModel extends ChangeNotifier {
     } else {
       _saveCard();
     }
-  }
-
-  Future<void> onTapImage(String heroTag) async {
-    await _transitionToImageDetailView(heroTag);
-  }
-
-  Future<void> sendPV() async {
-    _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'detail_view',
-        'id': _cardId,
-      },
-    );
   }
 
   Future<void> _fetch() async {
@@ -125,6 +112,10 @@ class DetailViewModel extends ChangeNotifier {
       return;
     }
     _cardDTO = (result as Success<CardDTO>).value;
+    viewData = await ModalCardViewDataMapper.convertToViewData(
+      cardDTO: _cardDTO,
+      position: _position,
+    );
     isLoading = false;
   }
 
@@ -133,17 +124,9 @@ class DetailViewModel extends ChangeNotifier {
         _alreadyGetCardQueryService.getStream().listen(
       (dto) async {
         _alreadyGet = dto.map((e) => e.cardId).contains(_cardId);
-        await _resetViewData();
+        notifyListeners();
       },
     );
-  }
-
-  Future<void> _resetViewData() async {
-    viewData = await DetailCardViewDataMapper.convertToViewData(
-      cardDTO: _cardDTO,
-      alreadyGet: _alreadyGet,
-    );
-    notifyListeners();
   }
 
   Future<void> _saveCard() async {
@@ -154,17 +137,19 @@ class DetailViewModel extends ChangeNotifier {
     _alreadyGetCardUseCase.delete(id: _cardId);
   }
 
-  Future<void> _transitionToImageDetailView(String heroTag) async {
-    await _ref.read(routerProvider(_key).notifier).presentImage(
-          imageData: viewData.icon,
-          imageTag: heroTag,
+  Future<void> _transitionToDetailView(String cardId) async {
+    await _ref.read(routerProvider(_key).notifier).push(
+          nextWidget: DetailView(
+            key: UniqueKey(),
+            cardId: cardId,
+          ),
         );
   }
 
   @override
   void dispose() {
     super.dispose();
-    _logger.d('DetailViewModel dispose');
+    _logger.d('CardModalViewModel dispose');
     _alreadyGetCardStreamSubscription?.cancel();
   }
 }

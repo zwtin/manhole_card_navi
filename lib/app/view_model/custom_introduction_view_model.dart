@@ -50,7 +50,9 @@ class CustomIntroductionViewModel extends ChangeNotifier {
   Future<void> sendPV() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
-      parameters: {'name': 'custom_introduction_view'},
+      parameters: {
+        'screen_name': 'custom_introduction_view',
+      },
     );
   }
 

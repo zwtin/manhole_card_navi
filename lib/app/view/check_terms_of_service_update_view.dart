@@ -5,14 +5,13 @@ import 'package:loading_overlay/loading_overlay.dart';
 
 import '/app/view_model/check_terms_of_service_update_view_model.dart';
 import '/app/widget/alert_widget.dart';
+import '/app/widget/common_widget.dart';
 import '/app/widget/custom_check_box.dart';
-import '/app/widget/custom_navigator_observer.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 import '/gen/assets.gen.dart';
 
-class CheckTermsOfServiceUpdateView extends HookConsumerWidget
-    implements PvSendable {
+class CheckTermsOfServiceUpdateView extends CommonWidget {
   const CheckTermsOfServiceUpdateView({
     super.key,
   });
@@ -38,6 +37,7 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget
     return AlertWidget(
       child: RouterWidget(
         key: key,
+        parent: this,
         child: LoadingOverlay(
           isLoading: viewModel.isLoading,
           color: Theme.of(context).colorScheme.background,
@@ -167,7 +167,10 @@ class CheckTermsOfServiceUpdateView extends HookConsumerWidget
   }
 
   @override
-  Future<void> sendPV(Ref ref) async {
+  Future<void> sendPV(WidgetRef ref) async {
     ref.read(checkTermsOfServiceUpdateViewModelProvider(key)).sendPV();
   }
+
+  @override
+  Future<void> onCloseModal(WidgetRef ref) async {}
 }

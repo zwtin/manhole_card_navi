@@ -3,10 +3,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/view_model/license_view_model.dart';
-import '/app/widget/custom_navigator_observer.dart';
+import '/app/widget/common_widget.dart';
 import '/app/widget/router_widget.dart';
 
-class LicenseView extends HookConsumerWidget implements PvSendable {
+class LicenseView extends CommonWidget {
   const LicenseView({
     super.key,
   });
@@ -29,6 +29,7 @@ class LicenseView extends HookConsumerWidget implements PvSendable {
 
     return RouterWidget(
       key: key,
+      parent: this,
       child: Theme(
         data: Theme.of(context).copyWith(
           cardColor: Theme.of(context).colorScheme.background,
@@ -46,7 +47,10 @@ class LicenseView extends HookConsumerWidget implements PvSendable {
   }
 
   @override
-  Future<void> sendPV(Ref ref) async {
+  Future<void> sendPV(WidgetRef ref) async {
     ref.read(licenseViewModelProvider(key)).sendPV();
   }
+
+  @override
+  Future<void> onCloseModal(WidgetRef ref) async {}
 }

@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$RouterViewData {
   TransitionType get type => throw _privateConstructorUsedError;
-  Widget? get nextWidget => throw _privateConstructorUsedError;
+  CommonWidget? get nextWidget => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $RouterViewDataCopyWith<RouterViewData> get copyWith =>
@@ -30,7 +30,7 @@ abstract class $RouterViewDataCopyWith<$Res> {
           RouterViewData value, $Res Function(RouterViewData) then) =
       _$RouterViewDataCopyWithImpl<$Res, RouterViewData>;
   @useResult
-  $Res call({TransitionType type, Widget? nextWidget});
+  $Res call({TransitionType type, CommonWidget? nextWidget});
 }
 
 /// @nodoc
@@ -57,7 +57,7 @@ class _$RouterViewDataCopyWithImpl<$Res, $Val extends RouterViewData>
       nextWidget: freezed == nextWidget
           ? _value.nextWidget
           : nextWidget // ignore: cast_nullable_to_non_nullable
-              as Widget?,
+              as CommonWidget?,
     ) as $Val);
   }
 }
@@ -70,7 +70,7 @@ abstract class _$$_RouterViewDataCopyWith<$Res>
       __$$_RouterViewDataCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({TransitionType type, Widget? nextWidget});
+  $Res call({TransitionType type, CommonWidget? nextWidget});
 }
 
 /// @nodoc
@@ -95,7 +95,7 @@ class __$$_RouterViewDataCopyWithImpl<$Res>
       nextWidget: freezed == nextWidget
           ? _value.nextWidget
           : nextWidget // ignore: cast_nullable_to_non_nullable
-              as Widget?,
+              as CommonWidget?,
     ));
   }
 }
@@ -108,7 +108,7 @@ class _$_RouterViewData extends _RouterViewData {
   @override
   final TransitionType type;
   @override
-  final Widget? nextWidget;
+  final CommonWidget? nextWidget;
 
   @override
   String toString() {
@@ -138,13 +138,13 @@ class _$_RouterViewData extends _RouterViewData {
 abstract class _RouterViewData extends RouterViewData {
   const factory _RouterViewData(
       {required final TransitionType type,
-      final Widget? nextWidget}) = _$_RouterViewData;
+      final CommonWidget? nextWidget}) = _$_RouterViewData;
   const _RouterViewData._() : super._();
 
   @override
   TransitionType get type;
   @override
-  Widget? get nextWidget;
+  CommonWidget? get nextWidget;
   @override
   @JsonKey(ignore: true)
   _$$_RouterViewDataCopyWith<_$_RouterViewData> get copyWith =>

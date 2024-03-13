@@ -68,7 +68,9 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
   Future<void> sendPV() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
-      parameters: {'name': 'check_master_update_view'},
+      parameters: {
+        'screen_name': 'check_master_update_view',
+      },
     );
   }
 

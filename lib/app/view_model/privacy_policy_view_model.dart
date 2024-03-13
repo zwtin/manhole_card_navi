@@ -44,7 +44,9 @@ class PrivacyPolicyViewModel extends ChangeNotifier {
   Future<void> sendPV() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
-      parameters: {'name': 'privacy_policy_view'},
+      parameters: {
+        'screen_name': 'privacy_policy_view',
+      },
     );
   }
 

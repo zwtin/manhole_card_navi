@@ -5,10 +5,10 @@ import 'package:loading_overlay/loading_overlay.dart';
 
 import '/app/view_model/check_app_update_view_model.dart';
 import '/app/widget/alert_widget.dart';
-import '/app/widget/custom_navigator_observer.dart';
+import '/app/widget/common_widget.dart';
 import '/app/widget/router_widget.dart';
 
-class CheckAppUpdateView extends HookConsumerWidget implements PvSendable {
+class CheckAppUpdateView extends CommonWidget {
   const CheckAppUpdateView({
     super.key,
   });
@@ -31,6 +31,7 @@ class CheckAppUpdateView extends HookConsumerWidget implements PvSendable {
     return AlertWidget(
       child: RouterWidget(
         key: key,
+        parent: this,
         child: LoadingOverlay(
           isLoading: viewModel.isLoading,
           color: Theme.of(context).colorScheme.background,
@@ -45,7 +46,10 @@ class CheckAppUpdateView extends HookConsumerWidget implements PvSendable {
   }
 
   @override
-  Future<void> sendPV(Ref ref) async {
+  Future<void> sendPV(WidgetRef ref) async {
     ref.read(checkAppUpdateViewModelProvider(key)).sendPV();
   }
+
+  @override
+  Future<void> onCloseModal(WidgetRef ref) async {}
 }

@@ -111,7 +111,9 @@ class ManholeCardListViewModel extends ChangeNotifier {
   Future<void> sendPV() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
-      parameters: {'name': 'manhole_card_list_view'},
+      parameters: {
+        'screen_name': 'manhole_card_list_view',
+      },
     );
   }
 

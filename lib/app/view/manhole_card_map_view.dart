@@ -4,17 +4,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '/app/provider/location_permission_provider.dart';
-import '/app/provider/map_modal_provider.dart';
-import '/app/view_data/map_modal_card_view_data.dart';
 import '/app/view_model/manhole_card_map_view_model.dart';
-import '/app/widget/custom_navigator_observer.dart';
+import '/app/widget/common_widget.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/router_widget.dart';
 
-class ManholeCardMapView extends HookConsumerWidget implements PvSendable {
+class ManholeCardMapView extends CommonWidget {
   const ManholeCardMapView({
     super.key,
   });
@@ -42,21 +39,9 @@ class ManholeCardMapView extends HookConsumerWidget implements PvSendable {
       },
     );
 
-    ref.listen(
-      mapModalProvider,
-      (previous, next) async {
-        if (previous == null && next != null) {
-          await showCardModal(
-            ref,
-            context,
-            next,
-          );
-        }
-      },
-    );
-
     return RouterWidget(
       key: key,
+      parent: this,
       pop: () {
         if (Navigator.of(context).canPop()) {
           Navigator.of(context).pop();
@@ -253,239 +238,13 @@ class ManholeCardMapView extends HookConsumerWidget implements PvSendable {
     ref.read(manholeCardMapViewModelProvider(key)).updateMyLocationEnabled();
   }
 
-  Future<void> showCardModal(
-    WidgetRef ref,
-    BuildContext context,
-    MapModalCardViewData viewData,
-  ) async {
-    final _ = await showModalBottomSheet(
-          isScrollControlled: true,
-          context: context,
-          builder: (context) {
-            return SingleChildScrollView(
-              child: SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 120,
-                            child: BodyLargeText(
-                              '名前',
-                            ),
-                          ),
-                          Flexible(
-                            child: BodyLargeText(
-                              viewData.name,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ...viewData.contacts.map(
-                      (contactViewData) {
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            16,
-                            0,
-                            16,
-                            16,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                width: 120,
-                                child: BodyLargeText(
-                                  '配布場所',
-                                ),
-                              ),
-                              Flexible(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (contactViewData.nameUrl.isNotEmpty)
-                                      TextButton(
-                                        onPressed: () async {
-                                          final uri = Uri.parse(
-                                              contactViewData.nameUrl);
-                                          if (await canLaunchUrl(uri)) {
-                                            launchUrl(
-                                              uri,
-                                              mode: LaunchMode.inAppWebView,
-                                            );
-                                          }
-                                        },
-                                        child: BodyLargeLinkText(
-                                          contactViewData.name,
-                                        ),
-                                      ),
-                                    if (contactViewData.nameUrl.isEmpty)
-                                      BodyLargeText(
-                                        contactViewData.name,
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 120,
-                            child: BodyLargeText(
-                              '在庫状況',
-                            ),
-                          ),
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (viewData.distributionLinkText.isNotEmpty)
-                                  TextButton(
-                                    onPressed: () async {
-                                      final uri = Uri.parse(
-                                          viewData.distributionLinkUrl);
-                                      if (await canLaunchUrl(uri)) {
-                                        launchUrl(
-                                          uri,
-                                          mode: LaunchMode.inAppWebView,
-                                        );
-                                      }
-                                    },
-                                    child: BodyLargeLinkText(
-                                      viewData.distributionLinkText,
-                                    ),
-                                  ),
-                                BodyLargeText(
-                                  viewData.distributionText,
-                                ),
-                                BodyLargeText(
-                                  viewData.distributionOther,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: 48,
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final uri = Uri(
-                            scheme: 'https',
-                            host: 'www.google.com',
-                            path: '/maps/search/',
-                            queryParameters: {
-                              'api': '1',
-                              'query':
-                                  '${viewData.latitude},${viewData.longitude}',
-                            },
-                          );
-                          if (await canLaunchUrl(uri)) {
-                            launchUrl(
-                              uri,
-                              mode: LaunchMode.externalApplication,
-                            );
-                          }
-                        },
-                        child: TitleMediumText(
-                          'Google マップで開く',
-                          color: Theme.of(context).colorScheme.surface,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                            child: OutlinedButton(
-                              onPressed: () async {
-                                await ref
-                                    .read(manholeCardMapViewModelProvider(key))
-                                    .onTapDetailButton(viewData.id);
-                              },
-                              child: SizedBox(
-                                height: 48,
-                                child: Center(
-                                  child: TitleMediumText(
-                                    '詳細を見る',
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                            child: StreamBuilder(
-                              stream: viewData.alreadyGet,
-                              builder: (_, snapshot) {
-                                return OutlinedButton(
-                                  onPressed: () async {
-                                    ref
-                                        .read(manholeCardMapViewModelProvider(
-                                            key))
-                                        .onTapAlreadyGetButton(
-                                          viewData.id,
-                                          snapshot.data ?? false,
-                                        );
-                                  },
-                                  child: SizedBox(
-                                    height: 48,
-                                    child: Center(
-                                      child: TitleMediumText(
-                                        snapshot.data ?? false
-                                            ? '未取得に戻す'
-                                            : '取得済みにする',
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ) ??
-        false;
-    ref.read(manholeCardMapViewModelProvider(key)).onCloseMarkerModal();
+  @override
+  Future<void> sendPV(WidgetRef ref) async {
+    ref.read(manholeCardMapViewModelProvider(key)).sendPV();
   }
 
   @override
-  Future<void> sendPV(Ref ref) async {
-    ref.read(manholeCardMapViewModelProvider(key)).sendPV();
+  Future<void> onCloseModal(WidgetRef ref) async {
+    ref.read(manholeCardMapViewModelProvider(key)).onCloseModal();
   }
 }

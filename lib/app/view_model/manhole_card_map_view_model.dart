@@ -7,27 +7,21 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
 import '/app/mapper/map_markers_view_data_mapper.dart';
-import '/app/mapper/map_modal_view_data_mapper.dart';
 import '/app/provider/alert_provider.dart';
-import '/app/provider/map_modal_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
-import '/app/view/detail_view.dart';
+import '/app/view/card_modal_view.dart';
 import '/app/view_data/map_markers_view_data.dart';
-import '/app/view_data/map_modal_card_view_data.dart';
 import '/domain/entity/result.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
 import '/infra/query_service_impl/position_cards_query_service_impl.dart';
 import '/use_case/dto/already_get_card_dto.dart';
-import '/use_case/dto/card_dto.dart';
 import '/use_case/dto/map_marker_dto.dart';
 import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/query_service/distribution_cards_query_service.dart';
 import '/use_case/query_service/position_cards_query_service.dart';
-import '/use_case/use_case/already_get_card_use_case.dart';
 import '/use_case/use_case/analytics_use_case.dart';
-import '/use_case/use_case/card_use_case.dart';
 
 final manholeCardMapViewModelProvider =
     ChangeNotifierProvider.family.autoDispose<ManholeCardMapViewModel, Key?>(
@@ -38,9 +32,7 @@ final manholeCardMapViewModelProvider =
       ref.watch(alreadyGetCardQueryServiceProvider),
       ref.watch(distributionCardsQueryServiceProvider),
       ref.watch(positionCardsQueryServiceProvider),
-      ref.watch(alreadyGetCardUseCaseProvider),
       ref.watch(analyticsUseCaseProvider),
-      ref.watch(cardUseCaseProvider),
     );
   },
 );
@@ -57,9 +49,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     this._alreadyGetCardQueryService,
     this._distributionCardsQueryService,
     this._positionCardsQueryService,
-    this._alreadyGetCardUseCase,
     this._analyticsUseCase,
-    this._cardUseCase,
   );
 
   final Key? _key;
@@ -70,9 +60,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final DistributionCardsQueryService _distributionCardsQueryService;
   final PositionCardsQueryService _positionCardsQueryService;
 
-  final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   final AnalyticsUseCase _analyticsUseCase;
-  final CardUseCase _cardUseCase;
 
   String get navigationTitle {
     switch (mapState) {
@@ -153,35 +141,19 @@ class ManholeCardMapViewModel extends ChangeNotifier {
           );
       return;
     }
+    final position = LatLng(
+      markerViewData.latitude,
+      markerViewData.longitude,
+    );
     await _moveToLocation(
-      LatLng(
-        markerViewData.latitude,
-        markerViewData.longitude,
-      ),
+      position,
       true,
     );
-    final result = await _cardUseCase.get(id: markerViewData.cardId);
-    if (result is Failure) {
-      _ref.read(alertProvider.notifier).show(
-            title: 'エラー',
-            message: 'カード情報の取得に失敗しました',
-            okButtonTitle: 'OK',
-            okButtonAction: () async {},
-            cancelButtonTitle: null,
-            cancelButtonAction: null,
-          );
-      return;
-    }
-    final cardDTO = (result as Success<CardDTO>).value;
-    final modalViewData = await MapModalViewDataMapper.convertToViewData(
-      cardDTO: cardDTO,
-      latLng: LatLng(
-        markerViewData.latitude,
-        markerViewData.longitude,
-      ),
-      getCardDTOList: _alreadyGetCardQueryService.getStream(),
+    await _transitionToCardModalView(
+      markerViewData.cardId,
+      position,
     );
-    await _showMarkerModal(modalViewData);
+    await _showModal();
   }
 
   Future<void> onTapCheckWithMapButton(String cardId) async {
@@ -197,54 +169,23 @@ class ManholeCardMapViewModel extends ChangeNotifier {
           );
       return;
     }
+    final position = LatLng(
+      markerViewData.latitude,
+      markerViewData.longitude,
+    );
     await _moveToLocation(
-      LatLng(
-        markerViewData.latitude,
-        markerViewData.longitude,
-      ),
+      position,
       true,
     );
-    final result = await _cardUseCase.get(id: markerViewData.cardId);
-    if (result is Failure) {
-      _ref.read(alertProvider.notifier).show(
-            title: 'エラー',
-            message: 'カード情報の取得に失敗しました',
-            okButtonTitle: 'OK',
-            okButtonAction: () async {},
-            cancelButtonTitle: null,
-            cancelButtonAction: null,
-          );
-      return;
-    }
-    final cardDTO = (result as Success<CardDTO>).value;
-    final modalViewData = await MapModalViewDataMapper.convertToViewData(
-      cardDTO: cardDTO,
-      latLng: LatLng(
-        markerViewData.latitude,
-        markerViewData.longitude,
-      ),
-      getCardDTOList: _alreadyGetCardQueryService.getStream(),
+    await _transitionToCardModalView(
+      markerViewData.cardId,
+      position,
     );
-    await _showMarkerModal(modalViewData);
+    await _showModal();
   }
 
-  Future<void> onTapDetailButton(String cardId) async {
-    await _transitionToDetailView(cardId);
-  }
-
-  Future<void> onTapAlreadyGetButton(
-    String cardId,
-    bool alreadyGet,
-  ) async {
-    if (alreadyGet) {
-      _deleteCard(cardId);
-    } else {
-      _saveCard(cardId);
-    }
-  }
-
-  Future<void> onCloseMarkerModal() async {
-    await _closeMarkerModal();
+  Future<void> onCloseModal() async {
+    await _closeModal();
   }
 
   Future<void> onCameraMove(CameraPosition position) async {
@@ -254,7 +195,9 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   Future<void> sendPV() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
-      parameters: {'name': 'manhole_card_map_view'},
+      parameters: {
+        'screen_name': 'manhole_card_map_view',
+      },
     );
   }
 
@@ -371,31 +314,25 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _showMarkerModal(MapModalCardViewData viewData) async {
+  Future<void> _showModal() async {
     isShowModal = true;
-    _ref.read(mapModalProvider.notifier).present(viewData: viewData);
     notifyListeners();
   }
 
-  Future<void> _closeMarkerModal() async {
+  Future<void> _closeModal() async {
     isShowModal = false;
-    _ref.read(mapModalProvider.notifier).dismiss();
     notifyListeners();
   }
 
-  Future<void> _saveCard(String cardId) async {
-    _alreadyGetCardUseCase.save(id: cardId);
-  }
-
-  Future<void> _deleteCard(String cardId) async {
-    _alreadyGetCardUseCase.delete(id: cardId);
-  }
-
-  Future<void> _transitionToDetailView(String cardId) async {
-    await _ref.read(routerProvider(_key).notifier).push(
-          nextWidget: DetailView(
+  Future<void> _transitionToCardModalView(
+    String cardId,
+    LatLng position,
+  ) async {
+    await _ref.read(routerProvider(_key).notifier).presentModal(
+          nextWidget: CardModalView(
             key: UniqueKey(),
             cardId: cardId,
+            position: position,
           ),
         );
   }

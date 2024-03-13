@@ -29,6 +29,7 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
           name: analyticsEvent.name,
           parameters: analyticsEvent.parameters,
         );
+        _logger.d('${analyticsEvent.name} ${analyticsEvent.parameters}');
       }
       return const Result.success(null);
     } on Exception catch (exception) {

@@ -5,7 +5,6 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
-import '/app/provider/custom_navigator_observer_provider.dart';
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/party_animation_provider.dart';
 import '/app/provider/router_provider.dart';
@@ -70,7 +69,7 @@ class BottomTabViewModel extends ChangeNotifier {
       selectedIndex = index;
       notifyListeners();
       final tabKey = _ref.read(tabKeyStorageProvider).getTabKey(selectedIndex);
-      _ref.read(customNavigatorObserverProvider(tabKey)).sendPV();
+      // _ref.read(customNavigatorObserverProvider(tabKey)).sendPV();
     }
   }
 
@@ -82,7 +81,9 @@ class BottomTabViewModel extends ChangeNotifier {
   Future<void> sendPV() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
-      parameters: {'name': 'bottom_tab_view'},
+      parameters: {
+        'screen_name': 'bottom_tab_view',
+      },
     );
   }
 
