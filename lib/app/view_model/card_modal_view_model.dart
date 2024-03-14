@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/app/mapper/modal_card_view_data_mapper.dart';
-import 'package:manhole_card_navi/app/provider/alert_provider.dart';
-import 'package:manhole_card_navi/domain/entity/result.dart';
 
+import '/app/mapper/modal_card_view_data_mapper.dart';
+import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/view/detail_view.dart';
 import '/app/view_data/modal_card_view_data.dart';
+import '/domain/entity/result.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/dto/card_dto.dart';
@@ -74,9 +74,9 @@ class CardModalViewModel extends ChangeNotifier {
     String cardId,
     LatLng position,
   ) async {
-    _logger.d('CardModalViewModel');
     _cardId = cardId;
     _position = position;
+    sendPV();
     await _fetch();
     await _listenAlreadyGetCard();
   }
@@ -86,6 +86,7 @@ class CardModalViewModel extends ChangeNotifier {
       name: 'screen_pv',
       parameters: {
         'screen_name': 'card_modal_view',
+        'card_id': _cardId,
       },
     );
   }

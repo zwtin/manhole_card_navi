@@ -73,8 +73,8 @@ class DetailViewModel extends ChangeNotifier {
   Future<void> onLoad(
     String cardId,
   ) async {
-    _logger.d('DetailViewModel');
     _cardId = cardId;
+    sendPV();
     await _fetch();
     await _listenAlreadyGetCard();
   }
@@ -106,7 +106,7 @@ class DetailViewModel extends ChangeNotifier {
       name: 'screen_pv',
       parameters: {
         'screen_name': 'detail_view',
-        'id': _cardId,
+        'card_id': _cardId,
       },
     );
   }

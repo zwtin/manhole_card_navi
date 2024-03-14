@@ -46,7 +46,7 @@ class CheckMasterUpdateViewModel extends ChangeNotifier {
   bool isLoading = false;
 
   Future<void> onLoad() async {
-    _logger.d('CheckMasterUpdateViewModel');
+    sendPV();
     final masterResult = await _checkNeedUpdate();
     if (masterResult is Failure) {
       return;

@@ -53,8 +53,8 @@ class BottomTabViewModel extends ChangeNotifier {
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
 
   Future<void> onLoad() async {
-    _logger.d('BottomTabViewModel');
     _ref.read(tabKeyStorageProvider).setBottomTabKey(_key);
+    sendPV();
     await _initAlreadyGetCardDTOList();
     await _listenAlreadyGetCard();
     await _requestPushNotificationPermission();

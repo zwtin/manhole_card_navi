@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:manhole_card_navi/app/widget/common_widget.dart';
 
 import '/app/provider/router_provider.dart';
 import '/app/view_data/router_view_data.dart';
+import '/app/widget/common_widget.dart';
 import '/app/widget/fade_in_route.dart';
 
 class RouterWidget<T extends CommonWidget> extends HookConsumerWidget {
@@ -33,7 +33,7 @@ class RouterWidget<T extends CommonWidget> extends HookConsumerWidget {
               break;
             }
             if (!context.mounted) break;
-            final result = await Navigator.of(context).push(
+            final result = await Navigator.of(context).push<bool>(
               MaterialPageRoute(
                 builder: (context) {
                   return nextWidget;
@@ -41,6 +41,7 @@ class RouterWidget<T extends CommonWidget> extends HookConsumerWidget {
               ),
             );
             if (!context.mounted) break;
+            if (result != null && !result) break;
             final currentWidget = context.findAncestorWidgetOfExactType<T>();
             await currentWidget?.sendPV(ref);
             break;
@@ -62,10 +63,8 @@ class RouterWidget<T extends CommonWidget> extends HookConsumerWidget {
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
+              result: false,
             );
-            if (!context.mounted) break;
-            final currentWidget = context.findAncestorWidgetOfExactType<T>();
-            await currentWidget?.sendPV(ref);
             break;
           case TransitionType.present:
             final nextWidget = next.nextWidget;

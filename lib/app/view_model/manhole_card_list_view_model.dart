@@ -75,8 +75,8 @@ class ManholeCardListViewModel extends ChangeNotifier {
   ListState listState = ListState.all;
 
   Future<void> onLoad() async {
-    _logger.d('ManholeCardListViewModel');
     _ref.read(tabKeyStorageProvider).setTabKey(1, _key);
+    sendPV();
     await _fetchCards();
     await _listenAlreadyGetCard();
   }
@@ -113,6 +113,7 @@ class ManholeCardListViewModel extends ChangeNotifier {
       name: 'screen_pv',
       parameters: {
         'screen_name': 'manhole_card_list_view',
+        'list_state': listState.name,
       },
     );
   }

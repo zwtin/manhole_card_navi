@@ -38,6 +38,7 @@ class TermsOfServiceViewModel extends ChangeNotifier {
   String html = '';
 
   Future<void> onLoad() async {
+    sendPV();
     await _fetchTermsOfService();
   }
 

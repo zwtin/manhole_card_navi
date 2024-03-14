@@ -90,8 +90,8 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       _alreadyGetCardStreamSubscription;
 
   Future<void> onLoad() async {
-    _logger.d('ManholeCardMapViewModel');
     _ref.read(tabKeyStorageProvider).setTabKey(0, _key);
+    sendPV();
     await _fetchMarker();
     await _listenAlreadyGetCard();
   }
@@ -197,6 +197,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       name: 'screen_pv',
       parameters: {
         'screen_name': 'manhole_card_map_view',
+        'map_state': mapState.name,
       },
     );
   }

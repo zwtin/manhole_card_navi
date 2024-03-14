@@ -315,7 +315,7 @@ class App extends HookConsumerWidget {
       ),
       themeMode: ThemeMode.system,
       onGenerateRoute: (settings) {
-        return PageRouteBuilder<Widget>(
+        return PageRouteBuilder(
           pageBuilder: (
             context,
             animation1,

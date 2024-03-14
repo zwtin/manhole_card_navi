@@ -35,8 +35,8 @@ class CustomIntroductionViewModel extends ChangeNotifier {
   Future<void> onLoad(
     bool isTutorial,
   ) async {
-    _logger.d('CustomIntroductionViewModel');
     _isTutorial = isTutorial;
+    sendPV();
   }
 
   Future<void> onDone() async {

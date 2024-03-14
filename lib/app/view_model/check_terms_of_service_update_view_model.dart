@@ -49,7 +49,7 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
   bool isAgreed = false;
 
   Future<void> onLoad() async {
-    _logger.d('CheckTermsOfServiceUpdateViewModel');
+    sendPV();
     final result = await _checkNeedUpdate();
     if (result is Failure) {
       return;

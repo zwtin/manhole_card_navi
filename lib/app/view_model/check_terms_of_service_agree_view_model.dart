@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/app/view/bottom_tab_view.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
-import '/app/view/bottom_tab_view.dart';
 import '/app/view/privacy_policy_view.dart';
 import '/app/view/terms_of_service_view.dart';
 import '/domain/entity/result.dart';
@@ -43,7 +43,7 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
   bool isAgreed = false;
 
   Future<void> onLoad() async {
-    _logger.d('CheckTermsOfServiceAgreeViewModel');
+    sendPV();
   }
 
   Future<void> onTapCheckBox() async {

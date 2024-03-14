@@ -1,8 +1,8 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/use_case/use_case/analytics_use_case.dart';
 
 import '/app_use_case.dart';
+import '/use_case/use_case/analytics_use_case.dart';
 
 final appViewModelProvider = Provider.autoDispose<AppViewModel>(
   (ref) {

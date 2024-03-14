@@ -45,8 +45,8 @@ class SettingViewModel extends ChangeNotifier {
   String appVersion = '';
 
   Future<void> onLoad() async {
-    _logger.d('SettingViewModel');
     _ref.read(tabKeyStorageProvider).setTabKey(2, _key);
+    sendPV();
     await _fetchAppInfo();
   }
 
