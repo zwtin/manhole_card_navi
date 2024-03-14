@@ -203,9 +203,9 @@ class CardModalView extends CommonWidget {
                             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                             child: OutlinedButton(
                               onPressed: () async {
-                                // await ref
-                                //     .read(manholeCardMapViewModelProvider(key))
-                                //     .onTapDetailButton(viewData.id);
+                                await ref
+                                    .read(cardModalViewModelProvider(key))
+                                    .onTapDetailButton();
                               },
                               child: SizedBox(
                                 height: 48,
@@ -224,9 +224,9 @@ class CardModalView extends CommonWidget {
                             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                             child: OutlinedButton(
                               onPressed: () async {
-                                // await ref
-                                //     .read(manholeCardMapViewModelProvider(key))
-                                //     .onTapDetailButton(viewData.id);
+                                await ref
+                                    .read(cardModalViewModelProvider(key))
+                                    .onTapAlreadyGetButton();
                               },
                               child: SizedBox(
                                 height: 48,

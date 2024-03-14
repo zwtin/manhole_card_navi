@@ -90,6 +90,10 @@ class CardModalViewModel extends ChangeNotifier {
     );
   }
 
+  Future<void> onTapDetailButton() async {
+    await _transitionToDetailView();
+  }
+
   Future<void> onTapAlreadyGetButton() async {
     if (_alreadyGet) {
       _deleteCard();
@@ -137,11 +141,11 @@ class CardModalViewModel extends ChangeNotifier {
     _alreadyGetCardUseCase.delete(id: _cardId);
   }
 
-  Future<void> _transitionToDetailView(String cardId) async {
+  Future<void> _transitionToDetailView() async {
     await _ref.read(routerProvider(_key).notifier).push(
           nextWidget: DetailView(
             key: UniqueKey(),
-            cardId: cardId,
+            cardId: _cardId,
           ),
         );
   }
