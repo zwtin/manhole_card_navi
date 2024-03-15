@@ -156,6 +156,7 @@ class DetailViewModel extends ChangeNotifier {
 
   Future<void> _transitionToImageDetailView(String heroTag) async {
     await _ref.read(routerProvider(_key).notifier).presentImage(
+          cardId: _cardId,
           imageData: viewData.icon,
           imageTag: heroTag,
         );

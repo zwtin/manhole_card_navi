@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/app/view/image_detail_view.dart';
-
-class FadeInRoute extends PageRouteBuilder<ImageDetailView> {
+class FadeInRoute extends PageRouteBuilder {
   FadeInRoute({
     required this.widget,
     required this.onTransitionCompleted,
