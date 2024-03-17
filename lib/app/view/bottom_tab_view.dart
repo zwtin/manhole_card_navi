@@ -11,6 +11,7 @@ import '/app/view/setting_view.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/widget/alert_widget.dart';
 import '/app/widget/common_widget.dart';
+import '/app/widget/pv_sender_widget.dart';
 import '/app/widget/router_widget.dart';
 
 class BottomTabView extends CommonWidget {
@@ -72,115 +73,118 @@ class BottomTabView extends CommonWidget {
     );
 
     return AlertWidget(
-      child: RouterWidget(
+      child: PVSendWidget(
         key: key,
-        parent: this,
-        child: WillPopScope(
-          onWillPop: () async {
-            ref.read(bottomTabViewModelProvider(key)).pop();
-            return false;
-          },
-          child: Scaffold(
-            bottomNavigationBar: ConvexAppBar(
-              color: Theme.of(context).iconTheme.color,
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              activeColor: Theme.of(context).primaryColor,
-              controller: controller,
-              initialActiveIndex: viewModel.selectedIndex,
-              onTap: (index) {
-                ref.read(bottomTabViewModelProvider(key)).onTap(index);
-              },
-              items: const [
-                TabItem<IconData>(
-                  icon: Icons.map_outlined,
-                  title: 'マップ',
-                ),
-                TabItem<IconData>(
-                  icon: Icons.list_alt,
-                  title: 'リスト',
-                ),
-                TabItem<IconData>(
-                  icon: Icons.settings,
-                  title: '設定',
-                ),
-              ],
-            ),
-            body: Stack(
-              children: [
-                IndexedStack(
-                  index: viewModel.selectedIndex,
-                  children: <Widget>[
-                    Navigator(
-                      onGenerateRoute: (settings) {
-                        return PageRouteBuilder<Widget>(
-                          pageBuilder: (
-                            context,
-                            animation1,
-                            animation2,
-                          ) {
-                            return tab0;
-                          },
-                        );
-                      },
-                    ),
-                    Navigator(
-                      onGenerateRoute: (settings) {
-                        return PageRouteBuilder<Widget>(
-                          pageBuilder: (
-                            context,
-                            animation1,
-                            animation2,
-                          ) {
-                            return tab1;
-                          },
-                        );
-                      },
-                    ),
-                    Navigator(
-                      onGenerateRoute: (settings) {
-                        return PageRouteBuilder<Widget>(
-                          pageBuilder: (
-                            context,
-                            animation1,
-                            animation2,
-                          ) {
-                            return tab2;
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final bodyHeight = constraints.maxHeight -
-                        kToolbarHeight -
-                        MediaQuery.of(context).padding.top;
-                    return Stack(
-                      children: [
-                        Positioned(
-                          right: -(bodyHeight -
-                                  MediaQuery.of(context).size.width) /
-                              2.0,
-                          bottom: 0.0,
-                          child: IgnorePointer(
-                            child: Lottie.asset(
-                              'assets/lotties/party.json',
-                              controller: animationController,
-                              onLoaded: (composition) {
-                                animationController.duration =
-                                    composition.duration ~/ 4 * 3;
-                              },
-                              height: bodyHeight,
-                              fit: BoxFit.fitHeight,
+        child: RouterWidget(
+          key: key,
+          parent: this,
+          child: WillPopScope(
+            onWillPop: () async {
+              ref.read(bottomTabViewModelProvider(key)).pop();
+              return false;
+            },
+            child: Scaffold(
+              bottomNavigationBar: ConvexAppBar(
+                color: Theme.of(context).iconTheme.color,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                activeColor: Theme.of(context).primaryColor,
+                controller: controller,
+                initialActiveIndex: viewModel.selectedIndex,
+                onTap: (index) {
+                  ref.read(bottomTabViewModelProvider(key)).onTap(index);
+                },
+                items: const [
+                  TabItem<IconData>(
+                    icon: Icons.map_outlined,
+                    title: 'マップ',
+                  ),
+                  TabItem<IconData>(
+                    icon: Icons.list_alt,
+                    title: 'リスト',
+                  ),
+                  TabItem<IconData>(
+                    icon: Icons.settings,
+                    title: '設定',
+                  ),
+                ],
+              ),
+              body: Stack(
+                children: [
+                  IndexedStack(
+                    index: viewModel.selectedIndex,
+                    children: <Widget>[
+                      Navigator(
+                        onGenerateRoute: (settings) {
+                          return PageRouteBuilder<Widget>(
+                            pageBuilder: (
+                              context,
+                              animation1,
+                              animation2,
+                            ) {
+                              return tab0;
+                            },
+                          );
+                        },
+                      ),
+                      Navigator(
+                        onGenerateRoute: (settings) {
+                          return PageRouteBuilder<Widget>(
+                            pageBuilder: (
+                              context,
+                              animation1,
+                              animation2,
+                            ) {
+                              return tab1;
+                            },
+                          );
+                        },
+                      ),
+                      Navigator(
+                        onGenerateRoute: (settings) {
+                          return PageRouteBuilder<Widget>(
+                            pageBuilder: (
+                              context,
+                              animation1,
+                              animation2,
+                            ) {
+                              return tab2;
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final bodyHeight = constraints.maxHeight -
+                          kToolbarHeight -
+                          MediaQuery.of(context).padding.top;
+                      return Stack(
+                        children: [
+                          Positioned(
+                            right: -(bodyHeight -
+                                    MediaQuery.of(context).size.width) /
+                                2.0,
+                            bottom: 0.0,
+                            child: IgnorePointer(
+                              child: Lottie.asset(
+                                'assets/lotties/party.json',
+                                controller: animationController,
+                                onLoaded: (composition) {
+                                  animationController.duration =
+                                      composition.duration ~/ 4 * 3;
+                                },
+                                height: bodyHeight,
+                                fit: BoxFit.fitHeight,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -190,9 +194,11 @@ class BottomTabView extends CommonWidget {
 
   @override
   Future<void> sendPV(WidgetRef ref) async {
-    ref.read(bottomTabViewModelProvider(key)).sendPV();
+    await ref.read(bottomTabViewModelProvider(key)).sendPV();
   }
 
   @override
-  Future<void> onCloseModal(WidgetRef ref) async {}
+  Future<void> onCameBack(WidgetRef ref) async {
+    await ref.read(bottomTabViewModelProvider(key)).onCameBack();
+  }
 }

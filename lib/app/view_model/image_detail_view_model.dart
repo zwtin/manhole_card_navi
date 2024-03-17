@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
+import '/app/provider/pv_sender_provider.dart';
+import '/app/provider/tab_key_storage_provider.dart';
+import '/app/view_model/bottom_tab_view_model.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 
 final imageDetailViewModelProvider =
@@ -34,7 +37,7 @@ class ImageDetailViewModel extends ChangeNotifier {
     String cardId,
   ) async {
     _cardId = cardId;
-    sendPV();
+    onCameBack();
   }
 
   Future<void> sendPV() async {
@@ -45,6 +48,15 @@ class ImageDetailViewModel extends ChangeNotifier {
         'card_id': _cardId,
       },
     );
+  }
+
+  Future<void> onCameBack() async {
+    final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
+    final selectedIndex = _ref
+        .read(bottomTabViewModelProvider(bottomTabKey).notifier)
+        .selectedIndex;
+    _ref.read(tabKeyStorageProvider).setTabKey(selectedIndex, _key);
+    _ref.read(pvSendProvider.notifier).send();
   }
 
   @override

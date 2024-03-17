@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '/app/view_model/privacy_policy_view_model.dart';
 import '/app/widget/common_widget.dart';
 import '/app/widget/custom_text.dart';
+import '/app/widget/pv_sender_widget.dart';
 import '/app/widget/router_widget.dart';
 
 class PrivacyPolicyView extends CommonWidget {
@@ -28,35 +29,39 @@ class PrivacyPolicyView extends CommonWidget {
       const [],
     );
 
-    return RouterWidget(
+    return PVSenderWidget(
       key: key,
       parent: this,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const TitleLargeText(
-            'プライバシーポリシー',
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        body: Stack(
-          children: [
-            Container(
-              color: Theme.of(context).colorScheme.background,
+      child: RouterWidget(
+        key: key,
+        parent: this,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const TitleLargeText(
+              'プライバシーポリシー',
+              fontWeight: FontWeight.bold,
             ),
-            SingleChildScrollView(
-              padding: EdgeInsets.only(
-                left: MediaQuery.of(context).padding.left,
-                bottom: MediaQuery.of(context).padding.bottom,
-                right: MediaQuery.of(context).padding.right,
+          ),
+          body: Stack(
+            children: [
+              Container(
+                color: Theme.of(context).colorScheme.background,
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Html(
-                  data: viewModel.html,
+              SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  left: MediaQuery.of(context).padding.left,
+                  bottom: MediaQuery.of(context).padding.bottom,
+                  right: MediaQuery.of(context).padding.right,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Html(
+                    data: viewModel.html,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -64,9 +69,11 @@ class PrivacyPolicyView extends CommonWidget {
 
   @override
   Future<void> sendPV(WidgetRef ref) async {
-    ref.read(privacyPolicyViewModelProvider(key)).sendPV();
+    await ref.read(privacyPolicyViewModelProvider(key)).sendPV();
   }
 
   @override
-  Future<void> onCloseModal(WidgetRef ref) async {}
+  Future<void> onCameBack(WidgetRef ref) async {
+    await ref.read(privacyPolicyViewModelProvider(key)).onCameBack();
+  }
 }

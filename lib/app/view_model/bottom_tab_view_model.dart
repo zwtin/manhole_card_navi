@@ -7,6 +7,7 @@ import 'package:logger/logger.dart';
 
 import '/app/provider/location_permission_provider.dart';
 import '/app/provider/party_animation_provider.dart';
+import '/app/provider/pv_sender_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/domain/entity/result.dart';
@@ -68,8 +69,7 @@ class BottomTabViewModel extends ChangeNotifier {
     } else {
       selectedIndex = index;
       notifyListeners();
-      final tabKey = _ref.read(tabKeyStorageProvider).getTabKey(selectedIndex);
-      // _ref.read(customNavigatorObserverProvider(tabKey)).sendPV();
+      _ref.read(pvSendProvider.notifier).send();
     }
   }
 
@@ -86,6 +86,8 @@ class BottomTabViewModel extends ChangeNotifier {
       },
     );
   }
+
+  Future<void> onCameBack() async {}
 
   Future<void> _listenAlreadyGetCard() async {
     _alreadyGetCardStreamSubscription =

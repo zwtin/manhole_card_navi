@@ -3,12 +3,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
 import '/app/provider/alert_provider.dart';
+import '/app/provider/pv_sender_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view/custom_introduction_view.dart';
 import '/app/view/license_view.dart';
 import '/app/view/privacy_policy_view.dart';
 import '/app/view/terms_of_service_view.dart';
+import '/app/view_model/bottom_tab_view_model.dart';
 import '/domain/entity/result.dart';
 import '/use_case/dto/app_info_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
@@ -46,7 +48,7 @@ class SettingViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _ref.read(tabKeyStorageProvider).setTabKey(2, _key);
-    sendPV();
+    onCameBack();
     await _fetchAppInfo();
   }
 
@@ -57,6 +59,15 @@ class SettingViewModel extends ChangeNotifier {
         'screen_name': 'setting_view',
       },
     );
+  }
+
+  Future<void> onCameBack() async {
+    final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
+    final selectedIndex = _ref
+        .read(bottomTabViewModelProvider(bottomTabKey).notifier)
+        .selectedIndex;
+    _ref.read(tabKeyStorageProvider).setTabKey(selectedIndex, _key);
+    _ref.read(pvSendProvider.notifier).send();
   }
 
   Future<void> _fetchAppInfo() async {

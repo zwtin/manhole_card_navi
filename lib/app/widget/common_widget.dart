@@ -4,5 +4,5 @@ abstract class CommonWidget extends HookConsumerWidget {
   const CommonWidget({super.key});
 
   Future<void> sendPV(WidgetRef ref);
-  Future<void> onCloseModal(WidgetRef ref);
+  Future<void> onCameBack(WidgetRef ref);
 }

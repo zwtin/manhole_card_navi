@@ -105,6 +105,8 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
     );
   }
 
+  Future<void> onCameBack() async {}
+
   Future<Result<bool>> _checkNeedUpdate() async {
     isLoading = true;
     notifyListeners();

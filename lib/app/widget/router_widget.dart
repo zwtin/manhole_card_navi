@@ -43,7 +43,7 @@ class RouterWidget<T extends CommonWidget> extends HookConsumerWidget {
             if (!context.mounted) break;
             if (result != null && !result) break;
             final currentWidget = context.findAncestorWidgetOfExactType<T>();
-            await currentWidget?.sendPV(ref);
+            await currentWidget?.onCameBack(ref);
             break;
           case TransitionType.pushReplacement:
             final nextWidget = next.nextWidget;
@@ -85,7 +85,7 @@ class RouterWidget<T extends CommonWidget> extends HookConsumerWidget {
             );
             if (!context.mounted) break;
             final currentWidget = context.findAncestorWidgetOfExactType<T>();
-            await currentWidget?.sendPV(ref);
+            await currentWidget?.onCameBack(ref);
             break;
           case TransitionType.modal:
             final nextWidget = next.nextWidget;
@@ -103,8 +103,7 @@ class RouterWidget<T extends CommonWidget> extends HookConsumerWidget {
             );
             if (!context.mounted) break;
             final currentWidget = context.findAncestorWidgetOfExactType<T>();
-            await currentWidget?.sendPV(ref);
-            await currentWidget?.onCloseModal(ref);
+            await currentWidget?.onCameBack(ref);
             break;
           case TransitionType.image:
             final nextWidget = next.nextWidget;
@@ -124,7 +123,7 @@ class RouterWidget<T extends CommonWidget> extends HookConsumerWidget {
             );
             if (!context.mounted) break;
             final currentWidget = context.findAncestorWidgetOfExactType<T>();
-            await currentWidget?.sendPV(ref);
+            await currentWidget?.onCameBack(ref);
             break;
           case TransitionType.pop:
             if (!context.mounted) break;

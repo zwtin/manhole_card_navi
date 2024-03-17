@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/view_model/license_view_model.dart';
 import '/app/widget/common_widget.dart';
+import '/app/widget/pv_sender_widget.dart';
 import '/app/widget/router_widget.dart';
 
 class LicenseView extends CommonWidget {
@@ -27,20 +28,24 @@ class LicenseView extends CommonWidget {
       const [],
     );
 
-    return RouterWidget(
+    return PVSenderWidget(
       key: key,
       parent: this,
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          cardColor: Theme.of(context).colorScheme.background,
-          listTileTheme: ListTileThemeData(
-            tileColor: Theme.of(context).colorScheme.background,
+      child: RouterWidget(
+        key: key,
+        parent: this,
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            cardColor: Theme.of(context).colorScheme.background,
+            listTileTheme: ListTileThemeData(
+              tileColor: Theme.of(context).colorScheme.background,
+            ),
           ),
-        ),
-        child: LicensePage(
-          applicationName: viewModel.appName,
-          applicationVersion: viewModel.appVersion,
-          applicationIcon: const FlutterLogo(),
+          child: LicensePage(
+            applicationName: viewModel.appName,
+            applicationVersion: viewModel.appVersion,
+            applicationIcon: const FlutterLogo(),
+          ),
         ),
       ),
     );
@@ -48,9 +53,11 @@ class LicenseView extends CommonWidget {
 
   @override
   Future<void> sendPV(WidgetRef ref) async {
-    ref.read(licenseViewModelProvider(key)).sendPV();
+    await ref.read(licenseViewModelProvider(key)).sendPV();
   }
 
   @override
-  Future<void> onCloseModal(WidgetRef ref) async {}
+  Future<void> onCameBack(WidgetRef ref) async {
+    await ref.read(licenseViewModelProvider(key)).onCameBack();
+  }
 }

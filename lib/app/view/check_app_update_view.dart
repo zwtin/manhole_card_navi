@@ -6,6 +6,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 import '/app/view_model/check_app_update_view_model.dart';
 import '/app/widget/alert_widget.dart';
 import '/app/widget/common_widget.dart';
+import '/app/widget/pv_sender_widget.dart';
 import '/app/widget/router_widget.dart';
 
 class CheckAppUpdateView extends CommonWidget {
@@ -29,15 +30,19 @@ class CheckAppUpdateView extends CommonWidget {
     );
 
     return AlertWidget(
-      child: RouterWidget(
+      child: PVSenderWidget(
         key: key,
         parent: this,
-        child: LoadingOverlay(
-          isLoading: viewModel.isLoading,
-          color: Theme.of(context).colorScheme.background,
-          child: Scaffold(
-            body: Container(
-              color: Theme.of(context).colorScheme.background,
+        child: RouterWidget(
+          key: key,
+          parent: this,
+          child: LoadingOverlay(
+            isLoading: viewModel.isLoading,
+            color: Theme.of(context).colorScheme.background,
+            child: Scaffold(
+              body: Container(
+                color: Theme.of(context).colorScheme.background,
+              ),
             ),
           ),
         ),
@@ -47,9 +52,11 @@ class CheckAppUpdateView extends CommonWidget {
 
   @override
   Future<void> sendPV(WidgetRef ref) async {
-    ref.read(checkAppUpdateViewModelProvider(key)).sendPV();
+    await ref.read(checkAppUpdateViewModelProvider(key)).sendPV();
   }
 
   @override
-  Future<void> onCloseModal(WidgetRef ref) async {}
+  Future<void> onCameBack(WidgetRef ref) async {
+    await ref.read(checkAppUpdateViewModelProvider(key)).onCameBack();
+  }
 }

@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '/app/view_model/card_modal_view_model.dart';
 import '/app/widget/common_widget.dart';
 import '/app/widget/custom_text.dart';
+import '/app/widget/pv_sender_widget.dart';
 import '/app/widget/router_widget.dart';
 
 class CardModalView extends CommonWidget {
@@ -38,225 +39,232 @@ class CardModalView extends CommonWidget {
       const [],
     );
 
-    return RouterWidget(
+    return PVSenderWidget(
       key: key,
       parent: this,
-      child: viewModel.isLoading
-          ? Container()
-          : SingleChildScrollView(
-              child: SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 120,
-                            child: BodyLargeText(
-                              '名前',
-                            ),
-                          ),
-                          Flexible(
-                            child: BodyLargeText(
-                              viewModel.viewData.name,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ...viewModel.viewData.contacts.map(
-                      (contactViewData) {
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            16,
-                            0,
-                            16,
-                            16,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                width: 120,
-                                child: BodyLargeText(
-                                  '配布場所',
-                                ),
+      child: RouterWidget(
+        key: key,
+        parent: this,
+        child: viewModel.isLoading
+            ? Container()
+            : SingleChildScrollView(
+                child: SafeArea(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 120,
+                              child: BodyLargeText(
+                                '名前',
                               ),
-                              Flexible(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (contactViewData.nameUrl.isNotEmpty)
-                                      TextButton(
-                                        onPressed: () async {
-                                          final uri = Uri.parse(
-                                              contactViewData.nameUrl);
-                                          if (await canLaunchUrl(uri)) {
-                                            launchUrl(
-                                              uri,
-                                              mode: LaunchMode.inAppWebView,
-                                            );
-                                          }
-                                        },
-                                        child: BodyLargeLinkText(
+                            ),
+                            Flexible(
+                              child: BodyLargeText(
+                                viewModel.viewData.name,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ...viewModel.viewData.contacts.map(
+                        (contactViewData) {
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              16,
+                              0,
+                              16,
+                              16,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  width: 120,
+                                  child: BodyLargeText(
+                                    '配布場所',
+                                  ),
+                                ),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (contactViewData.nameUrl.isNotEmpty)
+                                        TextButton(
+                                          onPressed: () async {
+                                            final uri = Uri.parse(
+                                                contactViewData.nameUrl);
+                                            if (await canLaunchUrl(uri)) {
+                                              launchUrl(
+                                                uri,
+                                                mode: LaunchMode.inAppWebView,
+                                              );
+                                            }
+                                          },
+                                          child: BodyLargeLinkText(
+                                            contactViewData.name,
+                                          ),
+                                        ),
+                                      if (contactViewData.nameUrl.isEmpty)
+                                        BodyLargeText(
                                           contactViewData.name,
                                         ),
-                                      ),
-                                    if (contactViewData.nameUrl.isEmpty)
-                                      BodyLargeText(
-                                        contactViewData.name,
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 120,
-                            child: BodyLargeText(
-                              '在庫状況',
-                            ),
-                          ),
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (viewModel
-                                    .viewData.distributionLinkText.isNotEmpty)
-                                  TextButton(
-                                    onPressed: () async {
-                                      final uri = Uri.parse(viewModel
-                                          .viewData.distributionLinkUrl);
-                                      if (await canLaunchUrl(uri)) {
-                                        launchUrl(
-                                          uri,
-                                          mode: LaunchMode.inAppWebView,
-                                        );
-                                      }
-                                    },
-                                    child: BodyLargeLinkText(
-                                      viewModel.viewData.distributionLinkText,
-                                    ),
+                                    ],
                                   ),
-                                BodyLargeText(
-                                  viewModel.viewData.distributionText,
-                                ),
-                                BodyLargeText(
-                                  viewModel.viewData.distributionOther,
                                 ),
                               ],
                             ),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 120,
+                              child: BodyLargeText(
+                                '在庫状況',
+                              ),
+                            ),
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (viewModel
+                                      .viewData.distributionLinkText.isNotEmpty)
+                                    TextButton(
+                                      onPressed: () async {
+                                        final uri = Uri.parse(viewModel
+                                            .viewData.distributionLinkUrl);
+                                        if (await canLaunchUrl(uri)) {
+                                          launchUrl(
+                                            uri,
+                                            mode: LaunchMode.inAppWebView,
+                                          );
+                                        }
+                                      },
+                                      child: BodyLargeLinkText(
+                                        viewModel.viewData.distributionLinkText,
+                                      ),
+                                    ),
+                                  BodyLargeText(
+                                    viewModel.viewData.distributionText,
+                                  ),
+                                  BodyLargeText(
+                                    viewModel.viewData.distributionOther,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 48,
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final uri = Uri(
+                              scheme: 'https',
+                              host: 'www.google.com',
+                              path: '/maps/search/',
+                              queryParameters: {
+                                'api': '1',
+                                'query':
+                                    '${viewModel.viewData.latitude},${viewModel.viewData.longitude}',
+                              },
+                            );
+                            if (await canLaunchUrl(uri)) {
+                              launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            }
+                          },
+                          child: TitleMediumText(
+                            'Google マップで開く',
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                              child: OutlinedButton(
+                                onPressed: () async {
+                                  await ref
+                                      .read(cardModalViewModelProvider(key))
+                                      .onTapDetailButton();
+                                },
+                                child: SizedBox(
+                                  height: 48,
+                                  child: Center(
+                                    child: TitleMediumText(
+                                      '詳細を見る',
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                              child: OutlinedButton(
+                                onPressed: () async {
+                                  await ref
+                                      .read(cardModalViewModelProvider(key))
+                                      .onTapAlreadyGetButton();
+                                },
+                                child: SizedBox(
+                                  height: 48,
+                                  child: Center(
+                                    child: TitleMediumText(
+                                      viewModel.alreadyGetActionButtonTitle,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    Container(
-                      height: 48,
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final uri = Uri(
-                            scheme: 'https',
-                            host: 'www.google.com',
-                            path: '/maps/search/',
-                            queryParameters: {
-                              'api': '1',
-                              'query':
-                                  '${viewModel.viewData.latitude},${viewModel.viewData.longitude}',
-                            },
-                          );
-                          if (await canLaunchUrl(uri)) {
-                            launchUrl(
-                              uri,
-                              mode: LaunchMode.externalApplication,
-                            );
-                          }
-                        },
-                        child: TitleMediumText(
-                          'Google マップで開く',
-                          color: Theme.of(context).colorScheme.surface,
-                        ),
+                      const SizedBox(
+                        height: 40,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                            child: OutlinedButton(
-                              onPressed: () async {
-                                await ref
-                                    .read(cardModalViewModelProvider(key))
-                                    .onTapDetailButton();
-                              },
-                              child: SizedBox(
-                                height: 48,
-                                child: Center(
-                                  child: TitleMediumText(
-                                    '詳細を見る',
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                            child: OutlinedButton(
-                              onPressed: () async {
-                                await ref
-                                    .read(cardModalViewModelProvider(key))
-                                    .onTapAlreadyGetButton();
-                              },
-                              child: SizedBox(
-                                height: 48,
-                                child: Center(
-                                  child: TitleMediumText(
-                                    viewModel.alreadyGetActionButtonTitle,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 
   @override
   Future<void> sendPV(WidgetRef ref) async {
-    ref.read(cardModalViewModelProvider(key)).sendPV();
+    await ref.read(cardModalViewModelProvider(key)).sendPV();
   }
 
   @override
-  Future<void> onCloseModal(WidgetRef ref) async {}
+  Future<void> onCameBack(WidgetRef ref) async {
+    await ref.read(cardModalViewModelProvider(key)).onCameBack();
+  }
 }

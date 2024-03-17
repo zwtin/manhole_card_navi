@@ -6,6 +6,7 @@ import 'package:logger/logger.dart';
 
 import '/app/mapper/detail_card_view_data_mapper.dart';
 import '/app/provider/alert_provider.dart';
+import '/app/provider/pv_sender_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view_data/detail_card_view_data.dart';
@@ -74,18 +75,18 @@ class DetailViewModel extends ChangeNotifier {
     String cardId,
   ) async {
     _cardId = cardId;
-    sendPV();
+    onCameBack();
     await _fetch();
     await _listenAlreadyGetCard();
   }
 
   Future<void> onTapCheckWithMapButton() async {
     final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
-    _ref.read(bottomTabViewModelProvider(bottomTabKey)).onTap(0);
-    final mapTabKey = _ref.read(tabKeyStorageProvider).getTabKey(0);
-    _ref.read(routerProvider(mapTabKey).notifier).popToRoot();
+    _ref.read(bottomTabViewModelProvider(bottomTabKey).notifier).onTap(0);
+    final mapKey = _ref.read(tabKeyStorageProvider).getMapKey();
+    _ref.read(routerProvider(mapKey).notifier).popToRoot();
     _ref
-        .read(manholeCardMapViewModelProvider(mapTabKey))
+        .read(manholeCardMapViewModelProvider(mapKey))
         .onTapCheckWithMapButton(_cardId);
   }
 
@@ -109,6 +110,15 @@ class DetailViewModel extends ChangeNotifier {
         'card_id': _cardId,
       },
     );
+  }
+
+  Future<void> onCameBack() async {
+    final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
+    final selectedIndex = _ref
+        .read(bottomTabViewModelProvider(bottomTabKey).notifier)
+        .selectedIndex;
+    _ref.read(tabKeyStorageProvider).setTabKey(selectedIndex, _key);
+    _ref.read(pvSendProvider.notifier).send();
   }
 
   Future<void> _fetch() async {

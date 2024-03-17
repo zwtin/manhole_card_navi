@@ -7,9 +7,12 @@ import 'package:logger/logger.dart';
 
 import '/app/mapper/modal_card_view_data_mapper.dart';
 import '/app/provider/alert_provider.dart';
+import '/app/provider/pv_sender_provider.dart';
 import '/app/provider/router_provider.dart';
+import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view/detail_view.dart';
 import '/app/view_data/modal_card_view_data.dart';
+import '/app/view_model/bottom_tab_view_model.dart';
 import '/domain/entity/result.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/use_case/dto/already_get_card_dto.dart';
@@ -76,7 +79,7 @@ class CardModalViewModel extends ChangeNotifier {
   ) async {
     _cardId = cardId;
     _position = position;
-    sendPV();
+    onCameBack();
     await _fetch();
     await _listenAlreadyGetCard();
   }
@@ -89,6 +92,15 @@ class CardModalViewModel extends ChangeNotifier {
         'card_id': _cardId,
       },
     );
+  }
+
+  Future<void> onCameBack() async {
+    final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
+    final selectedIndex = _ref
+        .read(bottomTabViewModelProvider(bottomTabKey).notifier)
+        .selectedIndex;
+    _ref.read(tabKeyStorageProvider).setTabKey(selectedIndex, _key);
+    _ref.read(pvSendProvider.notifier).send();
   }
 
   Future<void> onTapDetailButton() async {

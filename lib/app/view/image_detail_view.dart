@@ -7,6 +7,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '/app/view_model/image_detail_view_model.dart';
 import '/app/widget/common_widget.dart';
 import '/app/widget/image_detail.dart';
+import '/app/widget/pv_sender_widget.dart';
+import '/app/widget/router_widget.dart';
 
 class ImageDetailView extends CommonWidget {
   const ImageDetailView({
@@ -36,17 +38,27 @@ class ImageDetailView extends CommonWidget {
       const [],
     );
 
-    return ImageDetail(
-      imageData: imageData,
-      imageTag: imageTag,
+    return PVSenderWidget(
+      key: key,
+      parent: this,
+      child: RouterWidget(
+        key: key,
+        parent: this,
+        child: ImageDetail(
+          imageData: imageData,
+          imageTag: imageTag,
+        ),
+      ),
     );
   }
 
   @override
   Future<void> sendPV(WidgetRef ref) async {
-    ref.read(imageDetailViewModelProvider(key)).sendPV();
+    await ref.read(imageDetailViewModelProvider(key)).sendPV();
   }
 
   @override
-  Future<void> onCloseModal(WidgetRef ref) async {}
+  Future<void> onCameBack(WidgetRef ref) async {
+    await ref.read(imageDetailViewModelProvider(key)).onCameBack();
+  }
 }

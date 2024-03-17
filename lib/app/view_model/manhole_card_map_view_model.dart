@@ -8,10 +8,12 @@ import 'package:logger/logger.dart';
 
 import '/app/mapper/map_markers_view_data_mapper.dart';
 import '/app/provider/alert_provider.dart';
+import '/app/provider/pv_sender_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view/card_modal_view.dart';
 import '/app/view_data/map_markers_view_data.dart';
+import '/app/view_model/bottom_tab_view_model.dart';
 import '/domain/entity/result.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
@@ -90,8 +92,9 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       _alreadyGetCardStreamSubscription;
 
   Future<void> onLoad() async {
+    _ref.read(tabKeyStorageProvider).setMapKey(_key);
     _ref.read(tabKeyStorageProvider).setTabKey(0, _key);
-    sendPV();
+    onCameBack();
     await _fetchMarker();
     await _listenAlreadyGetCard();
   }
@@ -184,10 +187,6 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     await _showModal();
   }
 
-  Future<void> onCloseModal() async {
-    await _closeModal();
-  }
-
   Future<void> onCameraMove(CameraPosition position) async {
     _zoom = position.zoom;
   }
@@ -200,6 +199,16 @@ class ManholeCardMapViewModel extends ChangeNotifier {
         'map_state': mapState.name,
       },
     );
+  }
+
+  Future<void> onCameBack() async {
+    await _closeModal();
+    final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
+    final selectedIndex = _ref
+        .read(bottomTabViewModelProvider(bottomTabKey).notifier)
+        .selectedIndex;
+    _ref.read(tabKeyStorageProvider).setTabKey(selectedIndex, _key);
+    _ref.read(pvSendProvider.notifier).send();
   }
 
   Future<void> _fetchMarker() async {
