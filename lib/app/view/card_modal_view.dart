@@ -45,11 +45,16 @@ class CardModalView extends CommonWidget {
       child: RouterWidget(
         key: key,
         parent: this,
-        child: viewModel.isLoading
-            ? Container()
-            : SingleChildScrollView(
-                child: SafeArea(
-                  child: Column(
+        child: SingleChildScrollView(
+          child: SafeArea(
+            child: viewModel.isLoading
+                ? const SizedBox(
+                    height: 300,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -252,8 +257,8 @@ class CardModalView extends CommonWidget {
                       ),
                     ],
                   ),
-                ),
-              ),
+          ),
+        ),
       ),
     );
   }

@@ -18,7 +18,7 @@ class ListPrefecturesViewDataMapper {
     required List<AlreadyGetCardDTO> originalGetCardDTOList,
     required ListPrefecturesViewData originalViewData,
   }) async {
-    final map = {};
+    final map = <String, dynamic>{};
     map['listCardDTOList'] = listCardDTOList;
     map['getCardDTOList'] = getCardDTOList;
     map['listState'] = listState;

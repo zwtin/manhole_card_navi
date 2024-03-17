@@ -19,7 +19,7 @@ class MapMarkersViewDataMapper {
     required MapMarkersViewData originalViewData,
   }) async {
     final assetsMap = await _getAssetMap();
-    final map = {};
+    final map = <String, dynamic>{};
     map['mapMarkerDTOList'] = mapMarkerDTOList;
     map['getCardDTOList'] = getCardDTOList;
     map['originalGetCardDTOList'] = originalGetCardDTOList;
