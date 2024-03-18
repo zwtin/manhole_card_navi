@@ -12,7 +12,10 @@ import '/app/widget/router_widget.dart';
 class TermsOfServiceView extends CommonWidget {
   const TermsOfServiceView({
     super.key,
+    required this.isTutorial,
   });
+
+  final bool isTutorial;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +24,9 @@ class TermsOfServiceView extends CommonWidget {
       () {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) async {
-            await ref.read(termsOfServiceViewModelProvider(key)).onLoad();
+            await ref
+                .read(termsOfServiceViewModelProvider(key))
+                .onLoad(isTutorial);
           },
         );
         return null;

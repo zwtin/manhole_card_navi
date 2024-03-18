@@ -38,9 +38,13 @@ class TermsOfServiceViewModel extends ChangeNotifier {
   final AnalyticsUseCase _analyticsUseCase;
   final TermsOfServiceUseCase _termsOfServiceUseCase;
 
+  bool _isTutorial = false;
   String html = '';
 
-  Future<void> onLoad() async {
+  Future<void> onLoad(
+    bool isTutorial,
+  ) async {
+    _isTutorial = isTutorial;
     onCameBack();
     await _fetchTermsOfService();
   }
@@ -55,12 +59,16 @@ class TermsOfServiceViewModel extends ChangeNotifier {
   }
 
   Future<void> onCameBack() async {
-    final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
-    final selectedIndex = _ref
-        .read(bottomTabViewModelProvider(bottomTabKey).notifier)
-        .selectedIndex;
-    _ref.read(tabKeyStorageProvider).setTabKey(selectedIndex, _key);
-    _ref.read(pvSendProvider.notifier).send();
+    if (_isTutorial) {
+      sendPV();
+    } else {
+      final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
+      final selectedIndex = _ref
+          .read(bottomTabViewModelProvider(bottomTabKey).notifier)
+          .selectedIndex;
+      _ref.read(tabKeyStorageProvider).setTabKey(selectedIndex, _key);
+      _ref.read(pvSendProvider.notifier).send();
+    }
   }
 
   Future<void> _fetchTermsOfService() async {

@@ -157,6 +157,7 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
     await _ref.read(routerProvider(_key).notifier).push(
           nextWidget: TermsOfServiceView(
             key: UniqueKey(),
+            isTutorial: true,
           ),
         );
   }
@@ -165,6 +166,7 @@ class CheckTermsOfServiceUpdateViewModel extends ChangeNotifier {
     await _ref.read(routerProvider(_key).notifier).push(
           nextWidget: PrivacyPolicyView(
             key: UniqueKey(),
+            isTutorial: true,
           ),
         );
   }

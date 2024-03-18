@@ -12,7 +12,10 @@ import '/app/widget/router_widget.dart';
 class PrivacyPolicyView extends CommonWidget {
   const PrivacyPolicyView({
     super.key,
+    required this.isTutorial,
   });
+
+  final bool isTutorial;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +24,9 @@ class PrivacyPolicyView extends CommonWidget {
       () {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) async {
-            await ref.read(privacyPolicyViewModelProvider(key)).onLoad();
+            await ref
+                .read(privacyPolicyViewModelProvider(key))
+                .onLoad(isTutorial);
           },
         );
         return null;

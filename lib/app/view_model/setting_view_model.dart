@@ -109,6 +109,7 @@ class SettingViewModel extends ChangeNotifier {
     await _ref.read(routerProvider(_key).notifier).push(
           nextWidget: TermsOfServiceView(
             key: UniqueKey(),
+            isTutorial: false,
           ),
         );
   }
@@ -121,6 +122,7 @@ class SettingViewModel extends ChangeNotifier {
     await _ref.read(routerProvider(_key).notifier).push(
           nextWidget: PrivacyPolicyView(
             key: UniqueKey(),
+            isTutorial: false,
           ),
         );
   }
