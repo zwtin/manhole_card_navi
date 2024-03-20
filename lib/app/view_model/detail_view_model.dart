@@ -68,14 +68,14 @@ class DetailViewModel extends ChangeNotifier {
   String _cardId = '';
   late CardDTO _cardDTO;
   bool _alreadyGet = false;
-  StreamSubscription<List<AlreadyGetCardDTO>>?
+  late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
 
   Future<void> onLoad(
     String cardId,
   ) async {
     _cardId = cardId;
-    onCameBack();
+    await onCameBack();
     await _fetch();
     await _listenAlreadyGetCard();
   }
@@ -176,6 +176,6 @@ class DetailViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('DetailViewModel dispose');
-    _alreadyGetCardStreamSubscription?.cancel();
+    _alreadyGetCardStreamSubscription.cancel();
   }
 }

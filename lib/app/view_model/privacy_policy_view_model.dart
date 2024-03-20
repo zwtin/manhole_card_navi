@@ -45,7 +45,7 @@ class PrivacyPolicyViewModel extends ChangeNotifier {
     bool isTutorial,
   ) async {
     _isTutorial = isTutorial;
-    onCameBack();
+    await onCameBack();
     await _fetchPrivacyPolicy();
   }
 
@@ -60,7 +60,7 @@ class PrivacyPolicyViewModel extends ChangeNotifier {
 
   Future<void> onCameBack() async {
     if (_isTutorial) {
-      sendPV();
+      await sendPV();
     } else {
       final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
       final selectedIndex = _ref

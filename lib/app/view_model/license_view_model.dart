@@ -42,7 +42,7 @@ class LicenseViewModel extends ChangeNotifier {
   String appVersion = '';
 
   Future<void> onLoad() async {
-    onCameBack();
+    await onCameBack();
     await _fetchAppInfo();
   }
 

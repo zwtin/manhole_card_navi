@@ -48,7 +48,7 @@ class SettingViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _ref.read(tabKeyStorageProvider).setTabKey(2, _key);
-    onCameBack();
+    await onCameBack();
     await _fetchAppInfo();
   }
 

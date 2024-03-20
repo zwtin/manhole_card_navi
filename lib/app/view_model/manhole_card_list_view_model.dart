@@ -61,7 +61,7 @@ class ManholeCardListViewModel extends ChangeNotifier {
       const ListPrefecturesViewData(list: []);
   final List<ListCardDTO> _listCardDTOList = [];
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
-  StreamSubscription<List<AlreadyGetCardDTO>>?
+  late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
   String get navigationTitle {
     switch (listState) {
@@ -78,7 +78,7 @@ class ManholeCardListViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _ref.read(tabKeyStorageProvider).setTabKey(1, _key);
-    onCameBack();
+    await onCameBack();
     await _fetchCards();
     await _listenAlreadyGetCard();
   }
@@ -178,6 +178,6 @@ class ManholeCardListViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('ManholeCardListViewModel dispose');
-    _alreadyGetCardStreamSubscription?.cancel();
+    _alreadyGetCardStreamSubscription.cancel();
   }
 }

@@ -40,7 +40,7 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
   bool isLoading = false;
 
   Future<void> onLoad() async {
-    sendPV();
+    await sendPV();
     final result = await _checkNeedUpdate();
     if (result is Failure) {
       return;

@@ -37,7 +37,7 @@ class ImageDetailViewModel extends ChangeNotifier {
     String cardId,
   ) async {
     _cardId = cardId;
-    onCameBack();
+    await onCameBack();
   }
 
   Future<void> sendPV() async {

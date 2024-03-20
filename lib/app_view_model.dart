@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
@@ -14,7 +15,7 @@ final appViewModelProvider = Provider.autoDispose<AppViewModel>(
   },
 );
 
-class AppViewModel {
+class AppViewModel extends ChangeNotifier {
   AppViewModel(
     this._ref,
     this._analyticsUseCase,
@@ -28,7 +29,12 @@ class AppViewModel {
   final AppUseCase _appUseCase;
 
   Future<void> onLoad() async {
-    _logger.d('AppViewModel');
-    _analyticsUseCase.sendOpen();
+    await _analyticsUseCase.sendOpen();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _logger.d('AppViewModel dispose');
   }
 }

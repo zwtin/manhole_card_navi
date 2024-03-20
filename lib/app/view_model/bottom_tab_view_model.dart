@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
@@ -15,6 +14,8 @@ import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/use_case/analytics_use_case.dart';
+import '/use_case/use_case/app_badge_use_case.dart';
+import '/use_case/use_case/location_use_case.dart';
 import '/use_case/use_case/push_notification_use_case.dart';
 
 final bottomTabViewModelProvider =
@@ -25,6 +26,8 @@ final bottomTabViewModelProvider =
       ref,
       ref.watch(alreadyGetCardQueryServiceProvider),
       ref.watch(analyticsUseCaseProvider),
+      ref.watch(appBadgeUseCaseProvider),
+      ref.watch(locationUseCaseProvider),
       ref.watch(pushNotificationUseCaseProvider),
     );
   },
@@ -36,6 +39,8 @@ class BottomTabViewModel extends ChangeNotifier {
     this._ref,
     this._alreadyGetCardQueryService,
     this._analyticsUseCase,
+    this._appBadgeUseCase,
+    this._locationUseCase,
     this._pushNotificationUseCase,
   );
 
@@ -46,16 +51,18 @@ class BottomTabViewModel extends ChangeNotifier {
   final AlreadyGetCardQueryService _alreadyGetCardQueryService;
 
   final AnalyticsUseCase _analyticsUseCase;
+  final AppBadgeUseCase _appBadgeUseCase;
+  final LocationUseCase _locationUseCase;
   final PushNotificationUseCase _pushNotificationUseCase;
 
   int selectedIndex = 0;
-  StreamSubscription<List<AlreadyGetCardDTO>>?
+  late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
 
   Future<void> onLoad() async {
     _ref.read(tabKeyStorageProvider).setBottomTabKey(_key);
-    sendPV();
+    await sendPV();
     await _initAlreadyGetCardDTOList();
     await _listenAlreadyGetCard();
     await _requestPushNotificationPermission();
@@ -115,17 +122,18 @@ class BottomTabViewModel extends ChangeNotifier {
 
   Future<void> _requestPushNotificationPermission() async {
     await _pushNotificationUseCase.requestPermission();
-    _ref.read(locationPermissionProvider.notifier).request();
+    await _locationUseCase.requestPermission();
+    _ref.read(locationPermissionProvider.notifier).requested();
   }
 
   Future<void> _removeAppBadge() async {
-    FlutterAppBadger.removeBadge();
+    _appBadgeUseCase.remove();
   }
 
   @override
   void dispose() {
     super.dispose();
     _logger.d('BottomTabViewModel dispose');
-    _alreadyGetCardStreamSubscription?.cancel();
+    _alreadyGetCardStreamSubscription.cancel();
   }
 }

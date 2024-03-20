@@ -88,13 +88,13 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final List<MapMarkerDTO> _distributionMarkerDTOList = [];
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
   double _zoom = 11.5;
-  StreamSubscription<List<AlreadyGetCardDTO>>?
+  late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
 
   Future<void> onLoad() async {
     _ref.read(tabKeyStorageProvider).setMapKey(_key);
     _ref.read(tabKeyStorageProvider).setTabKey(0, _key);
-    onCameBack();
+    await onCameBack();
     await _fetchMarker();
     await _listenAlreadyGetCard();
   }
@@ -351,6 +351,6 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('ManholeCardMapViewModel dispose');
-    _alreadyGetCardStreamSubscription?.cancel();
+    _alreadyGetCardStreamSubscription.cancel();
   }
 }

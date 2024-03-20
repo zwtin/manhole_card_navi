@@ -70,7 +70,7 @@ class CardModalViewModel extends ChangeNotifier {
   late LatLng _position;
   late CardDTO _cardDTO;
   bool _alreadyGet = false;
-  StreamSubscription<List<AlreadyGetCardDTO>>?
+  late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
 
   Future<void> onLoad(
@@ -79,7 +79,7 @@ class CardModalViewModel extends ChangeNotifier {
   ) async {
     _cardId = cardId;
     _position = position;
-    onCameBack();
+    await onCameBack();
     await _fetch();
     await _listenAlreadyGetCard();
   }
@@ -167,6 +167,6 @@ class CardModalViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('CardModalViewModel dispose');
-    _alreadyGetCardStreamSubscription?.cancel();
+    _alreadyGetCardStreamSubscription.cancel();
   }
 }

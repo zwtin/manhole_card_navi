@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -36,7 +35,9 @@ class ManholeCardMapView extends CommonWidget {
     ref.listen(
       locationPermissionProvider,
       (previous, next) async {
-        await requestPermission(ref);
+        await ref
+            .read(manholeCardMapViewModelProvider(key))
+            .updateMyLocationEnabled();
       },
     );
 
@@ -216,33 +217,6 @@ class ManholeCardMapView extends CommonWidget {
         ),
       ),
     );
-  }
-
-  Future<void> requestPermission(WidgetRef ref) async {
-    final isServiceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!isServiceEnabled) {
-      return Future.error(
-        'Location services are disabled.',
-      );
-    }
-
-    var permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error(
-          'Location permissions are denied',
-        );
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-        'Location permissions are permanently denied, we cannot request permissions.',
-      );
-    }
-
-    ref.read(manholeCardMapViewModelProvider(key)).updateMyLocationEnabled();
   }
 
   @override

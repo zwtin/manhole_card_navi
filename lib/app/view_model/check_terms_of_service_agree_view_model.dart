@@ -43,7 +43,7 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
   bool isAgreed = false;
 
   Future<void> onLoad() async {
-    sendPV();
+    await sendPV();
   }
 
   Future<void> onTapCheckBox() async {
@@ -90,7 +90,7 @@ class CheckTermsOfServiceAgreeViewModel extends ChangeNotifier {
   }
 
   Future<void> onCameBack() async {
-    sendPV();
+    await sendPV();
   }
 
   Future<Result<bool>> _agreeTermsOfService() async {

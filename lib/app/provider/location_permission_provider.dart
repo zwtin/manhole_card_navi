@@ -10,7 +10,7 @@ final locationPermissionProvider =
 class LocationPermissionNotifier extends StateNotifier<bool> {
   LocationPermissionNotifier() : super(false);
 
-  void request() {
+  void requested() {
     state = true;
   }
 }
