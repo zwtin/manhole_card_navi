@@ -80,7 +80,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -109,7 +109,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -134,7 +134,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -150,7 +150,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -168,7 +168,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -191,7 +191,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -258,7 +258,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -275,7 +275,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -298,7 +298,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -315,7 +315,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -332,7 +332,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -355,7 +355,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -374,7 +374,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -391,7 +391,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -408,7 +408,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -431,7 +431,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -448,7 +448,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -465,7 +465,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -488,7 +488,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -505,7 +505,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
@@ -522,7 +522,7 @@ class CheckMasterUpdateUseCase {
         return const Result.failure(
           CustomException(
             title: 'エラー',
-            text: '',
+            text: '不明なエラーが発生しました。',
           ),
         );
       }
