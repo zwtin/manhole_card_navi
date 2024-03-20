@@ -1,6 +1,7 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
 
 import '/domain/entity/analytics_event.dart';
 import '/domain/entity/result.dart';
@@ -32,8 +33,17 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
         _logger.d('${analyticsEvent.name} ${analyticsEvent.parameters}');
       }
       return const Result.success(null);
-    } on Exception catch (exception) {
-      return Result.failure(exception);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
     }
   }
 
@@ -44,8 +54,17 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
         _analytics.logAppOpen();
       }
       return const Result.success(null);
-    } on Exception catch (exception) {
-      return Result.failure(exception);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
     }
   }
 

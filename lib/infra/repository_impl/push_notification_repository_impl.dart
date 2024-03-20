@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
 
 import '/domain/entity/result.dart';
 import '/domain/repository/push_notification_repository.dart';
@@ -20,16 +21,29 @@ class PushNotificationRepositoryImpl implements PushNotificationRepository {
 
   @override
   Future<Result<void>> requestPermission() async {
-    NotificationSettings settings = await _messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-    return const Result.success(null);
+    try {
+      NotificationSettings settings = await _messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   void dispose() {

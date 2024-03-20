@@ -1,5 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import '/domain/entity/result.dart';
@@ -28,20 +29,33 @@ class AlreadyGetCardQueryServiceImpl implements AlreadyGetCardQueryService {
 
   @override
   Future<Result<List<AlreadyGetCardDTO>>> get() async {
-    return Result.success(
-      _instance
-          .getStringList(
-            'already_get_cards',
-            defaultValue: [],
-          )
-          .getValue()
-          .map(
-            (cardId) {
-              return AlreadyGetCardDTO(cardId: cardId);
-            },
-          )
-          .toList(),
-    );
+    try {
+      return Result.success(
+        _instance
+            .getStringList(
+              'already_get_cards',
+              defaultValue: [],
+            )
+            .getValue()
+            .map(
+              (cardId) {
+                return AlreadyGetCardDTO(cardId: cardId);
+              },
+            )
+            .toList(),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override

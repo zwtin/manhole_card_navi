@@ -29,102 +29,152 @@ class ContactRepositoryImpl implements ContactRepository {
   Future<Result<ManholeCardContacts>> fetchMaster({
     required InquiredMasterVersion inquiredMasterVersion,
   }) async {
-    final querySnapshot = await _firestore
-        .collection('master')
-        .doc(inquiredMasterVersion.value)
-        .collection('contacts')
-        .get();
-    final list = querySnapshot.docs.map(
-      (doc) {
-        return ManholeCardContact(
-          address: doc['address'] as String,
-          id: doc['id'] as String,
-          latitude: doc['latitude'] as double,
-          longitude: doc['longitude'] as double,
-          name: doc['name'] as String,
-          nameUrl: doc['name_url'] as String,
-          other: doc['other'] as String,
-          phoneNumber: doc['phone_number'] as String,
-          time: doc['time'] as String,
-          timeOther: doc['time_other'] as String,
-        );
-      },
-    ).toList();
-    return Result.success(
-      ManholeCardContacts(
-        list: list,
-      ),
-    );
+    try {
+      final querySnapshot = await _firestore
+          .collection('master')
+          .doc(inquiredMasterVersion.value)
+          .collection('contacts')
+          .get();
+      final list = querySnapshot.docs.map(
+        (doc) {
+          return ManholeCardContact(
+            address: doc['address'] as String,
+            id: doc['id'] as String,
+            latitude: doc['latitude'] as double,
+            longitude: doc['longitude'] as double,
+            name: doc['name'] as String,
+            nameUrl: doc['name_url'] as String,
+            other: doc['other'] as String,
+            phoneNumber: doc['phone_number'] as String,
+            time: doc['time'] as String,
+            timeOther: doc['time_other'] as String,
+          );
+        },
+      ).toList();
+      return Result.success(
+        ManholeCardContacts(
+          list: list,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<void>> deleteMaster() async {
-    var config = Configuration.local(
-      [
-        RealmContactDAO.schema,
-      ],
-      shouldDeleteIfMigrationNeeded: true,
-    );
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local(
+        [
+          RealmContactDAO.schema,
+        ],
+        shouldDeleteIfMigrationNeeded: true,
+      );
+      var realm = Realm(config);
 
-    realm.write(() {
-      realm.deleteAll<RealmContactDAO>();
-    });
-    realm.close();
+      realm.write(() {
+        realm.deleteAll<RealmContactDAO>();
+      });
+      realm.close();
 
-    return const Result.success(null);
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<void>> saveMaster({
     required ManholeCardContacts manholeCardContacts,
   }) async {
-    var config = Configuration.local([
-      RealmContactDAO.schema,
-    ]);
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local([
+        RealmContactDAO.schema,
+      ]);
+      var realm = Realm(config);
 
-    final realmContacts = RealmContactsMapper.convertFromEntity(
-      entity: manholeCardContacts,
-    );
-
-    realm.write(() {
-      realm.addAll(
-        realmContacts,
-        update: true,
+      final realmContacts = RealmContactsMapper.convertFromEntity(
+        entity: manholeCardContacts,
       );
-    });
-    realm.close();
 
-    return const Result.success(null);
+      realm.write(() {
+        realm.addAll(
+          realmContacts,
+          update: true,
+        );
+      });
+      realm.close();
+
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<ManholeCardContact>> get({
     required String id,
   }) async {
-    var config = Configuration.local([
-      RealmContactDAO.schema,
-    ]);
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local([
+        RealmContactDAO.schema,
+      ]);
+      var realm = Realm(config);
 
-    final daoOrNull = realm
-        .all<RealmContactDAO>()
-        .query(
-          "id == '$id'",
-        )
-        .firstOrNull;
-    if (daoOrNull == null) {
+      final daoOrNull = realm
+          .all<RealmContactDAO>()
+          .query(
+            "id == '$id'",
+          )
+          .firstOrNull;
+      if (daoOrNull == null) {
+        throw const CustomException(
+          title: 'エラー',
+          text: 'データが見つかりませんでした',
+        );
+      }
+      final contact = RealmContactMapper.convertToEntity(dao: daoOrNull);
+      realm.close();
+      return Result.success(contact);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: 'データが見つかりませんでした',
+          text: '',
         ),
       );
     }
-    final contact = RealmContactMapper.convertToEntity(dao: daoOrNull);
-    realm.close();
-    return Result.success(contact);
   }
 
   void dispose() {

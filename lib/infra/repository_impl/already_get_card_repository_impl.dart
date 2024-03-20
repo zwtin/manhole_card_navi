@@ -31,20 +31,31 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   Future<Result<void>> save({
     required ManholeCard manholeCard,
   }) async {
-    final list = _instance.getStringList(
-      'already_get_cards',
-      defaultValue: [],
-    ).getValue();
-    if (!list.contains(manholeCard.id)) {
-      list.add(manholeCard.id);
-    }
-    final result = await _instance.setStringList(
-      'already_get_cards',
-      list,
-    );
-    if (result) {
-      return const Result.success(null);
-    } else {
+    try {
+      final list = _instance.getStringList(
+        'already_get_cards',
+        defaultValue: [],
+      ).getValue();
+      if (!list.contains(manholeCard.id)) {
+        list.add(manholeCard.id);
+      }
+      final result = await _instance.setStringList(
+        'already_get_cards',
+        list,
+      );
+      if (result) {
+        return const Result.success(null);
+      } else {
+        throw const CustomException(
+          title: 'エラー',
+          text: '取得済みカードの保存に失敗しました',
+        );
+      }
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
@@ -58,20 +69,31 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   Future<Result<void>> delete({
     required ManholeCard manholeCard,
   }) async {
-    final list = _instance.getStringList(
-      'already_get_cards',
-      defaultValue: [],
-    ).getValue();
-    if (list.contains(manholeCard.id)) {
-      list.remove(manholeCard.id);
-    }
-    final result = await _instance.setStringList(
-      'already_get_cards',
-      list,
-    );
-    if (result) {
-      return const Result.success(null);
-    } else {
+    try {
+      final list = _instance.getStringList(
+        'already_get_cards',
+        defaultValue: [],
+      ).getValue();
+      if (list.contains(manholeCard.id)) {
+        list.remove(manholeCard.id);
+      }
+      final result = await _instance.setStringList(
+        'already_get_cards',
+        list,
+      );
+      if (result) {
+        return const Result.success(null);
+      } else {
+        throw const CustomException(
+          title: 'エラー',
+          text: '取得済みカードの削除に失敗しました',
+        );
+      }
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
       return const Result.failure(
         CustomException(
           title: 'エラー',

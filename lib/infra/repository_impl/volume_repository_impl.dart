@@ -29,94 +29,144 @@ class VolumeRepositoryImpl implements VolumeRepository {
   Future<Result<ManholeCardVolumes>> fetchMaster({
     required InquiredMasterVersion inquiredMasterVersion,
   }) async {
-    final querySnapshot = await _firestore
-        .collection('master')
-        .doc(inquiredMasterVersion.value)
-        .collection('volumes')
-        .get();
-    final list = querySnapshot.docs.map(
-      (doc) {
-        return ManholeCardVolume(
-          id: doc['id'] as String,
-          name: doc['name'] as String,
-        );
-      },
-    ).toList();
-    return Result.success(
-      ManholeCardVolumes(
-        list: list,
-      ),
-    );
+    try {
+      final querySnapshot = await _firestore
+          .collection('master')
+          .doc(inquiredMasterVersion.value)
+          .collection('volumes')
+          .get();
+      final list = querySnapshot.docs.map(
+        (doc) {
+          return ManholeCardVolume(
+            id: doc['id'] as String,
+            name: doc['name'] as String,
+          );
+        },
+      ).toList();
+      return Result.success(
+        ManholeCardVolumes(
+          list: list,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<void>> deleteMaster() async {
-    var config = Configuration.local(
-      [
-        RealmVolumeDAO.schema,
-      ],
-      shouldDeleteIfMigrationNeeded: true,
-    );
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local(
+        [
+          RealmVolumeDAO.schema,
+        ],
+        shouldDeleteIfMigrationNeeded: true,
+      );
+      var realm = Realm(config);
 
-    realm.write(() {
-      realm.deleteAll<RealmVolumeDAO>();
-    });
-    realm.close();
+      realm.write(() {
+        realm.deleteAll<RealmVolumeDAO>();
+      });
+      realm.close();
 
-    return const Result.success(null);
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<void>> saveMaster({
     required ManholeCardVolumes manholeCardVolumes,
   }) async {
-    var config = Configuration.local([
-      RealmVolumeDAO.schema,
-    ]);
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local([
+        RealmVolumeDAO.schema,
+      ]);
+      var realm = Realm(config);
 
-    final realmVolumes = RealmVolumesMapper.convertFromEntity(
-      entity: manholeCardVolumes,
-    );
-
-    realm.write(() {
-      realm.addAll(
-        realmVolumes,
-        update: true,
+      final realmVolumes = RealmVolumesMapper.convertFromEntity(
+        entity: manholeCardVolumes,
       );
-    });
-    realm.close();
 
-    return const Result.success(null);
+      realm.write(() {
+        realm.addAll(
+          realmVolumes,
+          update: true,
+        );
+      });
+      realm.close();
+
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<ManholeCardVolume>> get({
     required String id,
   }) async {
-    var config = Configuration.local([
-      RealmVolumeDAO.schema,
-    ]);
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local([
+        RealmVolumeDAO.schema,
+      ]);
+      var realm = Realm(config);
 
-    final daoOrNull = realm
-        .all<RealmVolumeDAO>()
-        .query(
-          "id == '$id'",
-        )
-        .firstOrNull;
-    if (daoOrNull == null) {
+      final daoOrNull = realm
+          .all<RealmVolumeDAO>()
+          .query(
+            "id == '$id'",
+          )
+          .firstOrNull;
+      if (daoOrNull == null) {
+        throw const CustomException(
+          title: 'エラー',
+          text: 'データが見つかりませんでした',
+        );
+      }
+      final volume = RealmVolumeMapper.convertToEntity(dao: daoOrNull);
+      realm.close();
+      return Result.success(volume);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: 'データが見つかりませんでした',
+          text: '',
         ),
       );
     }
-    final volume = RealmVolumeMapper.convertToEntity(dao: daoOrNull);
-    realm.close();
-    return Result.success(volume);
   }
 
   void dispose() {

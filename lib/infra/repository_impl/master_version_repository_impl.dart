@@ -32,45 +32,82 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
 
   @override
   Future<Result<InquiredMasterVersion>> getInquiredVersion() async {
-    final inquiredMasterVersion =
-        _remoteConfig.getString('inquired_master_version');
-    return Result.success(
-      InquiredMasterVersion(
-        value: inquiredMasterVersion,
-      ),
-    );
+    try {
+      final inquiredMasterVersion =
+          _remoteConfig.getString('inquired_master_version');
+      return Result.success(
+        InquiredMasterVersion(
+          value: inquiredMasterVersion,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<CurrentMasterVersion>> getCurrentVersion() async {
-    final currentMasterVersion = _instance
-        .getString(
-          'current_master_version',
-          defaultValue: '',
-        )
-        .getValue();
-    return Result.success(
-      CurrentMasterVersion(
-        value: currentMasterVersion,
-      ),
-    );
+    try {
+      final currentMasterVersion = _instance
+          .getString(
+            'current_master_version',
+            defaultValue: '',
+          )
+          .getValue();
+      return Result.success(
+        CurrentMasterVersion(
+          value: currentMasterVersion,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<void>> setCurrentVersion({
     required CurrentMasterVersion currentMasterVersion,
   }) async {
-    final result = await _instance.setString(
-      'current_master_version',
-      currentMasterVersion.value,
-    );
-    if (result) {
-      return const Result.success(null);
-    } else {
+    try {
+      final result = await _instance.setString(
+        'current_master_version',
+        currentMasterVersion.value,
+      );
+      if (result) {
+        return const Result.success(null);
+      } else {
+        throw const CustomException(
+          title: 'エラー',
+          text: 'バージョンの保存に失敗しました',
+        );
+      }
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: 'バージョンの保存に失敗しました',
+          text: '',
         ),
       );
     }

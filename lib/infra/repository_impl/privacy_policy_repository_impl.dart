@@ -1,6 +1,7 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
 
 import '/domain/entity/privacy_policy.dart';
 import '/domain/entity/result.dart';
@@ -21,12 +22,25 @@ class PrivacyPolicyRepositoryImpl implements PrivacyPolicyRepository {
 
   @override
   Future<Result<PrivacyPolicy>> get() async {
-    final privacyPolicy = _remoteConfig.getString('privacy_policy');
-    return Result.success(
-      PrivacyPolicy(
-        value: privacyPolicy,
-      ),
-    );
+    try {
+      final privacyPolicy = _remoteConfig.getString('privacy_policy');
+      return Result.success(
+        PrivacyPolicy(
+          value: privacyPolicy,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   void dispose() {

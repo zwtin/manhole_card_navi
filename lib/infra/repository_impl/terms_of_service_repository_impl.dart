@@ -33,55 +33,105 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
 
   @override
   Future<Result<TermsOfService>> get() async {
-    final termsOfService = _remoteConfig.getString('terms_of_service');
-    return Result.success(
-      TermsOfService(
-        value: termsOfService,
-      ),
-    );
+    try {
+      final termsOfService = _remoteConfig.getString('terms_of_service');
+      return Result.success(
+        TermsOfService(
+          value: termsOfService,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<InquiredTermsOfServiceVersion>> getInquiredVersion() async {
-    final inquiredTermsOfServiceVersion =
-        _remoteConfig.getString('inquired_terms_of_service_version');
-    return Result.success(
-      InquiredTermsOfServiceVersion(
-        value: inquiredTermsOfServiceVersion,
-      ),
-    );
+    try {
+      final inquiredTermsOfServiceVersion =
+          _remoteConfig.getString('inquired_terms_of_service_version');
+      return Result.success(
+        InquiredTermsOfServiceVersion(
+          value: inquiredTermsOfServiceVersion,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<AgreedTermsOfServiceVersion>> getAgreedVersion() async {
-    final agreedTermsOfServiceVersion = _instance
-        .getString(
-          'agreed_terms_of_service_version',
-          defaultValue: '',
-        )
-        .getValue();
-    return Result.success(
-      AgreedTermsOfServiceVersion(
-        value: agreedTermsOfServiceVersion,
-      ),
-    );
+    try {
+      final agreedTermsOfServiceVersion = _instance
+          .getString(
+            'agreed_terms_of_service_version',
+            defaultValue: '',
+          )
+          .getValue();
+      return Result.success(
+        AgreedTermsOfServiceVersion(
+          value: agreedTermsOfServiceVersion,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<void>> setAgreedVersion({
     required AgreedTermsOfServiceVersion agreedTermsOfServiceVersion,
   }) async {
-    final result = await _instance.setString(
-      'agreed_terms_of_service_version',
-      agreedTermsOfServiceVersion.value,
-    );
-    if (result) {
-      return const Result.success(null);
-    } else {
+    try {
+      final result = await _instance.setString(
+        'agreed_terms_of_service_version',
+        agreedTermsOfServiceVersion.value,
+      );
+      if (result) {
+        return const Result.success(null);
+      } else {
+        throw const CustomException(
+          title: 'エラー',
+          text: 'バージョンの保存に失敗しました',
+        );
+      }
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: 'バージョンの保存に失敗しました',
+          text: '',
         ),
       );
     }

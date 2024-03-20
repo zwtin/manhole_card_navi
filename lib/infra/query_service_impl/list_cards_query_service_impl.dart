@@ -29,44 +29,55 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
 
   @override
   Future<Result<List<ListCardDTO>>> fetch() async {
-    final config = Configuration.local([
-      RealmCardDAO.schema,
-      RealmContactDAO.schema,
-      RealmImageDAO.schema,
-      RealmPrefectureDAO.schema,
-      RealmVolumeDAO.schema,
-    ]);
-    var realm = Realm(config);
+    try {
+      final config = Configuration.local([
+        RealmCardDAO.schema,
+        RealmContactDAO.schema,
+        RealmImageDAO.schema,
+        RealmPrefectureDAO.schema,
+        RealmVolumeDAO.schema,
+      ]);
+      var realm = Realm(config);
 
-    final cardDAOList = realm.all<RealmCardDAO>();
-    if (cardDAOList.isEmpty) {
+      final cardDAOList = realm.all<RealmCardDAO>();
+      if (cardDAOList.isEmpty) {
+        throw const CustomException(
+          title: 'エラー',
+          text: 'データが見つかりませんでした',
+        );
+      }
+
+      final appDirectory = await getApplicationDocumentsDirectory();
+      final imageDirectory = Directory('${appDirectory.path}/images');
+
+      final cardDTOList = cardDAOList.map((dao) {
+        return ListCardDTO(
+          id: dao.id,
+          name: dao.name,
+          imagePath: dao.image == null
+              ? ''
+              : '${imageDirectory.path}/${dao.image!.name}',
+          prefectureId: dao.prefecture?.id ?? '',
+          prefectureName: dao.prefecture?.name ?? '',
+          volumeId: dao.volume?.id ?? '',
+          volumeName: dao.volume?.name ?? '',
+          publicationDate: dao.publicationDate,
+        );
+      }).toList();
+
+      return Result.success(cardDTOList);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: 'データが見つかりませんでした',
+          text: '',
         ),
       );
     }
-
-    final appDirectory = await getApplicationDocumentsDirectory();
-    final imageDirectory = Directory('${appDirectory.path}/images');
-
-    final cardDTOList = cardDAOList.map((dao) {
-      return ListCardDTO(
-        id: dao.id,
-        name: dao.name,
-        imagePath: dao.image == null
-            ? ''
-            : '${imageDirectory.path}/${dao.image!.name}',
-        prefectureId: dao.prefecture?.id ?? '',
-        prefectureName: dao.prefecture?.name ?? '',
-        volumeId: dao.volume?.id ?? '',
-        volumeName: dao.volume?.name ?? '',
-        publicationDate: dao.publicationDate,
-      );
-    }).toList();
-
-    return Result.success(cardDTOList);
   }
 
   void dispose() {

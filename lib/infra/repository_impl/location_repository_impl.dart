@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
@@ -17,43 +16,49 @@ final locationRepositoryProvider = Provider.autoDispose<LocationRepository>(
 
 class LocationRepositoryImpl implements LocationRepository {
   final _logger = Logger();
-  final _messaging = FirebaseMessaging.instance;
 
   @override
   Future<Result<void>> requestPermission() async {
-    final isServiceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!isServiceEnabled) {
-      return const Result.failure(
-        CustomException(
+    try {
+      final isServiceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!isServiceEnabled) {
+        throw const CustomException(
           title: 'エラー',
           text: '位置情報サービスが使えないデバイスです',
-        ),
-      );
-    }
-
-    var permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '位置権限を許可してください',
-          ),
         );
       }
-    }
 
-    if (permission == LocationPermission.deniedForever) {
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw const CustomException(
+            title: 'エラー',
+            text: '位置権限を許可してください',
+          );
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw const CustomException(
+          title: 'エラー',
+          text: '位置権限を許可してください',
+        );
+      }
+
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '位置権限を許可してください',
+          text: '',
         ),
       );
     }
-
-    return const Result.success(null);
   }
 
   void dispose() {

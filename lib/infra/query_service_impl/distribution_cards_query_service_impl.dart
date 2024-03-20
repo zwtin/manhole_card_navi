@@ -30,62 +30,74 @@ class DistributionCardsQueryServiceImpl
 
   @override
   Future<Result<List<MapMarkerDTO>>> fetch() async {
-    final config = Configuration.local([
-      RealmCardDAO.schema,
-      RealmContactDAO.schema,
-      RealmImageDAO.schema,
-      RealmPrefectureDAO.schema,
-      RealmVolumeDAO.schema,
-    ]);
-    var realm = Realm(config);
+    try {
+      final config = Configuration.local([
+        RealmCardDAO.schema,
+        RealmContactDAO.schema,
+        RealmImageDAO.schema,
+        RealmPrefectureDAO.schema,
+        RealmVolumeDAO.schema,
+      ]);
+      var realm = Realm(config);
 
-    final daoList = realm.all<RealmCardDAO>();
-    if (daoList.isEmpty) {
+      final daoList = realm.all<RealmCardDAO>();
+      if (daoList.isEmpty) {
+        throw const CustomException(
+          title: 'エラー',
+          text: 'データが見つかりませんでした',
+        );
+      }
+
+      final appDirectory = await getApplicationDocumentsDirectory();
+      final imageDirectory = Directory('${appDirectory.path}/images');
+
+      final dtoList = <MapMarkerDTO>[];
+      for (final dao in daoList) {
+        final DistributionStateDTO distributionState;
+        switch (dao.distributionState) {
+          case 'distributing':
+            distributionState = DistributionStateDTO.distributing;
+            break;
+          case 'stopped':
+            distributionState = DistributionStateDTO.stopped;
+            break;
+          case 'notClear':
+            distributionState = DistributionStateDTO.notClear;
+            break;
+          default:
+            distributionState = DistributionStateDTO.notClear;
+            break;
+        }
+        final imagePath = dao.image == null
+            ? ''
+            : '${imageDirectory.path}/${dao.image!.name}';
+
+        for (final contact in dao.contacts) {
+          dtoList.add(
+            MapMarkerDTO(
+              cardId: dao.id,
+              imagePath: imagePath,
+              distributionState: distributionState,
+              latitude: contact.latitude,
+              longitude: contact.longitude,
+            ),
+          );
+        }
+      }
+
+      return Result.success(dtoList);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: 'データが見つかりませんでした',
+          text: '',
         ),
       );
     }
-
-    final appDirectory = await getApplicationDocumentsDirectory();
-    final imageDirectory = Directory('${appDirectory.path}/images');
-
-    final dtoList = <MapMarkerDTO>[];
-    for (final dao in daoList) {
-      final DistributionStateDTO distributionState;
-      switch (dao.distributionState) {
-        case 'distributing':
-          distributionState = DistributionStateDTO.distributing;
-          break;
-        case 'stopped':
-          distributionState = DistributionStateDTO.stopped;
-          break;
-        case 'notClear':
-          distributionState = DistributionStateDTO.notClear;
-          break;
-        default:
-          distributionState = DistributionStateDTO.notClear;
-          break;
-      }
-      final imagePath =
-          dao.image == null ? '' : '${imageDirectory.path}/${dao.image!.name}';
-
-      for (final contact in dao.contacts) {
-        dtoList.add(
-          MapMarkerDTO(
-            cardId: dao.id,
-            imagePath: imagePath,
-            distributionState: distributionState,
-            latitude: contact.latitude,
-            longitude: contact.longitude,
-          ),
-        );
-      }
-    }
-
-    return Result.success(dtoList);
   }
 
   void dispose() {

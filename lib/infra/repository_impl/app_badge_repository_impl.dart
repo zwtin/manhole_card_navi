@@ -1,6 +1,7 @@
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
 
 import '/domain/entity/result.dart';
 import '/domain/repository/app_badge_repository.dart';
@@ -20,14 +21,40 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
   Future<Result<void>> updateCount({
     required int count,
   }) async {
-    FlutterAppBadger.updateBadgeCount(count);
-    return const Result.success(null);
+    try {
+      FlutterAppBadger.updateBadgeCount(count);
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<void>> remove() async {
-    FlutterAppBadger.removeBadge();
-    return const Result.success(null);
+    try {
+      FlutterAppBadger.removeBadge();
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   void dispose() {

@@ -34,129 +34,192 @@ class ImageRepositoryImpl implements ImageRepository {
   Future<Result<ManholeCardImages>> fetchMaster({
     required InquiredMasterVersion inquiredMasterVersion,
   }) async {
-    final querySnapshot = await _firestore
-        .collection('master')
-        .doc(inquiredMasterVersion.value)
-        .collection('images')
-        .get();
-    final list = querySnapshot.docs.map(
-      (doc) {
-        return ManholeCardImage(
-          id: doc['id'] as String,
-          name: doc['name'] as String,
-        );
-      },
-    ).toList();
-    return Result.success(
-      ManholeCardImages(
-        list: list,
-      ),
-    );
+    try {
+      final querySnapshot = await _firestore
+          .collection('master')
+          .doc(inquiredMasterVersion.value)
+          .collection('images')
+          .get();
+      final list = querySnapshot.docs.map(
+        (doc) {
+          return ManholeCardImage(
+            id: doc['id'] as String,
+            name: doc['name'] as String,
+          );
+        },
+      ).toList();
+      return Result.success(
+        ManholeCardImages(
+          list: list,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<ManholeCardImages>> fetchImage({
     required ManholeCardImages manholeCardImages,
   }) async {
-    final appDirectory = await getApplicationDocumentsDirectory();
-    final imageDirectory = Directory('${appDirectory.path}/images');
-    if (imageDirectory.existsSync()) {
-      imageDirectory.deleteSync(recursive: true);
-    }
-    imageDirectory.createSync(recursive: true);
+    try {
+      final appDirectory = await getApplicationDocumentsDirectory();
+      final imageDirectory = Directory('${appDirectory.path}/images');
+      if (imageDirectory.existsSync()) {
+        imageDirectory.deleteSync(recursive: true);
+      }
+      imageDirectory.createSync(recursive: true);
 
-    final newManholeCardImageList = await Future.wait(
-      manholeCardImages.map(
-        (manholeCardImage) async {
-          final firebaseStoragePath = _storage.ref().child(
-                'images/${manholeCardImage.name}',
-              );
-          final data = await firebaseStoragePath.getData();
-          if (data == null) {
+      final newManholeCardImageList = await Future.wait(
+        manholeCardImages.map(
+          (manholeCardImage) async {
+            final firebaseStoragePath = _storage.ref().child(
+                  'images/${manholeCardImage.name}',
+                );
+            final data = await firebaseStoragePath.getData();
+            if (data == null) {
+              return manholeCardImage;
+            }
+            final imagePath = '${imageDirectory.path}/${manholeCardImage.name}';
+            final imageFile = File(imagePath);
+            await imageFile.writeAsBytes(data);
             return manholeCardImage;
-          }
-          final imagePath = '${imageDirectory.path}/${manholeCardImage.name}';
-          final imageFile = File(imagePath);
-          await imageFile.writeAsBytes(data);
-          return manholeCardImage;
-        },
-      ),
-    );
-    return Result.success(
-      ManholeCardImages(
-        list: newManholeCardImageList,
-      ),
-    );
+          },
+        ),
+      );
+      return Result.success(
+        ManholeCardImages(
+          list: newManholeCardImageList,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<void>> deleteMaster() async {
-    var config = Configuration.local(
-      [
-        RealmImageDAO.schema,
-      ],
-      shouldDeleteIfMigrationNeeded: true,
-    );
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local(
+        [
+          RealmImageDAO.schema,
+        ],
+        shouldDeleteIfMigrationNeeded: true,
+      );
+      var realm = Realm(config);
 
-    realm.write(() {
-      realm.deleteAll<RealmImageDAO>();
-    });
-    realm.close();
+      realm.write(() {
+        realm.deleteAll<RealmImageDAO>();
+      });
+      realm.close();
 
-    return const Result.success(null);
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<void>> saveMaster({
     required ManholeCardImages manholeCardImages,
   }) async {
-    var config = Configuration.local([
-      RealmImageDAO.schema,
-    ]);
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local([
+        RealmImageDAO.schema,
+      ]);
+      var realm = Realm(config);
 
-    final realmImages = RealmImagesMapper.convertFromEntity(
-      entity: manholeCardImages,
-    );
-
-    realm.write(() {
-      realm.addAll(
-        realmImages,
-        update: true,
+      final realmImages = RealmImagesMapper.convertFromEntity(
+        entity: manholeCardImages,
       );
-    });
-    realm.close();
 
-    return const Result.success(null);
+      realm.write(() {
+        realm.addAll(
+          realmImages,
+          update: true,
+        );
+      });
+      realm.close();
+
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<ManholeCardImage>> get({
     required String id,
   }) async {
-    var config = Configuration.local([
-      RealmImageDAO.schema,
-    ]);
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local([
+        RealmImageDAO.schema,
+      ]);
+      var realm = Realm(config);
 
-    final daoOrNull = realm
-        .all<RealmImageDAO>()
-        .query(
-          "id == '$id'",
-        )
-        .firstOrNull;
-    if (daoOrNull == null) {
+      final daoOrNull = realm
+          .all<RealmImageDAO>()
+          .query(
+            "id == '$id'",
+          )
+          .firstOrNull;
+      if (daoOrNull == null) {
+        throw const CustomException(
+          title: 'エラー',
+          text: 'データが見つかりませんでした',
+        );
+      }
+      final image = RealmImageMapper.convertToEntity(dao: daoOrNull);
+      realm.close();
+      return Result.success(image);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: 'データが見つかりませんでした',
+          text: '',
         ),
       );
     }
-    final image = RealmImageMapper.convertToEntity(dao: daoOrNull);
-    realm.close();
-    return Result.success(image);
   }
 
   void dispose() {

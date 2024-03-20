@@ -1,6 +1,7 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '/domain/entity/app_info.dart';
@@ -30,22 +31,49 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
 
   @override
   Future<Result<InquiredAppVersion>> getInquiredAppVersion() async {
-    final inquiredAppVersion = _remoteConfig.getString('inquired_app_version');
-    return Result.success(
-      InquiredAppVersion(
-        value: inquiredAppVersion,
-      ),
-    );
+    try {
+      final inquiredAppVersion =
+          _remoteConfig.getString('inquired_app_version');
+      return Result.success(
+        InquiredAppVersion(
+          value: inquiredAppVersion,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<AppInfo>> getAppInfo() async {
-    return Result.success(
-      AppInfo(
-        name: _packageInfo.appName,
-        version: _packageInfo.version,
-      ),
-    );
+    try {
+      return Result.success(
+        AppInfo(
+          name: _packageInfo.appName,
+          version: _packageInfo.version,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   void dispose() {

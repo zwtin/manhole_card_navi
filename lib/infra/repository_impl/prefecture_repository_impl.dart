@@ -29,94 +29,144 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
   Future<Result<ManholeCardPrefectures>> fetchMaster({
     required InquiredMasterVersion inquiredMasterVersion,
   }) async {
-    final querySnapshot = await _firestore
-        .collection('master')
-        .doc(inquiredMasterVersion.value)
-        .collection('prefectures')
-        .get();
-    final list = querySnapshot.docs.map(
-      (doc) {
-        return ManholeCardPrefecture(
-          id: doc['id'] as String,
-          name: doc['name'] as String,
-        );
-      },
-    ).toList();
-    return Result.success(
-      ManholeCardPrefectures(
-        list: list,
-      ),
-    );
+    try {
+      final querySnapshot = await _firestore
+          .collection('master')
+          .doc(inquiredMasterVersion.value)
+          .collection('prefectures')
+          .get();
+      final list = querySnapshot.docs.map(
+        (doc) {
+          return ManholeCardPrefecture(
+            id: doc['id'] as String,
+            name: doc['name'] as String,
+          );
+        },
+      ).toList();
+      return Result.success(
+        ManholeCardPrefectures(
+          list: list,
+        ),
+      );
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<void>> deleteMaster() async {
-    var config = Configuration.local(
-      [
-        RealmPrefectureDAO.schema,
-      ],
-      shouldDeleteIfMigrationNeeded: true,
-    );
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local(
+        [
+          RealmPrefectureDAO.schema,
+        ],
+        shouldDeleteIfMigrationNeeded: true,
+      );
+      var realm = Realm(config);
 
-    realm.write(() {
-      realm.deleteAll<RealmPrefectureDAO>();
-    });
-    realm.close();
+      realm.write(() {
+        realm.deleteAll<RealmPrefectureDAO>();
+      });
+      realm.close();
 
-    return const Result.success(null);
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<void>> saveMaster({
     required ManholeCardPrefectures manholeCardPrefectures,
   }) async {
-    var config = Configuration.local([
-      RealmPrefectureDAO.schema,
-    ]);
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local([
+        RealmPrefectureDAO.schema,
+      ]);
+      var realm = Realm(config);
 
-    final realmPrefectures = RealmPrefecturesMapper.convertFromEntity(
-      entity: manholeCardPrefectures,
-    );
-
-    realm.write(() {
-      realm.addAll(
-        realmPrefectures,
-        update: true,
+      final realmPrefectures = RealmPrefecturesMapper.convertFromEntity(
+        entity: manholeCardPrefectures,
       );
-    });
-    realm.close();
 
-    return const Result.success(null);
+      realm.write(() {
+        realm.addAll(
+          realmPrefectures,
+          update: true,
+        );
+      });
+      realm.close();
+
+      return const Result.success(null);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: '',
+        ),
+      );
+    }
   }
 
   @override
   Future<Result<ManholeCardPrefecture>> get({
     required String id,
   }) async {
-    var config = Configuration.local([
-      RealmPrefectureDAO.schema,
-    ]);
-    var realm = Realm(config);
+    try {
+      var config = Configuration.local([
+        RealmPrefectureDAO.schema,
+      ]);
+      var realm = Realm(config);
 
-    final daoOrNull = realm
-        .all<RealmPrefectureDAO>()
-        .query(
-          "id == '$id'",
-        )
-        .firstOrNull;
-    if (daoOrNull == null) {
+      final daoOrNull = realm
+          .all<RealmPrefectureDAO>()
+          .query(
+            "id == '$id'",
+          )
+          .firstOrNull;
+      if (daoOrNull == null) {
+        throw const CustomException(
+          title: 'エラー',
+          text: 'データが見つかりませんでした',
+        );
+      }
+      final prefecture = RealmPrefectureMapper.convertToEntity(dao: daoOrNull);
+      realm.close();
+      return Result.success(prefecture);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: 'データが見つかりませんでした',
+          text: '',
         ),
       );
     }
-    final prefecture = RealmPrefectureMapper.convertToEntity(dao: daoOrNull);
-    realm.close();
-    return Result.success(prefecture);
   }
 
   void dispose() {
