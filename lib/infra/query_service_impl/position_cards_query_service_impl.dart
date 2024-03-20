@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:manhole_card_navi/temporary_provider.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/custom_exception.dart';
@@ -18,14 +18,21 @@ import '/use_case/query_service/position_cards_query_service.dart';
 final positionCardsQueryServiceProvider =
     Provider.autoDispose<PositionCardsQueryService>(
   (ref) {
-    final positionCardsQueryService = PositionCardsQueryServiceImpl();
+    final positionCardsQueryService = PositionCardsQueryServiceImpl(
+      ref.watch(directoryProvider),
+    );
     ref.onDispose(positionCardsQueryService.dispose);
     return positionCardsQueryService;
   },
 );
 
 class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
+  PositionCardsQueryServiceImpl(
+    this._directory,
+  );
+
   final _logger = Logger();
+  final Directory _directory;
 
   @override
   Future<Result<List<MapMarkerDTO>>> fetch() async {
@@ -47,7 +54,7 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
         );
       }
 
-      final appDirectory = await getApplicationDocumentsDirectory();
+      final appDirectory = _directory;
       final imageDirectory = Directory('${appDirectory.path}/images');
 
       final dtoList = <MapMarkerDTO>[];

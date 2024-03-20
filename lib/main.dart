@@ -6,6 +6,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import 'app.dart';
@@ -22,8 +23,8 @@ FutureOr<void> main() async {
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
       final streamSharedPreference = await StreamingSharedPreferences.instance;
-
       final packageInfo = await PackageInfo.fromPlatform();
+      final appDirectory = await getApplicationDocumentsDirectory();
 
       final remoteConfig = FirebaseRemoteConfig.instance;
       if (F.appFlavor == Flavor.development) {
@@ -42,6 +43,9 @@ FutureOr<void> main() async {
             ),
             packageInfoProvider.overrideWithValue(
               packageInfo,
+            ),
+            directoryProvider.overrideWithValue(
+              appDirectory,
             ),
           ],
           child: App(

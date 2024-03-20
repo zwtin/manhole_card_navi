@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:manhole_card_navi/temporary_provider.dart';
 import 'package:realm/realm.dart';
 
 import '/domain/entity/custom_exception.dart';
@@ -19,14 +19,21 @@ import '/infra/mapper/realm_images_mapper.dart';
 
 final imageRepositoryProvider = Provider.autoDispose<ImageRepository>(
   (ref) {
-    final imageRepository = ImageRepositoryImpl();
+    final imageRepository = ImageRepositoryImpl(
+      ref.watch(directoryProvider),
+    );
     ref.onDispose(imageRepository.dispose);
     return imageRepository;
   },
 );
 
 class ImageRepositoryImpl implements ImageRepository {
+  ImageRepositoryImpl(
+    this._directory,
+  );
+
   final _logger = Logger();
+  final Directory _directory;
   final _firestore = FirebaseFirestore.instance;
   final _storage = FirebaseStorage.instance;
 
@@ -72,7 +79,7 @@ class ImageRepositoryImpl implements ImageRepository {
     required ManholeCardImages manholeCardImages,
   }) async {
     try {
-      final appDirectory = await getApplicationDocumentsDirectory();
+      final appDirectory = _directory;
       final imageDirectory = Directory('${appDirectory.path}/images');
       if (imageDirectory.existsSync()) {
         imageDirectory.deleteSync(recursive: true);

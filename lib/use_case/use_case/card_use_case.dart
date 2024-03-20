@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:manhole_card_navi/temporary_provider.dart';
 
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/manhole_card.dart';
@@ -17,6 +17,7 @@ final cardUseCaseProvider = Provider.autoDispose<CardUseCase>(
   (ref) {
     final cardUseCase = CardUseCase(
       ref.watch(cardRepositoryProvider),
+      ref.watch(directoryProvider),
     );
     ref.onDispose(cardUseCase.dispose);
     return cardUseCase;
@@ -26,11 +27,13 @@ final cardUseCaseProvider = Provider.autoDispose<CardUseCase>(
 class CardUseCase {
   CardUseCase(
     this._cardRepository,
+    this._directory,
   );
 
   final CardRepository _cardRepository;
 
   final _logger = Logger();
+  final Directory _directory;
 
   Future<Result<CardDTO>> get({
     required String id,
@@ -51,7 +54,7 @@ class CardUseCase {
     }
     final card = (result as Success<ManholeCard>).value;
 
-    final appDirectory = await getApplicationDocumentsDirectory();
+    final appDirectory = _directory;
     final imageDirectory = Directory('${appDirectory.path}/images');
 
     final DistributionStateDTO distributionState;
