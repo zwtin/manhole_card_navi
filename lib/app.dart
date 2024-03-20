@@ -17,7 +17,7 @@ class App extends HookConsumerWidget {
       () {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) async {
-            await ref.read(appViewModelProvider).onLoad();
+            await ref.read(appViewModelProvider(key)).onLoad();
           },
         );
         return null;

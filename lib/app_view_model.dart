@@ -5,9 +5,10 @@ import 'package:logger/logger.dart';
 import '/app_use_case.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 
-final appViewModelProvider = Provider.autoDispose<AppViewModel>(
-  (ref) {
+final appViewModelProvider = Provider.family.autoDispose<AppViewModel, Key?>(
+  (ref, key) {
     return AppViewModel(
+      key,
       ref,
       ref.watch(analyticsUseCaseProvider),
       ref.watch(appUseCaseProvider),
@@ -17,11 +18,13 @@ final appViewModelProvider = Provider.autoDispose<AppViewModel>(
 
 class AppViewModel extends ChangeNotifier {
   AppViewModel(
+    this._key,
     this._ref,
     this._analyticsUseCase,
     this._appUseCase,
   );
 
+  final Key? _key;
   final Ref _ref;
   final _logger = Logger();
 

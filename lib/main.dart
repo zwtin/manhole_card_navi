@@ -44,7 +44,9 @@ FutureOr<void> main() async {
               packageInfo,
             ),
           ],
-          child: const App(),
+          child: App(
+            key: UniqueKey(),
+          ),
         ),
       );
     },
