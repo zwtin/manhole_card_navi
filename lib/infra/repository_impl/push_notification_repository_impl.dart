@@ -1,8 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
 
+import '/domain/entity/custom_exception.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/push_notification_repository.dart';
 

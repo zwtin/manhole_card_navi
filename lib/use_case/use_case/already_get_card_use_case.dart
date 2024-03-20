@@ -1,6 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
+import '/domain/entity/custom_exception.dart';
 import '/domain/entity/manhole_card.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/already_get_card_repository.dart';
@@ -36,7 +37,17 @@ class AlreadyGetCardUseCase {
   }) async {
     final result = await _cardRepository.get(id: id);
     if (result is Failure) {
-      return Result.failure(Exception());
+      final exception = (result as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final card = (result as Success<ManholeCard>).value;
     return _alreadyGetCardRepository.save(manholeCard: card);
@@ -47,7 +58,17 @@ class AlreadyGetCardUseCase {
   }) async {
     final result = await _cardRepository.get(id: id);
     if (result is Failure) {
-      return Result.failure(Exception());
+      final exception = (result as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final card = (result as Success<ManholeCard>).value;
     return _alreadyGetCardRepository.delete(manholeCard: card);

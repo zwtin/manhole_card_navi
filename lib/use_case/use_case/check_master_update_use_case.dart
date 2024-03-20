@@ -71,12 +71,19 @@ class CheckMasterUpdateUseCase {
     ]);
 
     if (result.whereType<Failure>().isNotEmpty) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータのバージョンの確認に失敗しました',
-        ),
-      );
+      final exception =
+          (result.firstWhere((element) => element is Failure) as Failure)
+              .exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     final currentVersion =
@@ -95,12 +102,17 @@ class CheckMasterUpdateUseCase {
     final getInquiredVersionResult =
         await _masterVersionRepository.getInquiredVersion();
     if (getInquiredVersionResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = (getInquiredVersionResult as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final inquiredVersion =
         (getInquiredVersionResult as Success<InquiredMasterVersion>).value;
@@ -113,23 +125,35 @@ class CheckMasterUpdateUseCase {
     ]);
 
     if (result.whereType<Failure>().isNotEmpty) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception =
+          (result.firstWhere((element) => element is Failure) as Failure)
+              .exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     final updateCardMasterResult =
         await _updateCardMaster(inquiredVersion: inquiredVersion);
     if (updateCardMasterResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = updateCardMasterResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     final currentMasterVersion =
@@ -137,12 +161,17 @@ class CheckMasterUpdateUseCase {
     final setCurrentMasterVersionResult = await _masterVersionRepository
         .setCurrentVersion(currentMasterVersion: currentMasterVersion);
     if (setCurrentMasterVersionResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = setCurrentMasterVersionResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     return const Result.success(null);
@@ -155,12 +184,17 @@ class CheckMasterUpdateUseCase {
       inquiredMasterVersion: inquiredVersion,
     );
     if (fetchResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = (fetchResult as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final tmpManholeCards = (fetchResult as Success<ManholeCards>).value;
 
@@ -217,24 +251,34 @@ class CheckMasterUpdateUseCase {
 
     final deleteResult = await _cardRepository.deleteMaster();
     if (deleteResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = deleteResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     final saveResult = await _cardRepository.saveMaster(
       manholeCards: manholeCards,
     );
     if (saveResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = saveResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     return const Result.success(null);
@@ -247,36 +291,51 @@ class CheckMasterUpdateUseCase {
       inquiredMasterVersion: inquiredVersion,
     );
     if (fetchResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = (fetchResult as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final manholeCardContacts =
         (fetchResult as Success<ManholeCardContacts>).value;
 
     final deleteResult = await _contactRepository.deleteMaster();
     if (deleteResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = deleteResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     final saveResult = await _contactRepository.saveMaster(
       manholeCardContacts: manholeCardContacts,
     );
     if (saveResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = saveResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     return const Result.success(null);
@@ -289,12 +348,17 @@ class CheckMasterUpdateUseCase {
       inquiredMasterVersion: inquiredVersion,
     );
     if (fetchResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = (fetchResult as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final tmpManholeCardImages =
         (fetchResult as Success<ManholeCardImages>).value;
@@ -303,36 +367,51 @@ class CheckMasterUpdateUseCase {
       manholeCardImages: tmpManholeCardImages,
     );
     if (fetchImageResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = (fetchImageResult as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final manholeCardImages =
         (fetchImageResult as Success<ManholeCardImages>).value;
 
     final deleteResult = await _imageRepository.deleteMaster();
     if (deleteResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = deleteResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     final saveResult = await _imageRepository.saveMaster(
       manholeCardImages: manholeCardImages,
     );
     if (saveResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = saveResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     return const Result.success(null);
@@ -345,36 +424,51 @@ class CheckMasterUpdateUseCase {
       inquiredMasterVersion: inquiredVersion,
     );
     if (fetchResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = (fetchResult as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final manholeCardPrefectures =
         (fetchResult as Success<ManholeCardPrefectures>).value;
 
     final deleteResult = await _prefectureRepository.deleteMaster();
     if (deleteResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = deleteResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     final saveResult = await _prefectureRepository.saveMaster(
       manholeCardPrefectures: manholeCardPrefectures,
     );
     if (saveResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = saveResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     return const Result.success(null);
@@ -387,36 +481,51 @@ class CheckMasterUpdateUseCase {
       inquiredMasterVersion: inquiredVersion,
     );
     if (fetchResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = (fetchResult as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final manholeCardVolumes =
         (fetchResult as Success<ManholeCardVolumes>).value;
 
     final deleteResult = await _volumeRepository.deleteMaster();
     if (deleteResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = deleteResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     final saveResult = await _volumeRepository.saveMaster(
       manholeCardVolumes: manholeCardVolumes,
     );
     if (saveResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの更新に失敗しました',
-        ),
-      );
+      final exception = saveResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     return const Result.success(null);

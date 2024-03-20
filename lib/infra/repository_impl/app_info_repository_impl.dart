@@ -1,10 +1,10 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:manhole_card_navi/domain/entity/custom_exception.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '/domain/entity/app_info.dart';
+import '/domain/entity/custom_exception.dart';
 import '/domain/entity/inquired_app_version.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/app_info_repository.dart';

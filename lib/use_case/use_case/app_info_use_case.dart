@@ -30,12 +30,17 @@ class AppInfoUseCase {
   Future<Result<AppInfoDTO>> get() async {
     final result = await _appInfoRepository.getAppInfo();
     if (result is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'アプリ情報の取得に失敗しました',
-        ),
-      );
+      final exception = (result as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final appInfo = (result as Success<AppInfo>).value;
     return Result.success(

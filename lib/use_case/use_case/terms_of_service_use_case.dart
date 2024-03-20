@@ -31,12 +31,17 @@ class TermsOfServiceUseCase {
   Future<Result<TermsOfServiceDTO>> get() async {
     final result = await _termsOfServiceRepository.get();
     if (result is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '利用規約の確認に失敗しました',
-        ),
-      );
+      final exception = (result as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final termsOfService = (result as Success<TermsOfService>).value;
     return Result.success(

@@ -33,12 +33,17 @@ class SaveTermsOfServiceAgreeVersionUseCase {
     final getInquiredVersionResult =
         await _termsOfServiceRepository.getInquiredVersion();
     if (getInquiredVersionResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '利用規約のバージョンの取得に失敗しました',
-        ),
-      );
+      final exception = (getInquiredVersionResult as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     final inquiredVersion =
@@ -52,12 +57,17 @@ class SaveTermsOfServiceAgreeVersionUseCase {
       agreedTermsOfServiceVersion: agreedVersion,
     );
     if (setAgreedVersionResult is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '利用規約の同意バージョンの保存に失敗しました',
-        ),
-      );
+      final exception = setAgreedVersionResult.exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     return const Result.success(null);

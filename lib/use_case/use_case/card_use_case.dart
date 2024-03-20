@@ -37,12 +37,17 @@ class CardUseCase {
   }) async {
     final result = await _cardRepository.get(id: id);
     if (result is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'カード情報の取得に失敗しました',
-        ),
-      );
+      final exception = (result as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
     final card = (result as Success<ManholeCard>).value;
 

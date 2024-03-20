@@ -31,12 +31,17 @@ class CheckTermsOfServiceAgreeUseCase {
   Future<Result<NeedTermsOfServiceAgreeDTO>> getNeedAgree() async {
     final result = await _termsOfServiceRepository.getAgreedVersion();
     if (result is Failure) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '利用規約のバージョンの確認に失敗しました',
-        ),
-      );
+      final exception = (result as Failure).exception;
+      if (exception is CustomException) {
+        return Result.failure(exception);
+      } else {
+        return const Result.failure(
+          CustomException(
+            title: 'エラー',
+            text: '',
+          ),
+        );
+      }
     }
 
     final agreedVersion =
