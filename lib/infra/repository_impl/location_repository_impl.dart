@@ -24,7 +24,7 @@ class LocationRepositoryImpl implements LocationRepository {
       if (!isServiceEnabled) {
         throw const CustomException(
           title: 'エラー',
-          text: '位置情報サービスが使えないデバイスです',
+          text: '位置情報が取得できないデバイスです。',
         );
       }
 
@@ -34,7 +34,7 @@ class LocationRepositoryImpl implements LocationRepository {
         if (permission == LocationPermission.denied) {
           throw const CustomException(
             title: 'エラー',
-            text: '位置権限を許可してください',
+            text: '位置情報のアクセスを許可してください。',
           );
         }
       }
@@ -42,7 +42,7 @@ class LocationRepositoryImpl implements LocationRepository {
       if (permission == LocationPermission.deniedForever) {
         throw const CustomException(
           title: 'エラー',
-          text: '位置権限を許可してください',
+          text: '位置情報のアクセスを許可してください。',
         );
       }
 
@@ -55,7 +55,7 @@ class LocationRepositoryImpl implements LocationRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '位置情報にアクセスできませんでした。',
         ),
       );
     }

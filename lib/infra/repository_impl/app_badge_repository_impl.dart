@@ -32,7 +32,7 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'バッジの更新に失敗しました。',
         ),
       );
     }
@@ -51,7 +51,7 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'バッジの削除に失敗しました。',
         ),
       );
     }

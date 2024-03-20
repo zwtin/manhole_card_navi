@@ -48,7 +48,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
       } else {
         throw const CustomException(
           title: 'エラー',
-          text: '取得済みカードの保存に失敗しました',
+          text: 'データの更新に失敗しました。',
         );
       }
     } on CustomException catch (customException) {
@@ -59,7 +59,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '取得済みカードの保存に失敗しました',
+          text: '取得済みカードの保存に失敗しました。',
         ),
       );
     }
@@ -86,7 +86,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
       } else {
         throw const CustomException(
           title: 'エラー',
-          text: '取得済みカードの削除に失敗しました',
+          text: 'データの更新に失敗しました。',
         );
       }
     } on CustomException catch (customException) {
@@ -97,7 +97,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '取得済みカードの削除に失敗しました',
+          text: '取得済みカードの削除に失敗しました。',
         ),
       );
     }

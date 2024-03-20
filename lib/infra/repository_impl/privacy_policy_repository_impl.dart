@@ -37,7 +37,7 @@ class PrivacyPolicyRepositoryImpl implements PrivacyPolicyRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'プライバシーポリシーの取得に失敗しました。',
         ),
       );
     }

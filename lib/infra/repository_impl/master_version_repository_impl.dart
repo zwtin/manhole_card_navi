@@ -48,7 +48,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '要求マスターデータバージョンの取得に失敗しました。',
         ),
       );
     }
@@ -76,7 +76,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '取得済みマスターデータバージョンの取得に失敗しました。',
         ),
       );
     }
@@ -96,7 +96,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
       } else {
         throw const CustomException(
           title: 'エラー',
-          text: 'バージョンの保存に失敗しました',
+          text: 'データの更新に失敗しました。',
         );
       }
     } on CustomException catch (customException) {
@@ -107,7 +107,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '取得済みマスターデータバージョンの保存に失敗しました。',
         ),
       );
     }

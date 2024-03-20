@@ -44,7 +44,7 @@ class DistributionCardsQueryServiceImpl
       if (daoList.isEmpty) {
         throw const CustomException(
           title: 'エラー',
-          text: 'データが見つかりませんでした',
+          text: 'データが見つかりませんでした。',
         );
       }
 
@@ -94,7 +94,7 @@ class DistributionCardsQueryServiceImpl
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '配布場所データの取得に失敗しました。',
         ),
       );
     }

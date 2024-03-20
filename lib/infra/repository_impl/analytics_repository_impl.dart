@@ -41,7 +41,7 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'イベントの送信に失敗しました。',
         ),
       );
     }
@@ -62,7 +62,7 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'アプリ起動イベントの送信に失敗しました。',
         ),
       );
     }

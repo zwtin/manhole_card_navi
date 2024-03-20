@@ -47,7 +47,7 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '要求アプリバージョンの取得に失敗しました。',
         ),
       );
     }
@@ -70,7 +70,7 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'アプリバージョンの取得に失敗しました。',
         ),
       );
     }

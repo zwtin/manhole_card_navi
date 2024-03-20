@@ -52,7 +52,7 @@ class AlreadyGetCardQueryServiceImpl implements AlreadyGetCardQueryService {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '取得済みカードの取得に失敗しました。',
         ),
       );
     }

@@ -43,7 +43,7 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
       if (daoList.isEmpty) {
         throw const CustomException(
           title: 'エラー',
-          text: 'データが見つかりませんでした',
+          text: 'データが見つかりませんでした。',
         );
       }
 
@@ -90,7 +90,7 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '蓋データの取得に失敗しました。',
         ),
       );
     }

@@ -61,7 +61,7 @@ class ImageRepositoryImpl implements ImageRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'マスターデータの取得に失敗しました。',
         ),
       );
     }
@@ -109,7 +109,7 @@ class ImageRepositoryImpl implements ImageRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'マスターデータの保存に失敗しました。',
         ),
       );
     }
@@ -140,7 +140,7 @@ class ImageRepositoryImpl implements ImageRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'マスターデータの削除に失敗しました。',
         ),
       );
     }
@@ -177,7 +177,7 @@ class ImageRepositoryImpl implements ImageRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'マスターデータの保存に失敗しました。',
         ),
       );
     }
@@ -202,7 +202,7 @@ class ImageRepositoryImpl implements ImageRepository {
       if (daoOrNull == null) {
         throw const CustomException(
           title: 'エラー',
-          text: 'データが見つかりませんでした',
+          text: 'データが見つかりませんでした。',
         );
       }
       final image = RealmImageMapper.convertToEntity(dao: daoOrNull);
@@ -216,7 +216,7 @@ class ImageRepositoryImpl implements ImageRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '画像データの取得に失敗しました。',
         ),
       );
     }

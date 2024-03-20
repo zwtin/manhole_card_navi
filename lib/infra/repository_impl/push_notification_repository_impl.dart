@@ -40,7 +40,7 @@ class PushNotificationRepositoryImpl implements PushNotificationRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '通知にアクセスできませんでした。',
         ),
       );
     }

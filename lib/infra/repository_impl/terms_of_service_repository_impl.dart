@@ -48,7 +48,7 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '利用規約の取得に失敗しました。',
         ),
       );
     }
@@ -72,7 +72,7 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '要求利用規約バージョンの取得に失敗しました。',
         ),
       );
     }
@@ -100,7 +100,7 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '同意済み利用規約バージョンの取得に失敗しました。',
         ),
       );
     }
@@ -120,7 +120,7 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
       } else {
         throw const CustomException(
           title: 'エラー',
-          text: 'バージョンの保存に失敗しました',
+          text: 'データの更新に失敗しました。',
         );
       }
     } on CustomException catch (customException) {
@@ -131,7 +131,7 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '同意済み利用規約バージョンの保存に失敗しました。',
         ),
       );
     }

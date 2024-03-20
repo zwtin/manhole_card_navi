@@ -56,7 +56,7 @@ class VolumeRepositoryImpl implements VolumeRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'マスターデータの取得に失敗しました。',
         ),
       );
     }
@@ -87,7 +87,7 @@ class VolumeRepositoryImpl implements VolumeRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'マスターデータの削除に失敗しました。',
         ),
       );
     }
@@ -124,7 +124,7 @@ class VolumeRepositoryImpl implements VolumeRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'マスターデータの保存に失敗しました。',
         ),
       );
     }
@@ -149,7 +149,7 @@ class VolumeRepositoryImpl implements VolumeRepository {
       if (daoOrNull == null) {
         throw const CustomException(
           title: 'エラー',
-          text: 'データが見つかりませんでした',
+          text: 'データが見つかりませんでした。',
         );
       }
       final volume = RealmVolumeMapper.convertToEntity(dao: daoOrNull);
@@ -163,7 +163,7 @@ class VolumeRepositoryImpl implements VolumeRepository {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: '弾数データの取得に失敗しました。',
         ),
       );
     }

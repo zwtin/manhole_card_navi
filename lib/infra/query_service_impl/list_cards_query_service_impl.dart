@@ -43,7 +43,7 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
       if (cardDAOList.isEmpty) {
         throw const CustomException(
           title: 'エラー',
-          text: 'データが見つかりませんでした',
+          text: 'データが見つかりませんでした。',
         );
       }
 
@@ -74,7 +74,7 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
       return const Result.failure(
         CustomException(
           title: 'エラー',
-          text: '',
+          text: 'リストデータの取得に失敗しました。',
         ),
       );
     }
