@@ -106,7 +106,7 @@ class ListPrefecturesViewDataMapper {
 
                 final cardImageOrNull = await img.decodeJpgFile(dto.imagePath);
                 final cardImage =
-                    img.copyResize(cardImageOrNull!, width: 174, height: 241);
+                    img.copyResize(cardImageOrNull!, width: 130, height: 180);
                 img.Image cardThumbnail;
                 if (getCardDTOList.map((e) => e.cardId).contains(dto.id)) {
                   cardThumbnail = cardImage;
