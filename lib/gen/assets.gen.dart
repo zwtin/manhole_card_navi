@@ -28,8 +28,13 @@ class $AssetsImagesGen {
   AssetGenImage get frameYellow =>
       const AssetGenImage('assets/images/frame_yellow.png');
 
-  /// File path: assets/images/icon.png
-  AssetGenImage get icon => const AssetGenImage('assets/images/icon.png');
+  /// File path: assets/images/icon_development.png
+  AssetGenImage get iconDevelopment =>
+      const AssetGenImage('assets/images/icon_development.png');
+
+  /// File path: assets/images/icon_production.png
+  AssetGenImage get iconProduction =>
+      const AssetGenImage('assets/images/icon_production.png');
 
   /// File path: assets/images/terms.jpg
   AssetGenImage get terms => const AssetGenImage('assets/images/terms.jpg');
@@ -52,7 +57,8 @@ class $AssetsImagesGen {
         frameGreen,
         frameRed,
         frameYellow,
-        icon,
+        iconDevelopment,
+        iconProduction,
         terms,
         tutorial1,
         tutorial2,
