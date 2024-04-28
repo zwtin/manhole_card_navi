@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
@@ -81,38 +80,33 @@ class ImageRepositoryImpl implements ImageRepository {
     required ManholeCardImages manholeCardImages,
   }) async {
     try {
-      return await compute(
-        (images) async {
-          final appDirectory = _directory;
-          final imageDirectory = Directory('${appDirectory.path}/images');
-          if (imageDirectory.existsSync()) {
-            imageDirectory.deleteSync(recursive: true);
-          }
-          imageDirectory.createSync(recursive: true);
+      final appDirectory = _directory;
+      final imageDirectory = Directory('${appDirectory.path}/images');
+      if (imageDirectory.existsSync()) {
+        imageDirectory.deleteSync(recursive: true);
+      }
+      imageDirectory.createSync(recursive: true);
 
-          final newManholeCardImageList = await Future.wait(
-            manholeCardImages.map(
-              (manholeCardImage) async {
-                final res = await http.get(
-                  Uri.parse(
-                    'https://storage.googleapis.com/manhole-card-navi-dev.appspot.com/images/${manholeCardImage.name}',
-                  ),
-                );
-                final imagePath =
-                    '${imageDirectory.path}/${manholeCardImage.name}';
-                final imageFile = File(imagePath);
-                await imageFile.writeAsBytes(res.bodyBytes);
-                return manholeCardImage;
-              },
-            ),
-          );
-          return Result.success(
-            ManholeCardImages(
-              list: newManholeCardImageList,
-            ),
-          );
-        },
-        manholeCardImages,
+      final newManholeCardImageList = await Future.wait(
+        manholeCardImages.map(
+          (manholeCardImage) async {
+            final res = await http.get(
+              Uri.parse(
+                'https://storage.googleapis.com/manhole-card-navi-dev.appspot.com/images/${manholeCardImage.name}',
+              ),
+            );
+            final imagePath = '${imageDirectory.path}/${manholeCardImage.name}';
+            final imageFile = File(imagePath);
+            await imageFile.writeAsBytes(res.bodyBytes);
+            return manholeCardImage;
+          },
+        ),
+      );
+
+      return Result.success(
+        ManholeCardImages(
+          list: newManholeCardImageList,
+        ),
       );
     } on CustomException catch (customException) {
       return Result.failure(

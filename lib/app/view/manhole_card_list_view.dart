@@ -68,13 +68,17 @@ class ManholeCardListView extends CommonWidget {
                             children: [
                               ListTile(
                                 leading: viewModel.listState == ListState.all
-                                    ? Icon(
-                                        Icons.check,
-                                        color: Theme.of(context).primaryColor,
+                                    ? SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: Icon(
+                                          Icons.check,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                                       )
                                     : const SizedBox(
-                                        width: 40,
-                                        height: 40,
+                                        width: 20,
+                                        height: 20,
                                       ),
                                 title: const TitleMediumText(
                                   'すべて',
@@ -91,13 +95,17 @@ class ManholeCardListView extends CommonWidget {
                               ListTile(
                                 leading: viewModel.listState ==
                                         ListState.alreadyGet
-                                    ? Icon(
-                                        Icons.check,
-                                        color: Theme.of(context).primaryColor,
+                                    ? SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: Icon(
+                                          Icons.check,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                                       )
                                     : const SizedBox(
-                                        width: 40,
-                                        height: 40,
+                                        width: 20,
+                                        height: 20,
                                       ),
                                 title: const TitleMediumText(
                                   '取得済みのみ',
@@ -182,7 +190,10 @@ class ManholeCardListView extends CommonWidget {
                                   },
                                 ).length +
                                 1) {
-                          return Container();
+                          return Container(
+                            color: Theme.of(context).dividerColor,
+                            height: 0.5,
+                          );
                         }
                         final prefectureViewData =
                             viewModel.prefecturesViewData.where(

@@ -360,27 +360,7 @@ class CheckMasterUpdateUseCase {
         );
       }
     }
-    final tmpManholeCardImages =
-        (fetchResult as Success<ManholeCardImages>).value;
-
-    final fetchImageResult = await _imageRepository.fetchImage(
-      manholeCardImages: tmpManholeCardImages,
-    );
-    if (fetchImageResult is Failure) {
-      final exception = (fetchImageResult as Failure).exception;
-      if (exception is CustomException) {
-        return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
-          ),
-        );
-      }
-    }
-    final manholeCardImages =
-        (fetchImageResult as Success<ManholeCardImages>).value;
+    final manholeCardImages = (fetchResult as Success<ManholeCardImages>).value;
 
     final deleteResult = await _imageRepository.deleteMaster();
     if (deleteResult is Failure) {

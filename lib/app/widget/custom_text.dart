@@ -426,6 +426,7 @@ class TitleLargeLinkText extends StatelessWidget {
             fontWeight: fontWeight,
             overflow: overflow,
             decoration: TextDecoration.underline,
+            decorationColor: Colors.blue,
           ),
     );
   }
@@ -452,6 +453,7 @@ class TitleMediumLinkText extends StatelessWidget {
             fontWeight: fontWeight,
             overflow: overflow,
             decoration: TextDecoration.underline,
+            decorationColor: Colors.blue,
           ),
     );
   }
@@ -478,6 +480,7 @@ class TitleSmallLinkText extends StatelessWidget {
             fontWeight: fontWeight,
             overflow: overflow,
             decoration: TextDecoration.underline,
+            decorationColor: Colors.blue,
           ),
     );
   }
@@ -504,6 +507,7 @@ class BodyLargeLinkText extends StatelessWidget {
             fontWeight: fontWeight,
             overflow: overflow,
             decoration: TextDecoration.underline,
+            decorationColor: Colors.blue,
           ),
     );
   }
@@ -530,6 +534,7 @@ class BodyMediumLinkText extends StatelessWidget {
             fontWeight: fontWeight,
             overflow: overflow,
             decoration: TextDecoration.underline,
+            decorationColor: Colors.blue,
           ),
     );
   }
@@ -556,6 +561,7 @@ class BodySmallLinkText extends StatelessWidget {
             fontWeight: fontWeight,
             overflow: overflow,
             decoration: TextDecoration.underline,
+            decorationColor: Colors.blue,
           ),
     );
   }

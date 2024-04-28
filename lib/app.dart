@@ -50,6 +50,10 @@ class App extends HookConsumerWidget {
               iconTheme: const IconThemeData(
                 color: ColorName.lightIcon,
               ),
+              titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: ColorName.lightPositiveText,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
         textTheme: Theme.of(context).textTheme.copyWith(
               displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(
@@ -114,6 +118,7 @@ class App extends HookConsumerWidget {
         cardColor: ColorName.lightScreenBackground,
         listTileTheme: Theme.of(context).listTileTheme.copyWith(
               tileColor: ColorName.lightContentsBackground,
+              textColor: ColorName.lightPositiveText,
             ),
         dividerTheme: const DividerThemeData(
           color: ColorName.lightBorder,
@@ -147,6 +152,9 @@ class App extends HookConsumerWidget {
                 ),
             backgroundColor: ColorName.lightPrimary,
             elevation: 0.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
@@ -185,6 +193,10 @@ class App extends HookConsumerWidget {
               iconTheme: const IconThemeData(
                 color: ColorName.darkIcon,
               ),
+              titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: ColorName.darkPositiveText,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
         textTheme: Theme.of(context).textTheme.copyWith(
               displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(
@@ -249,6 +261,7 @@ class App extends HookConsumerWidget {
         cardColor: ColorName.darkScreenBackground,
         listTileTheme: Theme.of(context).listTileTheme.copyWith(
               tileColor: ColorName.darkContentsBackground,
+              textColor: ColorName.darkPositiveText,
             ),
         dividerTheme: const DividerThemeData(
           color: ColorName.darkBorder,
@@ -282,6 +295,9 @@ class App extends HookConsumerWidget {
                 ),
             backgroundColor: ColorName.darkPrimary,
             elevation: 0.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(

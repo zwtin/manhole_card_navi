@@ -6,6 +6,7 @@ import '/app/view_model/license_view_model.dart';
 import '/app/widget/common_widget.dart';
 import '/app/widget/pv_sender_widget.dart';
 import '/app/widget/router_widget.dart';
+import '/gen/assets.gen.dart';
 
 class LicenseView extends CommonWidget {
   const LicenseView({
@@ -37,14 +38,19 @@ class LicenseView extends CommonWidget {
         child: Theme(
           data: Theme.of(context).copyWith(
             cardColor: Theme.of(context).colorScheme.background,
-            listTileTheme: ListTileThemeData(
-              tileColor: Theme.of(context).colorScheme.background,
-            ),
+            listTileTheme: Theme.of(context).listTileTheme.copyWith(
+                  tileColor: Theme.of(context).colorScheme.background,
+                ),
           ),
           child: LicensePage(
             applicationName: viewModel.appName,
             applicationVersion: viewModel.appVersion,
-            applicationIcon: const FlutterLogo(),
+            applicationIcon: SizedBox(
+                width: 48,
+                height: 48,
+                child: const String.fromEnvironment('flavor') == 'development'
+                    ? Assets.images.iconDevelopment.image()
+                    : Assets.images.iconProduction.image()),
           ),
         ),
       ),

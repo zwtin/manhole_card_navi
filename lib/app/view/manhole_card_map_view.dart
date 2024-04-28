@@ -77,13 +77,17 @@ class ManholeCardMapView extends CommonWidget {
                               ListTile(
                                 leading: viewModel.mapState ==
                                         MapState.distribution
-                                    ? Icon(
-                                        Icons.check,
-                                        color: Theme.of(context).primaryColor,
+                                    ? SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: Icon(
+                                          Icons.check,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                                       )
                                     : const SizedBox(
-                                        width: 40,
-                                        height: 40,
+                                        width: 20,
+                                        height: 20,
                                       ),
                                 title: const TitleMediumText(
                                   '配布場所マップ',
@@ -99,13 +103,17 @@ class ManholeCardMapView extends CommonWidget {
                               ),
                               ListTile(
                                 leading: viewModel.mapState == MapState.position
-                                    ? Icon(
-                                        Icons.check,
-                                        color: Theme.of(context).primaryColor,
+                                    ? SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: Icon(
+                                          Icons.check,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                                       )
                                     : const SizedBox(
-                                        width: 40,
-                                        height: 40,
+                                        width: 20,
+                                        height: 20,
                                       ),
                                 title: const TitleMediumText(
                                   '蓋マップ',

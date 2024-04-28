@@ -58,7 +58,7 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
     try {
       return Result.success(
         AppInfo(
-          name: _packageInfo.appName,
+          name: const String.fromEnvironment('appName'),
           version: _packageInfo.version,
         ),
       );
