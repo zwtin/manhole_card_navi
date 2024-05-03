@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:manhole_card_navi/app/view/manhole_card_list_view.dart';
+import 'package:manhole_card_navi/app/view/manhole_card_map_view.dart';
 
 import '/app/provider/party_animation_provider.dart';
 import '/app/view/setting_view.dart';
@@ -32,7 +33,7 @@ class BottomTabView extends CommonWidget {
           ref.read(partyAnimationProvider.notifier).finish();
         }
       });
-    final tab0 = Container(
+    final tab0 = ManholeCardMapView(
       key: tab0Key,
     );
 

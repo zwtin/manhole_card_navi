@@ -160,6 +160,7 @@ class ManholeCardMapView extends CommonWidget {
                       },
                       mapToolbarEnabled: false,
                       mapType: MapType.normal,
+                      minMaxZoomPreference: const MinMaxZoomPreference(8, 15),
                       rotateGesturesEnabled: false,
                       zoomControlsEnabled: false,
                       tiltGesturesEnabled: false,

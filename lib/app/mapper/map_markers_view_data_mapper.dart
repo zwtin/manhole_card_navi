@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'package:uuid/uuid.dart';
 
@@ -17,6 +17,7 @@ class MapMarkersViewDataMapper {
     required List<AlreadyGetCardDTO> getCardDTOList,
     required List<AlreadyGetCardDTO> originalGetCardDTOList,
     required MapMarkersViewData originalViewData,
+    required LatLngBounds region,
   }) async {
     final assetsMap = await _getAssetMap();
     final map = <String, dynamic>{};
@@ -25,7 +26,8 @@ class MapMarkersViewDataMapper {
     map['originalGetCardDTOList'] = originalGetCardDTOList;
     map['originalViewData'] = originalViewData;
     map['assetsMap'] = assetsMap;
-    return compute(_convert, map);
+    map['region'] = region;
+    return _convert(map);
   }
 
   static Future<MapMarkersViewData> _convert(
@@ -41,9 +43,20 @@ class MapMarkersViewDataMapper {
         parameter['originalViewData'] as MapMarkersViewData;
     final assetsMap =
         parameter['assetsMap'] as Map<DistributionStateDTO, img.Image>;
+    final region = parameter['region'] as LatLngBounds;
     const uuid = Uuid();
     final markersList = await Future.wait(
-      mapMarkerDTOList.map(
+      mapMarkerDTOList.where((dto) {
+        if (dto.latitude < region.southwest.latitude - 0.1 ||
+            dto.latitude > region.northeast.latitude + 0.1) {
+          return false;
+        } else if (dto.longitude < region.southwest.longitude - 0.1 ||
+            dto.longitude > region.northeast.longitude + 0.1) {
+          return false;
+        } else {
+          return true;
+        }
+      }).map(
         (dto) async {
           if (getCardDTOList.map((e) => e.cardId).contains(dto.cardId) &&
               originalGetCardDTOList

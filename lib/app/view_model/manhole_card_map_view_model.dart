@@ -75,14 +75,14 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     }
   }
 
-  late GoogleMapController mapController;
+  GoogleMapController? mapController;
   CameraPosition initialCameraPosition = const CameraPosition(
     target: LatLng(35.680212, 139.757669),
     zoom: 11.5,
   );
   bool myLocationEnabled = false;
   MapMarkersViewData markersViewData = const MapMarkersViewData(list: []);
-  MapState mapState = MapState.distribution;
+  MapState mapState = MapState.position;
   bool isShowModal = false;
   final List<MapMarkerDTO> _positionMarkerDTOList = [];
   final List<MapMarkerDTO> _distributionMarkerDTOList = [];
@@ -189,6 +189,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   Future<void> onCameraMove(CameraPosition position) async {
     _zoom = position.zoom;
+    await _reloadMarkerViewData();
   }
 
   Future<void> sendPV() async {
@@ -217,15 +218,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     } else if (mapState == MapState.distribution) {
       await _fetchDistributionMarker();
     }
-    markersViewData = await MapMarkersViewDataMapper.convertToViewData(
-      mapMarkerDTOList: mapState == MapState.position
-          ? _positionMarkerDTOList
-          : _distributionMarkerDTOList,
-      getCardDTOList: _alreadyGetCardDTOList,
-      originalGetCardDTOList: _alreadyGetCardDTOList,
-      originalViewData: markersViewData,
-    );
-    notifyListeners();
+    await _reloadMarkerViewData();
   }
 
   Future<void> _fetchPositionMarker() async {
@@ -273,6 +266,11 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   Future<void> _listenAlreadyGetCard() async {
     _alreadyGetCardStreamSubscription =
         _alreadyGetCardQueryService.getStream().listen((dtoList) async {
+      final region = await mapController?.getVisibleRegion() ??
+          LatLngBounds(
+            southwest: const LatLng(35.680212, 139.757669),
+            northeast: const LatLng(35.680212, 139.757669),
+          );
       markersViewData = await MapMarkersViewDataMapper.convertToViewData(
         mapMarkerDTOList: mapState == MapState.position
             ? _positionMarkerDTOList
@@ -280,12 +278,31 @@ class ManholeCardMapViewModel extends ChangeNotifier {
         getCardDTOList: dtoList,
         originalGetCardDTOList: _alreadyGetCardDTOList,
         originalViewData: markersViewData,
+        region: region,
       );
       notifyListeners();
 
       _alreadyGetCardDTOList.clear();
       _alreadyGetCardDTOList.addAll(dtoList);
     });
+  }
+
+  Future<void> _reloadMarkerViewData() async {
+    final region = await mapController?.getVisibleRegion() ??
+        LatLngBounds(
+          southwest: const LatLng(35.680212, 139.757669),
+          northeast: const LatLng(35.680212, 139.757669),
+        );
+    markersViewData = await MapMarkersViewDataMapper.convertToViewData(
+      mapMarkerDTOList: mapState == MapState.position
+          ? _positionMarkerDTOList
+          : _distributionMarkerDTOList,
+      getCardDTOList: _alreadyGetCardDTOList,
+      originalGetCardDTOList: _alreadyGetCardDTOList,
+      originalViewData: markersViewData,
+      region: region,
+    );
+    notifyListeners();
   }
 
   Future<void> _moveToCurrentLocation(bool animation) async {
@@ -304,7 +321,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   Future<void> _moveToLocation(LatLng latLng, bool animation) async {
     if (animation) {
-      mapController.animateCamera(
+      mapController?.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: latLng,
@@ -313,7 +330,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
         ),
       );
     } else {
-      mapController.moveCamera(
+      mapController?.moveCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: latLng,
