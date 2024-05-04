@@ -171,7 +171,7 @@ class ManholeCardListView extends CommonWidget {
                               ).isEmpty;
                             },
                           ).length +
-                          2,
+                          3,
                       itemBuilder: (itemContext, index) {
                         if (index == 0) {
                           return Container(
@@ -192,6 +192,21 @@ class ManholeCardListView extends CommonWidget {
                                 1) {
                           return Container(
                             color: Theme.of(context).dividerColor,
+                          );
+                        }
+                        if (index ==
+                            viewModel.prefecturesViewData.where(
+                                  (prefectureViewData) {
+                                    return !prefectureViewData.cards.where(
+                                      (card) {
+                                        return !card.isHidden;
+                                      },
+                                    ).isEmpty;
+                                  },
+                                ).length +
+                                2) {
+                          return Container(
+                            color: Colors.transparent,
                             height: 0.5,
                           );
                         }

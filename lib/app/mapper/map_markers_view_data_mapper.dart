@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image/image.dart' as img;
@@ -17,7 +18,7 @@ class MapMarkersViewDataMapper {
     required List<AlreadyGetCardDTO> getCardDTOList,
     required List<AlreadyGetCardDTO> originalGetCardDTOList,
     required MapMarkersViewData originalViewData,
-    required LatLngBounds region,
+    required LatLng coordinate,
   }) async {
     final assetsMap = await _getAssetMap();
     final map = <String, dynamic>{};
@@ -26,8 +27,8 @@ class MapMarkersViewDataMapper {
     map['originalGetCardDTOList'] = originalGetCardDTOList;
     map['originalViewData'] = originalViewData;
     map['assetsMap'] = assetsMap;
-    map['region'] = region;
-    return _convert(map);
+    map['coordinate'] = coordinate;
+    return compute(_convert, map);
   }
 
   static Future<MapMarkersViewData> _convert(
@@ -43,20 +44,34 @@ class MapMarkersViewDataMapper {
         parameter['originalViewData'] as MapMarkersViewData;
     final assetsMap =
         parameter['assetsMap'] as Map<DistributionStateDTO, img.Image>;
-    final region = parameter['region'] as LatLngBounds;
+    final coordinate = parameter['coordinate'] as LatLng;
     const uuid = Uuid();
+
+    final tmpDTOList = mapMarkerDTOList.where((dto) {
+      final latitude = dto.latitude - coordinate.latitude;
+      final longitude = dto.longitude - coordinate.longitude;
+
+      final distance = latitude * latitude + longitude * longitude;
+
+      return distance < 10;
+    }).toList();
+
+    tmpDTOList.sort((dto1, dto2) {
+      final latitude1 = dto1.latitude - coordinate.latitude;
+      final longitude1 = dto1.longitude - coordinate.longitude;
+      final latitude2 = dto2.latitude - coordinate.latitude;
+      final longitude2 = dto2.longitude - coordinate.longitude;
+
+      final distance1 = latitude1 * latitude1 + longitude1 * longitude1;
+      final distance2 = latitude2 * latitude2 + longitude2 * longitude2;
+
+      return distance1.compareTo(distance2);
+    });
+
+    final takedList = tmpDTOList.take(100);
+
     final markersList = await Future.wait(
-      mapMarkerDTOList.where((dto) {
-        if (dto.latitude < region.southwest.latitude - 0.1 ||
-            dto.latitude > region.northeast.latitude + 0.1) {
-          return false;
-        } else if (dto.longitude < region.southwest.longitude - 0.1 ||
-            dto.longitude > region.northeast.longitude + 0.1) {
-          return false;
-        } else {
-          return true;
-        }
-      }).map(
+      takedList.map(
         (dto) async {
           if (getCardDTOList.map((e) => e.cardId).contains(dto.cardId) &&
               originalGetCardDTOList

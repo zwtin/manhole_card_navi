@@ -164,6 +164,9 @@ class App extends HookConsumerWidget {
               color: ColorName.lightPrimary,
               width: 2,
             ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
           ),
         ),
         textButtonTheme: TextButtonThemeData(
@@ -306,6 +309,9 @@ class App extends HookConsumerWidget {
             side: const BorderSide(
               color: ColorName.darkPrimary,
               width: 2,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
             ),
           ),
         ),

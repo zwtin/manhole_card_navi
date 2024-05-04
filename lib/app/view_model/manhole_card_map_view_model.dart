@@ -78,7 +78,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   GoogleMapController? mapController;
   CameraPosition initialCameraPosition = const CameraPosition(
     target: LatLng(35.680212, 139.757669),
-    zoom: 11.5,
+    zoom: 12.0,
   );
   bool myLocationEnabled = false;
   MapMarkersViewData markersViewData = const MapMarkersViewData(list: []);
@@ -87,7 +87,9 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final List<MapMarkerDTO> _positionMarkerDTOList = [];
   final List<MapMarkerDTO> _distributionMarkerDTOList = [];
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
-  double _zoom = 11.5;
+  double _zoom = 12.0;
+  LatLng _position = const LatLng(35.680212, 139.757669);
+  LatLng _viewDataCreatedPosition = const LatLng(35.680212, 139.757669);
   late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
 
@@ -189,7 +191,19 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   Future<void> onCameraMove(CameraPosition position) async {
     _zoom = position.zoom;
-    await _reloadMarkerViewData();
+    _position = position.target;
+  }
+
+  Future<void> onCameraIdle() async {
+    final latitude = _position.latitude - _viewDataCreatedPosition.latitude;
+    final longitude = _position.longitude - _viewDataCreatedPosition.longitude;
+
+    final distance = latitude * latitude + longitude * longitude;
+
+    if (distance > 1) {
+      await _reloadMarkerViewData();
+      _viewDataCreatedPosition = _position;
+    }
   }
 
   Future<void> sendPV() async {
@@ -266,11 +280,6 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   Future<void> _listenAlreadyGetCard() async {
     _alreadyGetCardStreamSubscription =
         _alreadyGetCardQueryService.getStream().listen((dtoList) async {
-      final region = await mapController?.getVisibleRegion() ??
-          LatLngBounds(
-            southwest: const LatLng(35.680212, 139.757669),
-            northeast: const LatLng(35.680212, 139.757669),
-          );
       markersViewData = await MapMarkersViewDataMapper.convertToViewData(
         mapMarkerDTOList: mapState == MapState.position
             ? _positionMarkerDTOList
@@ -278,7 +287,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
         getCardDTOList: dtoList,
         originalGetCardDTOList: _alreadyGetCardDTOList,
         originalViewData: markersViewData,
-        region: region,
+        coordinate: _position,
       );
       notifyListeners();
 
@@ -288,11 +297,6 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   }
 
   Future<void> _reloadMarkerViewData() async {
-    final region = await mapController?.getVisibleRegion() ??
-        LatLngBounds(
-          southwest: const LatLng(35.680212, 139.757669),
-          northeast: const LatLng(35.680212, 139.757669),
-        );
     markersViewData = await MapMarkersViewDataMapper.convertToViewData(
       mapMarkerDTOList: mapState == MapState.position
           ? _positionMarkerDTOList
@@ -300,7 +304,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       getCardDTOList: _alreadyGetCardDTOList,
       originalGetCardDTOList: _alreadyGetCardDTOList,
       originalViewData: markersViewData,
-      region: region,
+      coordinate: _position,
     );
     notifyListeners();
   }
