@@ -104,6 +104,7 @@ android {
         versionName flutterVersionName
         applicationId "${dartDefines.appId}"
         resValue "string", "app_name", "${dartDefines.appName}"
+        resValue "string", "android_apiKey", "${dartDefines.android_apiKey}"
     }
 
     buildTypes {
