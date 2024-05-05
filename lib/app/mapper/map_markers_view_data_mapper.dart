@@ -68,7 +68,7 @@ class MapMarkersViewDataMapper {
       return distance1.compareTo(distance2);
     });
 
-    final takedList = tmpDTOList.take(100);
+    final takedList = tmpDTOList.take(50);
 
     final markersList = await Future.wait(
       takedList.map(
