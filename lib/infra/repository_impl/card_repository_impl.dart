@@ -73,10 +73,15 @@ class CardRepositoryImpl implements CardRepository {
             }).toList();
             final contacts = ManholeCardContacts(list: contactList);
 
+            final latitudeNum = doc['latitude'] as num;
+            var latitude = latitudeNum.toDouble();
+            final longitudeNum = doc['longitude'] as num;
+            var longitude = longitudeNum.toDouble();
+
             return ManholeCard(
               id: doc['id'] as String,
-              latitude: doc['latitude'] as double,
-              longitude: doc['longitude'] as double,
+              latitude: latitude,
+              longitude: longitude,
               name: doc['name'] as String,
               publicationDate: DateFormat('yyyy/MM/dd').parse(
                 doc['publication_date'] as String,

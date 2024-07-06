@@ -37,11 +37,15 @@ class ContactRepositoryImpl implements ContactRepository {
           .get();
       final list = querySnapshot.docs.map(
         (doc) {
+          final latitudeNum = doc['latitude'] as num;
+          var latitude = latitudeNum.toDouble();
+          final longitudeNum = doc['longitude'] as num;
+          var longitude = longitudeNum.toDouble();
           return ManholeCardContact(
             address: doc['address'] as String,
             id: doc['id'] as String,
-            latitude: doc['latitude'] as double,
-            longitude: doc['longitude'] as double,
+            latitude: latitude,
+            longitude: longitude,
             name: doc['name'] as String,
             nameUrl: doc['name_url'] as String,
             other: doc['other'] as String,
