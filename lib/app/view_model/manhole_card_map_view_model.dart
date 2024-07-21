@@ -200,7 +200,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
     final distance = latitude * latitude + longitude * longitude;
 
-    if (distance > 1) {
+    if (distance > 0.01) {
       await _reloadMarkerViewData();
       _viewDataCreatedPosition = _position;
     }

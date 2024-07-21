@@ -54,9 +54,6 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
         );
       }
 
-      final appDirectory = _directory;
-      final imageDirectory = Directory('${appDirectory.path}/images');
-
       final dtoList = <MapMarkerDTO>[];
       for (final dao in daoList) {
         final DistributionStateDTO distributionState;
@@ -78,9 +75,7 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
         dtoList.add(
           MapMarkerDTO(
             cardId: dao.id,
-            imagePath: dao.image == null
-                ? ''
-                : '${imageDirectory.path}/${dao.image!.name}',
+            imagePath: dao.image?.name ?? '',
             distributionState: distributionState,
             latitude: dao.latitude,
             longitude: dao.longitude,
