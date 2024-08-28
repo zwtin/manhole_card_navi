@@ -38,7 +38,7 @@ class MapMarkersViewDataMapper {
 
       final distance = latitude * latitude + longitude * longitude;
 
-      return distance < 30;
+      return distance < 1;
     }).toList();
 
     tmpDTOList.sort((dto1, dto2) {
