@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -60,14 +58,14 @@ class RouterNotifier extends StateNotifier<RouterViewData> {
 
   Future<void> presentImage({
     required String cardId,
-    required Uint8List imageData,
+    required String imageUrl,
     required String imageTag,
   }) async {
     state = RouterViewData(
       type: TransitionType.image,
       nextWidget: ImageDetailView(
         cardId: cardId,
-        imageData: imageData,
+        imageUrl: imageUrl,
         imageTag: imageTag,
       ),
     );

@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$DetailCardViewData {
   String get id => throw _privateConstructorUsedError;
-  Uint8List get icon => throw _privateConstructorUsedError;
+  String get imageUrl => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get prefecture => throw _privateConstructorUsedError;
   String get volume => throw _privateConstructorUsedError;
@@ -42,7 +42,7 @@ abstract class $DetailCardViewDataCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      Uint8List icon,
+      String imageUrl,
       String name,
       String prefecture,
       String volume,
@@ -68,7 +68,7 @@ class _$DetailCardViewDataCopyWithImpl<$Res, $Val extends DetailCardViewData>
   @override
   $Res call({
     Object? id = null,
-    Object? icon = null,
+    Object? imageUrl = null,
     Object? name = null,
     Object? prefecture = null,
     Object? volume = null,
@@ -84,10 +84,10 @@ class _$DetailCardViewDataCopyWithImpl<$Res, $Val extends DetailCardViewData>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      icon: null == icon
-          ? _value.icon
-          : icon // ignore: cast_nullable_to_non_nullable
-              as Uint8List,
+      imageUrl: null == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -138,7 +138,7 @@ abstract class _$$DetailCardViewDataImplCopyWith<$Res>
   @useResult
   $Res call(
       {String id,
-      Uint8List icon,
+      String imageUrl,
       String name,
       String prefecture,
       String volume,
@@ -162,7 +162,7 @@ class __$$DetailCardViewDataImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? icon = null,
+    Object? imageUrl = null,
     Object? name = null,
     Object? prefecture = null,
     Object? volume = null,
@@ -178,10 +178,10 @@ class __$$DetailCardViewDataImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      icon: null == icon
-          ? _value.icon
-          : icon // ignore: cast_nullable_to_non_nullable
-              as Uint8List,
+      imageUrl: null == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -227,7 +227,7 @@ class __$$DetailCardViewDataImplCopyWithImpl<$Res>
 class _$DetailCardViewDataImpl extends _DetailCardViewData {
   const _$DetailCardViewDataImpl(
       {required this.id,
-      required this.icon,
+      required this.imageUrl,
       required this.name,
       required this.prefecture,
       required this.volume,
@@ -243,7 +243,7 @@ class _$DetailCardViewDataImpl extends _DetailCardViewData {
   @override
   final String id;
   @override
-  final Uint8List icon;
+  final String imageUrl;
   @override
   final String name;
   @override
@@ -271,7 +271,7 @@ class _$DetailCardViewDataImpl extends _DetailCardViewData {
 
   @override
   String toString() {
-    return 'DetailCardViewData(id: $id, icon: $icon, name: $name, prefecture: $prefecture, volume: $volume, publicationDate: $publicationDate, contacts: $contacts, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther)';
+    return 'DetailCardViewData(id: $id, imageUrl: $imageUrl, name: $name, prefecture: $prefecture, volume: $volume, publicationDate: $publicationDate, contacts: $contacts, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther)';
   }
 
   @override
@@ -280,7 +280,8 @@ class _$DetailCardViewDataImpl extends _DetailCardViewData {
         (other.runtimeType == runtimeType &&
             other is _$DetailCardViewDataImpl &&
             (identical(other.id, id) || other.id == id) &&
-            const DeepCollectionEquality().equals(other.icon, icon) &&
+            (identical(other.imageUrl, imageUrl) ||
+                other.imageUrl == imageUrl) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.prefecture, prefecture) ||
                 other.prefecture == prefecture) &&
@@ -302,7 +303,7 @@ class _$DetailCardViewDataImpl extends _DetailCardViewData {
   int get hashCode => Object.hash(
       runtimeType,
       id,
-      const DeepCollectionEquality().hash(icon),
+      imageUrl,
       name,
       prefecture,
       volume,
@@ -324,7 +325,7 @@ class _$DetailCardViewDataImpl extends _DetailCardViewData {
 abstract class _DetailCardViewData extends DetailCardViewData {
   const factory _DetailCardViewData(
       {required final String id,
-      required final Uint8List icon,
+      required final String imageUrl,
       required final String name,
       required final String prefecture,
       required final String volume,
@@ -339,7 +340,7 @@ abstract class _DetailCardViewData extends DetailCardViewData {
   @override
   String get id;
   @override
-  Uint8List get icon;
+  String get imageUrl;
   @override
   String get name;
   @override

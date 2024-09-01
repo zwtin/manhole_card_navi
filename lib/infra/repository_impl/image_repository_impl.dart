@@ -1,10 +1,5 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:realm/realm.dart';
 
@@ -17,27 +12,18 @@ import '/domain/repository/image_repository.dart';
 import '/infra/dao/realm_image_dao.dart';
 import '/infra/mapper/realm_image_mapper.dart';
 import '/infra/mapper/realm_images_mapper.dart';
-import '/temporary_provider.dart';
 
 final imageRepositoryProvider = Provider.autoDispose<ImageRepository>(
   (ref) {
-    final imageRepository = ImageRepositoryImpl(
-      ref.watch(directoryProvider),
-    );
+    final imageRepository = ImageRepositoryImpl();
     ref.onDispose(imageRepository.dispose);
     return imageRepository;
   },
 );
 
 class ImageRepositoryImpl implements ImageRepository {
-  ImageRepositoryImpl(
-    this._directory,
-  );
-
   final _logger = Logger();
-  final Directory _directory;
   final _firestore = FirebaseFirestore.instance;
-  final _storage = FirebaseStorage.instance;
 
   @override
   Future<Result<ManholeCardImages>> fetchMaster({
@@ -53,7 +39,16 @@ class ImageRepositoryImpl implements ImageRepository {
         (doc) {
           return ManholeCardImage(
             id: doc['id'] as String,
-            name: doc['name'] as String,
+            colorOriginal: doc['color_original'] as String,
+            colorResized: doc['color_resized'] as String,
+            colorFrameGreen: doc['color_frame_green'] as String,
+            colorFrameRed: doc['color_frame_red'] as String,
+            colorFrameYellow: doc['color_frame_yellow'] as String,
+            grayOriginal: doc['gray_original'] as String,
+            grayResized: doc['gray_resized'] as String,
+            grayFrameGreen: doc['gray_frame_green'] as String,
+            grayFrameRed: doc['gray_frame_red'] as String,
+            grayFrameYellow: doc['gray_frame_yellow'] as String,
           );
         },
       ).toList();
@@ -71,30 +66,6 @@ class ImageRepositoryImpl implements ImageRepository {
         CustomException(
           title: 'エラー',
           text: 'マスターデータの取得に失敗しました。',
-        ),
-      );
-    }
-  }
-
-  @override
-  Future<Result<ManholeCardImages>> fetchImage({
-    required ManholeCardImages manholeCardImages,
-  }) async {
-    try {
-      final map = <String, dynamic>{};
-      map['appDirectory'] = _directory;
-      map['manholeCardImages'] = manholeCardImages;
-
-      return compute(_saveInLocal, map);
-    } on CustomException catch (customException) {
-      return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの保存に失敗しました。',
         ),
       );
     }
@@ -205,41 +176,6 @@ class ImageRepositoryImpl implements ImageRepository {
         ),
       );
     }
-  }
-
-  static Future<Result<ManholeCardImages>> _saveInLocal(
-    Map<String, dynamic> parameter,
-  ) async {
-    final appDirectory = parameter['appDirectory'] as Directory;
-    final manholeCardImages =
-        parameter['manholeCardImages'] as ManholeCardImages;
-
-    final imageDirectory = Directory('${appDirectory.path}/images');
-    if (imageDirectory.existsSync()) {
-      imageDirectory.deleteSync(recursive: true);
-    }
-    imageDirectory.createSync(recursive: true);
-
-    final newManholeCardImageList = await Future.wait(
-      manholeCardImages.map(
-        (manholeCardImage) async {
-          final res = await http.get(
-            Uri.parse(
-              'https://storage.googleapis.com/manhole-card-navi-dev.appspot.com/images/${manholeCardImage.name}',
-            ),
-          );
-          final imagePath = '${imageDirectory.path}/${manholeCardImage.name}';
-          final imageFile = File(imagePath);
-          await imageFile.writeAsBytes(res.bodyBytes);
-          return manholeCardImage;
-        },
-      ),
-    );
-    return Result.success(
-      ManholeCardImages(
-        list: newManholeCardImageList,
-      ),
-    );
   }
 
   void dispose() {

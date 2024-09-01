@@ -1,17 +1,17 @@
 import 'dart:math';
-import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class ImageDetail extends StatefulWidget {
   const ImageDetail({
     super.key,
-    required this.imageData,
+    required this.imageUrl,
     required this.imageTag,
   });
 
-  final Uint8List imageData;
+  final String imageUrl;
   final String imageTag;
 
   @override
@@ -89,7 +89,7 @@ class ImageDetailViewState extends State<ImageDetail> {
           child: PhotoView(
             backgroundDecoration:
                 const BoxDecoration(color: Colors.transparent),
-            imageProvider: MemoryImage(widget.imageData),
+            imageProvider: CachedNetworkImageProvider(widget.imageUrl),
             heroAttributes: PhotoViewHeroAttributes(
                 tag: widget.imageTag, transitionOnUserGestures: true),
             minScale: PhotoViewComputedScale.contained,

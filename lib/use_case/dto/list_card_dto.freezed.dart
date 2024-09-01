@@ -18,7 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ListCardDTO {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String get imagePath => throw _privateConstructorUsedError;
+  String get colorImageUrl => throw _privateConstructorUsedError;
+  String get grayImageUrl => throw _privateConstructorUsedError;
   String get prefectureId => throw _privateConstructorUsedError;
   String get prefectureName => throw _privateConstructorUsedError;
   String get volumeId => throw _privateConstructorUsedError;
@@ -39,7 +40,8 @@ abstract class $ListCardDTOCopyWith<$Res> {
   $Res call(
       {String id,
       String name,
-      String imagePath,
+      String colorImageUrl,
+      String grayImageUrl,
       String prefectureId,
       String prefectureName,
       String volumeId,
@@ -62,7 +64,8 @@ class _$ListCardDTOCopyWithImpl<$Res, $Val extends ListCardDTO>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? imagePath = null,
+    Object? colorImageUrl = null,
+    Object? grayImageUrl = null,
     Object? prefectureId = null,
     Object? prefectureName = null,
     Object? volumeId = null,
@@ -78,9 +81,13 @@ class _$ListCardDTOCopyWithImpl<$Res, $Val extends ListCardDTO>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      imagePath: null == imagePath
-          ? _value.imagePath
-          : imagePath // ignore: cast_nullable_to_non_nullable
+      colorImageUrl: null == colorImageUrl
+          ? _value.colorImageUrl
+          : colorImageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      grayImageUrl: null == grayImageUrl
+          ? _value.grayImageUrl
+          : grayImageUrl // ignore: cast_nullable_to_non_nullable
               as String,
       prefectureId: null == prefectureId
           ? _value.prefectureId
@@ -117,7 +124,8 @@ abstract class _$$ListCardDTOImplCopyWith<$Res>
   $Res call(
       {String id,
       String name,
-      String imagePath,
+      String colorImageUrl,
+      String grayImageUrl,
       String prefectureId,
       String prefectureName,
       String volumeId,
@@ -138,7 +146,8 @@ class __$$ListCardDTOImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? imagePath = null,
+    Object? colorImageUrl = null,
+    Object? grayImageUrl = null,
     Object? prefectureId = null,
     Object? prefectureName = null,
     Object? volumeId = null,
@@ -154,9 +163,13 @@ class __$$ListCardDTOImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      imagePath: null == imagePath
-          ? _value.imagePath
-          : imagePath // ignore: cast_nullable_to_non_nullable
+      colorImageUrl: null == colorImageUrl
+          ? _value.colorImageUrl
+          : colorImageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      grayImageUrl: null == grayImageUrl
+          ? _value.grayImageUrl
+          : grayImageUrl // ignore: cast_nullable_to_non_nullable
               as String,
       prefectureId: null == prefectureId
           ? _value.prefectureId
@@ -188,7 +201,8 @@ class _$ListCardDTOImpl extends _ListCardDTO {
   const _$ListCardDTOImpl(
       {required this.id,
       required this.name,
-      required this.imagePath,
+      required this.colorImageUrl,
+      required this.grayImageUrl,
       required this.prefectureId,
       required this.prefectureName,
       required this.volumeId,
@@ -201,7 +215,9 @@ class _$ListCardDTOImpl extends _ListCardDTO {
   @override
   final String name;
   @override
-  final String imagePath;
+  final String colorImageUrl;
+  @override
+  final String grayImageUrl;
   @override
   final String prefectureId;
   @override
@@ -215,7 +231,7 @@ class _$ListCardDTOImpl extends _ListCardDTO {
 
   @override
   String toString() {
-    return 'ListCardDTO(id: $id, name: $name, imagePath: $imagePath, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate)';
+    return 'ListCardDTO(id: $id, name: $name, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate)';
   }
 
   @override
@@ -225,8 +241,10 @@ class _$ListCardDTOImpl extends _ListCardDTO {
             other is _$ListCardDTOImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.imagePath, imagePath) ||
-                other.imagePath == imagePath) &&
+            (identical(other.colorImageUrl, colorImageUrl) ||
+                other.colorImageUrl == colorImageUrl) &&
+            (identical(other.grayImageUrl, grayImageUrl) ||
+                other.grayImageUrl == grayImageUrl) &&
             (identical(other.prefectureId, prefectureId) ||
                 other.prefectureId == prefectureId) &&
             (identical(other.prefectureName, prefectureName) ||
@@ -240,8 +258,17 @@ class _$ListCardDTOImpl extends _ListCardDTO {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, imagePath,
-      prefectureId, prefectureName, volumeId, volumeName, publicationDate);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      name,
+      colorImageUrl,
+      grayImageUrl,
+      prefectureId,
+      prefectureName,
+      volumeId,
+      volumeName,
+      publicationDate);
 
   @JsonKey(ignore: true)
   @override
@@ -254,7 +281,8 @@ abstract class _ListCardDTO extends ListCardDTO {
   const factory _ListCardDTO(
       {required final String id,
       required final String name,
-      required final String imagePath,
+      required final String colorImageUrl,
+      required final String grayImageUrl,
       required final String prefectureId,
       required final String prefectureName,
       required final String volumeId,
@@ -267,7 +295,9 @@ abstract class _ListCardDTO extends ListCardDTO {
   @override
   String get name;
   @override
-  String get imagePath;
+  String get colorImageUrl;
+  @override
+  String get grayImageUrl;
   @override
   String get prefectureId;
   @override

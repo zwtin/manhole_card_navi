@@ -33,13 +33,34 @@ class RealmCardsMapper {
               daoList: element.contacts,
             ),
             image: RealmImageMapper.convertToEntity(
-              dao: element.image ?? RealmImageDAO('', ''),
+              dao: element.image ??
+                  RealmImageDAO(
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                  ),
             ),
             prefecture: RealmPrefectureMapper.convertToEntity(
-              dao: element.prefecture ?? RealmPrefectureDAO('', ''),
+              dao: element.prefecture ??
+                  RealmPrefectureDAO(
+                    '',
+                    '',
+                  ),
             ),
             volume: RealmVolumeMapper.convertToEntity(
-              dao: element.volume ?? RealmVolumeDAO('', ''),
+              dao: element.volume ??
+                  RealmVolumeDAO(
+                    '',
+                    '',
+                  ),
             ),
           );
         },

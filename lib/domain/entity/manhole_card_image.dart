@@ -6,7 +6,16 @@ part 'manhole_card_image.freezed.dart';
 abstract class ManholeCardImage with _$ManholeCardImage {
   const factory ManholeCardImage({
     required String id,
-    required String name,
+    required String colorOriginal,
+    required String colorResized,
+    required String colorFrameGreen,
+    required String colorFrameRed,
+    required String colorFrameYellow,
+    required String grayOriginal,
+    required String grayResized,
+    required String grayFrameGreen,
+    required String grayFrameRed,
+    required String grayFrameYellow,
   }) = _ManholeCardImage;
   const ManholeCardImage._();
 }

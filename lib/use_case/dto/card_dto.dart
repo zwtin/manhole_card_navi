@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '/use_case/dto/contact_dto.dart';
-import 'map_marker_dto.dart';
 
 part 'card_dto.freezed.dart';
 
@@ -10,7 +9,8 @@ abstract class CardDTO with _$CardDTO {
   const factory CardDTO({
     required String id,
     required String name,
-    required String imagePath,
+    required String colorImageUrl,
+    required String grayImageUrl,
     required double latitude,
     required double longitude,
     required String prefectureId,
@@ -18,7 +18,6 @@ abstract class CardDTO with _$CardDTO {
     required String volumeId,
     required String volumeName,
     required DateTime publicationDate,
-    required DistributionStateDTO distributionState,
     required String distributionLinkText,
     required String distributionLinkUrl,
     required String distributionText,

@@ -284,10 +284,8 @@ class ManholeCardMapViewModel extends ChangeNotifier {
         mapMarkerDTOList: mapState == MapState.position
             ? _positionMarkerDTOList
             : _distributionMarkerDTOList,
-        getCardDTOList: dtoList,
-        originalGetCardDTOList: _alreadyGetCardDTOList,
-        originalViewData: markersViewData,
-        coordinate: _position,
+        alreadyGetCardDTOList: dtoList,
+        centerCoordinate: _position,
       );
       notifyListeners();
 
@@ -301,10 +299,8 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       mapMarkerDTOList: mapState == MapState.position
           ? _positionMarkerDTOList
           : _distributionMarkerDTOList,
-      getCardDTOList: _alreadyGetCardDTOList,
-      originalGetCardDTOList: _alreadyGetCardDTOList,
-      originalViewData: markersViewData,
-      coordinate: _position,
+      alreadyGetCardDTOList: _alreadyGetCardDTOList,
+      centerCoordinate: _position,
     );
     notifyListeners();
   }

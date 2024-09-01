@@ -10,7 +10,7 @@ part 'detail_card_view_data.freezed.dart';
 abstract class DetailCardViewData with _$DetailCardViewData {
   const factory DetailCardViewData({
     required String id,
-    required Uint8List icon,
+    required String imageUrl,
     required String name,
     required String prefecture,
     required String volume,

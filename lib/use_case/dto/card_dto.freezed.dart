@@ -18,7 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CardDTO {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String get imagePath => throw _privateConstructorUsedError;
+  String get colorImageUrl => throw _privateConstructorUsedError;
+  String get grayImageUrl => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
   String get prefectureId => throw _privateConstructorUsedError;
@@ -26,8 +27,6 @@ mixin _$CardDTO {
   String get volumeId => throw _privateConstructorUsedError;
   String get volumeName => throw _privateConstructorUsedError;
   DateTime get publicationDate => throw _privateConstructorUsedError;
-  DistributionStateDTO get distributionState =>
-      throw _privateConstructorUsedError;
   String get distributionLinkText => throw _privateConstructorUsedError;
   String get distributionLinkUrl => throw _privateConstructorUsedError;
   String get distributionText => throw _privateConstructorUsedError;
@@ -46,7 +45,8 @@ abstract class $CardDTOCopyWith<$Res> {
   $Res call(
       {String id,
       String name,
-      String imagePath,
+      String colorImageUrl,
+      String grayImageUrl,
       double latitude,
       double longitude,
       String prefectureId,
@@ -54,7 +54,6 @@ abstract class $CardDTOCopyWith<$Res> {
       String volumeId,
       String volumeName,
       DateTime publicationDate,
-      DistributionStateDTO distributionState,
       String distributionLinkText,
       String distributionLinkUrl,
       String distributionText,
@@ -77,7 +76,8 @@ class _$CardDTOCopyWithImpl<$Res, $Val extends CardDTO>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? imagePath = null,
+    Object? colorImageUrl = null,
+    Object? grayImageUrl = null,
     Object? latitude = null,
     Object? longitude = null,
     Object? prefectureId = null,
@@ -85,7 +85,6 @@ class _$CardDTOCopyWithImpl<$Res, $Val extends CardDTO>
     Object? volumeId = null,
     Object? volumeName = null,
     Object? publicationDate = null,
-    Object? distributionState = null,
     Object? distributionLinkText = null,
     Object? distributionLinkUrl = null,
     Object? distributionText = null,
@@ -101,9 +100,13 @@ class _$CardDTOCopyWithImpl<$Res, $Val extends CardDTO>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      imagePath: null == imagePath
-          ? _value.imagePath
-          : imagePath // ignore: cast_nullable_to_non_nullable
+      colorImageUrl: null == colorImageUrl
+          ? _value.colorImageUrl
+          : colorImageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      grayImageUrl: null == grayImageUrl
+          ? _value.grayImageUrl
+          : grayImageUrl // ignore: cast_nullable_to_non_nullable
               as String,
       latitude: null == latitude
           ? _value.latitude
@@ -133,10 +136,6 @@ class _$CardDTOCopyWithImpl<$Res, $Val extends CardDTO>
           ? _value.publicationDate
           : publicationDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      distributionState: null == distributionState
-          ? _value.distributionState
-          : distributionState // ignore: cast_nullable_to_non_nullable
-              as DistributionStateDTO,
       distributionLinkText: null == distributionLinkText
           ? _value.distributionLinkText
           : distributionLinkText // ignore: cast_nullable_to_non_nullable
@@ -171,7 +170,8 @@ abstract class _$$CardDTOImplCopyWith<$Res> implements $CardDTOCopyWith<$Res> {
   $Res call(
       {String id,
       String name,
-      String imagePath,
+      String colorImageUrl,
+      String grayImageUrl,
       double latitude,
       double longitude,
       String prefectureId,
@@ -179,7 +179,6 @@ abstract class _$$CardDTOImplCopyWith<$Res> implements $CardDTOCopyWith<$Res> {
       String volumeId,
       String volumeName,
       DateTime publicationDate,
-      DistributionStateDTO distributionState,
       String distributionLinkText,
       String distributionLinkUrl,
       String distributionText,
@@ -200,7 +199,8 @@ class __$$CardDTOImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? imagePath = null,
+    Object? colorImageUrl = null,
+    Object? grayImageUrl = null,
     Object? latitude = null,
     Object? longitude = null,
     Object? prefectureId = null,
@@ -208,7 +208,6 @@ class __$$CardDTOImplCopyWithImpl<$Res>
     Object? volumeId = null,
     Object? volumeName = null,
     Object? publicationDate = null,
-    Object? distributionState = null,
     Object? distributionLinkText = null,
     Object? distributionLinkUrl = null,
     Object? distributionText = null,
@@ -224,9 +223,13 @@ class __$$CardDTOImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      imagePath: null == imagePath
-          ? _value.imagePath
-          : imagePath // ignore: cast_nullable_to_non_nullable
+      colorImageUrl: null == colorImageUrl
+          ? _value.colorImageUrl
+          : colorImageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      grayImageUrl: null == grayImageUrl
+          ? _value.grayImageUrl
+          : grayImageUrl // ignore: cast_nullable_to_non_nullable
               as String,
       latitude: null == latitude
           ? _value.latitude
@@ -256,10 +259,6 @@ class __$$CardDTOImplCopyWithImpl<$Res>
           ? _value.publicationDate
           : publicationDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      distributionState: null == distributionState
-          ? _value.distributionState
-          : distributionState // ignore: cast_nullable_to_non_nullable
-              as DistributionStateDTO,
       distributionLinkText: null == distributionLinkText
           ? _value.distributionLinkText
           : distributionLinkText // ignore: cast_nullable_to_non_nullable
@@ -290,7 +289,8 @@ class _$CardDTOImpl extends _CardDTO {
   const _$CardDTOImpl(
       {required this.id,
       required this.name,
-      required this.imagePath,
+      required this.colorImageUrl,
+      required this.grayImageUrl,
       required this.latitude,
       required this.longitude,
       required this.prefectureId,
@@ -298,7 +298,6 @@ class _$CardDTOImpl extends _CardDTO {
       required this.volumeId,
       required this.volumeName,
       required this.publicationDate,
-      required this.distributionState,
       required this.distributionLinkText,
       required this.distributionLinkUrl,
       required this.distributionText,
@@ -312,7 +311,9 @@ class _$CardDTOImpl extends _CardDTO {
   @override
   final String name;
   @override
-  final String imagePath;
+  final String colorImageUrl;
+  @override
+  final String grayImageUrl;
   @override
   final double latitude;
   @override
@@ -327,8 +328,6 @@ class _$CardDTOImpl extends _CardDTO {
   final String volumeName;
   @override
   final DateTime publicationDate;
-  @override
-  final DistributionStateDTO distributionState;
   @override
   final String distributionLinkText;
   @override
@@ -347,7 +346,7 @@ class _$CardDTOImpl extends _CardDTO {
 
   @override
   String toString() {
-    return 'CardDTO(id: $id, name: $name, imagePath: $imagePath, latitude: $latitude, longitude: $longitude, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate, distributionState: $distributionState, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther, contacts: $contacts)';
+    return 'CardDTO(id: $id, name: $name, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, latitude: $latitude, longitude: $longitude, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther, contacts: $contacts)';
   }
 
   @override
@@ -357,8 +356,10 @@ class _$CardDTOImpl extends _CardDTO {
             other is _$CardDTOImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.imagePath, imagePath) ||
-                other.imagePath == imagePath) &&
+            (identical(other.colorImageUrl, colorImageUrl) ||
+                other.colorImageUrl == colorImageUrl) &&
+            (identical(other.grayImageUrl, grayImageUrl) ||
+                other.grayImageUrl == grayImageUrl) &&
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
@@ -373,8 +374,6 @@ class _$CardDTOImpl extends _CardDTO {
                 other.volumeName == volumeName) &&
             (identical(other.publicationDate, publicationDate) ||
                 other.publicationDate == publicationDate) &&
-            (identical(other.distributionState, distributionState) ||
-                other.distributionState == distributionState) &&
             (identical(other.distributionLinkText, distributionLinkText) ||
                 other.distributionLinkText == distributionLinkText) &&
             (identical(other.distributionLinkUrl, distributionLinkUrl) ||
@@ -391,7 +390,8 @@ class _$CardDTOImpl extends _CardDTO {
       runtimeType,
       id,
       name,
-      imagePath,
+      colorImageUrl,
+      grayImageUrl,
       latitude,
       longitude,
       prefectureId,
@@ -399,7 +399,6 @@ class _$CardDTOImpl extends _CardDTO {
       volumeId,
       volumeName,
       publicationDate,
-      distributionState,
       distributionLinkText,
       distributionLinkUrl,
       distributionText,
@@ -417,7 +416,8 @@ abstract class _CardDTO extends CardDTO {
   const factory _CardDTO(
       {required final String id,
       required final String name,
-      required final String imagePath,
+      required final String colorImageUrl,
+      required final String grayImageUrl,
       required final double latitude,
       required final double longitude,
       required final String prefectureId,
@@ -425,7 +425,6 @@ abstract class _CardDTO extends CardDTO {
       required final String volumeId,
       required final String volumeName,
       required final DateTime publicationDate,
-      required final DistributionStateDTO distributionState,
       required final String distributionLinkText,
       required final String distributionLinkUrl,
       required final String distributionText,
@@ -438,7 +437,9 @@ abstract class _CardDTO extends CardDTO {
   @override
   String get name;
   @override
-  String get imagePath;
+  String get colorImageUrl;
+  @override
+  String get grayImageUrl;
   @override
   double get latitude;
   @override
@@ -453,8 +454,6 @@ abstract class _CardDTO extends CardDTO {
   String get volumeName;
   @override
   DateTime get publicationDate;
-  @override
-  DistributionStateDTO get distributionState;
   @override
   String get distributionLinkText;
   @override

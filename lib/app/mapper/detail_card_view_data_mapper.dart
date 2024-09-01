@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:image/image.dart' as img;
 import 'package:intl/intl.dart';
 
 import '/app/view_data/detail_card_view_data.dart';
@@ -22,20 +21,18 @@ class DetailCardViewDataMapper {
   ) async {
     final cardDTO = parameter['cardDTO'] as CardDTO;
     final alreadyGet = parameter['alreadyGet'] as bool;
-    final cardImageOrNull = await img.decodeJpgFile(cardDTO.imagePath);
-    final cardImage = img.copyResize(cardImageOrNull!, width: 260, height: 360);
-    img.Image cardThumbnail;
+    final String imageUrl;
     if (alreadyGet) {
-      cardThumbnail = cardImage;
+      imageUrl = cardDTO.colorImageUrl;
     } else {
-      cardThumbnail = img.grayscale(cardImage);
+      imageUrl = cardDTO.grayImageUrl;
     }
 
     final dateFormatter = DateFormat('yyyy/MM/dd');
 
     return DetailCardViewData(
       id: cardDTO.id,
-      icon: img.encodePng(cardThumbnail).buffer.asUint8List(),
+      imageUrl: imageUrl,
       name: cardDTO.name,
       prefecture: cardDTO.prefectureName,
       volume: cardDTO.volumeName,

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:realm/realm.dart';
@@ -11,28 +9,20 @@ import '/infra/dao/realm_contact_dao.dart';
 import '/infra/dao/realm_image_dao.dart';
 import '/infra/dao/realm_prefecture_dao.dart';
 import '/infra/dao/realm_volume_dao.dart';
-import '/temporary_provider.dart';
 import '/use_case/dto/map_marker_dto.dart';
 import '/use_case/query_service/position_cards_query_service.dart';
 
 final positionCardsQueryServiceProvider =
     Provider.autoDispose<PositionCardsQueryService>(
   (ref) {
-    final positionCardsQueryService = PositionCardsQueryServiceImpl(
-      ref.watch(directoryProvider),
-    );
+    final positionCardsQueryService = PositionCardsQueryServiceImpl();
     ref.onDispose(positionCardsQueryService.dispose);
     return positionCardsQueryService;
   },
 );
 
 class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
-  PositionCardsQueryServiceImpl(
-    this._directory,
-  );
-
   final _logger = Logger();
-  final Directory _directory;
 
   @override
   Future<Result<List<MapMarkerDTO>>> fetch() async {
@@ -56,27 +46,32 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
 
       final dtoList = <MapMarkerDTO>[];
       for (final dao in daoList) {
-        final DistributionStateDTO distributionState;
+        final String colorImageUrl;
+        final String grayImageUrl;
         switch (dao.distributionState) {
           case 'distributing':
-            distributionState = DistributionStateDTO.distributing;
+            colorImageUrl = dao.image?.colorFrameGreen ?? '';
+            grayImageUrl = dao.image?.grayFrameGreen ?? '';
             break;
           case 'stopped':
-            distributionState = DistributionStateDTO.stopped;
+            colorImageUrl = dao.image?.colorFrameRed ?? '';
+            grayImageUrl = dao.image?.grayFrameRed ?? '';
             break;
           case 'notClear':
-            distributionState = DistributionStateDTO.notClear;
+            colorImageUrl = dao.image?.colorFrameYellow ?? '';
+            grayImageUrl = dao.image?.grayFrameYellow ?? '';
             break;
           default:
-            distributionState = DistributionStateDTO.notClear;
+            colorImageUrl = dao.image?.colorFrameYellow ?? '';
+            grayImageUrl = dao.image?.grayFrameYellow ?? '';
             break;
         }
 
         dtoList.add(
           MapMarkerDTO(
             cardId: dao.id,
-            imagePath: dao.image?.name ?? '',
-            distributionState: distributionState,
+            colorImageUrl: colorImageUrl,
+            grayImageUrl: grayImageUrl,
             latitude: dao.latitude,
             longitude: dao.longitude,
           ),

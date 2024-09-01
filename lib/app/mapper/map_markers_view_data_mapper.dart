@@ -14,14 +14,13 @@ class MapMarkersViewDataMapper {
 
   static Future<MapMarkersViewData> convertToViewData({
     required List<MapMarkerDTO> mapMarkerDTOList,
-    required List<AlreadyGetCardDTO> getCardDTOList,
-    required List<AlreadyGetCardDTO> originalGetCardDTOList,
-    required MapMarkersViewData originalViewData,
-    required LatLng coordinate,
+    required List<AlreadyGetCardDTO> alreadyGetCardDTOList,
+    required LatLng centerCoordinate,
   }) async {
     final map = <String, dynamic>{};
     map['mapMarkerDTOList'] = mapMarkerDTOList;
-    map['coordinate'] = coordinate;
+    map['alreadyGetCardDTOList'] = alreadyGetCardDTOList;
+    map['centerCoordinate'] = centerCoordinate;
     return compute(_convert, map);
   }
 
@@ -30,11 +29,13 @@ class MapMarkersViewDataMapper {
   ) async {
     final mapMarkerDTOList =
         parameter['mapMarkerDTOList'] as List<MapMarkerDTO>;
-    final coordinate = parameter['coordinate'] as LatLng;
+    final alreadyGetCardDTOList =
+        parameter['alreadyGetCardDTOList'] as List<AlreadyGetCardDTO>;
+    final centerCoordinate = parameter['centerCoordinate'] as LatLng;
 
     final tmpDTOList = mapMarkerDTOList.where((dto) {
-      final latitude = dto.latitude - coordinate.latitude;
-      final longitude = dto.longitude - coordinate.longitude;
+      final latitude = dto.latitude - centerCoordinate.latitude;
+      final longitude = dto.longitude - centerCoordinate.longitude;
 
       final distance = latitude * latitude + longitude * longitude;
 
@@ -42,10 +43,10 @@ class MapMarkersViewDataMapper {
     }).toList();
 
     tmpDTOList.sort((dto1, dto2) {
-      final latitude1 = dto1.latitude - coordinate.latitude;
-      final longitude1 = dto1.longitude - coordinate.longitude;
-      final latitude2 = dto2.latitude - coordinate.latitude;
-      final longitude2 = dto2.longitude - coordinate.longitude;
+      final latitude1 = dto1.latitude - centerCoordinate.latitude;
+      final longitude1 = dto1.longitude - centerCoordinate.longitude;
+      final latitude2 = dto2.latitude - centerCoordinate.latitude;
+      final longitude2 = dto2.longitude - centerCoordinate.longitude;
 
       final distance1 = latitude1 * latitude1 + longitude1 * longitude1;
       final distance2 = latitude2 * latitude2 + longitude2 * longitude2;
@@ -62,8 +63,14 @@ class MapMarkersViewDataMapper {
     final markersList = await Future.wait(
       takedList.map(
         (dto) async {
-          final imageUrl =
-              "https://storage.googleapis.com/manhole-card-navi-dev.appspot.com/images/${dto.imagePath}";
+          final alreadyGet =
+              alreadyGetCardDTOList.map((e) => e.cardId).contains(dto.cardId);
+          final String imageUrl;
+          if (alreadyGet) {
+            imageUrl = dto.colorImageUrl;
+          } else {
+            imageUrl = dto.grayImageUrl;
+          }
           Uint8List icon = Uint8List(0);
           if (cache[imageUrl] != null) {
             icon = cache[imageUrl]!;

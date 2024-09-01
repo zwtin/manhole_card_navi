@@ -7,9 +7,6 @@ abstract class ImageRepository {
   Future<Result<ManholeCardImages>> fetchMaster({
     required InquiredMasterVersion inquiredMasterVersion,
   });
-  Future<Result<ManholeCardImages>> fetchImage({
-    required ManholeCardImages manholeCardImages,
-  });
   Future<Result<void>> deleteMaster();
   Future<Result<void>> saveMaster({
     required ManholeCardImages manholeCardImages,

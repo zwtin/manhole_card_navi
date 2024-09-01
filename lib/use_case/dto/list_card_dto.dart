@@ -7,7 +7,8 @@ abstract class ListCardDTO with _$ListCardDTO {
   const factory ListCardDTO({
     required String id,
     required String name,
-    required String imagePath,
+    required String colorImageUrl,
+    required String grayImageUrl,
     required String prefectureId,
     required String prefectureName,
     required String volumeId,

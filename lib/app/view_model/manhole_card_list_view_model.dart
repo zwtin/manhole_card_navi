@@ -63,6 +63,7 @@ class ManholeCardListViewModel extends ChangeNotifier {
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
   late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
+
   String get navigationTitle {
     switch (listState) {
       case ListState.all:
@@ -91,10 +92,8 @@ class ManholeCardListViewModel extends ChangeNotifier {
     listState = newListState;
     prefecturesViewData = await ListPrefecturesViewDataMapper.convertToViewData(
       listCardDTOList: _listCardDTOList,
-      getCardDTOList: _alreadyGetCardDTOList,
+      alreadyGetCardDTOList: _alreadyGetCardDTOList,
       listState: listState,
-      originalGetCardDTOList: _alreadyGetCardDTOList,
-      originalViewData: prefecturesViewData,
     );
     notifyListeners();
   }
@@ -153,10 +152,8 @@ class ManholeCardListViewModel extends ChangeNotifier {
       prefecturesViewData =
           await ListPrefecturesViewDataMapper.convertToViewData(
         listCardDTOList: _listCardDTOList,
-        getCardDTOList: dtoList,
+        alreadyGetCardDTOList: dtoList,
         listState: listState,
-        originalGetCardDTOList: _alreadyGetCardDTOList,
-        originalViewData: prefecturesViewData,
       );
       notifyListeners();
 

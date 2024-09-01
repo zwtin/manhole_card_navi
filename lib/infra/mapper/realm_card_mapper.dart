@@ -29,13 +29,34 @@ class RealmCardMapper {
         daoList: dao.contacts,
       ),
       image: RealmImageMapper.convertToEntity(
-        dao: dao.image ?? RealmImageDAO('', ''),
+        dao: dao.image ??
+            RealmImageDAO(
+              '',
+              '',
+              '',
+              '',
+              '',
+              '',
+              '',
+              '',
+              '',
+              '',
+              '',
+            ),
       ),
       prefecture: RealmPrefectureMapper.convertToEntity(
-        dao: dao.prefecture ?? RealmPrefectureDAO('', ''),
+        dao: dao.prefecture ??
+            RealmPrefectureDAO(
+              '',
+              '',
+            ),
       ),
       volume: RealmVolumeMapper.convertToEntity(
-        dao: dao.volume ?? RealmVolumeDAO('', ''),
+        dao: dao.volume ??
+            RealmVolumeDAO(
+              '',
+              '',
+            ),
       ),
     );
   }

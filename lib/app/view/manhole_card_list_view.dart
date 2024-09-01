@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -137,15 +138,7 @@ class ManholeCardListView extends CommonWidget {
               Container(
                 color: Theme.of(context).colorScheme.background,
               ),
-              viewModel.prefecturesViewData.where(
-                (prefectureViewData) {
-                  return !prefectureViewData.cards.where(
-                    (card) {
-                      return !card.isHidden;
-                    },
-                  ).isEmpty;
-                },
-              ).isEmpty
+              viewModel.prefecturesViewData.isEmpty
                   ? ListView.builder(
                       itemBuilder: (itemContext, index) {
                         return const SafeArea(
@@ -162,16 +155,7 @@ class ManholeCardListView extends CommonWidget {
                       itemCount: 1,
                     )
                   : ListView.separated(
-                      itemCount: viewModel.prefecturesViewData.where(
-                            (prefectureViewData) {
-                              return !prefectureViewData.cards.where(
-                                (card) {
-                                  return !card.isHidden;
-                                },
-                              ).isEmpty;
-                            },
-                          ).length +
-                          3,
+                      itemCount: viewModel.prefecturesViewData.length + 3,
                       itemBuilder: (itemContext, index) {
                         if (index == 0) {
                           return Container(
@@ -179,53 +163,20 @@ class ManholeCardListView extends CommonWidget {
                             height: 0.5,
                           );
                         }
-                        if (index ==
-                            viewModel.prefecturesViewData.where(
-                                  (prefectureViewData) {
-                                    return !prefectureViewData.cards.where(
-                                      (card) {
-                                        return !card.isHidden;
-                                      },
-                                    ).isEmpty;
-                                  },
-                                ).length +
-                                1) {
+                        if (index == viewModel.prefecturesViewData.length + 1) {
                           return Container(
                             color: Theme.of(context).dividerColor,
                           );
                         }
-                        if (index ==
-                            viewModel.prefecturesViewData.where(
-                                  (prefectureViewData) {
-                                    return !prefectureViewData.cards.where(
-                                      (card) {
-                                        return !card.isHidden;
-                                      },
-                                    ).isEmpty;
-                                  },
-                                ).length +
-                                2) {
+                        if (index == viewModel.prefecturesViewData.length + 2) {
                           return Container(
                             color: Colors.transparent,
                             height: 0.5,
                           );
                         }
                         final prefectureViewData =
-                            viewModel.prefecturesViewData.where(
-                          (prefectureViewData) {
-                            return !prefectureViewData.cards.where(
-                              (card) {
-                                return !card.isHidden;
-                              },
-                            ).isEmpty;
-                          },
-                        ).getByIndex(index - 1);
-                        final cardWithSeparator =
-                            prefectureViewData.cards.where(
-                          (cardViewData) {
-                            return !cardViewData.isHidden;
-                          },
-                        ).map(
+                            viewModel.prefecturesViewData.getByIndex(index - 1);
+                        final cardWithSeparator = prefectureViewData.cards.map(
                           (cardViewData) {
                             return GestureDetector(
                               onTap: () {
@@ -249,7 +200,14 @@ class ManholeCardListView extends CommonWidget {
                                 child: SafeArea(
                                   child: Row(
                                     children: [
-                                      Image.memory(cardViewData.icon),
+                                      SizedBox(
+                                        child: CachedNetworkImage(
+                                          imageUrl: cardViewData.imageUrl,
+                                          fadeInDuration: const Duration(
+                                            microseconds: 0,
+                                          ),
+                                        ),
+                                      ),
                                       const SizedBox(
                                         width: 16,
                                       ),

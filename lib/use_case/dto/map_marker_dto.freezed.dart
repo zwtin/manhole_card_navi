@@ -17,9 +17,8 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MapMarkerDTO {
   String get cardId => throw _privateConstructorUsedError;
-  String get imagePath => throw _privateConstructorUsedError;
-  DistributionStateDTO get distributionState =>
-      throw _privateConstructorUsedError;
+  String get colorImageUrl => throw _privateConstructorUsedError;
+  String get grayImageUrl => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
 
@@ -36,8 +35,8 @@ abstract class $MapMarkerDTOCopyWith<$Res> {
   @useResult
   $Res call(
       {String cardId,
-      String imagePath,
-      DistributionStateDTO distributionState,
+      String colorImageUrl,
+      String grayImageUrl,
       double latitude,
       double longitude});
 }
@@ -56,8 +55,8 @@ class _$MapMarkerDTOCopyWithImpl<$Res, $Val extends MapMarkerDTO>
   @override
   $Res call({
     Object? cardId = null,
-    Object? imagePath = null,
-    Object? distributionState = null,
+    Object? colorImageUrl = null,
+    Object? grayImageUrl = null,
     Object? latitude = null,
     Object? longitude = null,
   }) {
@@ -66,14 +65,14 @@ class _$MapMarkerDTOCopyWithImpl<$Res, $Val extends MapMarkerDTO>
           ? _value.cardId
           : cardId // ignore: cast_nullable_to_non_nullable
               as String,
-      imagePath: null == imagePath
-          ? _value.imagePath
-          : imagePath // ignore: cast_nullable_to_non_nullable
+      colorImageUrl: null == colorImageUrl
+          ? _value.colorImageUrl
+          : colorImageUrl // ignore: cast_nullable_to_non_nullable
               as String,
-      distributionState: null == distributionState
-          ? _value.distributionState
-          : distributionState // ignore: cast_nullable_to_non_nullable
-              as DistributionStateDTO,
+      grayImageUrl: null == grayImageUrl
+          ? _value.grayImageUrl
+          : grayImageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       latitude: null == latitude
           ? _value.latitude
           : latitude // ignore: cast_nullable_to_non_nullable
@@ -96,8 +95,8 @@ abstract class _$$MapMarkerDTOImplCopyWith<$Res>
   @useResult
   $Res call(
       {String cardId,
-      String imagePath,
-      DistributionStateDTO distributionState,
+      String colorImageUrl,
+      String grayImageUrl,
       double latitude,
       double longitude});
 }
@@ -114,8 +113,8 @@ class __$$MapMarkerDTOImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? cardId = null,
-    Object? imagePath = null,
-    Object? distributionState = null,
+    Object? colorImageUrl = null,
+    Object? grayImageUrl = null,
     Object? latitude = null,
     Object? longitude = null,
   }) {
@@ -124,14 +123,14 @@ class __$$MapMarkerDTOImplCopyWithImpl<$Res>
           ? _value.cardId
           : cardId // ignore: cast_nullable_to_non_nullable
               as String,
-      imagePath: null == imagePath
-          ? _value.imagePath
-          : imagePath // ignore: cast_nullable_to_non_nullable
+      colorImageUrl: null == colorImageUrl
+          ? _value.colorImageUrl
+          : colorImageUrl // ignore: cast_nullable_to_non_nullable
               as String,
-      distributionState: null == distributionState
-          ? _value.distributionState
-          : distributionState // ignore: cast_nullable_to_non_nullable
-              as DistributionStateDTO,
+      grayImageUrl: null == grayImageUrl
+          ? _value.grayImageUrl
+          : grayImageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
       latitude: null == latitude
           ? _value.latitude
           : latitude // ignore: cast_nullable_to_non_nullable
@@ -149,8 +148,8 @@ class __$$MapMarkerDTOImplCopyWithImpl<$Res>
 class _$MapMarkerDTOImpl extends _MapMarkerDTO {
   const _$MapMarkerDTOImpl(
       {required this.cardId,
-      required this.imagePath,
-      required this.distributionState,
+      required this.colorImageUrl,
+      required this.grayImageUrl,
       required this.latitude,
       required this.longitude})
       : super._();
@@ -158,9 +157,9 @@ class _$MapMarkerDTOImpl extends _MapMarkerDTO {
   @override
   final String cardId;
   @override
-  final String imagePath;
+  final String colorImageUrl;
   @override
-  final DistributionStateDTO distributionState;
+  final String grayImageUrl;
   @override
   final double latitude;
   @override
@@ -168,7 +167,7 @@ class _$MapMarkerDTOImpl extends _MapMarkerDTO {
 
   @override
   String toString() {
-    return 'MapMarkerDTO(cardId: $cardId, imagePath: $imagePath, distributionState: $distributionState, latitude: $latitude, longitude: $longitude)';
+    return 'MapMarkerDTO(cardId: $cardId, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, latitude: $latitude, longitude: $longitude)';
   }
 
   @override
@@ -177,10 +176,10 @@ class _$MapMarkerDTOImpl extends _MapMarkerDTO {
         (other.runtimeType == runtimeType &&
             other is _$MapMarkerDTOImpl &&
             (identical(other.cardId, cardId) || other.cardId == cardId) &&
-            (identical(other.imagePath, imagePath) ||
-                other.imagePath == imagePath) &&
-            (identical(other.distributionState, distributionState) ||
-                other.distributionState == distributionState) &&
+            (identical(other.colorImageUrl, colorImageUrl) ||
+                other.colorImageUrl == colorImageUrl) &&
+            (identical(other.grayImageUrl, grayImageUrl) ||
+                other.grayImageUrl == grayImageUrl) &&
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
@@ -189,7 +188,7 @@ class _$MapMarkerDTOImpl extends _MapMarkerDTO {
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, cardId, imagePath, distributionState, latitude, longitude);
+      runtimeType, cardId, colorImageUrl, grayImageUrl, latitude, longitude);
 
   @JsonKey(ignore: true)
   @override
@@ -201,8 +200,8 @@ class _$MapMarkerDTOImpl extends _MapMarkerDTO {
 abstract class _MapMarkerDTO extends MapMarkerDTO {
   const factory _MapMarkerDTO(
       {required final String cardId,
-      required final String imagePath,
-      required final DistributionStateDTO distributionState,
+      required final String colorImageUrl,
+      required final String grayImageUrl,
       required final double latitude,
       required final double longitude}) = _$MapMarkerDTOImpl;
   const _MapMarkerDTO._() : super._();
@@ -210,9 +209,9 @@ abstract class _MapMarkerDTO extends MapMarkerDTO {
   @override
   String get cardId;
   @override
-  String get imagePath;
+  String get colorImageUrl;
   @override
-  DistributionStateDTO get distributionState;
+  String get grayImageUrl;
   @override
   double get latitude;
   @override
