@@ -89,7 +89,6 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
   double _zoom = 12.0;
   LatLng _position = const LatLng(35.680212, 139.757669);
-  LatLng _viewDataCreatedPosition = const LatLng(35.680212, 139.757669);
   late StreamSubscription<List<AlreadyGetCardDTO>>
       _alreadyGetCardStreamSubscription;
 
@@ -162,8 +161,17 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   }
 
   Future<void> onTapCheckWithMapButton(String cardId) async {
-    final markerViewData = markersViewData.getByCardId(cardId);
-    if (markerViewData == null) {
+    final MapMarkerDTO? dto;
+    if (mapState == MapState.position) {
+      dto = _positionMarkerDTOList
+          .where((element) => element.cardId == cardId)
+          .firstOrNull;
+    } else {
+      dto = _distributionMarkerDTOList
+          .where((element) => element.cardId == cardId)
+          .firstOrNull;
+    }
+    if (dto == null) {
       _ref.read(alertProvider.notifier).show(
             title: 'エラー',
             message: 'カード情報の取得に失敗しました',
@@ -175,15 +183,15 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       return;
     }
     final position = LatLng(
-      markerViewData.latitude,
-      markerViewData.longitude,
+      dto.latitude,
+      dto.longitude,
     );
     await _moveToLocation(
       position,
       true,
     );
     await _transitionToCardModalView(
-      markerViewData.cardId,
+      dto.cardId,
       position,
     );
     await _showModal();
@@ -195,15 +203,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   }
 
   Future<void> onCameraIdle() async {
-    final latitude = _position.latitude - _viewDataCreatedPosition.latitude;
-    final longitude = _position.longitude - _viewDataCreatedPosition.longitude;
-
-    final distance = latitude * latitude + longitude * longitude;
-
-    if (distance > 0.01) {
-      await _reloadMarkerViewData();
-      _viewDataCreatedPosition = _position;
-    }
+    await _reloadMarkerViewData();
   }
 
   Future<void> sendPV() async {
@@ -280,14 +280,17 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   Future<void> _listenAlreadyGetCard() async {
     _alreadyGetCardStreamSubscription =
         _alreadyGetCardQueryService.getStream().listen((dtoList) async {
-      markersViewData = await MapMarkersViewDataMapper.convertToViewData(
+      final newViewData = await MapMarkersViewDataMapper.convertToViewData(
         mapMarkerDTOList: mapState == MapState.position
             ? _positionMarkerDTOList
             : _distributionMarkerDTOList,
         alreadyGetCardDTOList: dtoList,
         centerCoordinate: _position,
       );
-      notifyListeners();
+      if (!newViewData.isEmpty) {
+        markersViewData = newViewData;
+        notifyListeners();
+      }
 
       _alreadyGetCardDTOList.clear();
       _alreadyGetCardDTOList.addAll(dtoList);
@@ -295,14 +298,17 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   }
 
   Future<void> _reloadMarkerViewData() async {
-    markersViewData = await MapMarkersViewDataMapper.convertToViewData(
+    final newViewData = await MapMarkersViewDataMapper.convertToViewData(
       mapMarkerDTOList: mapState == MapState.position
           ? _positionMarkerDTOList
           : _distributionMarkerDTOList,
       alreadyGetCardDTOList: _alreadyGetCardDTOList,
       centerCoordinate: _position,
     );
-    notifyListeners();
+    if (!newViewData.isEmpty) {
+      markersViewData = newViewData;
+      notifyListeners();
+    }
   }
 
   Future<void> _moveToCurrentLocation(bool animation) async {

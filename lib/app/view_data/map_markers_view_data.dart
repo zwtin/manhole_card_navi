@@ -15,6 +15,14 @@ abstract class MapMarkersViewData with _$MapMarkersViewData {
     return list.map(toElement);
   }
 
+  void forEach(void Function(MapMarkerViewData element) action) {
+    list.forEach(action);
+  }
+
+  bool get isEmpty {
+    return list.isEmpty;
+  }
+
   MapMarkersViewData added(MapMarkerViewData value) {
     final newList = list;
     newList.add(value);

@@ -10,6 +10,7 @@ abstract class MapMarkerViewData with _$MapMarkerViewData {
     required String id,
     required String cardId,
     required Uint8List icon,
+    required String imageUrl,
     required double latitude,
     required double longitude,
   }) = _MapMarkerViewData;

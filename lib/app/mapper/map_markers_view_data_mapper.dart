@@ -11,17 +11,28 @@ import '/use_case/dto/map_marker_dto.dart';
 
 class MapMarkersViewDataMapper {
   static Map<String, Uint8List> cache = <String, Uint8List>{};
+  static bool converting = false;
 
   static Future<MapMarkersViewData> convertToViewData({
     required List<MapMarkerDTO> mapMarkerDTOList,
     required List<AlreadyGetCardDTO> alreadyGetCardDTOList,
     required LatLng centerCoordinate,
   }) async {
+    if (converting) {
+      return const MapMarkersViewData(list: []);
+    }
+    converting = true;
     final map = <String, dynamic>{};
     map['mapMarkerDTOList'] = mapMarkerDTOList;
     map['alreadyGetCardDTOList'] = alreadyGetCardDTOList;
     map['centerCoordinate'] = centerCoordinate;
-    return compute(_convert, map);
+    map['cache'] = cache;
+    final viewData = await compute(_convert, map);
+    viewData.forEach((element) {
+      cache[element.imageUrl] = element.icon;
+    });
+    converting = false;
+    return viewData;
   }
 
   static Future<MapMarkersViewData> _convert(
@@ -32,6 +43,7 @@ class MapMarkersViewDataMapper {
     final alreadyGetCardDTOList =
         parameter['alreadyGetCardDTOList'] as List<AlreadyGetCardDTO>;
     final centerCoordinate = parameter['centerCoordinate'] as LatLng;
+    final cache = parameter['cache'] as Map<String, Uint8List>;
 
     final tmpDTOList = mapMarkerDTOList.where((dto) {
       final latitude = dto.latitude - centerCoordinate.latitude;
@@ -71,19 +83,20 @@ class MapMarkersViewDataMapper {
           } else {
             imageUrl = dto.grayImageUrl;
           }
-          Uint8List icon = Uint8List(0);
-          if (cache[imageUrl] != null) {
-            icon = cache[imageUrl]!;
+          final Uint8List icon;
+          final fromCache = cache[imageUrl];
+          if (fromCache != null) {
+            icon = fromCache;
           } else {
             final response = await http.get(Uri.parse(imageUrl));
             icon = response.bodyBytes;
-            cache[imageUrl] = icon;
           }
           return MapMarkerViewData(
             id: List.generate(8, (_) => charset[random.nextInt(charset.length)])
                 .join(),
             cardId: dto.cardId,
             icon: icon,
+            imageUrl: imageUrl,
             latitude: dto.latitude,
             longitude: dto.longitude,
           );
