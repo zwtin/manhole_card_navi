@@ -46,11 +46,10 @@ class LicenseView extends CommonWidget {
             applicationName: viewModel.appName,
             applicationVersion: viewModel.appVersion,
             applicationIcon: SizedBox(
-                width: 48,
-                height: 48,
-                child: const String.fromEnvironment('flavor') == 'development'
-                    ? Assets.images.iconDevelopment.image()
-                    : Assets.images.iconProduction.image()),
+              width: 48,
+              height: 48,
+              child: Assets.images.iconMini.image(),
+            ),
           ),
         ),
       ),

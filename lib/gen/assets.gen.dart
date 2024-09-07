@@ -12,29 +12,25 @@ import 'package:flutter/widgets.dart';
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
-  /// File path: assets/images/frame_gray.png
-  AssetGenImage get frameGray =>
-      const AssetGenImage('assets/images/frame_gray.png');
+  /// File path: assets/images/icon_adaptive_foreground.png
+  AssetGenImage get iconAdaptiveForeground =>
+      const AssetGenImage('assets/images/icon_adaptive_foreground.png');
 
-  /// File path: assets/images/frame_green.png
-  AssetGenImage get frameGreen =>
-      const AssetGenImage('assets/images/frame_green.png');
+  /// File path: assets/images/icon_default.png
+  AssetGenImage get iconDefault =>
+      const AssetGenImage('assets/images/icon_default.png');
 
-  /// File path: assets/images/frame_red.png
-  AssetGenImage get frameRed =>
-      const AssetGenImage('assets/images/frame_red.png');
+  /// File path: assets/images/icon_ios_development.png
+  AssetGenImage get iconIosDevelopment =>
+      const AssetGenImage('assets/images/icon_ios_development.png');
 
-  /// File path: assets/images/frame_yellow.png
-  AssetGenImage get frameYellow =>
-      const AssetGenImage('assets/images/frame_yellow.png');
+  /// File path: assets/images/icon_ios_production.png
+  AssetGenImage get iconIosProduction =>
+      const AssetGenImage('assets/images/icon_ios_production.png');
 
-  /// File path: assets/images/icon_development.png
-  AssetGenImage get iconDevelopment =>
-      const AssetGenImage('assets/images/icon_development.png');
-
-  /// File path: assets/images/icon_production.png
-  AssetGenImage get iconProduction =>
-      const AssetGenImage('assets/images/icon_production.png');
+  /// File path: assets/images/icon_mini.png
+  AssetGenImage get iconMini =>
+      const AssetGenImage('assets/images/icon_mini.png');
 
   /// File path: assets/images/terms.jpg
   AssetGenImage get terms => const AssetGenImage('assets/images/terms.jpg');
@@ -53,12 +49,11 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [
-        frameGray,
-        frameGreen,
-        frameRed,
-        frameYellow,
-        iconDevelopment,
-        iconProduction,
+        iconAdaptiveForeground,
+        iconDefault,
+        iconIosDevelopment,
+        iconIosProduction,
+        iconMini,
         terms,
         tutorial1,
         tutorial2,
