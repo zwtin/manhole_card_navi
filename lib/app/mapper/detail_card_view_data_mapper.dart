@@ -36,7 +36,7 @@ class DetailCardViewDataMapper {
       name: cardDTO.name,
       prefecture: cardDTO.prefectureName,
       volume: cardDTO.volumeName,
-      publicationDate: dateFormatter.format(cardDTO.publicationDate),
+      publicationDate: dateFormatter.format(cardDTO.publicationDate.toLocal()),
       contacts: cardDTO.contacts.map(
         (contactDTO) {
           return DetailContactViewData(

@@ -60,7 +60,7 @@ class ListPrefecturesViewDataMapper {
                       name: dto.name,
                       volume: dto.volumeName,
                       publicationDate:
-                          dateFormatter.format(dto.publicationDate),
+                          dateFormatter.format(dto.publicationDate.toLocal()),
                     );
                   },
                 )
