@@ -109,9 +109,9 @@ class CardModalViewModel extends ChangeNotifier {
 
   Future<void> onTapAlreadyGetButton() async {
     if (_alreadyGet) {
-      _deleteCard();
+      await _confirmToDeleteCard();
     } else {
-      _saveCard();
+      await _saveCard();
     }
   }
 
@@ -148,6 +148,19 @@ class CardModalViewModel extends ChangeNotifier {
 
   Future<void> _saveCard() async {
     _alreadyGetCardUseCase.save(id: _cardId);
+  }
+
+  Future<void> _confirmToDeleteCard() async {
+    _ref.read(alertProvider.notifier).show(
+          title: '確認',
+          message: 'カードを未取得に戻してよろしいですか？',
+          okButtonTitle: 'OK',
+          okButtonAction: () async {
+            await _deleteCard();
+          },
+          cancelButtonTitle: 'キャンセル',
+          cancelButtonAction: () async {},
+        );
   }
 
   Future<void> _deleteCard() async {
