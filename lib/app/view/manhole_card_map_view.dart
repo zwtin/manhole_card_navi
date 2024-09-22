@@ -226,7 +226,7 @@ class ManholeCardMapView extends CommonWidget {
             hoverElevation: 0.0,
             highlightElevation: 0.0,
             disabledElevation: 0.0,
-            child: const Icon(Icons.room_outlined),
+            child: const Icon(Icons.near_me_outlined),
           ),
         ),
       ),
