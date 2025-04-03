@@ -82,7 +82,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   );
   bool myLocationEnabled = false;
   MapMarkersViewData markersViewData = const MapMarkersViewData(list: []);
-  MapState mapState = MapState.position;
+  MapState mapState = MapState.distribution;
   bool isShowModal = false;
   final List<MapMarkerDTO> _positionMarkerDTOList = [];
   final List<MapMarkerDTO> _distributionMarkerDTOList = [];
