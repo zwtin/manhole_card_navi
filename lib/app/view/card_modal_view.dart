@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:manhole_card_navi/app/view_data/modal_card_view_data.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '/app/view_model/card_modal_view_model.dart';
@@ -180,25 +183,19 @@ class CardModalView extends CommonWidget {
                         padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                         child: ElevatedButton(
                           onPressed: () async {
-                            final uri = Uri(
-                              scheme: 'https',
-                              host: 'www.google.com',
-                              path: '/maps/search/',
-                              queryParameters: {
-                                'api': '1',
-                                'query':
-                                    '${viewModel.viewData.latitude},${viewModel.viewData.longitude}',
-                              },
-                            );
-                            if (await canLaunchUrl(uri)) {
-                              launchUrl(
-                                uri,
-                                mode: LaunchMode.externalApplication,
+                            if (Platform.isAndroid) {
+                              await openGoogleMap(
+                                viewModel.viewData,
+                              );
+                            } else if (Platform.isIOS) {
+                              await showSelectMapModal(
+                                context,
+                                viewModel.viewData,
                               );
                             }
                           },
                           child: TitleMediumText(
-                            'Google マップで開く',
+                            '別アプリで開く',
                             color: Theme.of(context).colorScheme.surface,
                           ),
                         ),
@@ -261,6 +258,84 @@ class CardModalView extends CommonWidget {
         ),
       ),
     );
+  }
+
+  Future<void> showSelectMapModal(
+    BuildContext context,
+    ModalCardViewData viewData,
+  ) async {
+    showModalBottomSheet<int>(
+      context: context,
+      builder: (modalContext) {
+        return SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: const TitleMediumText(
+                    'Apple Map で開く',
+                  ),
+                  tileColor: Colors.transparent,
+                  onTap: () async {
+                    Navigator.of(modalContext).pop();
+                    await openAppleMap(viewData);
+                  },
+                ),
+                ListTile(
+                  title: const TitleMediumText(
+                    'Google Map で開く',
+                  ),
+                  tileColor: Colors.transparent,
+                  onTap: () async {
+                    Navigator.of(modalContext).pop();
+                    await openGoogleMap(viewData);
+                  },
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> openGoogleMap(ModalCardViewData viewData) async {
+    final uri = Uri(
+      scheme: 'https',
+      host: 'maps.google.com',
+      path: '/maps/search/',
+      queryParameters: {
+        'api': '1',
+        'query': '${viewData.latitude},${viewData.longitude}',
+      },
+    );
+    if (await canLaunchUrl(uri)) {
+      launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+    }
+  }
+
+  Future<void> openAppleMap(ModalCardViewData viewData) async {
+    final uri = Uri(
+      scheme: 'https',
+      host: 'maps.apple.com',
+      queryParameters: {
+        'q': viewData.name,
+        'll': '${viewData.latitude},${viewData.longitude}',
+      },
+    );
+    if (await canLaunchUrl(uri)) {
+      launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+    }
   }
 
   @override
