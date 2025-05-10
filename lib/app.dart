@@ -43,6 +43,7 @@ class App extends HookConsumerWidget {
     );
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: Theme.of(context).copyWith(
         appBarTheme: Theme.of(context).appBarTheme.copyWith(
               color: ColorName.lightContentsBackground,

@@ -51,7 +51,7 @@ class MapMarkersViewDataMapper {
 
       final distance = latitude * latitude + longitude * longitude;
 
-      return distance < 1;
+      return distance < 0.1;
     }).toList();
 
     tmpDTOList.sort((dto1, dto2) {
@@ -66,7 +66,7 @@ class MapMarkersViewDataMapper {
       return distance1.compareTo(distance2);
     });
 
-    final takedList = tmpDTOList.take(50);
+    final takedList = tmpDTOList.take(30);
 
     const charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';

@@ -192,11 +192,6 @@ class ManholeCardMapView extends CommonWidget {
                             .read(manholeCardMapViewModelProvider(key))
                             .onCameraMove(position);
                       },
-                      onCameraIdle: () async {
-                        ref
-                            .read(manholeCardMapViewModelProvider(key))
-                            .onCameraIdle();
-                      },
                     ),
                   ),
                   if (viewModel.isShowModal)

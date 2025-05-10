@@ -199,11 +199,16 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   Future<void> onCameraMove(CameraPosition position) async {
     _zoom = position.zoom;
-    _position = position.target;
-  }
-
-  Future<void> onCameraIdle() async {
-    await _reloadMarkerViewData();
+    final latitudeDistance =
+        (_position.latitude - position.target.latitude).abs();
+    final longitudeDistance =
+        (_position.longitude - position.target.longitude).abs();
+    if (latitudeDistance * latitudeDistance +
+            longitudeDistance * longitudeDistance >
+        0.01) {
+      _position = position.target;
+      await _reloadMarkerViewData();
+    }
   }
 
   Future<void> sendPV() async {
