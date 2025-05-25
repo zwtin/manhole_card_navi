@@ -127,7 +127,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
           );
       return;
     }
-    await _moveToCurrentLocation(true);
+    await _moveToCurrentLocation(false);
   }
 
   Future<void> onTapMarker(String markerId) async {
@@ -146,9 +146,11 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       return;
     }
     final position = LatLng(markerViewData.latitude, markerViewData.longitude);
-    await _moveToLocation(position, true);
-    await _transitionToCardModalView(markerViewData.cardId, position);
-    await _showModal();
+    await Future.wait([
+      _moveToLocation(position, true),
+      _transitionToCardModalView(markerViewData.cardId, position),
+      _showModal(),
+    ]);
   }
 
   Future<void> onTapCheckWithMapButton(String cardId) async {
@@ -178,9 +180,11 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       return;
     }
     final position = LatLng(dto.latitude, dto.longitude);
-    await _moveToLocation(position, true);
-    await _transitionToCardModalView(dto.cardId, position);
-    await _showModal();
+    await Future.wait([
+      _moveToLocation(position, false),
+      _transitionToCardModalView(dto.cardId, position),
+      _showModal(),
+    ]);
   }
 
   Future<void> onCameraMove(CameraPosition position) async {
@@ -326,21 +330,21 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   }
 
   Future<void> _moveToLocation(LatLng latLng, bool animation) async {
-    _position = latLng;
     if (animation) {
-      mapController?.animateCamera(
+      await mapController?.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(target: latLng, zoom: _zoom),
         ),
       );
     } else {
-      mapController?.moveCamera(
+      await mapController?.moveCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(target: latLng, zoom: _zoom),
         ),
       );
     }
-    _reloadMarkerViewData();
+    _position = latLng;
+    await _reloadMarkerViewData();
   }
 
   Future<void> _showModal() async {
