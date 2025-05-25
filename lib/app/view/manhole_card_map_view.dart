@@ -12,34 +12,24 @@ import '/app/widget/pv_sender_widget.dart';
 import '/app/widget/router_widget.dart';
 
 class ManholeCardMapView extends CommonWidget {
-  const ManholeCardMapView({
-    super.key,
-  });
+  const ManholeCardMapView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(manholeCardMapViewModelProvider(key));
 
-    useEffect(
-      () {
-        WidgetsBinding.instance.addPostFrameCallback(
-          (_) async {
-            await ref.read(manholeCardMapViewModelProvider(key)).onLoad();
-          },
-        );
-        return null;
-      },
-      const [],
-    );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await ref.read(manholeCardMapViewModelProvider(key)).onLoad();
+      });
+      return null;
+    }, const []);
 
-    ref.listen(
-      locationPermissionProvider,
-      (previous, next) async {
-        await ref
-            .read(manholeCardMapViewModelProvider(key))
-            .updateMyLocationEnabled();
-      },
-    );
+    ref.listen(locationPermissionProvider, (previous, next) async {
+      await ref
+          .read(manholeCardMapViewModelProvider(key))
+          .updateMyLocationEnabled();
+    });
 
     return PVSenderWidget(
       key: key,
@@ -62,9 +52,7 @@ class ManholeCardMapView extends CommonWidget {
             ),
             actions: <Widget>[
               IconButton(
-                icon: const Icon(
-                  Icons.menu,
-                ),
+                icon: const Icon(Icons.menu),
                 onPressed: () {
                   showModalBottomSheet<int>(
                     context: context,
@@ -75,61 +63,54 @@ class ManholeCardMapView extends CommonWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               ListTile(
-                                leading: viewModel.mapState ==
-                                        MapState.distribution
-                                    ? SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: Icon(
-                                          Icons.check,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      )
-                                    : const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                title: const TitleMediumText(
-                                  '配布場所マップ',
-                                ),
+                                leading:
+                                    viewModel.mapState == MapState.distribution
+                                        ? SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: Icon(
+                                            Icons.check,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        )
+                                        : const SizedBox(width: 20, height: 20),
+                                title: const TitleMediumText('配布場所マップ'),
                                 tileColor: Colors.transparent,
                                 onTap: () async {
                                   Navigator.of(modalContext).pop();
                                   ref
                                       .read(
-                                          manholeCardMapViewModelProvider(key))
+                                        manholeCardMapViewModelProvider(key),
+                                      )
                                       .onChangeMapState(MapState.distribution);
                                 },
                               ),
                               ListTile(
-                                leading: viewModel.mapState == MapState.position
-                                    ? SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: Icon(
-                                          Icons.check,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      )
-                                    : const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                title: const TitleMediumText(
-                                  '蓋マップ',
-                                ),
+                                leading:
+                                    viewModel.mapState == MapState.position
+                                        ? SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: Icon(
+                                            Icons.check,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        )
+                                        : const SizedBox(width: 20, height: 20),
+                                title: const TitleMediumText('蓋マップ'),
                                 tileColor: Colors.transparent,
                                 onTap: () async {
                                   Navigator.of(modalContext).pop();
                                   ref
                                       .read(
-                                          manholeCardMapViewModelProvider(key))
+                                        manholeCardMapViewModelProvider(key),
+                                      )
                                       .onChangeMapState(MapState.position);
                                 },
                               ),
-                              const SizedBox(
-                                height: 30,
-                              ),
+                              const SizedBox(height: 30),
                             ],
                           ),
                         ),
@@ -142,9 +123,7 @@ class ManholeCardMapView extends CommonWidget {
           ),
           body: Stack(
             children: [
-              Container(
-                color: Theme.of(context).colorScheme.background,
-              ),
+              Container(color: Theme.of(context).colorScheme.background),
               Column(
                 children: [
                   Flexible(
@@ -166,31 +145,31 @@ class ManholeCardMapView extends CommonWidget {
                       tiltGesturesEnabled: false,
                       myLocationEnabled: viewModel.myLocationEnabled,
                       myLocationButtonEnabled: false,
-                      markers: viewModel.markersViewData.map(
-                        (viewData) {
-                          return Marker(
-                            markerId: MarkerId(
-                              viewData.id,
-                            ),
-                            icon: BitmapDescriptor.fromBytes(
-                              viewData.icon,
-                            ),
-                            position: LatLng(
-                              viewData.latitude,
-                              viewData.longitude,
-                            ),
-                            onTap: () {
-                              ref
-                                  .read(manholeCardMapViewModelProvider(key))
-                                  .onTapMarker(viewData.id);
-                            },
-                          );
-                        },
-                      ).toSet(),
+                      markers:
+                          viewModel.markersViewData.map((viewData) {
+                            return Marker(
+                              markerId: MarkerId(viewData.id),
+                              icon: BitmapDescriptor.fromBytes(viewData.icon),
+                              position: LatLng(
+                                viewData.latitude,
+                                viewData.longitude,
+                              ),
+                              onTap: () {
+                                ref
+                                    .read(manholeCardMapViewModelProvider(key))
+                                    .onTapMarker(viewData.id);
+                              },
+                            );
+                          }).toSet(),
                       onCameraMove: (position) async {
                         ref
                             .read(manholeCardMapViewModelProvider(key))
                             .onCameraMove(position);
+                      },
+                      onCameraIdle: () async {
+                        ref
+                            .read(manholeCardMapViewModelProvider(key))
+                            .onCameraIdle();
                       },
                     ),
                   ),
