@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/pv_sender_provider.dart';
@@ -16,17 +17,15 @@ import '/use_case/dto/app_info_dto.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 import '/use_case/use_case/app_info_use_case.dart';
 
-final settingViewModelProvider =
-    ChangeNotifierProvider.family.autoDispose<SettingViewModel, Key?>(
-  (ref, key) {
-    return SettingViewModel(
-      key,
-      ref,
-      ref.watch(analyticsUseCaseProvider),
-      ref.watch(appInfoUseCaseProvider),
-    );
-  },
-);
+final settingViewModelProvider = ChangeNotifierProvider.family
+    .autoDispose<SettingViewModel, Key?>((ref, key) {
+      return SettingViewModel(
+        key,
+        ref,
+        ref.watch(analyticsUseCaseProvider),
+        ref.watch(appInfoUseCaseProvider),
+      );
+    });
 
 class SettingViewModel extends ChangeNotifier {
   SettingViewModel(
@@ -55,17 +54,16 @@ class SettingViewModel extends ChangeNotifier {
   Future<void> sendPV() async {
     _analyticsUseCase.send(
       name: 'screen_pv',
-      parameters: {
-        'screen_name': 'setting_view',
-      },
+      parameters: {'screen_name': 'setting_view'},
     );
   }
 
   Future<void> onCameBack() async {
     final bottomTabKey = _ref.read(tabKeyStorageProvider).getBottomTabKey();
-    final selectedIndex = _ref
-        .read(bottomTabViewModelProvider(bottomTabKey).notifier)
-        .selectedIndex;
+    final selectedIndex =
+        _ref
+            .read(bottomTabViewModelProvider(bottomTabKey).notifier)
+            .selectedIndex;
     _ref.read(tabKeyStorageProvider).setTabKey(selectedIndex, _key);
     _ref.read(pvSendProvider.notifier).send();
   }
@@ -73,7 +71,9 @@ class SettingViewModel extends ChangeNotifier {
   Future<void> _fetchAppInfo() async {
     final result = await _appInfoUseCase.get();
     if (result is Failure) {
-      _ref.read(alertProvider.notifier).show(
+      _ref
+          .read(alertProvider.notifier)
+          .show(
             title: 'エラー',
             message: 'アプリ情報の取得に失敗しました',
             okButtonTitle: 'OK',
@@ -93,7 +93,9 @@ class SettingViewModel extends ChangeNotifier {
   }
 
   Future<void> _transitionToCustomIntroductionView() async {
-    await _ref.read(routerProvider(_key).notifier).push(
+    await _ref
+        .read(routerProvider(_key).notifier)
+        .push(
           nextWidget: CustomIntroductionView(
             key: UniqueKey(),
             isTutorial: false,
@@ -101,16 +103,26 @@ class SettingViewModel extends ChangeNotifier {
         );
   }
 
+  Future<void> onTapRequestImprovement() async {
+    await _transitionToRequestImprovement();
+  }
+
+  Future<void> _transitionToRequestImprovement() async {
+    final uri = Uri.parse('https://forms.gle/JVEuCBxCJhAZFSQA7');
+    if (await canLaunchUrl(uri)) {
+      launchUrl(uri, mode: LaunchMode.inAppWebView);
+    }
+  }
+
   Future<void> onTapTermsOfService() async {
     await _transitionToTermsOfServiceView();
   }
 
   Future<void> _transitionToTermsOfServiceView() async {
-    await _ref.read(routerProvider(_key).notifier).push(
-          nextWidget: TermsOfServiceView(
-            key: UniqueKey(),
-            isTutorial: false,
-          ),
+    await _ref
+        .read(routerProvider(_key).notifier)
+        .push(
+          nextWidget: TermsOfServiceView(key: UniqueKey(), isTutorial: false),
         );
   }
 
@@ -119,11 +131,10 @@ class SettingViewModel extends ChangeNotifier {
   }
 
   Future<void> _transitionToPrivacyPolicyView() async {
-    await _ref.read(routerProvider(_key).notifier).push(
-          nextWidget: PrivacyPolicyView(
-            key: UniqueKey(),
-            isTutorial: false,
-          ),
+    await _ref
+        .read(routerProvider(_key).notifier)
+        .push(
+          nextWidget: PrivacyPolicyView(key: UniqueKey(), isTutorial: false),
         );
   }
 
@@ -132,11 +143,9 @@ class SettingViewModel extends ChangeNotifier {
   }
 
   Future<void> _transitionToLicenseView() async {
-    await _ref.read(routerProvider(_key).notifier).push(
-          nextWidget: LicenseView(
-            key: UniqueKey(),
-          ),
-        );
+    await _ref
+        .read(routerProvider(_key).notifier)
+        .push(nextWidget: LicenseView(key: UniqueKey()));
   }
 
   @override

@@ -11,25 +11,18 @@ import '/app/widget/pv_sender_widget.dart';
 import '/app/widget/router_widget.dart';
 
 class SettingView extends CommonWidget {
-  const SettingView({
-    super.key,
-  });
+  const SettingView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(settingViewModelProvider(key));
 
-    useEffect(
-      () {
-        WidgetsBinding.instance.addPostFrameCallback(
-          (_) async {
-            await ref.read(settingViewModelProvider(key)).onLoad();
-          },
-        );
-        return null;
-      },
-      const [],
-    );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await ref.read(settingViewModelProvider(key)).onLoad();
+      });
+      return null;
+    }, const []);
 
     return PVSenderWidget(
       key: key,
@@ -48,16 +41,11 @@ class SettingView extends CommonWidget {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: const TitleLargeText(
-              '設定',
-              fontWeight: FontWeight.bold,
-            ),
+            title: const TitleLargeText('設定', fontWeight: FontWeight.bold),
           ),
           body: Stack(
             children: [
-              Container(
-                color: Theme.of(context).colorScheme.background,
-              ),
+              Container(color: Theme.of(context).colorScheme.background),
               SingleChildScrollView(
                 child: SafeArea(
                   child: Padding(
@@ -76,9 +64,7 @@ class SettingView extends CommonWidget {
                             child: Column(
                               children: [
                                 ListTile(
-                                  title: const TitleMediumText(
-                                    'アプリの使い方',
-                                  ),
+                                  title: const TitleMediumText('アプリの使い方'),
                                   trailing: Icon(
                                     Icons.arrow_forward_ios,
                                     color: Theme.of(context).iconTheme.color,
@@ -99,9 +85,7 @@ class SettingView extends CommonWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 16,
-                        ),
+                        const SizedBox(height: 16),
                         Container(
                           decoration: BoxDecoration(
                             border: Border.all(
@@ -114,9 +98,41 @@ class SettingView extends CommonWidget {
                             child: Column(
                               children: [
                                 ListTile(
-                                  title: const TitleMediumText(
-                                    '利用規約',
+                                  title: const TitleMediumText('改善要望・不具合報告'),
+                                  trailing: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Theme.of(context).iconTheme.color,
                                   ),
+                                  onTap: () async {
+                                    await ref
+                                        .read(settingViewModelProvider(key))
+                                        .onTapRequestImprovement();
+                                  },
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(16.0),
+                                      bottom: Radius.circular(16.0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  title: const TitleMediumText('利用規約'),
                                   trailing: Icon(
                                     Icons.arrow_forward_ios,
                                     color: Theme.of(context).iconTheme.color,
@@ -137,9 +153,7 @@ class SettingView extends CommonWidget {
                                   height: 1,
                                 ),
                                 ListTile(
-                                  title: const TitleMediumText(
-                                    'プライバシーポリシー',
-                                  ),
+                                  title: const TitleMediumText('プライバシーポリシー'),
                                   trailing: Icon(
                                     Icons.arrow_forward_ios,
                                     color: Theme.of(context).iconTheme.color,
@@ -155,9 +169,7 @@ class SettingView extends CommonWidget {
                                   height: 1,
                                 ),
                                 ListTile(
-                                  title: const TitleMediumText(
-                                    'ライセンス',
-                                  ),
+                                  title: const TitleMediumText('ライセンス'),
                                   trailing: Icon(
                                     Icons.arrow_forward_ios,
                                     color: Theme.of(context).iconTheme.color,
@@ -177,15 +189,9 @@ class SettingView extends CommonWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 24,
-                        ),
-                        TitleMediumText(
-                          viewModel.appName,
-                        ),
-                        TitleMediumText(
-                          'バージョン ${viewModel.appVersion}',
-                        ),
+                        const SizedBox(height: 24),
+                        TitleMediumText(viewModel.appName),
+                        TitleMediumText('バージョン ${viewModel.appVersion}'),
                       ],
                     ),
                   ),
