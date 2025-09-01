@@ -95,7 +95,7 @@ dependencies:
 
   lottie: ^3.3.1
 
-  flutter_app_badger: ^1.5.0
+  flutter_app_badge_control: ^0.0.2
 
   http: ^1.4.0
 

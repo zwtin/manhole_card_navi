@@ -1,4 +1,4 @@
-import 'package:flutter_app_badger/flutter_app_badger.dart';
+import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
@@ -22,7 +22,7 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
     required int count,
   }) async {
     try {
-      FlutterAppBadger.updateBadgeCount(count);
+      FlutterAppBadgeControl.updateBadgeCount(count);
       return const Result.success(null);
     } on CustomException catch (customException) {
       return Result.failure(
@@ -41,7 +41,7 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
   @override
   Future<Result<void>> remove() async {
     try {
-      FlutterAppBadger.removeBadge();
+      FlutterAppBadgeControl.removeBadge();
       return const Result.success(null);
     } on CustomException catch (customException) {
       return Result.failure(
