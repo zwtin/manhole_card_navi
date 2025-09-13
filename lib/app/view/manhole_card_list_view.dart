@@ -242,29 +242,35 @@ class ManholeCardListView extends CommonWidget {
                                 ),
                               ),
                             );
-                          },
-                        ).toList();
-                        return ExpansionTile(
-                          title: TitleMediumText(
-                            prefectureViewData.name,
-                          ),
-                          initiallyExpanded:
-                              prefectureViewData.initiallyExpanded,
-                          onExpansionChanged: (expanded) async {
-                            await ref
-                                .read(manholeCardListViewModelProvider(key))
-                                .onExpandedChanged(
-                                  expanded,
-                                  prefectureViewData.id,
-                                );
-                          },
-                          children: cardWithSeparator,
-                        );
-                      },
-                      separatorBuilder: (separatorContext, index) {
-                        return const Divider();
-                      },
-                    ),
+                          }).toList();
+                      return ExpansionTile(
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: TitleMediumText(prefectureViewData.name),
+                            ),
+                            TitleMediumText(
+                              '${prefectureViewData.alreadyGetCount}/${prefectureViewData.totalCount}',
+                            ),
+                          ],
+                        ),
+                        initiallyExpanded: prefectureViewData.initiallyExpanded,
+                        onExpansionChanged: (expanded) async {
+                          await ref
+                              .read(manholeCardListViewModelProvider(key))
+                              .onExpandedChanged(
+                                expanded,
+                                prefectureViewData.id,
+                              );
+                        },
+                        children: cardWithSeparator,
+                      );
+                    },
+                    separatorBuilder: (separatorContext, index) {
+                      return const Divider();
+                    },
+                  ),
             ],
           ),
         ),

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ListPrefectureViewData {
 
- String get id; String get name; ListCardsViewData get cards; bool get initiallyExpanded;
+ String get id; String get name; ListCardsViewData get cards; bool get initiallyExpanded; int get totalCount; int get alreadyGetCount;
 /// Create a copy of ListPrefectureViewData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $ListPrefectureViewDataCopyWith<ListPrefectureViewData> get copyWith => _$ListPr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListPrefectureViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cards, cards) || other.cards == cards)&&(identical(other.initiallyExpanded, initiallyExpanded) || other.initiallyExpanded == initiallyExpanded));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListPrefectureViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cards, cards) || other.cards == cards)&&(identical(other.initiallyExpanded, initiallyExpanded) || other.initiallyExpanded == initiallyExpanded)&&(identical(other.totalCount, totalCount) || other.totalCount == totalCount)&&(identical(other.alreadyGetCount, alreadyGetCount) || other.alreadyGetCount == alreadyGetCount));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,cards,initiallyExpanded);
+int get hashCode => Object.hash(runtimeType,id,name,cards,initiallyExpanded,totalCount,alreadyGetCount);
 
 @override
 String toString() {
-  return 'ListPrefectureViewData(id: $id, name: $name, cards: $cards, initiallyExpanded: $initiallyExpanded)';
+  return 'ListPrefectureViewData(id: $id, name: $name, cards: $cards, initiallyExpanded: $initiallyExpanded, totalCount: $totalCount, alreadyGetCount: $alreadyGetCount)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $ListPrefectureViewDataCopyWith<$Res>  {
   factory $ListPrefectureViewDataCopyWith(ListPrefectureViewData value, $Res Function(ListPrefectureViewData) _then) = _$ListPrefectureViewDataCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, ListCardsViewData cards, bool initiallyExpanded
+ String id, String name, ListCardsViewData cards, bool initiallyExpanded, int totalCount, int alreadyGetCount
 });
 
 
@@ -63,13 +63,15 @@ class _$ListPrefectureViewDataCopyWithImpl<$Res>
 
 /// Create a copy of ListPrefectureViewData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? cards = null,Object? initiallyExpanded = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? cards = null,Object? initiallyExpanded = null,Object? totalCount = null,Object? alreadyGetCount = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,cards: null == cards ? _self.cards : cards // ignore: cast_nullable_to_non_nullable
 as ListCardsViewData,initiallyExpanded: null == initiallyExpanded ? _self.initiallyExpanded : initiallyExpanded // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,totalCount: null == totalCount ? _self.totalCount : totalCount // ignore: cast_nullable_to_non_nullable
+as int,alreadyGetCount: null == alreadyGetCount ? _self.alreadyGetCount : alreadyGetCount // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 /// Create a copy of ListPrefectureViewData
@@ -89,13 +91,15 @@ $ListCardsViewDataCopyWith<$Res> get cards {
 
 
 class _ListPrefectureViewData extends ListPrefectureViewData {
-  const _ListPrefectureViewData({required this.id, required this.name, required this.cards, required this.initiallyExpanded}): super._();
+  const _ListPrefectureViewData({required this.id, required this.name, required this.cards, required this.initiallyExpanded, required this.totalCount, required this.alreadyGetCount}): super._();
   
 
 @override final  String id;
 @override final  String name;
 @override final  ListCardsViewData cards;
 @override final  bool initiallyExpanded;
+@override final  int totalCount;
+@override final  int alreadyGetCount;
 
 /// Create a copy of ListPrefectureViewData
 /// with the given fields replaced by the non-null parameter values.
@@ -107,16 +111,16 @@ _$ListPrefectureViewDataCopyWith<_ListPrefectureViewData> get copyWith => __$Lis
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListPrefectureViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cards, cards) || other.cards == cards)&&(identical(other.initiallyExpanded, initiallyExpanded) || other.initiallyExpanded == initiallyExpanded));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListPrefectureViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cards, cards) || other.cards == cards)&&(identical(other.initiallyExpanded, initiallyExpanded) || other.initiallyExpanded == initiallyExpanded)&&(identical(other.totalCount, totalCount) || other.totalCount == totalCount)&&(identical(other.alreadyGetCount, alreadyGetCount) || other.alreadyGetCount == alreadyGetCount));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,cards,initiallyExpanded);
+int get hashCode => Object.hash(runtimeType,id,name,cards,initiallyExpanded,totalCount,alreadyGetCount);
 
 @override
 String toString() {
-  return 'ListPrefectureViewData(id: $id, name: $name, cards: $cards, initiallyExpanded: $initiallyExpanded)';
+  return 'ListPrefectureViewData(id: $id, name: $name, cards: $cards, initiallyExpanded: $initiallyExpanded, totalCount: $totalCount, alreadyGetCount: $alreadyGetCount)';
 }
 
 
@@ -127,7 +131,7 @@ abstract mixin class _$ListPrefectureViewDataCopyWith<$Res> implements $ListPref
   factory _$ListPrefectureViewDataCopyWith(_ListPrefectureViewData value, $Res Function(_ListPrefectureViewData) _then) = __$ListPrefectureViewDataCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, ListCardsViewData cards, bool initiallyExpanded
+ String id, String name, ListCardsViewData cards, bool initiallyExpanded, int totalCount, int alreadyGetCount
 });
 
 
@@ -144,13 +148,15 @@ class __$ListPrefectureViewDataCopyWithImpl<$Res>
 
 /// Create a copy of ListPrefectureViewData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? cards = null,Object? initiallyExpanded = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? cards = null,Object? initiallyExpanded = null,Object? totalCount = null,Object? alreadyGetCount = null,}) {
   return _then(_ListPrefectureViewData(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,cards: null == cards ? _self.cards : cards // ignore: cast_nullable_to_non_nullable
 as ListCardsViewData,initiallyExpanded: null == initiallyExpanded ? _self.initiallyExpanded : initiallyExpanded // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,totalCount: null == totalCount ? _self.totalCount : totalCount // ignore: cast_nullable_to_non_nullable
+as int,alreadyGetCount: null == alreadyGetCount ? _self.alreadyGetCount : alreadyGetCount // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

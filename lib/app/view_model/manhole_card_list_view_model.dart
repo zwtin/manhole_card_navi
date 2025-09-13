@@ -67,7 +67,9 @@ class ManholeCardListViewModel extends ChangeNotifier {
   String get navigationTitle {
     switch (listState) {
       case ListState.all:
-        return 'すべて';
+        final totalCount = _listCardDTOList.length;
+        final alreadyGetCount = _alreadyGetCardDTOList.length;
+        return 'すべて　$alreadyGetCount/$totalCount';
       case ListState.alreadyGet:
         return '取得済みのみ';
       default:

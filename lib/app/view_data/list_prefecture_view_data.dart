@@ -11,6 +11,8 @@ abstract class ListPrefectureViewData with _$ListPrefectureViewData {
     required String name,
     required ListCardsViewData cards,
     required bool initiallyExpanded,
+    required int totalCount,
+    required int alreadyGetCount,
   }) = _ListPrefectureViewData;
   const ListPrefectureViewData._();
 }

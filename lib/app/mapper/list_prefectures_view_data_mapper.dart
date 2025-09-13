@@ -74,6 +74,17 @@ class ListPrefecturesViewDataMapper {
                 .firstWhere((dto) => dto.prefectureId == id)
                 .prefectureName;
 
+            // 分数の計算
+            final totalCardsInPrefecture = listCardDTOList
+                .where((dto) => dto.prefectureId == id)
+                .length;
+            final alreadyGetCardsInPrefecture = listCardDTOList
+                .where((dto) => dto.prefectureId == id)
+                .where((dto) => alreadyGetCardDTOList
+                    .map((e) => e.cardId)
+                    .contains(dto.id))
+                .length;
+
             return ListPrefectureViewData(
               id: id,
               name: prefectureName.isEmpty ? '全国' : prefectureName,
@@ -81,6 +92,8 @@ class ListPrefecturesViewDataMapper {
                 list: cardList,
               ),
               initiallyExpanded: false,
+              totalCount: totalCardsInPrefecture,
+              alreadyGetCount: alreadyGetCardsInPrefecture,
             );
           },
         )
