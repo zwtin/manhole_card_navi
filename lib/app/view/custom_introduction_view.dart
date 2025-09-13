@@ -11,10 +11,7 @@ import '/app/widget/router_widget.dart';
 import '/gen/assets.gen.dart';
 
 class CustomIntroductionView extends CommonWidget {
-  const CustomIntroductionView({
-    super.key,
-    required this.isTutorial,
-  });
+  const CustomIntroductionView({super.key, required this.isTutorial});
 
   final bool isTutorial;
 
@@ -22,19 +19,14 @@ class CustomIntroductionView extends CommonWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(customIntroductionViewModelProvider(key));
 
-    useEffect(
-      () {
-        WidgetsBinding.instance.addPostFrameCallback(
-          (_) async {
-            await ref
-                .read(customIntroductionViewModelProvider(key))
-                .onLoad(isTutorial);
-          },
-        );
-        return null;
-      },
-      const [],
-    );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await ref
+            .read(customIntroductionViewModelProvider(key))
+            .onLoad(isTutorial);
+      });
+      return null;
+    }, const []);
 
     return PVSenderWidget(
       key: key,
@@ -44,10 +36,7 @@ class CustomIntroductionView extends CommonWidget {
         parent: this,
         child: Scaffold(
           appBar: AppBar(
-            title: const TitleLargeText(
-              'アプリの使い方',
-              fontWeight: FontWeight.bold,
-            ),
+            title: const TitleLargeText('アプリの使い方', fontWeight: FontWeight.bold),
           ),
           body: Container(
             color: Theme.of(context).colorScheme.background,
@@ -60,10 +49,8 @@ class CustomIntroductionView extends CommonWidget {
                       'ようこそ！',
                       fontWeight: FontWeight.bold,
                     ),
-                    bodyWidget: const TitleMediumText(
-                      'マンホールカード集めをもっと楽しもう！',
-                    ),
-                    image: Assets.images.tutorial1.image(),
+                    bodyWidget: const TitleMediumText('マンホールカード集めをもっと楽しもう！'),
+                    image: Assets.images.tutorials.tutorial1.image(),
                   ),
                   PageViewModel(
                     titleWidget: const TitleLargeText(
@@ -73,7 +60,7 @@ class CustomIntroductionView extends CommonWidget {
                     bodyWidget: const TitleMediumText(
                       '枠の色でカードが配布中かわかります。\n\n緑色: 配布中\n赤色: 配布停止\n黄色: 不明',
                     ),
-                    image: Assets.images.tutorial2.image(),
+                    image: Assets.images.tutorials.tutorial2.image(),
                   ),
                   PageViewModel(
                     titleWidget: const TitleLargeText(
@@ -83,7 +70,7 @@ class CustomIntroductionView extends CommonWidget {
                     bodyWidget: const TitleMediumText(
                       'カードの色で取得済みかわかります。\n\nカラー: 取得済み\nグレー: 未取得',
                     ),
-                    image: Assets.images.tutorial3.image(),
+                    image: Assets.images.tutorials.tutorial3.image(),
                   ),
                 ],
                 showNextButton: true,
@@ -92,15 +79,9 @@ class CustomIntroductionView extends CommonWidget {
                 done: const Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TitleMediumText(
-                      'OK!',
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Icon(
-                      Icons.check,
-                    ),
+                    TitleMediumText('OK!'),
+                    SizedBox(width: 8),
+                    Icon(Icons.check),
                   ],
                 ),
                 onDone: () async {
@@ -111,17 +92,11 @@ class CustomIntroductionView extends CommonWidget {
                 next: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const TitleMediumText(
-                      '次へ',
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
+                    const TitleMediumText('次へ'),
+                    const SizedBox(width: 4),
                     Transform.scale(
                       scale: 0.75,
-                      child: const Icon(
-                        Icons.arrow_forward_ios,
-                      ),
+                      child: const Icon(Icons.arrow_forward_ios),
                     ),
                   ],
                 ),
@@ -130,16 +105,10 @@ class CustomIntroductionView extends CommonWidget {
                   children: [
                     Transform.scale(
                       scale: 0.75,
-                      child: const Icon(
-                        Icons.arrow_back_ios,
-                      ),
+                      child: const Icon(Icons.arrow_back_ios),
                     ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    const TitleMediumText(
-                      '前へ',
-                    ),
+                    const SizedBox(width: 4),
+                    const TitleMediumText('前へ'),
                   ],
                 ),
                 globalBackgroundColor: Theme.of(context).colorScheme.background,

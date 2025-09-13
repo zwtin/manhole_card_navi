@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,141 +10,139 @@ part of 'manhole_card_prefectures.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$ManholeCardPrefectures {
-  List<ManholeCardPrefecture> get list => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $ManholeCardPrefecturesCopyWith<ManholeCardPrefectures> get copyWith =>
-      throw _privateConstructorUsedError;
+ List<ManholeCardPrefecture> get list;
+/// Create a copy of ManholeCardPrefectures
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ManholeCardPrefecturesCopyWith<ManholeCardPrefectures> get copyWith => _$ManholeCardPrefecturesCopyWithImpl<ManholeCardPrefectures>(this as ManholeCardPrefectures, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ManholeCardPrefectures&&const DeepCollectionEquality().equals(other.list, list));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(list));
+
+@override
+String toString() {
+  return 'ManholeCardPrefectures(list: $list)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $ManholeCardPrefecturesCopyWith<$Res> {
-  factory $ManholeCardPrefecturesCopyWith(ManholeCardPrefectures value,
-          $Res Function(ManholeCardPrefectures) then) =
-      _$ManholeCardPrefecturesCopyWithImpl<$Res, ManholeCardPrefectures>;
-  @useResult
-  $Res call({List<ManholeCardPrefecture> list});
-}
+abstract mixin class $ManholeCardPrefecturesCopyWith<$Res>  {
+  factory $ManholeCardPrefecturesCopyWith(ManholeCardPrefectures value, $Res Function(ManholeCardPrefectures) _then) = _$ManholeCardPrefecturesCopyWithImpl;
+@useResult
+$Res call({
+ List<ManholeCardPrefecture> list
+});
 
+
+
+
+}
 /// @nodoc
-class _$ManholeCardPrefecturesCopyWithImpl<$Res,
-        $Val extends ManholeCardPrefectures>
+class _$ManholeCardPrefecturesCopyWithImpl<$Res>
     implements $ManholeCardPrefecturesCopyWith<$Res> {
-  _$ManholeCardPrefecturesCopyWithImpl(this._value, this._then);
+  _$ManholeCardPrefecturesCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final ManholeCardPrefectures _self;
+  final $Res Function(ManholeCardPrefectures) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? list = null,
-  }) {
-    return _then(_value.copyWith(
-      list: null == list
-          ? _value.list
-          : list // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardPrefecture>,
-    ) as $Val);
-  }
+/// Create a copy of ManholeCardPrefectures
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? list = null,}) {
+  return _then(_self.copyWith(
+list: null == list ? _self.list : list // ignore: cast_nullable_to_non_nullable
+as List<ManholeCardPrefecture>,
+  ));
 }
 
-/// @nodoc
-abstract class _$$ManholeCardPrefecturesImplCopyWith<$Res>
-    implements $ManholeCardPrefecturesCopyWith<$Res> {
-  factory _$$ManholeCardPrefecturesImplCopyWith(
-          _$ManholeCardPrefecturesImpl value,
-          $Res Function(_$ManholeCardPrefecturesImpl) then) =
-      __$$ManholeCardPrefecturesImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({List<ManholeCardPrefecture> list});
 }
 
-/// @nodoc
-class __$$ManholeCardPrefecturesImplCopyWithImpl<$Res>
-    extends _$ManholeCardPrefecturesCopyWithImpl<$Res,
-        _$ManholeCardPrefecturesImpl>
-    implements _$$ManholeCardPrefecturesImplCopyWith<$Res> {
-  __$$ManholeCardPrefecturesImplCopyWithImpl(
-      _$ManholeCardPrefecturesImpl _value,
-      $Res Function(_$ManholeCardPrefecturesImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? list = null,
-  }) {
-    return _then(_$ManholeCardPrefecturesImpl(
-      list: null == list
-          ? _value._list
-          : list // ignore: cast_nullable_to_non_nullable
-              as List<ManholeCardPrefecture>,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$ManholeCardPrefecturesImpl extends _ManholeCardPrefectures {
-  const _$ManholeCardPrefecturesImpl(
-      {required final List<ManholeCardPrefecture> list})
-      : _list = list,
-        super._();
 
-  final List<ManholeCardPrefecture> _list;
-  @override
-  List<ManholeCardPrefecture> get list {
-    if (_list is EqualUnmodifiableListView) return _list;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_list);
-  }
+class _ManholeCardPrefectures extends ManholeCardPrefectures {
+  const _ManholeCardPrefectures({required final  List<ManholeCardPrefecture> list}): _list = list,super._();
+  
 
-  @override
-  String toString() {
-    return 'ManholeCardPrefectures(list: $list)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ManholeCardPrefecturesImpl &&
-            const DeepCollectionEquality().equals(other._list, _list));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_list));
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ManholeCardPrefecturesImplCopyWith<_$ManholeCardPrefecturesImpl>
-      get copyWith => __$$ManholeCardPrefecturesImplCopyWithImpl<
-          _$ManholeCardPrefecturesImpl>(this, _$identity);
+ final  List<ManholeCardPrefecture> _list;
+@override List<ManholeCardPrefecture> get list {
+  if (_list is EqualUnmodifiableListView) return _list;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_list);
 }
 
-abstract class _ManholeCardPrefectures extends ManholeCardPrefectures {
-  const factory _ManholeCardPrefectures(
-          {required final List<ManholeCardPrefecture> list}) =
-      _$ManholeCardPrefecturesImpl;
-  const _ManholeCardPrefectures._() : super._();
 
-  @override
-  List<ManholeCardPrefecture> get list;
-  @override
-  @JsonKey(ignore: true)
-  _$$ManholeCardPrefecturesImplCopyWith<_$ManholeCardPrefecturesImpl>
-      get copyWith => throw _privateConstructorUsedError;
+/// Create a copy of ManholeCardPrefectures
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ManholeCardPrefecturesCopyWith<_ManholeCardPrefectures> get copyWith => __$ManholeCardPrefecturesCopyWithImpl<_ManholeCardPrefectures>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ManholeCardPrefectures&&const DeepCollectionEquality().equals(other._list, _list));
 }
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_list));
+
+@override
+String toString() {
+  return 'ManholeCardPrefectures(list: $list)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ManholeCardPrefecturesCopyWith<$Res> implements $ManholeCardPrefecturesCopyWith<$Res> {
+  factory _$ManholeCardPrefecturesCopyWith(_ManholeCardPrefectures value, $Res Function(_ManholeCardPrefectures) _then) = __$ManholeCardPrefecturesCopyWithImpl;
+@override @useResult
+$Res call({
+ List<ManholeCardPrefecture> list
+});
+
+
+
+
+}
+/// @nodoc
+class __$ManholeCardPrefecturesCopyWithImpl<$Res>
+    implements _$ManholeCardPrefecturesCopyWith<$Res> {
+  __$ManholeCardPrefecturesCopyWithImpl(this._self, this._then);
+
+  final _ManholeCardPrefectures _self;
+  final $Res Function(_ManholeCardPrefectures) _then;
+
+/// Create a copy of ManholeCardPrefectures
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? list = null,}) {
+  return _then(_ManholeCardPrefectures(
+list: null == list ? _self._list : list // ignore: cast_nullable_to_non_nullable
+as List<ManholeCardPrefecture>,
+  ));
+}
+
+
+}
+
+// dart format on

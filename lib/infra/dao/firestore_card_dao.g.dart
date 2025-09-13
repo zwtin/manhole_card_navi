@@ -6,9 +6,8 @@ part of 'firestore_card_dao.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$FirestoreCardDAOImpl _$$FirestoreCardDAOImplFromJson(
-        Map<String, dynamic> json) =>
-    _$FirestoreCardDAOImpl(
+_FirestoreCardDAO _$FirestoreCardDAOFromJson(Map<String, dynamic> json) =>
+    _FirestoreCardDAO(
       id: json['id'] as String,
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
@@ -24,8 +23,7 @@ _$FirestoreCardDAOImpl _$$FirestoreCardDAOImplFromJson(
       distributionOther: json['distributionOther'] as String,
     );
 
-Map<String, dynamic> _$$FirestoreCardDAOImplToJson(
-        _$FirestoreCardDAOImpl instance) =>
+Map<String, dynamic> _$FirestoreCardDAOToJson(_FirestoreCardDAO instance) =>
     <String, dynamic>{
       'id': instance.id,
       'latitude': instance.latitude,

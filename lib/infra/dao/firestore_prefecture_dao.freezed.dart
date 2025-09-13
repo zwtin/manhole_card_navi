@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,169 +10,142 @@ part of 'firestore_prefecture_dao.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-FirestorePrefectureDAO _$FirestorePrefectureDAOFromJson(
-    Map<String, dynamic> json) {
-  return _FirestorePrefectureDAO.fromJson(json);
-}
 
 /// @nodoc
 mixin _$FirestorePrefectureDAO {
-  String get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $FirestorePrefectureDAOCopyWith<FirestorePrefectureDAO> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get id; String get name;
+/// Create a copy of FirestorePrefectureDAO
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FirestorePrefectureDAOCopyWith<FirestorePrefectureDAO> get copyWith => _$FirestorePrefectureDAOCopyWithImpl<FirestorePrefectureDAO>(this as FirestorePrefectureDAO, _$identity);
+
+  /// Serializes this FirestorePrefectureDAO to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FirestorePrefectureDAO&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name);
+
+@override
+String toString() {
+  return 'FirestorePrefectureDAO(id: $id, name: $name)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $FirestorePrefectureDAOCopyWith<$Res> {
-  factory $FirestorePrefectureDAOCopyWith(FirestorePrefectureDAO value,
-          $Res Function(FirestorePrefectureDAO) then) =
-      _$FirestorePrefectureDAOCopyWithImpl<$Res, FirestorePrefectureDAO>;
-  @useResult
-  $Res call({String id, String name});
-}
+abstract mixin class $FirestorePrefectureDAOCopyWith<$Res>  {
+  factory $FirestorePrefectureDAOCopyWith(FirestorePrefectureDAO value, $Res Function(FirestorePrefectureDAO) _then) = _$FirestorePrefectureDAOCopyWithImpl;
+@useResult
+$Res call({
+ String id, String name
+});
 
+
+
+
+}
 /// @nodoc
-class _$FirestorePrefectureDAOCopyWithImpl<$Res,
-        $Val extends FirestorePrefectureDAO>
+class _$FirestorePrefectureDAOCopyWithImpl<$Res>
     implements $FirestorePrefectureDAOCopyWith<$Res> {
-  _$FirestorePrefectureDAOCopyWithImpl(this._value, this._then);
+  _$FirestorePrefectureDAOCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final FirestorePrefectureDAO _self;
+  final $Res Function(FirestorePrefectureDAO) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of FirestorePrefectureDAO
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$FirestorePrefectureDAOImplCopyWith<$Res>
-    implements $FirestorePrefectureDAOCopyWith<$Res> {
-  factory _$$FirestorePrefectureDAOImplCopyWith(
-          _$FirestorePrefectureDAOImpl value,
-          $Res Function(_$FirestorePrefectureDAOImpl) then) =
-      __$$FirestorePrefectureDAOImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String id, String name});
 }
 
-/// @nodoc
-class __$$FirestorePrefectureDAOImplCopyWithImpl<$Res>
-    extends _$FirestorePrefectureDAOCopyWithImpl<$Res,
-        _$FirestorePrefectureDAOImpl>
-    implements _$$FirestorePrefectureDAOImplCopyWith<$Res> {
-  __$$FirestorePrefectureDAOImplCopyWithImpl(
-      _$FirestorePrefectureDAOImpl _value,
-      $Res Function(_$FirestorePrefectureDAOImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-  }) {
-    return _then(_$FirestorePrefectureDAOImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$FirestorePrefectureDAOImpl extends _FirestorePrefectureDAO {
-  const _$FirestorePrefectureDAOImpl({required this.id, required this.name})
-      : super._();
 
-  factory _$FirestorePrefectureDAOImpl.fromJson(Map<String, dynamic> json) =>
-      _$$FirestorePrefectureDAOImplFromJson(json);
+class _FirestorePrefectureDAO extends FirestorePrefectureDAO {
+  const _FirestorePrefectureDAO({required this.id, required this.name}): super._();
+  factory _FirestorePrefectureDAO.fromJson(Map<String, dynamic> json) => _$FirestorePrefectureDAOFromJson(json);
 
-  @override
-  final String id;
-  @override
-  final String name;
+@override final  String id;
+@override final  String name;
 
-  @override
-  String toString() {
-    return 'FirestorePrefectureDAO(id: $id, name: $name)';
-  }
+/// Create a copy of FirestorePrefectureDAO
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$FirestorePrefectureDAOCopyWith<_FirestorePrefectureDAO> get copyWith => __$FirestorePrefectureDAOCopyWithImpl<_FirestorePrefectureDAO>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$FirestorePrefectureDAOImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, name);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$FirestorePrefectureDAOImplCopyWith<_$FirestorePrefectureDAOImpl>
-      get copyWith => __$$FirestorePrefectureDAOImplCopyWithImpl<
-          _$FirestorePrefectureDAOImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$FirestorePrefectureDAOImplToJson(
-      this,
-    );
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$FirestorePrefectureDAOToJson(this, );
 }
 
-abstract class _FirestorePrefectureDAO extends FirestorePrefectureDAO {
-  const factory _FirestorePrefectureDAO(
-      {required final String id,
-      required final String name}) = _$FirestorePrefectureDAOImpl;
-  const _FirestorePrefectureDAO._() : super._();
-
-  factory _FirestorePrefectureDAO.fromJson(Map<String, dynamic> json) =
-      _$FirestorePrefectureDAOImpl.fromJson;
-
-  @override
-  String get id;
-  @override
-  String get name;
-  @override
-  @JsonKey(ignore: true)
-  _$$FirestorePrefectureDAOImplCopyWith<_$FirestorePrefectureDAOImpl>
-      get copyWith => throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FirestorePrefectureDAO&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
 }
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name);
+
+@override
+String toString() {
+  return 'FirestorePrefectureDAO(id: $id, name: $name)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$FirestorePrefectureDAOCopyWith<$Res> implements $FirestorePrefectureDAOCopyWith<$Res> {
+  factory _$FirestorePrefectureDAOCopyWith(_FirestorePrefectureDAO value, $Res Function(_FirestorePrefectureDAO) _then) = __$FirestorePrefectureDAOCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String name
+});
+
+
+
+
+}
+/// @nodoc
+class __$FirestorePrefectureDAOCopyWithImpl<$Res>
+    implements _$FirestorePrefectureDAOCopyWith<$Res> {
+  __$FirestorePrefectureDAOCopyWithImpl(this._self, this._then);
+
+  final _FirestorePrefectureDAO _self;
+  final $Res Function(_FirestorePrefectureDAO) _then;
+
+/// Create a copy of FirestorePrefectureDAO
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,}) {
+  return _then(_FirestorePrefectureDAO(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

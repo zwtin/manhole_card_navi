@@ -9,25 +9,18 @@ import '/app/widget/router_widget.dart';
 import '/gen/assets.gen.dart';
 
 class LicenseView extends CommonWidget {
-  const LicenseView({
-    super.key,
-  });
+  const LicenseView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(licenseViewModelProvider(key));
 
-    useEffect(
-      () {
-        WidgetsBinding.instance.addPostFrameCallback(
-          (_) async {
-            await ref.read(licenseViewModelProvider(key)).onLoad();
-          },
-        );
-        return null;
-      },
-      const [],
-    );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await ref.read(licenseViewModelProvider(key)).onLoad();
+      });
+      return null;
+    }, const []);
 
     return PVSenderWidget(
       key: key,
@@ -39,8 +32,8 @@ class LicenseView extends CommonWidget {
           data: Theme.of(context).copyWith(
             cardColor: Theme.of(context).colorScheme.background,
             listTileTheme: Theme.of(context).listTileTheme.copyWith(
-                  tileColor: Theme.of(context).colorScheme.background,
-                ),
+              tileColor: Theme.of(context).colorScheme.background,
+            ),
           ),
           child: LicensePage(
             applicationName: viewModel.appName,
@@ -48,7 +41,7 @@ class LicenseView extends CommonWidget {
             applicationIcon: SizedBox(
               width: 48,
               height: 48,
-              child: Assets.images.iconMini.image(),
+              child: Assets.images.license.icon.image(),
             ),
           ),
         ),

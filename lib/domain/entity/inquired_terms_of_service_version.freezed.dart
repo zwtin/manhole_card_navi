@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,137 +10,133 @@ part of 'inquired_terms_of_service_version.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$InquiredTermsOfServiceVersion {
-  String get value => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $InquiredTermsOfServiceVersionCopyWith<InquiredTermsOfServiceVersion>
-      get copyWith => throw _privateConstructorUsedError;
+ String get value;
+/// Create a copy of InquiredTermsOfServiceVersion
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$InquiredTermsOfServiceVersionCopyWith<InquiredTermsOfServiceVersion> get copyWith => _$InquiredTermsOfServiceVersionCopyWithImpl<InquiredTermsOfServiceVersion>(this as InquiredTermsOfServiceVersion, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InquiredTermsOfServiceVersion&&(identical(other.value, value) || other.value == value));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'InquiredTermsOfServiceVersion(value: $value)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $InquiredTermsOfServiceVersionCopyWith<$Res> {
-  factory $InquiredTermsOfServiceVersionCopyWith(
-          InquiredTermsOfServiceVersion value,
-          $Res Function(InquiredTermsOfServiceVersion) then) =
-      _$InquiredTermsOfServiceVersionCopyWithImpl<$Res,
-          InquiredTermsOfServiceVersion>;
-  @useResult
-  $Res call({String value});
-}
+abstract mixin class $InquiredTermsOfServiceVersionCopyWith<$Res>  {
+  factory $InquiredTermsOfServiceVersionCopyWith(InquiredTermsOfServiceVersion value, $Res Function(InquiredTermsOfServiceVersion) _then) = _$InquiredTermsOfServiceVersionCopyWithImpl;
+@useResult
+$Res call({
+ String value
+});
 
+
+
+
+}
 /// @nodoc
-class _$InquiredTermsOfServiceVersionCopyWithImpl<$Res,
-        $Val extends InquiredTermsOfServiceVersion>
+class _$InquiredTermsOfServiceVersionCopyWithImpl<$Res>
     implements $InquiredTermsOfServiceVersionCopyWith<$Res> {
-  _$InquiredTermsOfServiceVersionCopyWithImpl(this._value, this._then);
+  _$InquiredTermsOfServiceVersionCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final InquiredTermsOfServiceVersion _self;
+  final $Res Function(InquiredTermsOfServiceVersion) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_value.copyWith(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of InquiredTermsOfServiceVersion
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? value = null,}) {
+  return _then(_self.copyWith(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$InquiredTermsOfServiceVersionImplCopyWith<$Res>
-    implements $InquiredTermsOfServiceVersionCopyWith<$Res> {
-  factory _$$InquiredTermsOfServiceVersionImplCopyWith(
-          _$InquiredTermsOfServiceVersionImpl value,
-          $Res Function(_$InquiredTermsOfServiceVersionImpl) then) =
-      __$$InquiredTermsOfServiceVersionImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String value});
 }
 
-/// @nodoc
-class __$$InquiredTermsOfServiceVersionImplCopyWithImpl<$Res>
-    extends _$InquiredTermsOfServiceVersionCopyWithImpl<$Res,
-        _$InquiredTermsOfServiceVersionImpl>
-    implements _$$InquiredTermsOfServiceVersionImplCopyWith<$Res> {
-  __$$InquiredTermsOfServiceVersionImplCopyWithImpl(
-      _$InquiredTermsOfServiceVersionImpl _value,
-      $Res Function(_$InquiredTermsOfServiceVersionImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_$InquiredTermsOfServiceVersionImpl(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$InquiredTermsOfServiceVersionImpl
-    extends _InquiredTermsOfServiceVersion {
-  const _$InquiredTermsOfServiceVersionImpl({required this.value}) : super._();
 
-  @override
-  final String value;
+class _InquiredTermsOfServiceVersion extends InquiredTermsOfServiceVersion {
+  const _InquiredTermsOfServiceVersion({required this.value}): super._();
+  
 
-  @override
-  String toString() {
-    return 'InquiredTermsOfServiceVersion(value: $value)';
-  }
+@override final  String value;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$InquiredTermsOfServiceVersionImpl &&
-            (identical(other.value, value) || other.value == value));
-  }
+/// Create a copy of InquiredTermsOfServiceVersion
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$InquiredTermsOfServiceVersionCopyWith<_InquiredTermsOfServiceVersion> get copyWith => __$InquiredTermsOfServiceVersionCopyWithImpl<_InquiredTermsOfServiceVersion>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, value);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$InquiredTermsOfServiceVersionImplCopyWith<
-          _$InquiredTermsOfServiceVersionImpl>
-      get copyWith => __$$InquiredTermsOfServiceVersionImplCopyWithImpl<
-          _$InquiredTermsOfServiceVersionImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _InquiredTermsOfServiceVersion&&(identical(other.value, value) || other.value == value));
 }
 
-abstract class _InquiredTermsOfServiceVersion
-    extends InquiredTermsOfServiceVersion {
-  const factory _InquiredTermsOfServiceVersion({required final String value}) =
-      _$InquiredTermsOfServiceVersionImpl;
-  const _InquiredTermsOfServiceVersion._() : super._();
 
-  @override
-  String get value;
-  @override
-  @JsonKey(ignore: true)
-  _$$InquiredTermsOfServiceVersionImplCopyWith<
-          _$InquiredTermsOfServiceVersionImpl>
-      get copyWith => throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'InquiredTermsOfServiceVersion(value: $value)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$InquiredTermsOfServiceVersionCopyWith<$Res> implements $InquiredTermsOfServiceVersionCopyWith<$Res> {
+  factory _$InquiredTermsOfServiceVersionCopyWith(_InquiredTermsOfServiceVersion value, $Res Function(_InquiredTermsOfServiceVersion) _then) = __$InquiredTermsOfServiceVersionCopyWithImpl;
+@override @useResult
+$Res call({
+ String value
+});
+
+
+
+
+}
+/// @nodoc
+class __$InquiredTermsOfServiceVersionCopyWithImpl<$Res>
+    implements _$InquiredTermsOfServiceVersionCopyWith<$Res> {
+  __$InquiredTermsOfServiceVersionCopyWithImpl(this._self, this._then);
+
+  final _InquiredTermsOfServiceVersion _self;
+  final $Res Function(_InquiredTermsOfServiceVersion) _then;
+
+/// Create a copy of InquiredTermsOfServiceVersion
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? value = null,}) {
+  return _then(_InquiredTermsOfServiceVersion(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

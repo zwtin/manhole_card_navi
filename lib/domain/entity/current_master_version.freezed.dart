@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,129 +10,133 @@ part of 'current_master_version.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$CurrentMasterVersion {
-  String get value => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $CurrentMasterVersionCopyWith<CurrentMasterVersion> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get value;
+/// Create a copy of CurrentMasterVersion
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CurrentMasterVersionCopyWith<CurrentMasterVersion> get copyWith => _$CurrentMasterVersionCopyWithImpl<CurrentMasterVersion>(this as CurrentMasterVersion, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CurrentMasterVersion&&(identical(other.value, value) || other.value == value));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'CurrentMasterVersion(value: $value)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $CurrentMasterVersionCopyWith<$Res> {
-  factory $CurrentMasterVersionCopyWith(CurrentMasterVersion value,
-          $Res Function(CurrentMasterVersion) then) =
-      _$CurrentMasterVersionCopyWithImpl<$Res, CurrentMasterVersion>;
-  @useResult
-  $Res call({String value});
-}
+abstract mixin class $CurrentMasterVersionCopyWith<$Res>  {
+  factory $CurrentMasterVersionCopyWith(CurrentMasterVersion value, $Res Function(CurrentMasterVersion) _then) = _$CurrentMasterVersionCopyWithImpl;
+@useResult
+$Res call({
+ String value
+});
 
+
+
+
+}
 /// @nodoc
-class _$CurrentMasterVersionCopyWithImpl<$Res,
-        $Val extends CurrentMasterVersion>
+class _$CurrentMasterVersionCopyWithImpl<$Res>
     implements $CurrentMasterVersionCopyWith<$Res> {
-  _$CurrentMasterVersionCopyWithImpl(this._value, this._then);
+  _$CurrentMasterVersionCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final CurrentMasterVersion _self;
+  final $Res Function(CurrentMasterVersion) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_value.copyWith(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of CurrentMasterVersion
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? value = null,}) {
+  return _then(_self.copyWith(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$CurrentMasterVersionImplCopyWith<$Res>
-    implements $CurrentMasterVersionCopyWith<$Res> {
-  factory _$$CurrentMasterVersionImplCopyWith(_$CurrentMasterVersionImpl value,
-          $Res Function(_$CurrentMasterVersionImpl) then) =
-      __$$CurrentMasterVersionImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String value});
 }
 
-/// @nodoc
-class __$$CurrentMasterVersionImplCopyWithImpl<$Res>
-    extends _$CurrentMasterVersionCopyWithImpl<$Res, _$CurrentMasterVersionImpl>
-    implements _$$CurrentMasterVersionImplCopyWith<$Res> {
-  __$$CurrentMasterVersionImplCopyWithImpl(_$CurrentMasterVersionImpl _value,
-      $Res Function(_$CurrentMasterVersionImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_$CurrentMasterVersionImpl(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$CurrentMasterVersionImpl extends _CurrentMasterVersion {
-  const _$CurrentMasterVersionImpl({required this.value}) : super._();
 
-  @override
-  final String value;
+class _CurrentMasterVersion extends CurrentMasterVersion {
+  const _CurrentMasterVersion({required this.value}): super._();
+  
 
-  @override
-  String toString() {
-    return 'CurrentMasterVersion(value: $value)';
-  }
+@override final  String value;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$CurrentMasterVersionImpl &&
-            (identical(other.value, value) || other.value == value));
-  }
+/// Create a copy of CurrentMasterVersion
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CurrentMasterVersionCopyWith<_CurrentMasterVersion> get copyWith => __$CurrentMasterVersionCopyWithImpl<_CurrentMasterVersion>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, value);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$CurrentMasterVersionImplCopyWith<_$CurrentMasterVersionImpl>
-      get copyWith =>
-          __$$CurrentMasterVersionImplCopyWithImpl<_$CurrentMasterVersionImpl>(
-              this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CurrentMasterVersion&&(identical(other.value, value) || other.value == value));
 }
 
-abstract class _CurrentMasterVersion extends CurrentMasterVersion {
-  const factory _CurrentMasterVersion({required final String value}) =
-      _$CurrentMasterVersionImpl;
-  const _CurrentMasterVersion._() : super._();
 
-  @override
-  String get value;
-  @override
-  @JsonKey(ignore: true)
-  _$$CurrentMasterVersionImplCopyWith<_$CurrentMasterVersionImpl>
-      get copyWith => throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'CurrentMasterVersion(value: $value)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CurrentMasterVersionCopyWith<$Res> implements $CurrentMasterVersionCopyWith<$Res> {
+  factory _$CurrentMasterVersionCopyWith(_CurrentMasterVersion value, $Res Function(_CurrentMasterVersion) _then) = __$CurrentMasterVersionCopyWithImpl;
+@override @useResult
+$Res call({
+ String value
+});
+
+
+
+
+}
+/// @nodoc
+class __$CurrentMasterVersionCopyWithImpl<$Res>
+    implements _$CurrentMasterVersionCopyWith<$Res> {
+  __$CurrentMasterVersionCopyWithImpl(this._self, this._then);
+
+  final _CurrentMasterVersion _self;
+  final $Res Function(_CurrentMasterVersion) _then;
+
+/// Create a copy of CurrentMasterVersion
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? value = null,}) {
+  return _then(_CurrentMasterVersion(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

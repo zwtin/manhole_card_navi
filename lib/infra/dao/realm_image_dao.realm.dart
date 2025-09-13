@@ -1,3 +1,4 @@
+// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 part of 'realm_image_dao.dart';
@@ -6,6 +7,7 @@ part of 'realm_image_dao.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
+// coverage:ignore-file
 // ignore_for_file: type=lint
 class RealmImageDAO extends $RealmImageDAO
     with RealmEntity, RealmObjectBase, RealmObject {
@@ -117,6 +119,11 @@ class RealmImageDAO extends $RealmImageDAO
       RealmObjectBase.getChanges<RealmImageDAO>(this);
 
   @override
+  Stream<RealmObjectChanges<RealmImageDAO>> changesFor([
+    List<String>? keyPaths,
+  ]) => RealmObjectBase.getChangesFor<RealmImageDAO>(this, keyPaths);
+
+  @override
   RealmImageDAO freeze() => RealmObjectBase.freezeObject<RealmImageDAO>(this);
 
   EJsonValue toEJson() {
@@ -137,6 +144,7 @@ class RealmImageDAO extends $RealmImageDAO
 
   static EJsonValue _toEJson(RealmImageDAO value) => value.toEJson();
   static RealmImageDAO _fromEJson(EJsonValue ejson) {
+    if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
     return switch (ejson) {
       {
         'id': EJsonValue id,
@@ -171,20 +179,24 @@ class RealmImageDAO extends $RealmImageDAO
   static final schema = () {
     RealmObjectBase.registerFactory(RealmImageDAO._);
     register(_toEJson, _fromEJson);
-    return SchemaObject(
-        ObjectType.realmObject, RealmImageDAO, 'RealmImageDAO', [
-      SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
-      SchemaProperty('colorOriginal', RealmPropertyType.string),
-      SchemaProperty('colorResized', RealmPropertyType.string),
-      SchemaProperty('colorFrameGreen', RealmPropertyType.string),
-      SchemaProperty('colorFrameRed', RealmPropertyType.string),
-      SchemaProperty('colorFrameYellow', RealmPropertyType.string),
-      SchemaProperty('grayOriginal', RealmPropertyType.string),
-      SchemaProperty('grayResized', RealmPropertyType.string),
-      SchemaProperty('grayFrameGreen', RealmPropertyType.string),
-      SchemaProperty('grayFrameRed', RealmPropertyType.string),
-      SchemaProperty('grayFrameYellow', RealmPropertyType.string),
-    ]);
+    return const SchemaObject(
+      ObjectType.realmObject,
+      RealmImageDAO,
+      'RealmImageDAO',
+      [
+        SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
+        SchemaProperty('colorOriginal', RealmPropertyType.string),
+        SchemaProperty('colorResized', RealmPropertyType.string),
+        SchemaProperty('colorFrameGreen', RealmPropertyType.string),
+        SchemaProperty('colorFrameRed', RealmPropertyType.string),
+        SchemaProperty('colorFrameYellow', RealmPropertyType.string),
+        SchemaProperty('grayOriginal', RealmPropertyType.string),
+        SchemaProperty('grayResized', RealmPropertyType.string),
+        SchemaProperty('grayFrameGreen', RealmPropertyType.string),
+        SchemaProperty('grayFrameRed', RealmPropertyType.string),
+        SchemaProperty('grayFrameYellow', RealmPropertyType.string),
+      ],
+    );
   }();
 
   @override

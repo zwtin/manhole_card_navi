@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,145 +10,136 @@ part of 'custom_exception.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$CustomException {
-  String get title => throw _privateConstructorUsedError;
-  String get text => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $CustomExceptionCopyWith<CustomException> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get title; String get text;
+/// Create a copy of CustomException
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CustomExceptionCopyWith<CustomException> get copyWith => _$CustomExceptionCopyWithImpl<CustomException>(this as CustomException, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CustomException&&(identical(other.title, title) || other.title == title)&&(identical(other.text, text) || other.text == text));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,title,text);
+
+@override
+String toString() {
+  return 'CustomException(title: $title, text: $text)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $CustomExceptionCopyWith<$Res> {
-  factory $CustomExceptionCopyWith(
-          CustomException value, $Res Function(CustomException) then) =
-      _$CustomExceptionCopyWithImpl<$Res, CustomException>;
-  @useResult
-  $Res call({String title, String text});
-}
+abstract mixin class $CustomExceptionCopyWith<$Res>  {
+  factory $CustomExceptionCopyWith(CustomException value, $Res Function(CustomException) _then) = _$CustomExceptionCopyWithImpl;
+@useResult
+$Res call({
+ String title, String text
+});
 
+
+
+
+}
 /// @nodoc
-class _$CustomExceptionCopyWithImpl<$Res, $Val extends CustomException>
+class _$CustomExceptionCopyWithImpl<$Res>
     implements $CustomExceptionCopyWith<$Res> {
-  _$CustomExceptionCopyWithImpl(this._value, this._then);
+  _$CustomExceptionCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final CustomException _self;
+  final $Res Function(CustomException) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? title = null,
-    Object? text = null,
-  }) {
-    return _then(_value.copyWith(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      text: null == text
-          ? _value.text
-          : text // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of CustomException
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? text = null,}) {
+  return _then(_self.copyWith(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$CustomExceptionImplCopyWith<$Res>
-    implements $CustomExceptionCopyWith<$Res> {
-  factory _$$CustomExceptionImplCopyWith(_$CustomExceptionImpl value,
-          $Res Function(_$CustomExceptionImpl) then) =
-      __$$CustomExceptionImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String title, String text});
 }
 
-/// @nodoc
-class __$$CustomExceptionImplCopyWithImpl<$Res>
-    extends _$CustomExceptionCopyWithImpl<$Res, _$CustomExceptionImpl>
-    implements _$$CustomExceptionImplCopyWith<$Res> {
-  __$$CustomExceptionImplCopyWithImpl(
-      _$CustomExceptionImpl _value, $Res Function(_$CustomExceptionImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? title = null,
-    Object? text = null,
-  }) {
-    return _then(_$CustomExceptionImpl(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      text: null == text
-          ? _value.text
-          : text // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$CustomExceptionImpl extends _CustomException {
-  const _$CustomExceptionImpl({required this.title, required this.text})
-      : super._();
 
-  @override
-  final String title;
-  @override
-  final String text;
+class _CustomException extends CustomException {
+  const _CustomException({required this.title, required this.text}): super._();
+  
 
-  @override
-  String toString() {
-    return 'CustomException(title: $title, text: $text)';
-  }
+@override final  String title;
+@override final  String text;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$CustomExceptionImpl &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.text, text) || other.text == text));
-  }
+/// Create a copy of CustomException
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CustomExceptionCopyWith<_CustomException> get copyWith => __$CustomExceptionCopyWithImpl<_CustomException>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, title, text);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$CustomExceptionImplCopyWith<_$CustomExceptionImpl> get copyWith =>
-      __$$CustomExceptionImplCopyWithImpl<_$CustomExceptionImpl>(
-          this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CustomException&&(identical(other.title, title) || other.title == title)&&(identical(other.text, text) || other.text == text));
 }
 
-abstract class _CustomException extends CustomException {
-  const factory _CustomException(
-      {required final String title,
-      required final String text}) = _$CustomExceptionImpl;
-  const _CustomException._() : super._();
 
-  @override
-  String get title;
-  @override
-  String get text;
-  @override
-  @JsonKey(ignore: true)
-  _$$CustomExceptionImplCopyWith<_$CustomExceptionImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,title,text);
+
+@override
+String toString() {
+  return 'CustomException(title: $title, text: $text)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CustomExceptionCopyWith<$Res> implements $CustomExceptionCopyWith<$Res> {
+  factory _$CustomExceptionCopyWith(_CustomException value, $Res Function(_CustomException) _then) = __$CustomExceptionCopyWithImpl;
+@override @useResult
+$Res call({
+ String title, String text
+});
+
+
+
+
+}
+/// @nodoc
+class __$CustomExceptionCopyWithImpl<$Res>
+    implements _$CustomExceptionCopyWith<$Res> {
+  __$CustomExceptionCopyWithImpl(this._self, this._then);
+
+  final _CustomException _self;
+  final $Res Function(_CustomException) _then;
+
+/// Create a copy of CustomException
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? text = null,}) {
+  return _then(_CustomException(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

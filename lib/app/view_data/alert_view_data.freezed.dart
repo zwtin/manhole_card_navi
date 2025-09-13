@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,516 +10,450 @@ part of 'alert_view_data.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$AlertViewData {
-  String get title => throw _privateConstructorUsedError;
-  String get message => throw _privateConstructorUsedError;
-  AlertOKButtonViewData? get okButtonViewData =>
-      throw _privateConstructorUsedError;
-  AlertCancelButtonViewData? get cancelButtonViewData =>
-      throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $AlertViewDataCopyWith<AlertViewData> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get title; String get message; AlertOKButtonViewData? get okButtonViewData; AlertCancelButtonViewData? get cancelButtonViewData;
+/// Create a copy of AlertViewData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AlertViewDataCopyWith<AlertViewData> get copyWith => _$AlertViewDataCopyWithImpl<AlertViewData>(this as AlertViewData, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AlertViewData&&(identical(other.title, title) || other.title == title)&&(identical(other.message, message) || other.message == message)&&(identical(other.okButtonViewData, okButtonViewData) || other.okButtonViewData == okButtonViewData)&&(identical(other.cancelButtonViewData, cancelButtonViewData) || other.cancelButtonViewData == cancelButtonViewData));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,title,message,okButtonViewData,cancelButtonViewData);
+
+@override
+String toString() {
+  return 'AlertViewData(title: $title, message: $message, okButtonViewData: $okButtonViewData, cancelButtonViewData: $cancelButtonViewData)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $AlertViewDataCopyWith<$Res> {
-  factory $AlertViewDataCopyWith(
-          AlertViewData value, $Res Function(AlertViewData) then) =
-      _$AlertViewDataCopyWithImpl<$Res, AlertViewData>;
-  @useResult
-  $Res call(
-      {String title,
-      String message,
-      AlertOKButtonViewData? okButtonViewData,
-      AlertCancelButtonViewData? cancelButtonViewData});
+abstract mixin class $AlertViewDataCopyWith<$Res>  {
+  factory $AlertViewDataCopyWith(AlertViewData value, $Res Function(AlertViewData) _then) = _$AlertViewDataCopyWithImpl;
+@useResult
+$Res call({
+ String title, String message, AlertOKButtonViewData? okButtonViewData, AlertCancelButtonViewData? cancelButtonViewData
+});
 
-  $AlertOKButtonViewDataCopyWith<$Res>? get okButtonViewData;
-  $AlertCancelButtonViewDataCopyWith<$Res>? get cancelButtonViewData;
+
+$AlertOKButtonViewDataCopyWith<$Res>? get okButtonViewData;$AlertCancelButtonViewDataCopyWith<$Res>? get cancelButtonViewData;
+
 }
-
 /// @nodoc
-class _$AlertViewDataCopyWithImpl<$Res, $Val extends AlertViewData>
+class _$AlertViewDataCopyWithImpl<$Res>
     implements $AlertViewDataCopyWith<$Res> {
-  _$AlertViewDataCopyWithImpl(this._value, this._then);
+  _$AlertViewDataCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final AlertViewData _self;
+  final $Res Function(AlertViewData) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? title = null,
-    Object? message = null,
-    Object? okButtonViewData = freezed,
-    Object? cancelButtonViewData = freezed,
-  }) {
-    return _then(_value.copyWith(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-      okButtonViewData: freezed == okButtonViewData
-          ? _value.okButtonViewData
-          : okButtonViewData // ignore: cast_nullable_to_non_nullable
-              as AlertOKButtonViewData?,
-      cancelButtonViewData: freezed == cancelButtonViewData
-          ? _value.cancelButtonViewData
-          : cancelButtonViewData // ignore: cast_nullable_to_non_nullable
-              as AlertCancelButtonViewData?,
-    ) as $Val);
+/// Create a copy of AlertViewData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? message = null,Object? okButtonViewData = freezed,Object? cancelButtonViewData = freezed,}) {
+  return _then(_self.copyWith(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,okButtonViewData: freezed == okButtonViewData ? _self.okButtonViewData : okButtonViewData // ignore: cast_nullable_to_non_nullable
+as AlertOKButtonViewData?,cancelButtonViewData: freezed == cancelButtonViewData ? _self.cancelButtonViewData : cancelButtonViewData // ignore: cast_nullable_to_non_nullable
+as AlertCancelButtonViewData?,
+  ));
+}
+/// Create a copy of AlertViewData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AlertOKButtonViewDataCopyWith<$Res>? get okButtonViewData {
+    if (_self.okButtonViewData == null) {
+    return null;
   }
 
-  @override
-  @pragma('vm:prefer-inline')
-  $AlertOKButtonViewDataCopyWith<$Res>? get okButtonViewData {
-    if (_value.okButtonViewData == null) {
-      return null;
-    }
-
-    return $AlertOKButtonViewDataCopyWith<$Res>(_value.okButtonViewData!,
-        (value) {
-      return _then(_value.copyWith(okButtonViewData: value) as $Val);
-    });
+  return $AlertOKButtonViewDataCopyWith<$Res>(_self.okButtonViewData!, (value) {
+    return _then(_self.copyWith(okButtonViewData: value));
+  });
+}/// Create a copy of AlertViewData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AlertCancelButtonViewDataCopyWith<$Res>? get cancelButtonViewData {
+    if (_self.cancelButtonViewData == null) {
+    return null;
   }
 
-  @override
-  @pragma('vm:prefer-inline')
-  $AlertCancelButtonViewDataCopyWith<$Res>? get cancelButtonViewData {
-    if (_value.cancelButtonViewData == null) {
-      return null;
-    }
-
-    return $AlertCancelButtonViewDataCopyWith<$Res>(
-        _value.cancelButtonViewData!, (value) {
-      return _then(_value.copyWith(cancelButtonViewData: value) as $Val);
-    });
-  }
+  return $AlertCancelButtonViewDataCopyWith<$Res>(_self.cancelButtonViewData!, (value) {
+    return _then(_self.copyWith(cancelButtonViewData: value));
+  });
+}
 }
 
-/// @nodoc
-abstract class _$$AlertViewDataImplCopyWith<$Res>
-    implements $AlertViewDataCopyWith<$Res> {
-  factory _$$AlertViewDataImplCopyWith(
-          _$AlertViewDataImpl value, $Res Function(_$AlertViewDataImpl) then) =
-      __$$AlertViewDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String title,
-      String message,
-      AlertOKButtonViewData? okButtonViewData,
-      AlertCancelButtonViewData? cancelButtonViewData});
-
-  @override
-  $AlertOKButtonViewDataCopyWith<$Res>? get okButtonViewData;
-  @override
-  $AlertCancelButtonViewDataCopyWith<$Res>? get cancelButtonViewData;
-}
-
-/// @nodoc
-class __$$AlertViewDataImplCopyWithImpl<$Res>
-    extends _$AlertViewDataCopyWithImpl<$Res, _$AlertViewDataImpl>
-    implements _$$AlertViewDataImplCopyWith<$Res> {
-  __$$AlertViewDataImplCopyWithImpl(
-      _$AlertViewDataImpl _value, $Res Function(_$AlertViewDataImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? title = null,
-    Object? message = null,
-    Object? okButtonViewData = freezed,
-    Object? cancelButtonViewData = freezed,
-  }) {
-    return _then(_$AlertViewDataImpl(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-      okButtonViewData: freezed == okButtonViewData
-          ? _value.okButtonViewData
-          : okButtonViewData // ignore: cast_nullable_to_non_nullable
-              as AlertOKButtonViewData?,
-      cancelButtonViewData: freezed == cancelButtonViewData
-          ? _value.cancelButtonViewData
-          : cancelButtonViewData // ignore: cast_nullable_to_non_nullable
-              as AlertCancelButtonViewData?,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$AlertViewDataImpl extends _AlertViewData {
-  const _$AlertViewDataImpl(
-      {required this.title,
-      required this.message,
-      required this.okButtonViewData,
-      required this.cancelButtonViewData})
-      : super._();
 
-  @override
-  final String title;
-  @override
-  final String message;
-  @override
-  final AlertOKButtonViewData? okButtonViewData;
-  @override
-  final AlertCancelButtonViewData? cancelButtonViewData;
+class _AlertViewData extends AlertViewData {
+  const _AlertViewData({required this.title, required this.message, required this.okButtonViewData, required this.cancelButtonViewData}): super._();
+  
 
-  @override
-  String toString() {
-    return 'AlertViewData(title: $title, message: $message, okButtonViewData: $okButtonViewData, cancelButtonViewData: $cancelButtonViewData)';
-  }
+@override final  String title;
+@override final  String message;
+@override final  AlertOKButtonViewData? okButtonViewData;
+@override final  AlertCancelButtonViewData? cancelButtonViewData;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$AlertViewDataImpl &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.message, message) || other.message == message) &&
-            (identical(other.okButtonViewData, okButtonViewData) ||
-                other.okButtonViewData == okButtonViewData) &&
-            (identical(other.cancelButtonViewData, cancelButtonViewData) ||
-                other.cancelButtonViewData == cancelButtonViewData));
-  }
+/// Create a copy of AlertViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AlertViewDataCopyWith<_AlertViewData> get copyWith => __$AlertViewDataCopyWithImpl<_AlertViewData>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(
-      runtimeType, title, message, okButtonViewData, cancelButtonViewData);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$AlertViewDataImplCopyWith<_$AlertViewDataImpl> get copyWith =>
-      __$$AlertViewDataImplCopyWithImpl<_$AlertViewDataImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AlertViewData&&(identical(other.title, title) || other.title == title)&&(identical(other.message, message) || other.message == message)&&(identical(other.okButtonViewData, okButtonViewData) || other.okButtonViewData == okButtonViewData)&&(identical(other.cancelButtonViewData, cancelButtonViewData) || other.cancelButtonViewData == cancelButtonViewData));
 }
 
-abstract class _AlertViewData extends AlertViewData {
-  const factory _AlertViewData(
-          {required final String title,
-          required final String message,
-          required final AlertOKButtonViewData? okButtonViewData,
-          required final AlertCancelButtonViewData? cancelButtonViewData}) =
-      _$AlertViewDataImpl;
-  const _AlertViewData._() : super._();
 
-  @override
-  String get title;
-  @override
-  String get message;
-  @override
-  AlertOKButtonViewData? get okButtonViewData;
-  @override
-  AlertCancelButtonViewData? get cancelButtonViewData;
-  @override
-  @JsonKey(ignore: true)
-  _$$AlertViewDataImplCopyWith<_$AlertViewDataImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,title,message,okButtonViewData,cancelButtonViewData);
+
+@override
+String toString() {
+  return 'AlertViewData(title: $title, message: $message, okButtonViewData: $okButtonViewData, cancelButtonViewData: $cancelButtonViewData)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AlertViewDataCopyWith<$Res> implements $AlertViewDataCopyWith<$Res> {
+  factory _$AlertViewDataCopyWith(_AlertViewData value, $Res Function(_AlertViewData) _then) = __$AlertViewDataCopyWithImpl;
+@override @useResult
+$Res call({
+ String title, String message, AlertOKButtonViewData? okButtonViewData, AlertCancelButtonViewData? cancelButtonViewData
+});
+
+
+@override $AlertOKButtonViewDataCopyWith<$Res>? get okButtonViewData;@override $AlertCancelButtonViewDataCopyWith<$Res>? get cancelButtonViewData;
+
+}
+/// @nodoc
+class __$AlertViewDataCopyWithImpl<$Res>
+    implements _$AlertViewDataCopyWith<$Res> {
+  __$AlertViewDataCopyWithImpl(this._self, this._then);
+
+  final _AlertViewData _self;
+  final $Res Function(_AlertViewData) _then;
+
+/// Create a copy of AlertViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? message = null,Object? okButtonViewData = freezed,Object? cancelButtonViewData = freezed,}) {
+  return _then(_AlertViewData(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,okButtonViewData: freezed == okButtonViewData ? _self.okButtonViewData : okButtonViewData // ignore: cast_nullable_to_non_nullable
+as AlertOKButtonViewData?,cancelButtonViewData: freezed == cancelButtonViewData ? _self.cancelButtonViewData : cancelButtonViewData // ignore: cast_nullable_to_non_nullable
+as AlertCancelButtonViewData?,
+  ));
+}
+
+/// Create a copy of AlertViewData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AlertOKButtonViewDataCopyWith<$Res>? get okButtonViewData {
+    if (_self.okButtonViewData == null) {
+    return null;
+  }
+
+  return $AlertOKButtonViewDataCopyWith<$Res>(_self.okButtonViewData!, (value) {
+    return _then(_self.copyWith(okButtonViewData: value));
+  });
+}/// Create a copy of AlertViewData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AlertCancelButtonViewDataCopyWith<$Res>? get cancelButtonViewData {
+    if (_self.cancelButtonViewData == null) {
+    return null;
+  }
+
+  return $AlertCancelButtonViewDataCopyWith<$Res>(_self.cancelButtonViewData!, (value) {
+    return _then(_self.copyWith(cancelButtonViewData: value));
+  });
+}
 }
 
 /// @nodoc
 mixin _$AlertOKButtonViewData {
-  String get title => throw _privateConstructorUsedError;
-  Future<void> Function() get action => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $AlertOKButtonViewDataCopyWith<AlertOKButtonViewData> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get title; Future<void> Function() get action;
+/// Create a copy of AlertOKButtonViewData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AlertOKButtonViewDataCopyWith<AlertOKButtonViewData> get copyWith => _$AlertOKButtonViewDataCopyWithImpl<AlertOKButtonViewData>(this as AlertOKButtonViewData, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AlertOKButtonViewData&&(identical(other.title, title) || other.title == title)&&(identical(other.action, action) || other.action == action));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,title,action);
+
+@override
+String toString() {
+  return 'AlertOKButtonViewData(title: $title, action: $action)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $AlertOKButtonViewDataCopyWith<$Res> {
-  factory $AlertOKButtonViewDataCopyWith(AlertOKButtonViewData value,
-          $Res Function(AlertOKButtonViewData) then) =
-      _$AlertOKButtonViewDataCopyWithImpl<$Res, AlertOKButtonViewData>;
-  @useResult
-  $Res call({String title, Future<void> Function() action});
-}
+abstract mixin class $AlertOKButtonViewDataCopyWith<$Res>  {
+  factory $AlertOKButtonViewDataCopyWith(AlertOKButtonViewData value, $Res Function(AlertOKButtonViewData) _then) = _$AlertOKButtonViewDataCopyWithImpl;
+@useResult
+$Res call({
+ String title, Future<void> Function() action
+});
 
+
+
+
+}
 /// @nodoc
-class _$AlertOKButtonViewDataCopyWithImpl<$Res,
-        $Val extends AlertOKButtonViewData>
+class _$AlertOKButtonViewDataCopyWithImpl<$Res>
     implements $AlertOKButtonViewDataCopyWith<$Res> {
-  _$AlertOKButtonViewDataCopyWithImpl(this._value, this._then);
+  _$AlertOKButtonViewDataCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final AlertOKButtonViewData _self;
+  final $Res Function(AlertOKButtonViewData) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? title = null,
-    Object? action = null,
-  }) {
-    return _then(_value.copyWith(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      action: null == action
-          ? _value.action
-          : action // ignore: cast_nullable_to_non_nullable
-              as Future<void> Function(),
-    ) as $Val);
-  }
+/// Create a copy of AlertOKButtonViewData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? action = null,}) {
+  return _then(_self.copyWith(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
+as Future<void> Function(),
+  ));
 }
 
-/// @nodoc
-abstract class _$$AlertOKButtonViewDataImplCopyWith<$Res>
-    implements $AlertOKButtonViewDataCopyWith<$Res> {
-  factory _$$AlertOKButtonViewDataImplCopyWith(
-          _$AlertOKButtonViewDataImpl value,
-          $Res Function(_$AlertOKButtonViewDataImpl) then) =
-      __$$AlertOKButtonViewDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String title, Future<void> Function() action});
 }
 
-/// @nodoc
-class __$$AlertOKButtonViewDataImplCopyWithImpl<$Res>
-    extends _$AlertOKButtonViewDataCopyWithImpl<$Res,
-        _$AlertOKButtonViewDataImpl>
-    implements _$$AlertOKButtonViewDataImplCopyWith<$Res> {
-  __$$AlertOKButtonViewDataImplCopyWithImpl(_$AlertOKButtonViewDataImpl _value,
-      $Res Function(_$AlertOKButtonViewDataImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? title = null,
-    Object? action = null,
-  }) {
-    return _then(_$AlertOKButtonViewDataImpl(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      action: null == action
-          ? _value.action
-          : action // ignore: cast_nullable_to_non_nullable
-              as Future<void> Function(),
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$AlertOKButtonViewDataImpl extends _AlertOKButtonViewData {
-  const _$AlertOKButtonViewDataImpl({required this.title, required this.action})
-      : super._();
 
-  @override
-  final String title;
-  @override
-  final Future<void> Function() action;
+class _AlertOKButtonViewData extends AlertOKButtonViewData {
+  const _AlertOKButtonViewData({required this.title, required this.action}): super._();
+  
 
-  @override
-  String toString() {
-    return 'AlertOKButtonViewData(title: $title, action: $action)';
-  }
+@override final  String title;
+@override final  Future<void> Function() action;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$AlertOKButtonViewDataImpl &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.action, action) || other.action == action));
-  }
+/// Create a copy of AlertOKButtonViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AlertOKButtonViewDataCopyWith<_AlertOKButtonViewData> get copyWith => __$AlertOKButtonViewDataCopyWithImpl<_AlertOKButtonViewData>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, title, action);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$AlertOKButtonViewDataImplCopyWith<_$AlertOKButtonViewDataImpl>
-      get copyWith => __$$AlertOKButtonViewDataImplCopyWithImpl<
-          _$AlertOKButtonViewDataImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AlertOKButtonViewData&&(identical(other.title, title) || other.title == title)&&(identical(other.action, action) || other.action == action));
 }
 
-abstract class _AlertOKButtonViewData extends AlertOKButtonViewData {
-  const factory _AlertOKButtonViewData(
-          {required final String title,
-          required final Future<void> Function() action}) =
-      _$AlertOKButtonViewDataImpl;
-  const _AlertOKButtonViewData._() : super._();
 
-  @override
-  String get title;
-  @override
-  Future<void> Function() get action;
-  @override
-  @JsonKey(ignore: true)
-  _$$AlertOKButtonViewDataImplCopyWith<_$AlertOKButtonViewDataImpl>
-      get copyWith => throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,title,action);
+
+@override
+String toString() {
+  return 'AlertOKButtonViewData(title: $title, action: $action)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AlertOKButtonViewDataCopyWith<$Res> implements $AlertOKButtonViewDataCopyWith<$Res> {
+  factory _$AlertOKButtonViewDataCopyWith(_AlertOKButtonViewData value, $Res Function(_AlertOKButtonViewData) _then) = __$AlertOKButtonViewDataCopyWithImpl;
+@override @useResult
+$Res call({
+ String title, Future<void> Function() action
+});
+
+
+
+
+}
+/// @nodoc
+class __$AlertOKButtonViewDataCopyWithImpl<$Res>
+    implements _$AlertOKButtonViewDataCopyWith<$Res> {
+  __$AlertOKButtonViewDataCopyWithImpl(this._self, this._then);
+
+  final _AlertOKButtonViewData _self;
+  final $Res Function(_AlertOKButtonViewData) _then;
+
+/// Create a copy of AlertOKButtonViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? action = null,}) {
+  return _then(_AlertOKButtonViewData(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
+as Future<void> Function(),
+  ));
+}
+
+
 }
 
 /// @nodoc
 mixin _$AlertCancelButtonViewData {
-  String get title => throw _privateConstructorUsedError;
-  Future<void> Function() get action => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $AlertCancelButtonViewDataCopyWith<AlertCancelButtonViewData> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get title; Future<void> Function() get action;
+/// Create a copy of AlertCancelButtonViewData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AlertCancelButtonViewDataCopyWith<AlertCancelButtonViewData> get copyWith => _$AlertCancelButtonViewDataCopyWithImpl<AlertCancelButtonViewData>(this as AlertCancelButtonViewData, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AlertCancelButtonViewData&&(identical(other.title, title) || other.title == title)&&(identical(other.action, action) || other.action == action));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,title,action);
+
+@override
+String toString() {
+  return 'AlertCancelButtonViewData(title: $title, action: $action)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $AlertCancelButtonViewDataCopyWith<$Res> {
-  factory $AlertCancelButtonViewDataCopyWith(AlertCancelButtonViewData value,
-          $Res Function(AlertCancelButtonViewData) then) =
-      _$AlertCancelButtonViewDataCopyWithImpl<$Res, AlertCancelButtonViewData>;
-  @useResult
-  $Res call({String title, Future<void> Function() action});
-}
+abstract mixin class $AlertCancelButtonViewDataCopyWith<$Res>  {
+  factory $AlertCancelButtonViewDataCopyWith(AlertCancelButtonViewData value, $Res Function(AlertCancelButtonViewData) _then) = _$AlertCancelButtonViewDataCopyWithImpl;
+@useResult
+$Res call({
+ String title, Future<void> Function() action
+});
 
+
+
+
+}
 /// @nodoc
-class _$AlertCancelButtonViewDataCopyWithImpl<$Res,
-        $Val extends AlertCancelButtonViewData>
+class _$AlertCancelButtonViewDataCopyWithImpl<$Res>
     implements $AlertCancelButtonViewDataCopyWith<$Res> {
-  _$AlertCancelButtonViewDataCopyWithImpl(this._value, this._then);
+  _$AlertCancelButtonViewDataCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final AlertCancelButtonViewData _self;
+  final $Res Function(AlertCancelButtonViewData) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? title = null,
-    Object? action = null,
-  }) {
-    return _then(_value.copyWith(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      action: null == action
-          ? _value.action
-          : action // ignore: cast_nullable_to_non_nullable
-              as Future<void> Function(),
-    ) as $Val);
-  }
+/// Create a copy of AlertCancelButtonViewData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? action = null,}) {
+  return _then(_self.copyWith(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
+as Future<void> Function(),
+  ));
 }
 
-/// @nodoc
-abstract class _$$AlertCancelButtonViewDataImplCopyWith<$Res>
-    implements $AlertCancelButtonViewDataCopyWith<$Res> {
-  factory _$$AlertCancelButtonViewDataImplCopyWith(
-          _$AlertCancelButtonViewDataImpl value,
-          $Res Function(_$AlertCancelButtonViewDataImpl) then) =
-      __$$AlertCancelButtonViewDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String title, Future<void> Function() action});
 }
 
-/// @nodoc
-class __$$AlertCancelButtonViewDataImplCopyWithImpl<$Res>
-    extends _$AlertCancelButtonViewDataCopyWithImpl<$Res,
-        _$AlertCancelButtonViewDataImpl>
-    implements _$$AlertCancelButtonViewDataImplCopyWith<$Res> {
-  __$$AlertCancelButtonViewDataImplCopyWithImpl(
-      _$AlertCancelButtonViewDataImpl _value,
-      $Res Function(_$AlertCancelButtonViewDataImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? title = null,
-    Object? action = null,
-  }) {
-    return _then(_$AlertCancelButtonViewDataImpl(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      action: null == action
-          ? _value.action
-          : action // ignore: cast_nullable_to_non_nullable
-              as Future<void> Function(),
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$AlertCancelButtonViewDataImpl extends _AlertCancelButtonViewData {
-  const _$AlertCancelButtonViewDataImpl(
-      {required this.title, required this.action})
-      : super._();
 
-  @override
-  final String title;
-  @override
-  final Future<void> Function() action;
+class _AlertCancelButtonViewData extends AlertCancelButtonViewData {
+  const _AlertCancelButtonViewData({required this.title, required this.action}): super._();
+  
 
-  @override
-  String toString() {
-    return 'AlertCancelButtonViewData(title: $title, action: $action)';
-  }
+@override final  String title;
+@override final  Future<void> Function() action;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$AlertCancelButtonViewDataImpl &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.action, action) || other.action == action));
-  }
+/// Create a copy of AlertCancelButtonViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AlertCancelButtonViewDataCopyWith<_AlertCancelButtonViewData> get copyWith => __$AlertCancelButtonViewDataCopyWithImpl<_AlertCancelButtonViewData>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, title, action);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$AlertCancelButtonViewDataImplCopyWith<_$AlertCancelButtonViewDataImpl>
-      get copyWith => __$$AlertCancelButtonViewDataImplCopyWithImpl<
-          _$AlertCancelButtonViewDataImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AlertCancelButtonViewData&&(identical(other.title, title) || other.title == title)&&(identical(other.action, action) || other.action == action));
 }
 
-abstract class _AlertCancelButtonViewData extends AlertCancelButtonViewData {
-  const factory _AlertCancelButtonViewData(
-          {required final String title,
-          required final Future<void> Function() action}) =
-      _$AlertCancelButtonViewDataImpl;
-  const _AlertCancelButtonViewData._() : super._();
 
-  @override
-  String get title;
-  @override
-  Future<void> Function() get action;
-  @override
-  @JsonKey(ignore: true)
-  _$$AlertCancelButtonViewDataImplCopyWith<_$AlertCancelButtonViewDataImpl>
-      get copyWith => throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,title,action);
+
+@override
+String toString() {
+  return 'AlertCancelButtonViewData(title: $title, action: $action)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AlertCancelButtonViewDataCopyWith<$Res> implements $AlertCancelButtonViewDataCopyWith<$Res> {
+  factory _$AlertCancelButtonViewDataCopyWith(_AlertCancelButtonViewData value, $Res Function(_AlertCancelButtonViewData) _then) = __$AlertCancelButtonViewDataCopyWithImpl;
+@override @useResult
+$Res call({
+ String title, Future<void> Function() action
+});
+
+
+
+
+}
+/// @nodoc
+class __$AlertCancelButtonViewDataCopyWithImpl<$Res>
+    implements _$AlertCancelButtonViewDataCopyWith<$Res> {
+  __$AlertCancelButtonViewDataCopyWithImpl(this._self, this._then);
+
+  final _AlertCancelButtonViewData _self;
+  final $Res Function(_AlertCancelButtonViewData) _then;
+
+/// Create a copy of AlertCancelButtonViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? action = null,}) {
+  return _then(_AlertCancelButtonViewData(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
+as Future<void> Function(),
+  ));
+}
+
+
+}
+
+// dart format on

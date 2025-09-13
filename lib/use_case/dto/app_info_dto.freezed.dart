@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,144 +10,136 @@ part of 'app_info_dto.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$AppInfoDTO {
-  String get name => throw _privateConstructorUsedError;
-  String get version => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $AppInfoDTOCopyWith<AppInfoDTO> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get name; String get version;
+/// Create a copy of AppInfoDTO
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AppInfoDTOCopyWith<AppInfoDTO> get copyWith => _$AppInfoDTOCopyWithImpl<AppInfoDTO>(this as AppInfoDTO, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppInfoDTO&&(identical(other.name, name) || other.name == name)&&(identical(other.version, version) || other.version == version));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,name,version);
+
+@override
+String toString() {
+  return 'AppInfoDTO(name: $name, version: $version)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $AppInfoDTOCopyWith<$Res> {
-  factory $AppInfoDTOCopyWith(
-          AppInfoDTO value, $Res Function(AppInfoDTO) then) =
-      _$AppInfoDTOCopyWithImpl<$Res, AppInfoDTO>;
-  @useResult
-  $Res call({String name, String version});
-}
+abstract mixin class $AppInfoDTOCopyWith<$Res>  {
+  factory $AppInfoDTOCopyWith(AppInfoDTO value, $Res Function(AppInfoDTO) _then) = _$AppInfoDTOCopyWithImpl;
+@useResult
+$Res call({
+ String name, String version
+});
 
+
+
+
+}
 /// @nodoc
-class _$AppInfoDTOCopyWithImpl<$Res, $Val extends AppInfoDTO>
+class _$AppInfoDTOCopyWithImpl<$Res>
     implements $AppInfoDTOCopyWith<$Res> {
-  _$AppInfoDTOCopyWithImpl(this._value, this._then);
+  _$AppInfoDTOCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final AppInfoDTO _self;
+  final $Res Function(AppInfoDTO) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? version = null,
-  }) {
-    return _then(_value.copyWith(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of AppInfoDTO
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? version = null,}) {
+  return _then(_self.copyWith(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$AppInfoDTOImplCopyWith<$Res>
-    implements $AppInfoDTOCopyWith<$Res> {
-  factory _$$AppInfoDTOImplCopyWith(
-          _$AppInfoDTOImpl value, $Res Function(_$AppInfoDTOImpl) then) =
-      __$$AppInfoDTOImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String name, String version});
 }
 
-/// @nodoc
-class __$$AppInfoDTOImplCopyWithImpl<$Res>
-    extends _$AppInfoDTOCopyWithImpl<$Res, _$AppInfoDTOImpl>
-    implements _$$AppInfoDTOImplCopyWith<$Res> {
-  __$$AppInfoDTOImplCopyWithImpl(
-      _$AppInfoDTOImpl _value, $Res Function(_$AppInfoDTOImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? version = null,
-  }) {
-    return _then(_$AppInfoDTOImpl(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$AppInfoDTOImpl extends _AppInfoDTO {
-  const _$AppInfoDTOImpl({required this.name, required this.version})
-      : super._();
 
-  @override
-  final String name;
-  @override
-  final String version;
+class _AppInfoDTO extends AppInfoDTO {
+  const _AppInfoDTO({required this.name, required this.version}): super._();
+  
 
-  @override
-  String toString() {
-    return 'AppInfoDTO(name: $name, version: $version)';
-  }
+@override final  String name;
+@override final  String version;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$AppInfoDTOImpl &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.version, version) || other.version == version));
-  }
+/// Create a copy of AppInfoDTO
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AppInfoDTOCopyWith<_AppInfoDTO> get copyWith => __$AppInfoDTOCopyWithImpl<_AppInfoDTO>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, name, version);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$AppInfoDTOImplCopyWith<_$AppInfoDTOImpl> get copyWith =>
-      __$$AppInfoDTOImplCopyWithImpl<_$AppInfoDTOImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppInfoDTO&&(identical(other.name, name) || other.name == name)&&(identical(other.version, version) || other.version == version));
 }
 
-abstract class _AppInfoDTO extends AppInfoDTO {
-  const factory _AppInfoDTO(
-      {required final String name,
-      required final String version}) = _$AppInfoDTOImpl;
-  const _AppInfoDTO._() : super._();
 
-  @override
-  String get name;
-  @override
-  String get version;
-  @override
-  @JsonKey(ignore: true)
-  _$$AppInfoDTOImplCopyWith<_$AppInfoDTOImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,name,version);
+
+@override
+String toString() {
+  return 'AppInfoDTO(name: $name, version: $version)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AppInfoDTOCopyWith<$Res> implements $AppInfoDTOCopyWith<$Res> {
+  factory _$AppInfoDTOCopyWith(_AppInfoDTO value, $Res Function(_AppInfoDTO) _then) = __$AppInfoDTOCopyWithImpl;
+@override @useResult
+$Res call({
+ String name, String version
+});
+
+
+
+
+}
+/// @nodoc
+class __$AppInfoDTOCopyWithImpl<$Res>
+    implements _$AppInfoDTOCopyWith<$Res> {
+  __$AppInfoDTOCopyWithImpl(this._self, this._then);
+
+  final _AppInfoDTO _self;
+  final $Res Function(_AppInfoDTO) _then;
+
+/// Create a copy of AppInfoDTO
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? version = null,}) {
+  return _then(_AppInfoDTO(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

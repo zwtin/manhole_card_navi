@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,127 +10,133 @@ part of 'terms_of_service_dto.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$TermsOfServiceDTO {
-  String get value => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $TermsOfServiceDTOCopyWith<TermsOfServiceDTO> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get value;
+/// Create a copy of TermsOfServiceDTO
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TermsOfServiceDTOCopyWith<TermsOfServiceDTO> get copyWith => _$TermsOfServiceDTOCopyWithImpl<TermsOfServiceDTO>(this as TermsOfServiceDTO, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TermsOfServiceDTO&&(identical(other.value, value) || other.value == value));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'TermsOfServiceDTO(value: $value)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $TermsOfServiceDTOCopyWith<$Res> {
-  factory $TermsOfServiceDTOCopyWith(
-          TermsOfServiceDTO value, $Res Function(TermsOfServiceDTO) then) =
-      _$TermsOfServiceDTOCopyWithImpl<$Res, TermsOfServiceDTO>;
-  @useResult
-  $Res call({String value});
-}
+abstract mixin class $TermsOfServiceDTOCopyWith<$Res>  {
+  factory $TermsOfServiceDTOCopyWith(TermsOfServiceDTO value, $Res Function(TermsOfServiceDTO) _then) = _$TermsOfServiceDTOCopyWithImpl;
+@useResult
+$Res call({
+ String value
+});
 
+
+
+
+}
 /// @nodoc
-class _$TermsOfServiceDTOCopyWithImpl<$Res, $Val extends TermsOfServiceDTO>
+class _$TermsOfServiceDTOCopyWithImpl<$Res>
     implements $TermsOfServiceDTOCopyWith<$Res> {
-  _$TermsOfServiceDTOCopyWithImpl(this._value, this._then);
+  _$TermsOfServiceDTOCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final TermsOfServiceDTO _self;
+  final $Res Function(TermsOfServiceDTO) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_value.copyWith(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of TermsOfServiceDTO
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? value = null,}) {
+  return _then(_self.copyWith(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$TermsOfServiceDTOImplCopyWith<$Res>
-    implements $TermsOfServiceDTOCopyWith<$Res> {
-  factory _$$TermsOfServiceDTOImplCopyWith(_$TermsOfServiceDTOImpl value,
-          $Res Function(_$TermsOfServiceDTOImpl) then) =
-      __$$TermsOfServiceDTOImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String value});
 }
 
-/// @nodoc
-class __$$TermsOfServiceDTOImplCopyWithImpl<$Res>
-    extends _$TermsOfServiceDTOCopyWithImpl<$Res, _$TermsOfServiceDTOImpl>
-    implements _$$TermsOfServiceDTOImplCopyWith<$Res> {
-  __$$TermsOfServiceDTOImplCopyWithImpl(_$TermsOfServiceDTOImpl _value,
-      $Res Function(_$TermsOfServiceDTOImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_$TermsOfServiceDTOImpl(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$TermsOfServiceDTOImpl extends _TermsOfServiceDTO {
-  const _$TermsOfServiceDTOImpl({required this.value}) : super._();
 
-  @override
-  final String value;
+class _TermsOfServiceDTO extends TermsOfServiceDTO {
+  const _TermsOfServiceDTO({required this.value}): super._();
+  
 
-  @override
-  String toString() {
-    return 'TermsOfServiceDTO(value: $value)';
-  }
+@override final  String value;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$TermsOfServiceDTOImpl &&
-            (identical(other.value, value) || other.value == value));
-  }
+/// Create a copy of TermsOfServiceDTO
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TermsOfServiceDTOCopyWith<_TermsOfServiceDTO> get copyWith => __$TermsOfServiceDTOCopyWithImpl<_TermsOfServiceDTO>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, value);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$TermsOfServiceDTOImplCopyWith<_$TermsOfServiceDTOImpl> get copyWith =>
-      __$$TermsOfServiceDTOImplCopyWithImpl<_$TermsOfServiceDTOImpl>(
-          this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TermsOfServiceDTO&&(identical(other.value, value) || other.value == value));
 }
 
-abstract class _TermsOfServiceDTO extends TermsOfServiceDTO {
-  const factory _TermsOfServiceDTO({required final String value}) =
-      _$TermsOfServiceDTOImpl;
-  const _TermsOfServiceDTO._() : super._();
 
-  @override
-  String get value;
-  @override
-  @JsonKey(ignore: true)
-  _$$TermsOfServiceDTOImplCopyWith<_$TermsOfServiceDTOImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'TermsOfServiceDTO(value: $value)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$TermsOfServiceDTOCopyWith<$Res> implements $TermsOfServiceDTOCopyWith<$Res> {
+  factory _$TermsOfServiceDTOCopyWith(_TermsOfServiceDTO value, $Res Function(_TermsOfServiceDTO) _then) = __$TermsOfServiceDTOCopyWithImpl;
+@override @useResult
+$Res call({
+ String value
+});
+
+
+
+
+}
+/// @nodoc
+class __$TermsOfServiceDTOCopyWithImpl<$Res>
+    implements _$TermsOfServiceDTOCopyWith<$Res> {
+  __$TermsOfServiceDTOCopyWithImpl(this._self, this._then);
+
+  final _TermsOfServiceDTO _self;
+  final $Res Function(_TermsOfServiceDTO) _then;
+
+/// Create a copy of TermsOfServiceDTO
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? value = null,}) {
+  return _then(_TermsOfServiceDTO(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

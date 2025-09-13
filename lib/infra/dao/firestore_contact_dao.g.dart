@@ -6,9 +6,8 @@ part of 'firestore_contact_dao.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$FirestoreContactDAOImpl _$$FirestoreContactDAOImplFromJson(
-        Map<String, dynamic> json) =>
-    _$FirestoreContactDAOImpl(
+_FirestoreContactDAO _$FirestoreContactDAOFromJson(Map<String, dynamic> json) =>
+    _FirestoreContactDAO(
       address: json['address'] as String,
       id: json['id'] as String,
       latitude: (json['latitude'] as num).toDouble(),
@@ -21,17 +20,17 @@ _$FirestoreContactDAOImpl _$$FirestoreContactDAOImplFromJson(
       timeOther: json['timeOther'] as String,
     );
 
-Map<String, dynamic> _$$FirestoreContactDAOImplToJson(
-        _$FirestoreContactDAOImpl instance) =>
-    <String, dynamic>{
-      'address': instance.address,
-      'id': instance.id,
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
-      'name': instance.name,
-      'nameUrl': instance.nameUrl,
-      'other': instance.other,
-      'phoneNumber': instance.phoneNumber,
-      'time': instance.time,
-      'timeOther': instance.timeOther,
-    };
+Map<String, dynamic> _$FirestoreContactDAOToJson(
+  _FirestoreContactDAO instance,
+) => <String, dynamic>{
+  'address': instance.address,
+  'id': instance.id,
+  'latitude': instance.latitude,
+  'longitude': instance.longitude,
+  'name': instance.name,
+  'nameUrl': instance.nameUrl,
+  'other': instance.other,
+  'phoneNumber': instance.phoneNumber,
+  'time': instance.time,
+  'timeOther': instance.timeOther,
+};

@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,165 +10,139 @@ part of 'modal_contact_view_data.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$ModalContactViewData {
-  String get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  String get nameUrl => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $ModalContactViewDataCopyWith<ModalContactViewData> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get id; String get name; String get nameUrl;
+/// Create a copy of ModalContactViewData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ModalContactViewDataCopyWith<ModalContactViewData> get copyWith => _$ModalContactViewDataCopyWithImpl<ModalContactViewData>(this as ModalContactViewData, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ModalContactViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.nameUrl, nameUrl) || other.nameUrl == nameUrl));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,name,nameUrl);
+
+@override
+String toString() {
+  return 'ModalContactViewData(id: $id, name: $name, nameUrl: $nameUrl)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $ModalContactViewDataCopyWith<$Res> {
-  factory $ModalContactViewDataCopyWith(ModalContactViewData value,
-          $Res Function(ModalContactViewData) then) =
-      _$ModalContactViewDataCopyWithImpl<$Res, ModalContactViewData>;
-  @useResult
-  $Res call({String id, String name, String nameUrl});
-}
+abstract mixin class $ModalContactViewDataCopyWith<$Res>  {
+  factory $ModalContactViewDataCopyWith(ModalContactViewData value, $Res Function(ModalContactViewData) _then) = _$ModalContactViewDataCopyWithImpl;
+@useResult
+$Res call({
+ String id, String name, String nameUrl
+});
 
+
+
+
+}
 /// @nodoc
-class _$ModalContactViewDataCopyWithImpl<$Res,
-        $Val extends ModalContactViewData>
+class _$ModalContactViewDataCopyWithImpl<$Res>
     implements $ModalContactViewDataCopyWith<$Res> {
-  _$ModalContactViewDataCopyWithImpl(this._value, this._then);
+  _$ModalContactViewDataCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final ModalContactViewData _self;
+  final $Res Function(ModalContactViewData) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? nameUrl = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      nameUrl: null == nameUrl
-          ? _value.nameUrl
-          : nameUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of ModalContactViewData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? nameUrl = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,nameUrl: null == nameUrl ? _self.nameUrl : nameUrl // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$ModalContactViewDataImplCopyWith<$Res>
-    implements $ModalContactViewDataCopyWith<$Res> {
-  factory _$$ModalContactViewDataImplCopyWith(_$ModalContactViewDataImpl value,
-          $Res Function(_$ModalContactViewDataImpl) then) =
-      __$$ModalContactViewDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String id, String name, String nameUrl});
 }
 
-/// @nodoc
-class __$$ModalContactViewDataImplCopyWithImpl<$Res>
-    extends _$ModalContactViewDataCopyWithImpl<$Res, _$ModalContactViewDataImpl>
-    implements _$$ModalContactViewDataImplCopyWith<$Res> {
-  __$$ModalContactViewDataImplCopyWithImpl(_$ModalContactViewDataImpl _value,
-      $Res Function(_$ModalContactViewDataImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? nameUrl = null,
-  }) {
-    return _then(_$ModalContactViewDataImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      nameUrl: null == nameUrl
-          ? _value.nameUrl
-          : nameUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$ModalContactViewDataImpl extends _ModalContactViewData {
-  const _$ModalContactViewDataImpl(
-      {required this.id, required this.name, required this.nameUrl})
-      : super._();
 
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final String nameUrl;
+class _ModalContactViewData extends ModalContactViewData {
+  const _ModalContactViewData({required this.id, required this.name, required this.nameUrl}): super._();
+  
 
-  @override
-  String toString() {
-    return 'ModalContactViewData(id: $id, name: $name, nameUrl: $nameUrl)';
-  }
+@override final  String id;
+@override final  String name;
+@override final  String nameUrl;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ModalContactViewDataImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.nameUrl, nameUrl) || other.nameUrl == nameUrl));
-  }
+/// Create a copy of ModalContactViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ModalContactViewDataCopyWith<_ModalContactViewData> get copyWith => __$ModalContactViewDataCopyWithImpl<_ModalContactViewData>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, id, name, nameUrl);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ModalContactViewDataImplCopyWith<_$ModalContactViewDataImpl>
-      get copyWith =>
-          __$$ModalContactViewDataImplCopyWithImpl<_$ModalContactViewDataImpl>(
-              this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ModalContactViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.nameUrl, nameUrl) || other.nameUrl == nameUrl));
 }
 
-abstract class _ModalContactViewData extends ModalContactViewData {
-  const factory _ModalContactViewData(
-      {required final String id,
-      required final String name,
-      required final String nameUrl}) = _$ModalContactViewDataImpl;
-  const _ModalContactViewData._() : super._();
 
-  @override
-  String get id;
-  @override
-  String get name;
-  @override
-  String get nameUrl;
-  @override
-  @JsonKey(ignore: true)
-  _$$ModalContactViewDataImplCopyWith<_$ModalContactViewDataImpl>
-      get copyWith => throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,id,name,nameUrl);
+
+@override
+String toString() {
+  return 'ModalContactViewData(id: $id, name: $name, nameUrl: $nameUrl)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ModalContactViewDataCopyWith<$Res> implements $ModalContactViewDataCopyWith<$Res> {
+  factory _$ModalContactViewDataCopyWith(_ModalContactViewData value, $Res Function(_ModalContactViewData) _then) = __$ModalContactViewDataCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String name, String nameUrl
+});
+
+
+
+
+}
+/// @nodoc
+class __$ModalContactViewDataCopyWithImpl<$Res>
+    implements _$ModalContactViewDataCopyWith<$Res> {
+  __$ModalContactViewDataCopyWithImpl(this._self, this._then);
+
+  final _ModalContactViewData _self;
+  final $Res Function(_ModalContactViewData) _then;
+
+/// Create a copy of ModalContactViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? nameUrl = null,}) {
+  return _then(_ModalContactViewData(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,nameUrl: null == nameUrl ? _self.nameUrl : nameUrl // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

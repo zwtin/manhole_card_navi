@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,140 +10,136 @@ part of 'app_info.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$AppInfo {
-  String get name => throw _privateConstructorUsedError;
-  String get version => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $AppInfoCopyWith<AppInfo> get copyWith => throw _privateConstructorUsedError;
+ String get name; String get version;
+/// Create a copy of AppInfo
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AppInfoCopyWith<AppInfo> get copyWith => _$AppInfoCopyWithImpl<AppInfo>(this as AppInfo, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppInfo&&(identical(other.name, name) || other.name == name)&&(identical(other.version, version) || other.version == version));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,name,version);
+
+@override
+String toString() {
+  return 'AppInfo(name: $name, version: $version)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $AppInfoCopyWith<$Res> {
-  factory $AppInfoCopyWith(AppInfo value, $Res Function(AppInfo) then) =
-      _$AppInfoCopyWithImpl<$Res, AppInfo>;
-  @useResult
-  $Res call({String name, String version});
-}
+abstract mixin class $AppInfoCopyWith<$Res>  {
+  factory $AppInfoCopyWith(AppInfo value, $Res Function(AppInfo) _then) = _$AppInfoCopyWithImpl;
+@useResult
+$Res call({
+ String name, String version
+});
 
+
+
+
+}
 /// @nodoc
-class _$AppInfoCopyWithImpl<$Res, $Val extends AppInfo>
+class _$AppInfoCopyWithImpl<$Res>
     implements $AppInfoCopyWith<$Res> {
-  _$AppInfoCopyWithImpl(this._value, this._then);
+  _$AppInfoCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final AppInfo _self;
+  final $Res Function(AppInfo) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? version = null,
-  }) {
-    return _then(_value.copyWith(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of AppInfo
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? version = null,}) {
+  return _then(_self.copyWith(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$AppInfoImplCopyWith<$Res> implements $AppInfoCopyWith<$Res> {
-  factory _$$AppInfoImplCopyWith(
-          _$AppInfoImpl value, $Res Function(_$AppInfoImpl) then) =
-      __$$AppInfoImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String name, String version});
 }
 
-/// @nodoc
-class __$$AppInfoImplCopyWithImpl<$Res>
-    extends _$AppInfoCopyWithImpl<$Res, _$AppInfoImpl>
-    implements _$$AppInfoImplCopyWith<$Res> {
-  __$$AppInfoImplCopyWithImpl(
-      _$AppInfoImpl _value, $Res Function(_$AppInfoImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? version = null,
-  }) {
-    return _then(_$AppInfoImpl(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$AppInfoImpl extends _AppInfo {
-  const _$AppInfoImpl({required this.name, required this.version}) : super._();
 
-  @override
-  final String name;
-  @override
-  final String version;
+class _AppInfo extends AppInfo {
+  const _AppInfo({required this.name, required this.version}): super._();
+  
 
-  @override
-  String toString() {
-    return 'AppInfo(name: $name, version: $version)';
-  }
+@override final  String name;
+@override final  String version;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$AppInfoImpl &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.version, version) || other.version == version));
-  }
+/// Create a copy of AppInfo
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AppInfoCopyWith<_AppInfo> get copyWith => __$AppInfoCopyWithImpl<_AppInfo>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, name, version);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$AppInfoImplCopyWith<_$AppInfoImpl> get copyWith =>
-      __$$AppInfoImplCopyWithImpl<_$AppInfoImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppInfo&&(identical(other.name, name) || other.name == name)&&(identical(other.version, version) || other.version == version));
 }
 
-abstract class _AppInfo extends AppInfo {
-  const factory _AppInfo(
-      {required final String name,
-      required final String version}) = _$AppInfoImpl;
-  const _AppInfo._() : super._();
 
-  @override
-  String get name;
-  @override
-  String get version;
-  @override
-  @JsonKey(ignore: true)
-  _$$AppInfoImplCopyWith<_$AppInfoImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,name,version);
+
+@override
+String toString() {
+  return 'AppInfo(name: $name, version: $version)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AppInfoCopyWith<$Res> implements $AppInfoCopyWith<$Res> {
+  factory _$AppInfoCopyWith(_AppInfo value, $Res Function(_AppInfo) _then) = __$AppInfoCopyWithImpl;
+@override @useResult
+$Res call({
+ String name, String version
+});
+
+
+
+
+}
+/// @nodoc
+class __$AppInfoCopyWithImpl<$Res>
+    implements _$AppInfoCopyWith<$Res> {
+  __$AppInfoCopyWithImpl(this._self, this._then);
+
+  final _AppInfo _self;
+  final $Res Function(_AppInfo) _then;
+
+/// Create a copy of AppInfo
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? version = null,}) {
+  return _then(_AppInfo(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

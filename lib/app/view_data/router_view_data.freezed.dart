@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,145 +10,136 @@ part of 'router_view_data.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$RouterViewData {
-  TransitionType get type => throw _privateConstructorUsedError;
-  CommonWidget? get nextWidget => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $RouterViewDataCopyWith<RouterViewData> get copyWith =>
-      throw _privateConstructorUsedError;
+ TransitionType get type; CommonWidget? get nextWidget;
+/// Create a copy of RouterViewData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RouterViewDataCopyWith<RouterViewData> get copyWith => _$RouterViewDataCopyWithImpl<RouterViewData>(this as RouterViewData, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RouterViewData&&(identical(other.type, type) || other.type == type)&&(identical(other.nextWidget, nextWidget) || other.nextWidget == nextWidget));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,type,nextWidget);
+
+@override
+String toString() {
+  return 'RouterViewData(type: $type, nextWidget: $nextWidget)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $RouterViewDataCopyWith<$Res> {
-  factory $RouterViewDataCopyWith(
-          RouterViewData value, $Res Function(RouterViewData) then) =
-      _$RouterViewDataCopyWithImpl<$Res, RouterViewData>;
-  @useResult
-  $Res call({TransitionType type, CommonWidget? nextWidget});
-}
+abstract mixin class $RouterViewDataCopyWith<$Res>  {
+  factory $RouterViewDataCopyWith(RouterViewData value, $Res Function(RouterViewData) _then) = _$RouterViewDataCopyWithImpl;
+@useResult
+$Res call({
+ TransitionType type, CommonWidget? nextWidget
+});
 
+
+
+
+}
 /// @nodoc
-class _$RouterViewDataCopyWithImpl<$Res, $Val extends RouterViewData>
+class _$RouterViewDataCopyWithImpl<$Res>
     implements $RouterViewDataCopyWith<$Res> {
-  _$RouterViewDataCopyWithImpl(this._value, this._then);
+  _$RouterViewDataCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final RouterViewData _self;
+  final $Res Function(RouterViewData) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? type = null,
-    Object? nextWidget = freezed,
-  }) {
-    return _then(_value.copyWith(
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as TransitionType,
-      nextWidget: freezed == nextWidget
-          ? _value.nextWidget
-          : nextWidget // ignore: cast_nullable_to_non_nullable
-              as CommonWidget?,
-    ) as $Val);
-  }
+/// Create a copy of RouterViewData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? nextWidget = freezed,}) {
+  return _then(_self.copyWith(
+type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as TransitionType,nextWidget: freezed == nextWidget ? _self.nextWidget : nextWidget // ignore: cast_nullable_to_non_nullable
+as CommonWidget?,
+  ));
 }
 
-/// @nodoc
-abstract class _$$RouterViewDataImplCopyWith<$Res>
-    implements $RouterViewDataCopyWith<$Res> {
-  factory _$$RouterViewDataImplCopyWith(_$RouterViewDataImpl value,
-          $Res Function(_$RouterViewDataImpl) then) =
-      __$$RouterViewDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({TransitionType type, CommonWidget? nextWidget});
 }
 
-/// @nodoc
-class __$$RouterViewDataImplCopyWithImpl<$Res>
-    extends _$RouterViewDataCopyWithImpl<$Res, _$RouterViewDataImpl>
-    implements _$$RouterViewDataImplCopyWith<$Res> {
-  __$$RouterViewDataImplCopyWithImpl(
-      _$RouterViewDataImpl _value, $Res Function(_$RouterViewDataImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? type = null,
-    Object? nextWidget = freezed,
-  }) {
-    return _then(_$RouterViewDataImpl(
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as TransitionType,
-      nextWidget: freezed == nextWidget
-          ? _value.nextWidget
-          : nextWidget // ignore: cast_nullable_to_non_nullable
-              as CommonWidget?,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$RouterViewDataImpl extends _RouterViewData {
-  const _$RouterViewDataImpl({required this.type, this.nextWidget}) : super._();
 
-  @override
-  final TransitionType type;
-  @override
-  final CommonWidget? nextWidget;
+class _RouterViewData extends RouterViewData {
+  const _RouterViewData({required this.type, this.nextWidget}): super._();
+  
 
-  @override
-  String toString() {
-    return 'RouterViewData(type: $type, nextWidget: $nextWidget)';
-  }
+@override final  TransitionType type;
+@override final  CommonWidget? nextWidget;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$RouterViewDataImpl &&
-            (identical(other.type, type) || other.type == type) &&
-            (identical(other.nextWidget, nextWidget) ||
-                other.nextWidget == nextWidget));
-  }
+/// Create a copy of RouterViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RouterViewDataCopyWith<_RouterViewData> get copyWith => __$RouterViewDataCopyWithImpl<_RouterViewData>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, type, nextWidget);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$RouterViewDataImplCopyWith<_$RouterViewDataImpl> get copyWith =>
-      __$$RouterViewDataImplCopyWithImpl<_$RouterViewDataImpl>(
-          this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RouterViewData&&(identical(other.type, type) || other.type == type)&&(identical(other.nextWidget, nextWidget) || other.nextWidget == nextWidget));
 }
 
-abstract class _RouterViewData extends RouterViewData {
-  const factory _RouterViewData(
-      {required final TransitionType type,
-      final CommonWidget? nextWidget}) = _$RouterViewDataImpl;
-  const _RouterViewData._() : super._();
 
-  @override
-  TransitionType get type;
-  @override
-  CommonWidget? get nextWidget;
-  @override
-  @JsonKey(ignore: true)
-  _$$RouterViewDataImplCopyWith<_$RouterViewDataImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,type,nextWidget);
+
+@override
+String toString() {
+  return 'RouterViewData(type: $type, nextWidget: $nextWidget)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RouterViewDataCopyWith<$Res> implements $RouterViewDataCopyWith<$Res> {
+  factory _$RouterViewDataCopyWith(_RouterViewData value, $Res Function(_RouterViewData) _then) = __$RouterViewDataCopyWithImpl;
+@override @useResult
+$Res call({
+ TransitionType type, CommonWidget? nextWidget
+});
+
+
+
+
+}
+/// @nodoc
+class __$RouterViewDataCopyWithImpl<$Res>
+    implements _$RouterViewDataCopyWith<$Res> {
+  __$RouterViewDataCopyWithImpl(this._self, this._then);
+
+  final _RouterViewData _self;
+  final $Res Function(_RouterViewData) _then;
+
+/// Create a copy of RouterViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? nextWidget = freezed,}) {
+  return _then(_RouterViewData(
+type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as TransitionType,nextWidget: freezed == nextWidget ? _self.nextWidget : nextWidget // ignore: cast_nullable_to_non_nullable
+as CommonWidget?,
+  ));
+}
+
+
+}
+
+// dart format on

@@ -13,26 +13,17 @@ import '/app/widget/router_widget.dart';
 import '/gen/assets.gen.dart';
 
 class CheckTermsOfServiceAgreeView extends CommonWidget {
-  const CheckTermsOfServiceAgreeView({
-    super.key,
-  });
+  const CheckTermsOfServiceAgreeView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(checkTermsOfServiceAgreeViewModelProvider(key));
-    useEffect(
-      () {
-        WidgetsBinding.instance.addPostFrameCallback(
-          (_) async {
-            await ref
-                .read(checkTermsOfServiceAgreeViewModelProvider(key))
-                .onLoad();
-          },
-        );
-        return null;
-      },
-      const [],
-    );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await ref.read(checkTermsOfServiceAgreeViewModelProvider(key)).onLoad();
+      });
+      return null;
+    }, const []);
 
     return AlertWidget(
       child: PVSenderWidget(
@@ -53,9 +44,7 @@ class CheckTermsOfServiceAgreeView extends CommonWidget {
               ),
               body: Stack(
                 children: [
-                  Container(
-                    color: Theme.of(context).colorScheme.background,
-                  ),
+                  Container(color: Theme.of(context).colorScheme.background),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: SafeArea(
@@ -66,13 +55,12 @@ class CheckTermsOfServiceAgreeView extends CommonWidget {
                           const TitleMediumText(
                             'アプリを使うためには、利用規約とプライバシーポリシーに同意する必要があります。',
                           ),
-                          const Spacer(
-                            flex: 1,
+                          const Spacer(flex: 1),
+                          Assets.images.terms.terms.image(
+                            width: 300,
+                            height: 300,
                           ),
-                          Assets.images.terms.image(width: 300, height: 300),
-                          const Spacer(
-                            flex: 2,
-                          ),
+                          const Spacer(flex: 2),
                           Row(
                             children: [
                               CustomCheckBox(
@@ -80,8 +68,10 @@ class CheckTermsOfServiceAgreeView extends CommonWidget {
                                 onChanged: (value) async {
                                   await ref
                                       .read(
-                                          checkTermsOfServiceAgreeViewModelProvider(
-                                              key))
+                                        checkTermsOfServiceAgreeViewModelProvider(
+                                          key,
+                                        ),
+                                      )
                                       .onTapCheckBox();
                                 },
                               ),
@@ -94,23 +84,25 @@ class CheckTermsOfServiceAgreeView extends CommonWidget {
                                         onPressed: () async {
                                           await ref
                                               .read(
-                                                  checkTermsOfServiceAgreeViewModelProvider(
-                                                      key))
+                                                checkTermsOfServiceAgreeViewModelProvider(
+                                                  key,
+                                                ),
+                                              )
                                               .onTapTermsOfService();
                                         },
                                         child: const TitleMediumLinkText(
                                           '利用規約',
                                         ),
                                       ),
-                                      const TitleMediumText(
-                                        'と',
-                                      ),
+                                      const TitleMediumText('と'),
                                       TextButton(
                                         onPressed: () async {
                                           await ref
                                               .read(
-                                                  checkTermsOfServiceAgreeViewModelProvider(
-                                                      key))
+                                                checkTermsOfServiceAgreeViewModelProvider(
+                                                  key,
+                                                ),
+                                              )
                                               .onTapPrivacyPolicy();
                                         },
                                         child: const TitleMediumLinkText(
@@ -119,24 +111,22 @@ class CheckTermsOfServiceAgreeView extends CommonWidget {
                                       ),
                                     ],
                                   ),
-                                  const TitleMediumText(
-                                    'に同意する',
-                                  ),
+                                  const TitleMediumText('に同意する'),
                                 ],
                               ),
                             ],
                           ),
-                          const SizedBox(
-                            height: 24,
-                          ),
+                          const SizedBox(height: 24),
                           SizedBox(
                             height: 48,
                             child: ElevatedButton(
                               onPressed: () async {
                                 await ref
                                     .read(
-                                        checkTermsOfServiceAgreeViewModelProvider(
-                                            key))
+                                      checkTermsOfServiceAgreeViewModelProvider(
+                                        key,
+                                      ),
+                                    )
                                     .onTapAgreeButton();
                               },
                               child: TitleMediumText(
@@ -145,13 +135,11 @@ class CheckTermsOfServiceAgreeView extends CommonWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(
-                            height: 16,
-                          ),
+                          const SizedBox(height: 16),
                         ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

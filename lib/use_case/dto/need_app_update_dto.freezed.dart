@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,127 +10,133 @@ part of 'need_app_update_dto.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$NeedAppUpdateDTO {
-  bool get value => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $NeedAppUpdateDTOCopyWith<NeedAppUpdateDTO> get copyWith =>
-      throw _privateConstructorUsedError;
+ bool get value;
+/// Create a copy of NeedAppUpdateDTO
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NeedAppUpdateDTOCopyWith<NeedAppUpdateDTO> get copyWith => _$NeedAppUpdateDTOCopyWithImpl<NeedAppUpdateDTO>(this as NeedAppUpdateDTO, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NeedAppUpdateDTO&&(identical(other.value, value) || other.value == value));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'NeedAppUpdateDTO(value: $value)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $NeedAppUpdateDTOCopyWith<$Res> {
-  factory $NeedAppUpdateDTOCopyWith(
-          NeedAppUpdateDTO value, $Res Function(NeedAppUpdateDTO) then) =
-      _$NeedAppUpdateDTOCopyWithImpl<$Res, NeedAppUpdateDTO>;
-  @useResult
-  $Res call({bool value});
-}
+abstract mixin class $NeedAppUpdateDTOCopyWith<$Res>  {
+  factory $NeedAppUpdateDTOCopyWith(NeedAppUpdateDTO value, $Res Function(NeedAppUpdateDTO) _then) = _$NeedAppUpdateDTOCopyWithImpl;
+@useResult
+$Res call({
+ bool value
+});
 
+
+
+
+}
 /// @nodoc
-class _$NeedAppUpdateDTOCopyWithImpl<$Res, $Val extends NeedAppUpdateDTO>
+class _$NeedAppUpdateDTOCopyWithImpl<$Res>
     implements $NeedAppUpdateDTOCopyWith<$Res> {
-  _$NeedAppUpdateDTOCopyWithImpl(this._value, this._then);
+  _$NeedAppUpdateDTOCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final NeedAppUpdateDTO _self;
+  final $Res Function(NeedAppUpdateDTO) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_value.copyWith(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
-  }
+/// Create a copy of NeedAppUpdateDTO
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? value = null,}) {
+  return _then(_self.copyWith(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
 }
 
-/// @nodoc
-abstract class _$$NeedAppUpdateDTOImplCopyWith<$Res>
-    implements $NeedAppUpdateDTOCopyWith<$Res> {
-  factory _$$NeedAppUpdateDTOImplCopyWith(_$NeedAppUpdateDTOImpl value,
-          $Res Function(_$NeedAppUpdateDTOImpl) then) =
-      __$$NeedAppUpdateDTOImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({bool value});
 }
 
-/// @nodoc
-class __$$NeedAppUpdateDTOImplCopyWithImpl<$Res>
-    extends _$NeedAppUpdateDTOCopyWithImpl<$Res, _$NeedAppUpdateDTOImpl>
-    implements _$$NeedAppUpdateDTOImplCopyWith<$Res> {
-  __$$NeedAppUpdateDTOImplCopyWithImpl(_$NeedAppUpdateDTOImpl _value,
-      $Res Function(_$NeedAppUpdateDTOImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_$NeedAppUpdateDTOImpl(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$NeedAppUpdateDTOImpl extends _NeedAppUpdateDTO {
-  const _$NeedAppUpdateDTOImpl({required this.value}) : super._();
 
-  @override
-  final bool value;
+class _NeedAppUpdateDTO extends NeedAppUpdateDTO {
+  const _NeedAppUpdateDTO({required this.value}): super._();
+  
 
-  @override
-  String toString() {
-    return 'NeedAppUpdateDTO(value: $value)';
-  }
+@override final  bool value;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$NeedAppUpdateDTOImpl &&
-            (identical(other.value, value) || other.value == value));
-  }
+/// Create a copy of NeedAppUpdateDTO
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$NeedAppUpdateDTOCopyWith<_NeedAppUpdateDTO> get copyWith => __$NeedAppUpdateDTOCopyWithImpl<_NeedAppUpdateDTO>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, value);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$NeedAppUpdateDTOImplCopyWith<_$NeedAppUpdateDTOImpl> get copyWith =>
-      __$$NeedAppUpdateDTOImplCopyWithImpl<_$NeedAppUpdateDTOImpl>(
-          this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NeedAppUpdateDTO&&(identical(other.value, value) || other.value == value));
 }
 
-abstract class _NeedAppUpdateDTO extends NeedAppUpdateDTO {
-  const factory _NeedAppUpdateDTO({required final bool value}) =
-      _$NeedAppUpdateDTOImpl;
-  const _NeedAppUpdateDTO._() : super._();
 
-  @override
-  bool get value;
-  @override
-  @JsonKey(ignore: true)
-  _$$NeedAppUpdateDTOImplCopyWith<_$NeedAppUpdateDTOImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'NeedAppUpdateDTO(value: $value)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$NeedAppUpdateDTOCopyWith<$Res> implements $NeedAppUpdateDTOCopyWith<$Res> {
+  factory _$NeedAppUpdateDTOCopyWith(_NeedAppUpdateDTO value, $Res Function(_NeedAppUpdateDTO) _then) = __$NeedAppUpdateDTOCopyWithImpl;
+@override @useResult
+$Res call({
+ bool value
+});
+
+
+
+
+}
+/// @nodoc
+class __$NeedAppUpdateDTOCopyWithImpl<$Res>
+    implements _$NeedAppUpdateDTOCopyWith<$Res> {
+  __$NeedAppUpdateDTOCopyWithImpl(this._self, this._then);
+
+  final _NeedAppUpdateDTO _self;
+  final $Res Function(_NeedAppUpdateDTO) _then;
+
+/// Create a copy of NeedAppUpdateDTO
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? value = null,}) {
+  return _then(_NeedAppUpdateDTO(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+// dart format on

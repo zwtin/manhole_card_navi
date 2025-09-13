@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,126 +10,133 @@ part of 'privacy_policy.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$PrivacyPolicy {
-  String get value => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $PrivacyPolicyCopyWith<PrivacyPolicy> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get value;
+/// Create a copy of PrivacyPolicy
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PrivacyPolicyCopyWith<PrivacyPolicy> get copyWith => _$PrivacyPolicyCopyWithImpl<PrivacyPolicy>(this as PrivacyPolicy, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PrivacyPolicy&&(identical(other.value, value) || other.value == value));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'PrivacyPolicy(value: $value)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $PrivacyPolicyCopyWith<$Res> {
-  factory $PrivacyPolicyCopyWith(
-          PrivacyPolicy value, $Res Function(PrivacyPolicy) then) =
-      _$PrivacyPolicyCopyWithImpl<$Res, PrivacyPolicy>;
-  @useResult
-  $Res call({String value});
-}
+abstract mixin class $PrivacyPolicyCopyWith<$Res>  {
+  factory $PrivacyPolicyCopyWith(PrivacyPolicy value, $Res Function(PrivacyPolicy) _then) = _$PrivacyPolicyCopyWithImpl;
+@useResult
+$Res call({
+ String value
+});
 
+
+
+
+}
 /// @nodoc
-class _$PrivacyPolicyCopyWithImpl<$Res, $Val extends PrivacyPolicy>
+class _$PrivacyPolicyCopyWithImpl<$Res>
     implements $PrivacyPolicyCopyWith<$Res> {
-  _$PrivacyPolicyCopyWithImpl(this._value, this._then);
+  _$PrivacyPolicyCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final PrivacyPolicy _self;
+  final $Res Function(PrivacyPolicy) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_value.copyWith(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of PrivacyPolicy
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? value = null,}) {
+  return _then(_self.copyWith(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$PrivacyPolicyImplCopyWith<$Res>
-    implements $PrivacyPolicyCopyWith<$Res> {
-  factory _$$PrivacyPolicyImplCopyWith(
-          _$PrivacyPolicyImpl value, $Res Function(_$PrivacyPolicyImpl) then) =
-      __$$PrivacyPolicyImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String value});
 }
 
-/// @nodoc
-class __$$PrivacyPolicyImplCopyWithImpl<$Res>
-    extends _$PrivacyPolicyCopyWithImpl<$Res, _$PrivacyPolicyImpl>
-    implements _$$PrivacyPolicyImplCopyWith<$Res> {
-  __$$PrivacyPolicyImplCopyWithImpl(
-      _$PrivacyPolicyImpl _value, $Res Function(_$PrivacyPolicyImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_$PrivacyPolicyImpl(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$PrivacyPolicyImpl extends _PrivacyPolicy {
-  const _$PrivacyPolicyImpl({required this.value}) : super._();
 
-  @override
-  final String value;
+class _PrivacyPolicy extends PrivacyPolicy {
+  const _PrivacyPolicy({required this.value}): super._();
+  
 
-  @override
-  String toString() {
-    return 'PrivacyPolicy(value: $value)';
-  }
+@override final  String value;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PrivacyPolicyImpl &&
-            (identical(other.value, value) || other.value == value));
-  }
+/// Create a copy of PrivacyPolicy
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PrivacyPolicyCopyWith<_PrivacyPolicy> get copyWith => __$PrivacyPolicyCopyWithImpl<_PrivacyPolicy>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, value);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PrivacyPolicyImplCopyWith<_$PrivacyPolicyImpl> get copyWith =>
-      __$$PrivacyPolicyImplCopyWithImpl<_$PrivacyPolicyImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PrivacyPolicy&&(identical(other.value, value) || other.value == value));
 }
 
-abstract class _PrivacyPolicy extends PrivacyPolicy {
-  const factory _PrivacyPolicy({required final String value}) =
-      _$PrivacyPolicyImpl;
-  const _PrivacyPolicy._() : super._();
 
-  @override
-  String get value;
-  @override
-  @JsonKey(ignore: true)
-  _$$PrivacyPolicyImplCopyWith<_$PrivacyPolicyImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'PrivacyPolicy(value: $value)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$PrivacyPolicyCopyWith<$Res> implements $PrivacyPolicyCopyWith<$Res> {
+  factory _$PrivacyPolicyCopyWith(_PrivacyPolicy value, $Res Function(_PrivacyPolicy) _then) = __$PrivacyPolicyCopyWithImpl;
+@override @useResult
+$Res call({
+ String value
+});
+
+
+
+
+}
+/// @nodoc
+class __$PrivacyPolicyCopyWithImpl<$Res>
+    implements _$PrivacyPolicyCopyWith<$Res> {
+  __$PrivacyPolicyCopyWithImpl(this._self, this._then);
+
+  final _PrivacyPolicy _self;
+  final $Res Function(_PrivacyPolicy) _then;
+
+/// Create a copy of PrivacyPolicy
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? value = null,}) {
+  return _then(_PrivacyPolicy(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

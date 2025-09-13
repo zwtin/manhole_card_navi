@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,164 +10,142 @@ part of 'firestore_volume_dao.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-FirestoreVolumeDAO _$FirestoreVolumeDAOFromJson(Map<String, dynamic> json) {
-  return _FirestoreVolumeDAO.fromJson(json);
-}
 
 /// @nodoc
 mixin _$FirestoreVolumeDAO {
-  String get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $FirestoreVolumeDAOCopyWith<FirestoreVolumeDAO> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get id; String get name;
+/// Create a copy of FirestoreVolumeDAO
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FirestoreVolumeDAOCopyWith<FirestoreVolumeDAO> get copyWith => _$FirestoreVolumeDAOCopyWithImpl<FirestoreVolumeDAO>(this as FirestoreVolumeDAO, _$identity);
+
+  /// Serializes this FirestoreVolumeDAO to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FirestoreVolumeDAO&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name);
+
+@override
+String toString() {
+  return 'FirestoreVolumeDAO(id: $id, name: $name)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $FirestoreVolumeDAOCopyWith<$Res> {
-  factory $FirestoreVolumeDAOCopyWith(
-          FirestoreVolumeDAO value, $Res Function(FirestoreVolumeDAO) then) =
-      _$FirestoreVolumeDAOCopyWithImpl<$Res, FirestoreVolumeDAO>;
-  @useResult
-  $Res call({String id, String name});
-}
+abstract mixin class $FirestoreVolumeDAOCopyWith<$Res>  {
+  factory $FirestoreVolumeDAOCopyWith(FirestoreVolumeDAO value, $Res Function(FirestoreVolumeDAO) _then) = _$FirestoreVolumeDAOCopyWithImpl;
+@useResult
+$Res call({
+ String id, String name
+});
 
+
+
+
+}
 /// @nodoc
-class _$FirestoreVolumeDAOCopyWithImpl<$Res, $Val extends FirestoreVolumeDAO>
+class _$FirestoreVolumeDAOCopyWithImpl<$Res>
     implements $FirestoreVolumeDAOCopyWith<$Res> {
-  _$FirestoreVolumeDAOCopyWithImpl(this._value, this._then);
+  _$FirestoreVolumeDAOCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final FirestoreVolumeDAO _self;
+  final $Res Function(FirestoreVolumeDAO) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of FirestoreVolumeDAO
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$FirestoreVolumeDAOImplCopyWith<$Res>
-    implements $FirestoreVolumeDAOCopyWith<$Res> {
-  factory _$$FirestoreVolumeDAOImplCopyWith(_$FirestoreVolumeDAOImpl value,
-          $Res Function(_$FirestoreVolumeDAOImpl) then) =
-      __$$FirestoreVolumeDAOImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String id, String name});
 }
 
-/// @nodoc
-class __$$FirestoreVolumeDAOImplCopyWithImpl<$Res>
-    extends _$FirestoreVolumeDAOCopyWithImpl<$Res, _$FirestoreVolumeDAOImpl>
-    implements _$$FirestoreVolumeDAOImplCopyWith<$Res> {
-  __$$FirestoreVolumeDAOImplCopyWithImpl(_$FirestoreVolumeDAOImpl _value,
-      $Res Function(_$FirestoreVolumeDAOImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-  }) {
-    return _then(_$FirestoreVolumeDAOImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$FirestoreVolumeDAOImpl extends _FirestoreVolumeDAO {
-  const _$FirestoreVolumeDAOImpl({required this.id, required this.name})
-      : super._();
 
-  factory _$FirestoreVolumeDAOImpl.fromJson(Map<String, dynamic> json) =>
-      _$$FirestoreVolumeDAOImplFromJson(json);
+class _FirestoreVolumeDAO extends FirestoreVolumeDAO {
+  const _FirestoreVolumeDAO({required this.id, required this.name}): super._();
+  factory _FirestoreVolumeDAO.fromJson(Map<String, dynamic> json) => _$FirestoreVolumeDAOFromJson(json);
 
-  @override
-  final String id;
-  @override
-  final String name;
+@override final  String id;
+@override final  String name;
 
-  @override
-  String toString() {
-    return 'FirestoreVolumeDAO(id: $id, name: $name)';
-  }
+/// Create a copy of FirestoreVolumeDAO
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$FirestoreVolumeDAOCopyWith<_FirestoreVolumeDAO> get copyWith => __$FirestoreVolumeDAOCopyWithImpl<_FirestoreVolumeDAO>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$FirestoreVolumeDAOImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, name);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$FirestoreVolumeDAOImplCopyWith<_$FirestoreVolumeDAOImpl> get copyWith =>
-      __$$FirestoreVolumeDAOImplCopyWithImpl<_$FirestoreVolumeDAOImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$FirestoreVolumeDAOImplToJson(
-      this,
-    );
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$FirestoreVolumeDAOToJson(this, );
 }
 
-abstract class _FirestoreVolumeDAO extends FirestoreVolumeDAO {
-  const factory _FirestoreVolumeDAO(
-      {required final String id,
-      required final String name}) = _$FirestoreVolumeDAOImpl;
-  const _FirestoreVolumeDAO._() : super._();
-
-  factory _FirestoreVolumeDAO.fromJson(Map<String, dynamic> json) =
-      _$FirestoreVolumeDAOImpl.fromJson;
-
-  @override
-  String get id;
-  @override
-  String get name;
-  @override
-  @JsonKey(ignore: true)
-  _$$FirestoreVolumeDAOImplCopyWith<_$FirestoreVolumeDAOImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FirestoreVolumeDAO&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
 }
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name);
+
+@override
+String toString() {
+  return 'FirestoreVolumeDAO(id: $id, name: $name)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$FirestoreVolumeDAOCopyWith<$Res> implements $FirestoreVolumeDAOCopyWith<$Res> {
+  factory _$FirestoreVolumeDAOCopyWith(_FirestoreVolumeDAO value, $Res Function(_FirestoreVolumeDAO) _then) = __$FirestoreVolumeDAOCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String name
+});
+
+
+
+
+}
+/// @nodoc
+class __$FirestoreVolumeDAOCopyWithImpl<$Res>
+    implements _$FirestoreVolumeDAOCopyWith<$Res> {
+  __$FirestoreVolumeDAOCopyWithImpl(this._self, this._then);
+
+  final _FirestoreVolumeDAO _self;
+  final $Res Function(_FirestoreVolumeDAO) _then;
+
+/// Create a copy of FirestoreVolumeDAO
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,}) {
+  return _then(_FirestoreVolumeDAO(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

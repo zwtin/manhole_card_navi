@@ -12,53 +12,14 @@ import 'package:flutter/widgets.dart';
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
-  /// File path: assets/images/icon_adaptive_foreground.png
-  AssetGenImage get iconAdaptiveForeground =>
-      const AssetGenImage('assets/images/icon_adaptive_foreground.png');
+  /// Directory path: assets/images/license
+  $AssetsImagesLicenseGen get license => const $AssetsImagesLicenseGen();
 
-  /// File path: assets/images/icon_default.png
-  AssetGenImage get iconDefault =>
-      const AssetGenImage('assets/images/icon_default.png');
+  /// Directory path: assets/images/terms
+  $AssetsImagesTermsGen get terms => const $AssetsImagesTermsGen();
 
-  /// File path: assets/images/icon_ios_development.png
-  AssetGenImage get iconIosDevelopment =>
-      const AssetGenImage('assets/images/icon_ios_development.png');
-
-  /// File path: assets/images/icon_ios_production.png
-  AssetGenImage get iconIosProduction =>
-      const AssetGenImage('assets/images/icon_ios_production.png');
-
-  /// File path: assets/images/icon_mini.png
-  AssetGenImage get iconMini =>
-      const AssetGenImage('assets/images/icon_mini.png');
-
-  /// File path: assets/images/terms.jpg
-  AssetGenImage get terms => const AssetGenImage('assets/images/terms.jpg');
-
-  /// File path: assets/images/tutorial_1.jpg
-  AssetGenImage get tutorial1 =>
-      const AssetGenImage('assets/images/tutorial_1.jpg');
-
-  /// File path: assets/images/tutorial_2.png
-  AssetGenImage get tutorial2 =>
-      const AssetGenImage('assets/images/tutorial_2.png');
-
-  /// File path: assets/images/tutorial_3.png
-  AssetGenImage get tutorial3 =>
-      const AssetGenImage('assets/images/tutorial_3.png');
-
-  /// List of all assets
-  List<AssetGenImage> get values => [
-        iconAdaptiveForeground,
-        iconDefault,
-        iconIosDevelopment,
-        iconIosProduction,
-        iconMini,
-        terms,
-        tutorial1,
-        tutorial2,
-        tutorial3
-      ];
+  /// Directory path: assets/images/tutorials
+  $AssetsImagesTutorialsGen get tutorials => const $AssetsImagesTutorialsGen();
 }
 
 class $AssetsLottiesGen {
@@ -71,17 +32,61 @@ class $AssetsLottiesGen {
   List<String> get values => [party];
 }
 
+class $AssetsImagesLicenseGen {
+  const $AssetsImagesLicenseGen();
+
+  /// File path: assets/images/license/icon.png
+  AssetGenImage get icon =>
+      const AssetGenImage('assets/images/license/icon.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [icon];
+}
+
+class $AssetsImagesTermsGen {
+  const $AssetsImagesTermsGen();
+
+  /// File path: assets/images/terms/terms.jpg
+  AssetGenImage get terms =>
+      const AssetGenImage('assets/images/terms/terms.jpg');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [terms];
+}
+
+class $AssetsImagesTutorialsGen {
+  const $AssetsImagesTutorialsGen();
+
+  /// File path: assets/images/tutorials/tutorial_1.jpg
+  AssetGenImage get tutorial1 =>
+      const AssetGenImage('assets/images/tutorials/tutorial_1.jpg');
+
+  /// File path: assets/images/tutorials/tutorial_2.png
+  AssetGenImage get tutorial2 =>
+      const AssetGenImage('assets/images/tutorials/tutorial_2.png');
+
+  /// File path: assets/images/tutorials/tutorial_3.png
+  AssetGenImage get tutorial3 =>
+      const AssetGenImage('assets/images/tutorials/tutorial_3.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [tutorial1, tutorial2, tutorial3];
+}
+
 class Assets {
-  Assets._();
+  const Assets._();
 
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsLottiesGen lotties = $AssetsLottiesGen();
 }
 
 class AssetGenImage {
-  const AssetGenImage(this._assetName);
+  const AssetGenImage(this._assetName, {this.size, this.flavors = const {}});
 
   final String _assetName;
+
+  final Size? size;
+  final Set<String> flavors;
 
   Image image({
     Key? key,
@@ -101,10 +106,10 @@ class AssetGenImage {
     ImageRepeat repeat = ImageRepeat.noRepeat,
     Rect? centerSlice,
     bool matchTextDirection = false,
-    bool gaplessPlayback = false,
+    bool gaplessPlayback = true,
     bool isAntiAlias = false,
     String? package,
-    FilterQuality filterQuality = FilterQuality.low,
+    FilterQuality filterQuality = FilterQuality.medium,
     int? cacheWidth,
     int? cacheHeight,
   }) {
@@ -136,15 +141,8 @@ class AssetGenImage {
     );
   }
 
-  ImageProvider provider({
-    AssetBundle? bundle,
-    String? package,
-  }) {
-    return AssetImage(
-      _assetName,
-      bundle: bundle,
-      package: package,
-    );
+  ImageProvider provider({AssetBundle? bundle, String? package}) {
+    return AssetImage(_assetName, bundle: bundle, package: package);
   }
 
   String get path => _assetName;

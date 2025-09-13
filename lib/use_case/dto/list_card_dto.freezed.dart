@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,307 +10,157 @@ part of 'list_card_dto.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$ListCardDTO {
-  String get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  String get colorImageUrl => throw _privateConstructorUsedError;
-  String get grayImageUrl => throw _privateConstructorUsedError;
-  String get prefectureId => throw _privateConstructorUsedError;
-  String get prefectureName => throw _privateConstructorUsedError;
-  String get volumeId => throw _privateConstructorUsedError;
-  String get volumeName => throw _privateConstructorUsedError;
-  DateTime get publicationDate => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $ListCardDTOCopyWith<ListCardDTO> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get id; String get name; String get colorImageUrl; String get grayImageUrl; String get prefectureId; String get prefectureName; String get volumeId; String get volumeName; DateTime get publicationDate;
+/// Create a copy of ListCardDTO
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ListCardDTOCopyWith<ListCardDTO> get copyWith => _$ListCardDTOCopyWithImpl<ListCardDTO>(this as ListCardDTO, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListCardDTO&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.colorImageUrl, colorImageUrl) || other.colorImageUrl == colorImageUrl)&&(identical(other.grayImageUrl, grayImageUrl) || other.grayImageUrl == grayImageUrl)&&(identical(other.prefectureId, prefectureId) || other.prefectureId == prefectureId)&&(identical(other.prefectureName, prefectureName) || other.prefectureName == prefectureName)&&(identical(other.volumeId, volumeId) || other.volumeId == volumeId)&&(identical(other.volumeName, volumeName) || other.volumeName == volumeName)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,name,colorImageUrl,grayImageUrl,prefectureId,prefectureName,volumeId,volumeName,publicationDate);
+
+@override
+String toString() {
+  return 'ListCardDTO(id: $id, name: $name, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $ListCardDTOCopyWith<$Res> {
-  factory $ListCardDTOCopyWith(
-          ListCardDTO value, $Res Function(ListCardDTO) then) =
-      _$ListCardDTOCopyWithImpl<$Res, ListCardDTO>;
-  @useResult
-  $Res call(
-      {String id,
-      String name,
-      String colorImageUrl,
-      String grayImageUrl,
-      String prefectureId,
-      String prefectureName,
-      String volumeId,
-      String volumeName,
-      DateTime publicationDate});
-}
+abstract mixin class $ListCardDTOCopyWith<$Res>  {
+  factory $ListCardDTOCopyWith(ListCardDTO value, $Res Function(ListCardDTO) _then) = _$ListCardDTOCopyWithImpl;
+@useResult
+$Res call({
+ String id, String name, String colorImageUrl, String grayImageUrl, String prefectureId, String prefectureName, String volumeId, String volumeName, DateTime publicationDate
+});
 
+
+
+
+}
 /// @nodoc
-class _$ListCardDTOCopyWithImpl<$Res, $Val extends ListCardDTO>
+class _$ListCardDTOCopyWithImpl<$Res>
     implements $ListCardDTOCopyWith<$Res> {
-  _$ListCardDTOCopyWithImpl(this._value, this._then);
+  _$ListCardDTOCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final ListCardDTO _self;
+  final $Res Function(ListCardDTO) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? colorImageUrl = null,
-    Object? grayImageUrl = null,
-    Object? prefectureId = null,
-    Object? prefectureName = null,
-    Object? volumeId = null,
-    Object? volumeName = null,
-    Object? publicationDate = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorImageUrl: null == colorImageUrl
-          ? _value.colorImageUrl
-          : colorImageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayImageUrl: null == grayImageUrl
-          ? _value.grayImageUrl
-          : grayImageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-      prefectureId: null == prefectureId
-          ? _value.prefectureId
-          : prefectureId // ignore: cast_nullable_to_non_nullable
-              as String,
-      prefectureName: null == prefectureName
-          ? _value.prefectureName
-          : prefectureName // ignore: cast_nullable_to_non_nullable
-              as String,
-      volumeId: null == volumeId
-          ? _value.volumeId
-          : volumeId // ignore: cast_nullable_to_non_nullable
-              as String,
-      volumeName: null == volumeName
-          ? _value.volumeName
-          : volumeName // ignore: cast_nullable_to_non_nullable
-              as String,
-      publicationDate: null == publicationDate
-          ? _value.publicationDate
-          : publicationDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-    ) as $Val);
-  }
+/// Create a copy of ListCardDTO
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? colorImageUrl = null,Object? grayImageUrl = null,Object? prefectureId = null,Object? prefectureName = null,Object? volumeId = null,Object? volumeName = null,Object? publicationDate = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,colorImageUrl: null == colorImageUrl ? _self.colorImageUrl : colorImageUrl // ignore: cast_nullable_to_non_nullable
+as String,grayImageUrl: null == grayImageUrl ? _self.grayImageUrl : grayImageUrl // ignore: cast_nullable_to_non_nullable
+as String,prefectureId: null == prefectureId ? _self.prefectureId : prefectureId // ignore: cast_nullable_to_non_nullable
+as String,prefectureName: null == prefectureName ? _self.prefectureName : prefectureName // ignore: cast_nullable_to_non_nullable
+as String,volumeId: null == volumeId ? _self.volumeId : volumeId // ignore: cast_nullable_to_non_nullable
+as String,volumeName: null == volumeName ? _self.volumeName : volumeName // ignore: cast_nullable_to_non_nullable
+as String,publicationDate: null == publicationDate ? _self.publicationDate : publicationDate // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
 }
 
-/// @nodoc
-abstract class _$$ListCardDTOImplCopyWith<$Res>
-    implements $ListCardDTOCopyWith<$Res> {
-  factory _$$ListCardDTOImplCopyWith(
-          _$ListCardDTOImpl value, $Res Function(_$ListCardDTOImpl) then) =
-      __$$ListCardDTOImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String id,
-      String name,
-      String colorImageUrl,
-      String grayImageUrl,
-      String prefectureId,
-      String prefectureName,
-      String volumeId,
-      String volumeName,
-      DateTime publicationDate});
 }
 
-/// @nodoc
-class __$$ListCardDTOImplCopyWithImpl<$Res>
-    extends _$ListCardDTOCopyWithImpl<$Res, _$ListCardDTOImpl>
-    implements _$$ListCardDTOImplCopyWith<$Res> {
-  __$$ListCardDTOImplCopyWithImpl(
-      _$ListCardDTOImpl _value, $Res Function(_$ListCardDTOImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? colorImageUrl = null,
-    Object? grayImageUrl = null,
-    Object? prefectureId = null,
-    Object? prefectureName = null,
-    Object? volumeId = null,
-    Object? volumeName = null,
-    Object? publicationDate = null,
-  }) {
-    return _then(_$ListCardDTOImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorImageUrl: null == colorImageUrl
-          ? _value.colorImageUrl
-          : colorImageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayImageUrl: null == grayImageUrl
-          ? _value.grayImageUrl
-          : grayImageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-      prefectureId: null == prefectureId
-          ? _value.prefectureId
-          : prefectureId // ignore: cast_nullable_to_non_nullable
-              as String,
-      prefectureName: null == prefectureName
-          ? _value.prefectureName
-          : prefectureName // ignore: cast_nullable_to_non_nullable
-              as String,
-      volumeId: null == volumeId
-          ? _value.volumeId
-          : volumeId // ignore: cast_nullable_to_non_nullable
-              as String,
-      volumeName: null == volumeName
-          ? _value.volumeName
-          : volumeName // ignore: cast_nullable_to_non_nullable
-              as String,
-      publicationDate: null == publicationDate
-          ? _value.publicationDate
-          : publicationDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$ListCardDTOImpl extends _ListCardDTO {
-  const _$ListCardDTOImpl(
-      {required this.id,
-      required this.name,
-      required this.colorImageUrl,
-      required this.grayImageUrl,
-      required this.prefectureId,
-      required this.prefectureName,
-      required this.volumeId,
-      required this.volumeName,
-      required this.publicationDate})
-      : super._();
 
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final String colorImageUrl;
-  @override
-  final String grayImageUrl;
-  @override
-  final String prefectureId;
-  @override
-  final String prefectureName;
-  @override
-  final String volumeId;
-  @override
-  final String volumeName;
-  @override
-  final DateTime publicationDate;
+class _ListCardDTO extends ListCardDTO {
+  const _ListCardDTO({required this.id, required this.name, required this.colorImageUrl, required this.grayImageUrl, required this.prefectureId, required this.prefectureName, required this.volumeId, required this.volumeName, required this.publicationDate}): super._();
+  
 
-  @override
-  String toString() {
-    return 'ListCardDTO(id: $id, name: $name, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate)';
-  }
+@override final  String id;
+@override final  String name;
+@override final  String colorImageUrl;
+@override final  String grayImageUrl;
+@override final  String prefectureId;
+@override final  String prefectureName;
+@override final  String volumeId;
+@override final  String volumeName;
+@override final  DateTime publicationDate;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ListCardDTOImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.colorImageUrl, colorImageUrl) ||
-                other.colorImageUrl == colorImageUrl) &&
-            (identical(other.grayImageUrl, grayImageUrl) ||
-                other.grayImageUrl == grayImageUrl) &&
-            (identical(other.prefectureId, prefectureId) ||
-                other.prefectureId == prefectureId) &&
-            (identical(other.prefectureName, prefectureName) ||
-                other.prefectureName == prefectureName) &&
-            (identical(other.volumeId, volumeId) ||
-                other.volumeId == volumeId) &&
-            (identical(other.volumeName, volumeName) ||
-                other.volumeName == volumeName) &&
-            (identical(other.publicationDate, publicationDate) ||
-                other.publicationDate == publicationDate));
-  }
+/// Create a copy of ListCardDTO
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ListCardDTOCopyWith<_ListCardDTO> get copyWith => __$ListCardDTOCopyWithImpl<_ListCardDTO>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      name,
-      colorImageUrl,
-      grayImageUrl,
-      prefectureId,
-      prefectureName,
-      volumeId,
-      volumeName,
-      publicationDate);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ListCardDTOImplCopyWith<_$ListCardDTOImpl> get copyWith =>
-      __$$ListCardDTOImplCopyWithImpl<_$ListCardDTOImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListCardDTO&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.colorImageUrl, colorImageUrl) || other.colorImageUrl == colorImageUrl)&&(identical(other.grayImageUrl, grayImageUrl) || other.grayImageUrl == grayImageUrl)&&(identical(other.prefectureId, prefectureId) || other.prefectureId == prefectureId)&&(identical(other.prefectureName, prefectureName) || other.prefectureName == prefectureName)&&(identical(other.volumeId, volumeId) || other.volumeId == volumeId)&&(identical(other.volumeName, volumeName) || other.volumeName == volumeName)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate));
 }
 
-abstract class _ListCardDTO extends ListCardDTO {
-  const factory _ListCardDTO(
-      {required final String id,
-      required final String name,
-      required final String colorImageUrl,
-      required final String grayImageUrl,
-      required final String prefectureId,
-      required final String prefectureName,
-      required final String volumeId,
-      required final String volumeName,
-      required final DateTime publicationDate}) = _$ListCardDTOImpl;
-  const _ListCardDTO._() : super._();
 
-  @override
-  String get id;
-  @override
-  String get name;
-  @override
-  String get colorImageUrl;
-  @override
-  String get grayImageUrl;
-  @override
-  String get prefectureId;
-  @override
-  String get prefectureName;
-  @override
-  String get volumeId;
-  @override
-  String get volumeName;
-  @override
-  DateTime get publicationDate;
-  @override
-  @JsonKey(ignore: true)
-  _$$ListCardDTOImplCopyWith<_$ListCardDTOImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,id,name,colorImageUrl,grayImageUrl,prefectureId,prefectureName,volumeId,volumeName,publicationDate);
+
+@override
+String toString() {
+  return 'ListCardDTO(id: $id, name: $name, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ListCardDTOCopyWith<$Res> implements $ListCardDTOCopyWith<$Res> {
+  factory _$ListCardDTOCopyWith(_ListCardDTO value, $Res Function(_ListCardDTO) _then) = __$ListCardDTOCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String name, String colorImageUrl, String grayImageUrl, String prefectureId, String prefectureName, String volumeId, String volumeName, DateTime publicationDate
+});
+
+
+
+
+}
+/// @nodoc
+class __$ListCardDTOCopyWithImpl<$Res>
+    implements _$ListCardDTOCopyWith<$Res> {
+  __$ListCardDTOCopyWithImpl(this._self, this._then);
+
+  final _ListCardDTO _self;
+  final $Res Function(_ListCardDTO) _then;
+
+/// Create a copy of ListCardDTO
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? colorImageUrl = null,Object? grayImageUrl = null,Object? prefectureId = null,Object? prefectureName = null,Object? volumeId = null,Object? volumeName = null,Object? publicationDate = null,}) {
+  return _then(_ListCardDTO(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,colorImageUrl: null == colorImageUrl ? _self.colorImageUrl : colorImageUrl // ignore: cast_nullable_to_non_nullable
+as String,grayImageUrl: null == grayImageUrl ? _self.grayImageUrl : grayImageUrl // ignore: cast_nullable_to_non_nullable
+as String,prefectureId: null == prefectureId ? _self.prefectureId : prefectureId // ignore: cast_nullable_to_non_nullable
+as String,prefectureName: null == prefectureName ? _self.prefectureName : prefectureName // ignore: cast_nullable_to_non_nullable
+as String,volumeId: null == volumeId ? _self.volumeId : volumeId // ignore: cast_nullable_to_non_nullable
+as String,volumeName: null == volumeName ? _self.volumeName : volumeName // ignore: cast_nullable_to_non_nullable
+as String,publicationDate: null == publicationDate ? _self.publicationDate : publicationDate // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+
+}
+
+// dart format on

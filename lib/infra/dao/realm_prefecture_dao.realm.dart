@@ -1,3 +1,4 @@
+// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 part of 'realm_prefecture_dao.dart';
@@ -6,13 +7,11 @@ part of 'realm_prefecture_dao.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
+// coverage:ignore-file
 // ignore_for_file: type=lint
 class RealmPrefectureDAO extends $RealmPrefectureDAO
     with RealmEntity, RealmObjectBase, RealmObject {
-  RealmPrefectureDAO(
-    String id,
-    String name,
-  ) {
+  RealmPrefectureDAO(String id, String name) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
   }
@@ -34,27 +33,26 @@ class RealmPrefectureDAO extends $RealmPrefectureDAO
       RealmObjectBase.getChanges<RealmPrefectureDAO>(this);
 
   @override
+  Stream<RealmObjectChanges<RealmPrefectureDAO>> changesFor([
+    List<String>? keyPaths,
+  ]) => RealmObjectBase.getChangesFor<RealmPrefectureDAO>(this, keyPaths);
+
+  @override
   RealmPrefectureDAO freeze() =>
       RealmObjectBase.freezeObject<RealmPrefectureDAO>(this);
 
   EJsonValue toEJson() {
-    return <String, dynamic>{
-      'id': id.toEJson(),
-      'name': name.toEJson(),
-    };
+    return <String, dynamic>{'id': id.toEJson(), 'name': name.toEJson()};
   }
 
   static EJsonValue _toEJson(RealmPrefectureDAO value) => value.toEJson();
   static RealmPrefectureDAO _fromEJson(EJsonValue ejson) {
+    if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
     return switch (ejson) {
-      {
-        'id': EJsonValue id,
-        'name': EJsonValue name,
-      } =>
-        RealmPrefectureDAO(
-          fromEJson(id),
-          fromEJson(name),
-        ),
+      {'id': EJsonValue id, 'name': EJsonValue name} => RealmPrefectureDAO(
+        fromEJson(id),
+        fromEJson(name),
+      ),
       _ => raiseInvalidEJson(ejson),
     };
   }
@@ -62,11 +60,15 @@ class RealmPrefectureDAO extends $RealmPrefectureDAO
   static final schema = () {
     RealmObjectBase.registerFactory(RealmPrefectureDAO._);
     register(_toEJson, _fromEJson);
-    return SchemaObject(
-        ObjectType.realmObject, RealmPrefectureDAO, 'RealmPrefectureDAO', [
-      SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
-      SchemaProperty('name', RealmPropertyType.string),
-    ]);
+    return const SchemaObject(
+      ObjectType.realmObject,
+      RealmPrefectureDAO,
+      'RealmPrefectureDAO',
+      [
+        SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
+        SchemaProperty('name', RealmPropertyType.string),
+      ],
+    );
   }();
 
   @override

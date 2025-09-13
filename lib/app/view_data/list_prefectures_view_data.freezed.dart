@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,141 +10,139 @@ part of 'list_prefectures_view_data.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$ListPrefecturesViewData {
-  List<ListPrefectureViewData> get list => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $ListPrefecturesViewDataCopyWith<ListPrefecturesViewData> get copyWith =>
-      throw _privateConstructorUsedError;
+ List<ListPrefectureViewData> get list;
+/// Create a copy of ListPrefecturesViewData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ListPrefecturesViewDataCopyWith<ListPrefecturesViewData> get copyWith => _$ListPrefecturesViewDataCopyWithImpl<ListPrefecturesViewData>(this as ListPrefecturesViewData, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListPrefecturesViewData&&const DeepCollectionEquality().equals(other.list, list));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(list));
+
+@override
+String toString() {
+  return 'ListPrefecturesViewData(list: $list)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $ListPrefecturesViewDataCopyWith<$Res> {
-  factory $ListPrefecturesViewDataCopyWith(ListPrefecturesViewData value,
-          $Res Function(ListPrefecturesViewData) then) =
-      _$ListPrefecturesViewDataCopyWithImpl<$Res, ListPrefecturesViewData>;
-  @useResult
-  $Res call({List<ListPrefectureViewData> list});
-}
+abstract mixin class $ListPrefecturesViewDataCopyWith<$Res>  {
+  factory $ListPrefecturesViewDataCopyWith(ListPrefecturesViewData value, $Res Function(ListPrefecturesViewData) _then) = _$ListPrefecturesViewDataCopyWithImpl;
+@useResult
+$Res call({
+ List<ListPrefectureViewData> list
+});
 
+
+
+
+}
 /// @nodoc
-class _$ListPrefecturesViewDataCopyWithImpl<$Res,
-        $Val extends ListPrefecturesViewData>
+class _$ListPrefecturesViewDataCopyWithImpl<$Res>
     implements $ListPrefecturesViewDataCopyWith<$Res> {
-  _$ListPrefecturesViewDataCopyWithImpl(this._value, this._then);
+  _$ListPrefecturesViewDataCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final ListPrefecturesViewData _self;
+  final $Res Function(ListPrefecturesViewData) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? list = null,
-  }) {
-    return _then(_value.copyWith(
-      list: null == list
-          ? _value.list
-          : list // ignore: cast_nullable_to_non_nullable
-              as List<ListPrefectureViewData>,
-    ) as $Val);
-  }
+/// Create a copy of ListPrefecturesViewData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? list = null,}) {
+  return _then(_self.copyWith(
+list: null == list ? _self.list : list // ignore: cast_nullable_to_non_nullable
+as List<ListPrefectureViewData>,
+  ));
 }
 
-/// @nodoc
-abstract class _$$ListPrefecturesViewDataImplCopyWith<$Res>
-    implements $ListPrefecturesViewDataCopyWith<$Res> {
-  factory _$$ListPrefecturesViewDataImplCopyWith(
-          _$ListPrefecturesViewDataImpl value,
-          $Res Function(_$ListPrefecturesViewDataImpl) then) =
-      __$$ListPrefecturesViewDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({List<ListPrefectureViewData> list});
 }
 
-/// @nodoc
-class __$$ListPrefecturesViewDataImplCopyWithImpl<$Res>
-    extends _$ListPrefecturesViewDataCopyWithImpl<$Res,
-        _$ListPrefecturesViewDataImpl>
-    implements _$$ListPrefecturesViewDataImplCopyWith<$Res> {
-  __$$ListPrefecturesViewDataImplCopyWithImpl(
-      _$ListPrefecturesViewDataImpl _value,
-      $Res Function(_$ListPrefecturesViewDataImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? list = null,
-  }) {
-    return _then(_$ListPrefecturesViewDataImpl(
-      list: null == list
-          ? _value._list
-          : list // ignore: cast_nullable_to_non_nullable
-              as List<ListPrefectureViewData>,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$ListPrefecturesViewDataImpl extends _ListPrefecturesViewData {
-  const _$ListPrefecturesViewDataImpl(
-      {required final List<ListPrefectureViewData> list})
-      : _list = list,
-        super._();
 
-  final List<ListPrefectureViewData> _list;
-  @override
-  List<ListPrefectureViewData> get list {
-    if (_list is EqualUnmodifiableListView) return _list;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_list);
-  }
+class _ListPrefecturesViewData extends ListPrefecturesViewData {
+  const _ListPrefecturesViewData({required final  List<ListPrefectureViewData> list}): _list = list,super._();
+  
 
-  @override
-  String toString() {
-    return 'ListPrefecturesViewData(list: $list)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ListPrefecturesViewDataImpl &&
-            const DeepCollectionEquality().equals(other._list, _list));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_list));
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ListPrefecturesViewDataImplCopyWith<_$ListPrefecturesViewDataImpl>
-      get copyWith => __$$ListPrefecturesViewDataImplCopyWithImpl<
-          _$ListPrefecturesViewDataImpl>(this, _$identity);
+ final  List<ListPrefectureViewData> _list;
+@override List<ListPrefectureViewData> get list {
+  if (_list is EqualUnmodifiableListView) return _list;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_list);
 }
 
-abstract class _ListPrefecturesViewData extends ListPrefecturesViewData {
-  const factory _ListPrefecturesViewData(
-          {required final List<ListPrefectureViewData> list}) =
-      _$ListPrefecturesViewDataImpl;
-  const _ListPrefecturesViewData._() : super._();
 
-  @override
-  List<ListPrefectureViewData> get list;
-  @override
-  @JsonKey(ignore: true)
-  _$$ListPrefecturesViewDataImplCopyWith<_$ListPrefecturesViewDataImpl>
-      get copyWith => throw _privateConstructorUsedError;
+/// Create a copy of ListPrefecturesViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ListPrefecturesViewDataCopyWith<_ListPrefecturesViewData> get copyWith => __$ListPrefecturesViewDataCopyWithImpl<_ListPrefecturesViewData>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListPrefecturesViewData&&const DeepCollectionEquality().equals(other._list, _list));
 }
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_list));
+
+@override
+String toString() {
+  return 'ListPrefecturesViewData(list: $list)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ListPrefecturesViewDataCopyWith<$Res> implements $ListPrefecturesViewDataCopyWith<$Res> {
+  factory _$ListPrefecturesViewDataCopyWith(_ListPrefecturesViewData value, $Res Function(_ListPrefecturesViewData) _then) = __$ListPrefecturesViewDataCopyWithImpl;
+@override @useResult
+$Res call({
+ List<ListPrefectureViewData> list
+});
+
+
+
+
+}
+/// @nodoc
+class __$ListPrefecturesViewDataCopyWithImpl<$Res>
+    implements _$ListPrefecturesViewDataCopyWith<$Res> {
+  __$ListPrefecturesViewDataCopyWithImpl(this._self, this._then);
+
+  final _ListPrefecturesViewData _self;
+  final $Res Function(_ListPrefecturesViewData) _then;
+
+/// Create a copy of ListPrefecturesViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? list = null,}) {
+  return _then(_ListPrefecturesViewData(
+list: null == list ? _self._list : list // ignore: cast_nullable_to_non_nullable
+as List<ListPrefectureViewData>,
+  ));
+}
+
+
+}
+
+// dart format on

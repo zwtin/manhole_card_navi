@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,135 +10,139 @@ part of 'map_markers_view_data.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$MapMarkersViewData {
-  List<MapMarkerViewData> get list => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $MapMarkersViewDataCopyWith<MapMarkersViewData> get copyWith =>
-      throw _privateConstructorUsedError;
+ List<MapMarkerViewData> get list;
+/// Create a copy of MapMarkersViewData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$MapMarkersViewDataCopyWith<MapMarkersViewData> get copyWith => _$MapMarkersViewDataCopyWithImpl<MapMarkersViewData>(this as MapMarkersViewData, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MapMarkersViewData&&const DeepCollectionEquality().equals(other.list, list));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(list));
+
+@override
+String toString() {
+  return 'MapMarkersViewData(list: $list)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $MapMarkersViewDataCopyWith<$Res> {
-  factory $MapMarkersViewDataCopyWith(
-          MapMarkersViewData value, $Res Function(MapMarkersViewData) then) =
-      _$MapMarkersViewDataCopyWithImpl<$Res, MapMarkersViewData>;
-  @useResult
-  $Res call({List<MapMarkerViewData> list});
-}
+abstract mixin class $MapMarkersViewDataCopyWith<$Res>  {
+  factory $MapMarkersViewDataCopyWith(MapMarkersViewData value, $Res Function(MapMarkersViewData) _then) = _$MapMarkersViewDataCopyWithImpl;
+@useResult
+$Res call({
+ List<MapMarkerViewData> list
+});
 
+
+
+
+}
 /// @nodoc
-class _$MapMarkersViewDataCopyWithImpl<$Res, $Val extends MapMarkersViewData>
+class _$MapMarkersViewDataCopyWithImpl<$Res>
     implements $MapMarkersViewDataCopyWith<$Res> {
-  _$MapMarkersViewDataCopyWithImpl(this._value, this._then);
+  _$MapMarkersViewDataCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final MapMarkersViewData _self;
+  final $Res Function(MapMarkersViewData) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? list = null,
-  }) {
-    return _then(_value.copyWith(
-      list: null == list
-          ? _value.list
-          : list // ignore: cast_nullable_to_non_nullable
-              as List<MapMarkerViewData>,
-    ) as $Val);
-  }
+/// Create a copy of MapMarkersViewData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? list = null,}) {
+  return _then(_self.copyWith(
+list: null == list ? _self.list : list // ignore: cast_nullable_to_non_nullable
+as List<MapMarkerViewData>,
+  ));
 }
 
-/// @nodoc
-abstract class _$$MapMarkersViewDataImplCopyWith<$Res>
-    implements $MapMarkersViewDataCopyWith<$Res> {
-  factory _$$MapMarkersViewDataImplCopyWith(_$MapMarkersViewDataImpl value,
-          $Res Function(_$MapMarkersViewDataImpl) then) =
-      __$$MapMarkersViewDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({List<MapMarkerViewData> list});
 }
 
-/// @nodoc
-class __$$MapMarkersViewDataImplCopyWithImpl<$Res>
-    extends _$MapMarkersViewDataCopyWithImpl<$Res, _$MapMarkersViewDataImpl>
-    implements _$$MapMarkersViewDataImplCopyWith<$Res> {
-  __$$MapMarkersViewDataImplCopyWithImpl(_$MapMarkersViewDataImpl _value,
-      $Res Function(_$MapMarkersViewDataImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? list = null,
-  }) {
-    return _then(_$MapMarkersViewDataImpl(
-      list: null == list
-          ? _value._list
-          : list // ignore: cast_nullable_to_non_nullable
-              as List<MapMarkerViewData>,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$MapMarkersViewDataImpl extends _MapMarkersViewData {
-  const _$MapMarkersViewDataImpl({required final List<MapMarkerViewData> list})
-      : _list = list,
-        super._();
 
-  final List<MapMarkerViewData> _list;
-  @override
-  List<MapMarkerViewData> get list {
-    if (_list is EqualUnmodifiableListView) return _list;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_list);
-  }
+class _MapMarkersViewData extends MapMarkersViewData {
+  const _MapMarkersViewData({required final  List<MapMarkerViewData> list}): _list = list,super._();
+  
 
-  @override
-  String toString() {
-    return 'MapMarkersViewData(list: $list)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$MapMarkersViewDataImpl &&
-            const DeepCollectionEquality().equals(other._list, _list));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_list));
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$MapMarkersViewDataImplCopyWith<_$MapMarkersViewDataImpl> get copyWith =>
-      __$$MapMarkersViewDataImplCopyWithImpl<_$MapMarkersViewDataImpl>(
-          this, _$identity);
+ final  List<MapMarkerViewData> _list;
+@override List<MapMarkerViewData> get list {
+  if (_list is EqualUnmodifiableListView) return _list;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_list);
 }
 
-abstract class _MapMarkersViewData extends MapMarkersViewData {
-  const factory _MapMarkersViewData(
-      {required final List<MapMarkerViewData> list}) = _$MapMarkersViewDataImpl;
-  const _MapMarkersViewData._() : super._();
 
-  @override
-  List<MapMarkerViewData> get list;
-  @override
-  @JsonKey(ignore: true)
-  _$$MapMarkersViewDataImplCopyWith<_$MapMarkersViewDataImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+/// Create a copy of MapMarkersViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$MapMarkersViewDataCopyWith<_MapMarkersViewData> get copyWith => __$MapMarkersViewDataCopyWithImpl<_MapMarkersViewData>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MapMarkersViewData&&const DeepCollectionEquality().equals(other._list, _list));
 }
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_list));
+
+@override
+String toString() {
+  return 'MapMarkersViewData(list: $list)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$MapMarkersViewDataCopyWith<$Res> implements $MapMarkersViewDataCopyWith<$Res> {
+  factory _$MapMarkersViewDataCopyWith(_MapMarkersViewData value, $Res Function(_MapMarkersViewData) _then) = __$MapMarkersViewDataCopyWithImpl;
+@override @useResult
+$Res call({
+ List<MapMarkerViewData> list
+});
+
+
+
+
+}
+/// @nodoc
+class __$MapMarkersViewDataCopyWithImpl<$Res>
+    implements _$MapMarkersViewDataCopyWith<$Res> {
+  __$MapMarkersViewDataCopyWithImpl(this._self, this._then);
+
+  final _MapMarkersViewData _self;
+  final $Res Function(_MapMarkersViewData) _then;
+
+/// Create a copy of MapMarkersViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? list = null,}) {
+  return _then(_MapMarkersViewData(
+list: null == list ? _self._list : list // ignore: cast_nullable_to_non_nullable
+as List<MapMarkerViewData>,
+  ));
+}
+
+
+}
+
+// dart format on

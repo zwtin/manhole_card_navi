@@ -1,3 +1,4 @@
+// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 part of 'realm_contact_dao.dart';
@@ -6,6 +7,7 @@ part of 'realm_contact_dao.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
+// coverage:ignore-file
 // ignore_for_file: type=lint
 class RealmContactDAO extends $RealmContactDAO
     with RealmEntity, RealmObjectBase, RealmObject {
@@ -95,6 +97,11 @@ class RealmContactDAO extends $RealmContactDAO
       RealmObjectBase.getChanges<RealmContactDAO>(this);
 
   @override
+  Stream<RealmObjectChanges<RealmContactDAO>> changesFor([
+    List<String>? keyPaths,
+  ]) => RealmObjectBase.getChangesFor<RealmContactDAO>(this, keyPaths);
+
+  @override
   RealmContactDAO freeze() =>
       RealmObjectBase.freezeObject<RealmContactDAO>(this);
 
@@ -115,6 +122,7 @@ class RealmContactDAO extends $RealmContactDAO
 
   static EJsonValue _toEJson(RealmContactDAO value) => value.toEJson();
   static RealmContactDAO _fromEJson(EJsonValue ejson) {
+    if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
     return switch (ejson) {
       {
         'id': EJsonValue id,
@@ -147,19 +155,23 @@ class RealmContactDAO extends $RealmContactDAO
   static final schema = () {
     RealmObjectBase.registerFactory(RealmContactDAO._);
     register(_toEJson, _fromEJson);
-    return SchemaObject(
-        ObjectType.realmObject, RealmContactDAO, 'RealmContactDAO', [
-      SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
-      SchemaProperty('address', RealmPropertyType.string),
-      SchemaProperty('latitude', RealmPropertyType.double),
-      SchemaProperty('longitude', RealmPropertyType.double),
-      SchemaProperty('name', RealmPropertyType.string),
-      SchemaProperty('nameUrl', RealmPropertyType.string),
-      SchemaProperty('other', RealmPropertyType.string),
-      SchemaProperty('phoneNumber', RealmPropertyType.string),
-      SchemaProperty('time', RealmPropertyType.string),
-      SchemaProperty('timeOther', RealmPropertyType.string),
-    ]);
+    return const SchemaObject(
+      ObjectType.realmObject,
+      RealmContactDAO,
+      'RealmContactDAO',
+      [
+        SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
+        SchemaProperty('address', RealmPropertyType.string),
+        SchemaProperty('latitude', RealmPropertyType.double),
+        SchemaProperty('longitude', RealmPropertyType.double),
+        SchemaProperty('name', RealmPropertyType.string),
+        SchemaProperty('nameUrl', RealmPropertyType.string),
+        SchemaProperty('other', RealmPropertyType.string),
+        SchemaProperty('phoneNumber', RealmPropertyType.string),
+        SchemaProperty('time', RealmPropertyType.string),
+        SchemaProperty('timeOther', RealmPropertyType.string),
+      ],
+    );
   }();
 
   @override

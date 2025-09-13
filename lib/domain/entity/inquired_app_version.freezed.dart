@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,127 +10,133 @@ part of 'inquired_app_version.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$InquiredAppVersion {
-  String get value => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $InquiredAppVersionCopyWith<InquiredAppVersion> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get value;
+/// Create a copy of InquiredAppVersion
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$InquiredAppVersionCopyWith<InquiredAppVersion> get copyWith => _$InquiredAppVersionCopyWithImpl<InquiredAppVersion>(this as InquiredAppVersion, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InquiredAppVersion&&(identical(other.value, value) || other.value == value));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'InquiredAppVersion(value: $value)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $InquiredAppVersionCopyWith<$Res> {
-  factory $InquiredAppVersionCopyWith(
-          InquiredAppVersion value, $Res Function(InquiredAppVersion) then) =
-      _$InquiredAppVersionCopyWithImpl<$Res, InquiredAppVersion>;
-  @useResult
-  $Res call({String value});
-}
+abstract mixin class $InquiredAppVersionCopyWith<$Res>  {
+  factory $InquiredAppVersionCopyWith(InquiredAppVersion value, $Res Function(InquiredAppVersion) _then) = _$InquiredAppVersionCopyWithImpl;
+@useResult
+$Res call({
+ String value
+});
 
+
+
+
+}
 /// @nodoc
-class _$InquiredAppVersionCopyWithImpl<$Res, $Val extends InquiredAppVersion>
+class _$InquiredAppVersionCopyWithImpl<$Res>
     implements $InquiredAppVersionCopyWith<$Res> {
-  _$InquiredAppVersionCopyWithImpl(this._value, this._then);
+  _$InquiredAppVersionCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final InquiredAppVersion _self;
+  final $Res Function(InquiredAppVersion) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_value.copyWith(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of InquiredAppVersion
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? value = null,}) {
+  return _then(_self.copyWith(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$InquiredAppVersionImplCopyWith<$Res>
-    implements $InquiredAppVersionCopyWith<$Res> {
-  factory _$$InquiredAppVersionImplCopyWith(_$InquiredAppVersionImpl value,
-          $Res Function(_$InquiredAppVersionImpl) then) =
-      __$$InquiredAppVersionImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String value});
 }
 
-/// @nodoc
-class __$$InquiredAppVersionImplCopyWithImpl<$Res>
-    extends _$InquiredAppVersionCopyWithImpl<$Res, _$InquiredAppVersionImpl>
-    implements _$$InquiredAppVersionImplCopyWith<$Res> {
-  __$$InquiredAppVersionImplCopyWithImpl(_$InquiredAppVersionImpl _value,
-      $Res Function(_$InquiredAppVersionImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_$InquiredAppVersionImpl(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$InquiredAppVersionImpl extends _InquiredAppVersion {
-  const _$InquiredAppVersionImpl({required this.value}) : super._();
 
-  @override
-  final String value;
+class _InquiredAppVersion extends InquiredAppVersion {
+  const _InquiredAppVersion({required this.value}): super._();
+  
 
-  @override
-  String toString() {
-    return 'InquiredAppVersion(value: $value)';
-  }
+@override final  String value;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$InquiredAppVersionImpl &&
-            (identical(other.value, value) || other.value == value));
-  }
+/// Create a copy of InquiredAppVersion
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$InquiredAppVersionCopyWith<_InquiredAppVersion> get copyWith => __$InquiredAppVersionCopyWithImpl<_InquiredAppVersion>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, value);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$InquiredAppVersionImplCopyWith<_$InquiredAppVersionImpl> get copyWith =>
-      __$$InquiredAppVersionImplCopyWithImpl<_$InquiredAppVersionImpl>(
-          this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _InquiredAppVersion&&(identical(other.value, value) || other.value == value));
 }
 
-abstract class _InquiredAppVersion extends InquiredAppVersion {
-  const factory _InquiredAppVersion({required final String value}) =
-      _$InquiredAppVersionImpl;
-  const _InquiredAppVersion._() : super._();
 
-  @override
-  String get value;
-  @override
-  @JsonKey(ignore: true)
-  _$$InquiredAppVersionImplCopyWith<_$InquiredAppVersionImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'InquiredAppVersion(value: $value)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$InquiredAppVersionCopyWith<$Res> implements $InquiredAppVersionCopyWith<$Res> {
+  factory _$InquiredAppVersionCopyWith(_InquiredAppVersion value, $Res Function(_InquiredAppVersion) _then) = __$InquiredAppVersionCopyWithImpl;
+@override @useResult
+$Res call({
+ String value
+});
+
+
+
+
+}
+/// @nodoc
+class __$InquiredAppVersionCopyWithImpl<$Res>
+    implements _$InquiredAppVersionCopyWith<$Res> {
+  __$InquiredAppVersionCopyWithImpl(this._self, this._then);
+
+  final _InquiredAppVersion _self;
+  final $Res Function(_InquiredAppVersion) _then;
+
+/// Create a copy of InquiredAppVersion
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? value = null,}) {
+  return _then(_InquiredAppVersion(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

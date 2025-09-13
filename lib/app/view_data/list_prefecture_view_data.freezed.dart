@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,210 +10,160 @@ part of 'list_prefecture_view_data.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$ListPrefectureViewData {
-  String get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  ListCardsViewData get cards => throw _privateConstructorUsedError;
-  bool get initiallyExpanded => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $ListPrefectureViewDataCopyWith<ListPrefectureViewData> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get id; String get name; ListCardsViewData get cards; bool get initiallyExpanded;
+/// Create a copy of ListPrefectureViewData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ListPrefectureViewDataCopyWith<ListPrefectureViewData> get copyWith => _$ListPrefectureViewDataCopyWithImpl<ListPrefectureViewData>(this as ListPrefectureViewData, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListPrefectureViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cards, cards) || other.cards == cards)&&(identical(other.initiallyExpanded, initiallyExpanded) || other.initiallyExpanded == initiallyExpanded));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,name,cards,initiallyExpanded);
+
+@override
+String toString() {
+  return 'ListPrefectureViewData(id: $id, name: $name, cards: $cards, initiallyExpanded: $initiallyExpanded)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $ListPrefectureViewDataCopyWith<$Res> {
-  factory $ListPrefectureViewDataCopyWith(ListPrefectureViewData value,
-          $Res Function(ListPrefectureViewData) then) =
-      _$ListPrefectureViewDataCopyWithImpl<$Res, ListPrefectureViewData>;
-  @useResult
-  $Res call(
-      {String id,
-      String name,
-      ListCardsViewData cards,
-      bool initiallyExpanded});
+abstract mixin class $ListPrefectureViewDataCopyWith<$Res>  {
+  factory $ListPrefectureViewDataCopyWith(ListPrefectureViewData value, $Res Function(ListPrefectureViewData) _then) = _$ListPrefectureViewDataCopyWithImpl;
+@useResult
+$Res call({
+ String id, String name, ListCardsViewData cards, bool initiallyExpanded
+});
 
-  $ListCardsViewDataCopyWith<$Res> get cards;
+
+$ListCardsViewDataCopyWith<$Res> get cards;
+
 }
-
 /// @nodoc
-class _$ListPrefectureViewDataCopyWithImpl<$Res,
-        $Val extends ListPrefectureViewData>
+class _$ListPrefectureViewDataCopyWithImpl<$Res>
     implements $ListPrefectureViewDataCopyWith<$Res> {
-  _$ListPrefectureViewDataCopyWithImpl(this._value, this._then);
+  _$ListPrefectureViewDataCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final ListPrefectureViewData _self;
+  final $Res Function(ListPrefectureViewData) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? cards = null,
-    Object? initiallyExpanded = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      cards: null == cards
-          ? _value.cards
-          : cards // ignore: cast_nullable_to_non_nullable
-              as ListCardsViewData,
-      initiallyExpanded: null == initiallyExpanded
-          ? _value.initiallyExpanded
-          : initiallyExpanded // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $ListCardsViewDataCopyWith<$Res> get cards {
-    return $ListCardsViewDataCopyWith<$Res>(_value.cards, (value) {
-      return _then(_value.copyWith(cards: value) as $Val);
-    });
-  }
+/// Create a copy of ListPrefectureViewData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? cards = null,Object? initiallyExpanded = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,cards: null == cards ? _self.cards : cards // ignore: cast_nullable_to_non_nullable
+as ListCardsViewData,initiallyExpanded: null == initiallyExpanded ? _self.initiallyExpanded : initiallyExpanded // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+/// Create a copy of ListPrefectureViewData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ListCardsViewDataCopyWith<$Res> get cards {
+  
+  return $ListCardsViewDataCopyWith<$Res>(_self.cards, (value) {
+    return _then(_self.copyWith(cards: value));
+  });
+}
 }
 
-/// @nodoc
-abstract class _$$ListPrefectureViewDataImplCopyWith<$Res>
-    implements $ListPrefectureViewDataCopyWith<$Res> {
-  factory _$$ListPrefectureViewDataImplCopyWith(
-          _$ListPrefectureViewDataImpl value,
-          $Res Function(_$ListPrefectureViewDataImpl) then) =
-      __$$ListPrefectureViewDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String id,
-      String name,
-      ListCardsViewData cards,
-      bool initiallyExpanded});
-
-  @override
-  $ListCardsViewDataCopyWith<$Res> get cards;
-}
-
-/// @nodoc
-class __$$ListPrefectureViewDataImplCopyWithImpl<$Res>
-    extends _$ListPrefectureViewDataCopyWithImpl<$Res,
-        _$ListPrefectureViewDataImpl>
-    implements _$$ListPrefectureViewDataImplCopyWith<$Res> {
-  __$$ListPrefectureViewDataImplCopyWithImpl(
-      _$ListPrefectureViewDataImpl _value,
-      $Res Function(_$ListPrefectureViewDataImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? cards = null,
-    Object? initiallyExpanded = null,
-  }) {
-    return _then(_$ListPrefectureViewDataImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      cards: null == cards
-          ? _value.cards
-          : cards // ignore: cast_nullable_to_non_nullable
-              as ListCardsViewData,
-      initiallyExpanded: null == initiallyExpanded
-          ? _value.initiallyExpanded
-          : initiallyExpanded // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$ListPrefectureViewDataImpl extends _ListPrefectureViewData {
-  const _$ListPrefectureViewDataImpl(
-      {required this.id,
-      required this.name,
-      required this.cards,
-      required this.initiallyExpanded})
-      : super._();
 
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final ListCardsViewData cards;
-  @override
-  final bool initiallyExpanded;
+class _ListPrefectureViewData extends ListPrefectureViewData {
+  const _ListPrefectureViewData({required this.id, required this.name, required this.cards, required this.initiallyExpanded}): super._();
+  
 
-  @override
-  String toString() {
-    return 'ListPrefectureViewData(id: $id, name: $name, cards: $cards, initiallyExpanded: $initiallyExpanded)';
-  }
+@override final  String id;
+@override final  String name;
+@override final  ListCardsViewData cards;
+@override final  bool initiallyExpanded;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ListPrefectureViewDataImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.cards, cards) || other.cards == cards) &&
-            (identical(other.initiallyExpanded, initiallyExpanded) ||
-                other.initiallyExpanded == initiallyExpanded));
-  }
+/// Create a copy of ListPrefectureViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ListPrefectureViewDataCopyWith<_ListPrefectureViewData> get copyWith => __$ListPrefectureViewDataCopyWithImpl<_ListPrefectureViewData>(this, _$identity);
 
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, cards, initiallyExpanded);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ListPrefectureViewDataImplCopyWith<_$ListPrefectureViewDataImpl>
-      get copyWith => __$$ListPrefectureViewDataImplCopyWithImpl<
-          _$ListPrefectureViewDataImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListPrefectureViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cards, cards) || other.cards == cards)&&(identical(other.initiallyExpanded, initiallyExpanded) || other.initiallyExpanded == initiallyExpanded));
 }
 
-abstract class _ListPrefectureViewData extends ListPrefectureViewData {
-  const factory _ListPrefectureViewData(
-      {required final String id,
-      required final String name,
-      required final ListCardsViewData cards,
-      required final bool initiallyExpanded}) = _$ListPrefectureViewDataImpl;
-  const _ListPrefectureViewData._() : super._();
 
-  @override
-  String get id;
-  @override
-  String get name;
-  @override
-  ListCardsViewData get cards;
-  @override
-  bool get initiallyExpanded;
-  @override
-  @JsonKey(ignore: true)
-  _$$ListPrefectureViewDataImplCopyWith<_$ListPrefectureViewDataImpl>
-      get copyWith => throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,id,name,cards,initiallyExpanded);
+
+@override
+String toString() {
+  return 'ListPrefectureViewData(id: $id, name: $name, cards: $cards, initiallyExpanded: $initiallyExpanded)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ListPrefectureViewDataCopyWith<$Res> implements $ListPrefectureViewDataCopyWith<$Res> {
+  factory _$ListPrefectureViewDataCopyWith(_ListPrefectureViewData value, $Res Function(_ListPrefectureViewData) _then) = __$ListPrefectureViewDataCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String name, ListCardsViewData cards, bool initiallyExpanded
+});
+
+
+@override $ListCardsViewDataCopyWith<$Res> get cards;
+
+}
+/// @nodoc
+class __$ListPrefectureViewDataCopyWithImpl<$Res>
+    implements _$ListPrefectureViewDataCopyWith<$Res> {
+  __$ListPrefectureViewDataCopyWithImpl(this._self, this._then);
+
+  final _ListPrefectureViewData _self;
+  final $Res Function(_ListPrefectureViewData) _then;
+
+/// Create a copy of ListPrefectureViewData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? cards = null,Object? initiallyExpanded = null,}) {
+  return _then(_ListPrefectureViewData(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,cards: null == cards ? _self.cards : cards // ignore: cast_nullable_to_non_nullable
+as ListCardsViewData,initiallyExpanded: null == initiallyExpanded ? _self.initiallyExpanded : initiallyExpanded // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+/// Create a copy of ListPrefectureViewData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ListCardsViewDataCopyWith<$Res> get cards {
+  
+  return $ListCardsViewDataCopyWith<$Res>(_self.cards, (value) {
+    return _then(_self.copyWith(cards: value));
+  });
+}
+}
+
+// dart format on

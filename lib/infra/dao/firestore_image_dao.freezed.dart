@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,372 +10,169 @@ part of 'firestore_image_dao.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-FirestoreImageDAO _$FirestoreImageDAOFromJson(Map<String, dynamic> json) {
-  return _FirestoreImageDAO.fromJson(json);
-}
 
 /// @nodoc
 mixin _$FirestoreImageDAO {
-  String get id => throw _privateConstructorUsedError;
-  String get colorOriginal => throw _privateConstructorUsedError;
-  String get colorResized => throw _privateConstructorUsedError;
-  String get colorFrameGreen => throw _privateConstructorUsedError;
-  String get colorFrameRed => throw _privateConstructorUsedError;
-  String get colorFrameYellow => throw _privateConstructorUsedError;
-  String get grayOriginal => throw _privateConstructorUsedError;
-  String get grayResized => throw _privateConstructorUsedError;
-  String get grayFrameGreen => throw _privateConstructorUsedError;
-  String get grayFrameRed => throw _privateConstructorUsedError;
-  String get grayFrameYellow => throw _privateConstructorUsedError;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $FirestoreImageDAOCopyWith<FirestoreImageDAO> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get id; String get colorOriginal; String get colorResized; String get colorFrameGreen; String get colorFrameRed; String get colorFrameYellow; String get grayOriginal; String get grayResized; String get grayFrameGreen; String get grayFrameRed; String get grayFrameYellow;
+/// Create a copy of FirestoreImageDAO
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FirestoreImageDAOCopyWith<FirestoreImageDAO> get copyWith => _$FirestoreImageDAOCopyWithImpl<FirestoreImageDAO>(this as FirestoreImageDAO, _$identity);
+
+  /// Serializes this FirestoreImageDAO to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FirestoreImageDAO&&(identical(other.id, id) || other.id == id)&&(identical(other.colorOriginal, colorOriginal) || other.colorOriginal == colorOriginal)&&(identical(other.colorResized, colorResized) || other.colorResized == colorResized)&&(identical(other.colorFrameGreen, colorFrameGreen) || other.colorFrameGreen == colorFrameGreen)&&(identical(other.colorFrameRed, colorFrameRed) || other.colorFrameRed == colorFrameRed)&&(identical(other.colorFrameYellow, colorFrameYellow) || other.colorFrameYellow == colorFrameYellow)&&(identical(other.grayOriginal, grayOriginal) || other.grayOriginal == grayOriginal)&&(identical(other.grayResized, grayResized) || other.grayResized == grayResized)&&(identical(other.grayFrameGreen, grayFrameGreen) || other.grayFrameGreen == grayFrameGreen)&&(identical(other.grayFrameRed, grayFrameRed) || other.grayFrameRed == grayFrameRed)&&(identical(other.grayFrameYellow, grayFrameYellow) || other.grayFrameYellow == grayFrameYellow));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,colorOriginal,colorResized,colorFrameGreen,colorFrameRed,colorFrameYellow,grayOriginal,grayResized,grayFrameGreen,grayFrameRed,grayFrameYellow);
+
+@override
+String toString() {
+  return 'FirestoreImageDAO(id: $id, colorOriginal: $colorOriginal, colorResized: $colorResized, colorFrameGreen: $colorFrameGreen, colorFrameRed: $colorFrameRed, colorFrameYellow: $colorFrameYellow, grayOriginal: $grayOriginal, grayResized: $grayResized, grayFrameGreen: $grayFrameGreen, grayFrameRed: $grayFrameRed, grayFrameYellow: $grayFrameYellow)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $FirestoreImageDAOCopyWith<$Res> {
-  factory $FirestoreImageDAOCopyWith(
-          FirestoreImageDAO value, $Res Function(FirestoreImageDAO) then) =
-      _$FirestoreImageDAOCopyWithImpl<$Res, FirestoreImageDAO>;
-  @useResult
-  $Res call(
-      {String id,
-      String colorOriginal,
-      String colorResized,
-      String colorFrameGreen,
-      String colorFrameRed,
-      String colorFrameYellow,
-      String grayOriginal,
-      String grayResized,
-      String grayFrameGreen,
-      String grayFrameRed,
-      String grayFrameYellow});
-}
+abstract mixin class $FirestoreImageDAOCopyWith<$Res>  {
+  factory $FirestoreImageDAOCopyWith(FirestoreImageDAO value, $Res Function(FirestoreImageDAO) _then) = _$FirestoreImageDAOCopyWithImpl;
+@useResult
+$Res call({
+ String id, String colorOriginal, String colorResized, String colorFrameGreen, String colorFrameRed, String colorFrameYellow, String grayOriginal, String grayResized, String grayFrameGreen, String grayFrameRed, String grayFrameYellow
+});
 
+
+
+
+}
 /// @nodoc
-class _$FirestoreImageDAOCopyWithImpl<$Res, $Val extends FirestoreImageDAO>
+class _$FirestoreImageDAOCopyWithImpl<$Res>
     implements $FirestoreImageDAOCopyWith<$Res> {
-  _$FirestoreImageDAOCopyWithImpl(this._value, this._then);
+  _$FirestoreImageDAOCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final FirestoreImageDAO _self;
+  final $Res Function(FirestoreImageDAO) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? colorOriginal = null,
-    Object? colorResized = null,
-    Object? colorFrameGreen = null,
-    Object? colorFrameRed = null,
-    Object? colorFrameYellow = null,
-    Object? grayOriginal = null,
-    Object? grayResized = null,
-    Object? grayFrameGreen = null,
-    Object? grayFrameRed = null,
-    Object? grayFrameYellow = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorOriginal: null == colorOriginal
-          ? _value.colorOriginal
-          : colorOriginal // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorResized: null == colorResized
-          ? _value.colorResized
-          : colorResized // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorFrameGreen: null == colorFrameGreen
-          ? _value.colorFrameGreen
-          : colorFrameGreen // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorFrameRed: null == colorFrameRed
-          ? _value.colorFrameRed
-          : colorFrameRed // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorFrameYellow: null == colorFrameYellow
-          ? _value.colorFrameYellow
-          : colorFrameYellow // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayOriginal: null == grayOriginal
-          ? _value.grayOriginal
-          : grayOriginal // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayResized: null == grayResized
-          ? _value.grayResized
-          : grayResized // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayFrameGreen: null == grayFrameGreen
-          ? _value.grayFrameGreen
-          : grayFrameGreen // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayFrameRed: null == grayFrameRed
-          ? _value.grayFrameRed
-          : grayFrameRed // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayFrameYellow: null == grayFrameYellow
-          ? _value.grayFrameYellow
-          : grayFrameYellow // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of FirestoreImageDAO
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? colorOriginal = null,Object? colorResized = null,Object? colorFrameGreen = null,Object? colorFrameRed = null,Object? colorFrameYellow = null,Object? grayOriginal = null,Object? grayResized = null,Object? grayFrameGreen = null,Object? grayFrameRed = null,Object? grayFrameYellow = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,colorOriginal: null == colorOriginal ? _self.colorOriginal : colorOriginal // ignore: cast_nullable_to_non_nullable
+as String,colorResized: null == colorResized ? _self.colorResized : colorResized // ignore: cast_nullable_to_non_nullable
+as String,colorFrameGreen: null == colorFrameGreen ? _self.colorFrameGreen : colorFrameGreen // ignore: cast_nullable_to_non_nullable
+as String,colorFrameRed: null == colorFrameRed ? _self.colorFrameRed : colorFrameRed // ignore: cast_nullable_to_non_nullable
+as String,colorFrameYellow: null == colorFrameYellow ? _self.colorFrameYellow : colorFrameYellow // ignore: cast_nullable_to_non_nullable
+as String,grayOriginal: null == grayOriginal ? _self.grayOriginal : grayOriginal // ignore: cast_nullable_to_non_nullable
+as String,grayResized: null == grayResized ? _self.grayResized : grayResized // ignore: cast_nullable_to_non_nullable
+as String,grayFrameGreen: null == grayFrameGreen ? _self.grayFrameGreen : grayFrameGreen // ignore: cast_nullable_to_non_nullable
+as String,grayFrameRed: null == grayFrameRed ? _self.grayFrameRed : grayFrameRed // ignore: cast_nullable_to_non_nullable
+as String,grayFrameYellow: null == grayFrameYellow ? _self.grayFrameYellow : grayFrameYellow // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$FirestoreImageDAOImplCopyWith<$Res>
-    implements $FirestoreImageDAOCopyWith<$Res> {
-  factory _$$FirestoreImageDAOImplCopyWith(_$FirestoreImageDAOImpl value,
-          $Res Function(_$FirestoreImageDAOImpl) then) =
-      __$$FirestoreImageDAOImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String id,
-      String colorOriginal,
-      String colorResized,
-      String colorFrameGreen,
-      String colorFrameRed,
-      String colorFrameYellow,
-      String grayOriginal,
-      String grayResized,
-      String grayFrameGreen,
-      String grayFrameRed,
-      String grayFrameYellow});
 }
 
-/// @nodoc
-class __$$FirestoreImageDAOImplCopyWithImpl<$Res>
-    extends _$FirestoreImageDAOCopyWithImpl<$Res, _$FirestoreImageDAOImpl>
-    implements _$$FirestoreImageDAOImplCopyWith<$Res> {
-  __$$FirestoreImageDAOImplCopyWithImpl(_$FirestoreImageDAOImpl _value,
-      $Res Function(_$FirestoreImageDAOImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? colorOriginal = null,
-    Object? colorResized = null,
-    Object? colorFrameGreen = null,
-    Object? colorFrameRed = null,
-    Object? colorFrameYellow = null,
-    Object? grayOriginal = null,
-    Object? grayResized = null,
-    Object? grayFrameGreen = null,
-    Object? grayFrameRed = null,
-    Object? grayFrameYellow = null,
-  }) {
-    return _then(_$FirestoreImageDAOImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorOriginal: null == colorOriginal
-          ? _value.colorOriginal
-          : colorOriginal // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorResized: null == colorResized
-          ? _value.colorResized
-          : colorResized // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorFrameGreen: null == colorFrameGreen
-          ? _value.colorFrameGreen
-          : colorFrameGreen // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorFrameRed: null == colorFrameRed
-          ? _value.colorFrameRed
-          : colorFrameRed // ignore: cast_nullable_to_non_nullable
-              as String,
-      colorFrameYellow: null == colorFrameYellow
-          ? _value.colorFrameYellow
-          : colorFrameYellow // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayOriginal: null == grayOriginal
-          ? _value.grayOriginal
-          : grayOriginal // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayResized: null == grayResized
-          ? _value.grayResized
-          : grayResized // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayFrameGreen: null == grayFrameGreen
-          ? _value.grayFrameGreen
-          : grayFrameGreen // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayFrameRed: null == grayFrameRed
-          ? _value.grayFrameRed
-          : grayFrameRed // ignore: cast_nullable_to_non_nullable
-              as String,
-      grayFrameYellow: null == grayFrameYellow
-          ? _value.grayFrameYellow
-          : grayFrameYellow // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$FirestoreImageDAOImpl extends _FirestoreImageDAO {
-  const _$FirestoreImageDAOImpl(
-      {required this.id,
-      required this.colorOriginal,
-      required this.colorResized,
-      required this.colorFrameGreen,
-      required this.colorFrameRed,
-      required this.colorFrameYellow,
-      required this.grayOriginal,
-      required this.grayResized,
-      required this.grayFrameGreen,
-      required this.grayFrameRed,
-      required this.grayFrameYellow})
-      : super._();
 
-  factory _$FirestoreImageDAOImpl.fromJson(Map<String, dynamic> json) =>
-      _$$FirestoreImageDAOImplFromJson(json);
+class _FirestoreImageDAO extends FirestoreImageDAO {
+  const _FirestoreImageDAO({required this.id, required this.colorOriginal, required this.colorResized, required this.colorFrameGreen, required this.colorFrameRed, required this.colorFrameYellow, required this.grayOriginal, required this.grayResized, required this.grayFrameGreen, required this.grayFrameRed, required this.grayFrameYellow}): super._();
+  factory _FirestoreImageDAO.fromJson(Map<String, dynamic> json) => _$FirestoreImageDAOFromJson(json);
 
-  @override
-  final String id;
-  @override
-  final String colorOriginal;
-  @override
-  final String colorResized;
-  @override
-  final String colorFrameGreen;
-  @override
-  final String colorFrameRed;
-  @override
-  final String colorFrameYellow;
-  @override
-  final String grayOriginal;
-  @override
-  final String grayResized;
-  @override
-  final String grayFrameGreen;
-  @override
-  final String grayFrameRed;
-  @override
-  final String grayFrameYellow;
+@override final  String id;
+@override final  String colorOriginal;
+@override final  String colorResized;
+@override final  String colorFrameGreen;
+@override final  String colorFrameRed;
+@override final  String colorFrameYellow;
+@override final  String grayOriginal;
+@override final  String grayResized;
+@override final  String grayFrameGreen;
+@override final  String grayFrameRed;
+@override final  String grayFrameYellow;
 
-  @override
-  String toString() {
-    return 'FirestoreImageDAO(id: $id, colorOriginal: $colorOriginal, colorResized: $colorResized, colorFrameGreen: $colorFrameGreen, colorFrameRed: $colorFrameRed, colorFrameYellow: $colorFrameYellow, grayOriginal: $grayOriginal, grayResized: $grayResized, grayFrameGreen: $grayFrameGreen, grayFrameRed: $grayFrameRed, grayFrameYellow: $grayFrameYellow)';
-  }
+/// Create a copy of FirestoreImageDAO
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$FirestoreImageDAOCopyWith<_FirestoreImageDAO> get copyWith => __$FirestoreImageDAOCopyWithImpl<_FirestoreImageDAO>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$FirestoreImageDAOImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.colorOriginal, colorOriginal) ||
-                other.colorOriginal == colorOriginal) &&
-            (identical(other.colorResized, colorResized) ||
-                other.colorResized == colorResized) &&
-            (identical(other.colorFrameGreen, colorFrameGreen) ||
-                other.colorFrameGreen == colorFrameGreen) &&
-            (identical(other.colorFrameRed, colorFrameRed) ||
-                other.colorFrameRed == colorFrameRed) &&
-            (identical(other.colorFrameYellow, colorFrameYellow) ||
-                other.colorFrameYellow == colorFrameYellow) &&
-            (identical(other.grayOriginal, grayOriginal) ||
-                other.grayOriginal == grayOriginal) &&
-            (identical(other.grayResized, grayResized) ||
-                other.grayResized == grayResized) &&
-            (identical(other.grayFrameGreen, grayFrameGreen) ||
-                other.grayFrameGreen == grayFrameGreen) &&
-            (identical(other.grayFrameRed, grayFrameRed) ||
-                other.grayFrameRed == grayFrameRed) &&
-            (identical(other.grayFrameYellow, grayFrameYellow) ||
-                other.grayFrameYellow == grayFrameYellow));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      colorOriginal,
-      colorResized,
-      colorFrameGreen,
-      colorFrameRed,
-      colorFrameYellow,
-      grayOriginal,
-      grayResized,
-      grayFrameGreen,
-      grayFrameRed,
-      grayFrameYellow);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$FirestoreImageDAOImplCopyWith<_$FirestoreImageDAOImpl> get copyWith =>
-      __$$FirestoreImageDAOImplCopyWithImpl<_$FirestoreImageDAOImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$FirestoreImageDAOImplToJson(
-      this,
-    );
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$FirestoreImageDAOToJson(this, );
 }
 
-abstract class _FirestoreImageDAO extends FirestoreImageDAO {
-  const factory _FirestoreImageDAO(
-      {required final String id,
-      required final String colorOriginal,
-      required final String colorResized,
-      required final String colorFrameGreen,
-      required final String colorFrameRed,
-      required final String colorFrameYellow,
-      required final String grayOriginal,
-      required final String grayResized,
-      required final String grayFrameGreen,
-      required final String grayFrameRed,
-      required final String grayFrameYellow}) = _$FirestoreImageDAOImpl;
-  const _FirestoreImageDAO._() : super._();
-
-  factory _FirestoreImageDAO.fromJson(Map<String, dynamic> json) =
-      _$FirestoreImageDAOImpl.fromJson;
-
-  @override
-  String get id;
-  @override
-  String get colorOriginal;
-  @override
-  String get colorResized;
-  @override
-  String get colorFrameGreen;
-  @override
-  String get colorFrameRed;
-  @override
-  String get colorFrameYellow;
-  @override
-  String get grayOriginal;
-  @override
-  String get grayResized;
-  @override
-  String get grayFrameGreen;
-  @override
-  String get grayFrameRed;
-  @override
-  String get grayFrameYellow;
-  @override
-  @JsonKey(ignore: true)
-  _$$FirestoreImageDAOImplCopyWith<_$FirestoreImageDAOImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FirestoreImageDAO&&(identical(other.id, id) || other.id == id)&&(identical(other.colorOriginal, colorOriginal) || other.colorOriginal == colorOriginal)&&(identical(other.colorResized, colorResized) || other.colorResized == colorResized)&&(identical(other.colorFrameGreen, colorFrameGreen) || other.colorFrameGreen == colorFrameGreen)&&(identical(other.colorFrameRed, colorFrameRed) || other.colorFrameRed == colorFrameRed)&&(identical(other.colorFrameYellow, colorFrameYellow) || other.colorFrameYellow == colorFrameYellow)&&(identical(other.grayOriginal, grayOriginal) || other.grayOriginal == grayOriginal)&&(identical(other.grayResized, grayResized) || other.grayResized == grayResized)&&(identical(other.grayFrameGreen, grayFrameGreen) || other.grayFrameGreen == grayFrameGreen)&&(identical(other.grayFrameRed, grayFrameRed) || other.grayFrameRed == grayFrameRed)&&(identical(other.grayFrameYellow, grayFrameYellow) || other.grayFrameYellow == grayFrameYellow));
 }
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,colorOriginal,colorResized,colorFrameGreen,colorFrameRed,colorFrameYellow,grayOriginal,grayResized,grayFrameGreen,grayFrameRed,grayFrameYellow);
+
+@override
+String toString() {
+  return 'FirestoreImageDAO(id: $id, colorOriginal: $colorOriginal, colorResized: $colorResized, colorFrameGreen: $colorFrameGreen, colorFrameRed: $colorFrameRed, colorFrameYellow: $colorFrameYellow, grayOriginal: $grayOriginal, grayResized: $grayResized, grayFrameGreen: $grayFrameGreen, grayFrameRed: $grayFrameRed, grayFrameYellow: $grayFrameYellow)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$FirestoreImageDAOCopyWith<$Res> implements $FirestoreImageDAOCopyWith<$Res> {
+  factory _$FirestoreImageDAOCopyWith(_FirestoreImageDAO value, $Res Function(_FirestoreImageDAO) _then) = __$FirestoreImageDAOCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String colorOriginal, String colorResized, String colorFrameGreen, String colorFrameRed, String colorFrameYellow, String grayOriginal, String grayResized, String grayFrameGreen, String grayFrameRed, String grayFrameYellow
+});
+
+
+
+
+}
+/// @nodoc
+class __$FirestoreImageDAOCopyWithImpl<$Res>
+    implements _$FirestoreImageDAOCopyWith<$Res> {
+  __$FirestoreImageDAOCopyWithImpl(this._self, this._then);
+
+  final _FirestoreImageDAO _self;
+  final $Res Function(_FirestoreImageDAO) _then;
+
+/// Create a copy of FirestoreImageDAO
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? colorOriginal = null,Object? colorResized = null,Object? colorFrameGreen = null,Object? colorFrameRed = null,Object? colorFrameYellow = null,Object? grayOriginal = null,Object? grayResized = null,Object? grayFrameGreen = null,Object? grayFrameRed = null,Object? grayFrameYellow = null,}) {
+  return _then(_FirestoreImageDAO(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,colorOriginal: null == colorOriginal ? _self.colorOriginal : colorOriginal // ignore: cast_nullable_to_non_nullable
+as String,colorResized: null == colorResized ? _self.colorResized : colorResized // ignore: cast_nullable_to_non_nullable
+as String,colorFrameGreen: null == colorFrameGreen ? _self.colorFrameGreen : colorFrameGreen // ignore: cast_nullable_to_non_nullable
+as String,colorFrameRed: null == colorFrameRed ? _self.colorFrameRed : colorFrameRed // ignore: cast_nullable_to_non_nullable
+as String,colorFrameYellow: null == colorFrameYellow ? _self.colorFrameYellow : colorFrameYellow // ignore: cast_nullable_to_non_nullable
+as String,grayOriginal: null == grayOriginal ? _self.grayOriginal : grayOriginal // ignore: cast_nullable_to_non_nullable
+as String,grayResized: null == grayResized ? _self.grayResized : grayResized // ignore: cast_nullable_to_non_nullable
+as String,grayFrameGreen: null == grayFrameGreen ? _self.grayFrameGreen : grayFrameGreen // ignore: cast_nullable_to_non_nullable
+as String,grayFrameRed: null == grayFrameRed ? _self.grayFrameRed : grayFrameRed // ignore: cast_nullable_to_non_nullable
+as String,grayFrameYellow: null == grayFrameYellow ? _self.grayFrameYellow : grayFrameYellow // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

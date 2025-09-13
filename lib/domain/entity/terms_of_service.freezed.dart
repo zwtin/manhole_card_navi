@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,127 +10,133 @@ part of 'terms_of_service.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$TermsOfService {
-  String get value => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
-  $TermsOfServiceCopyWith<TermsOfService> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get value;
+/// Create a copy of TermsOfService
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TermsOfServiceCopyWith<TermsOfService> get copyWith => _$TermsOfServiceCopyWithImpl<TermsOfService>(this as TermsOfService, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TermsOfService&&(identical(other.value, value) || other.value == value));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'TermsOfService(value: $value)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $TermsOfServiceCopyWith<$Res> {
-  factory $TermsOfServiceCopyWith(
-          TermsOfService value, $Res Function(TermsOfService) then) =
-      _$TermsOfServiceCopyWithImpl<$Res, TermsOfService>;
-  @useResult
-  $Res call({String value});
-}
+abstract mixin class $TermsOfServiceCopyWith<$Res>  {
+  factory $TermsOfServiceCopyWith(TermsOfService value, $Res Function(TermsOfService) _then) = _$TermsOfServiceCopyWithImpl;
+@useResult
+$Res call({
+ String value
+});
 
+
+
+
+}
 /// @nodoc
-class _$TermsOfServiceCopyWithImpl<$Res, $Val extends TermsOfService>
+class _$TermsOfServiceCopyWithImpl<$Res>
     implements $TermsOfServiceCopyWith<$Res> {
-  _$TermsOfServiceCopyWithImpl(this._value, this._then);
+  _$TermsOfServiceCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final TermsOfService _self;
+  final $Res Function(TermsOfService) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_value.copyWith(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of TermsOfService
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? value = null,}) {
+  return _then(_self.copyWith(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$TermsOfServiceImplCopyWith<$Res>
-    implements $TermsOfServiceCopyWith<$Res> {
-  factory _$$TermsOfServiceImplCopyWith(_$TermsOfServiceImpl value,
-          $Res Function(_$TermsOfServiceImpl) then) =
-      __$$TermsOfServiceImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String value});
 }
 
-/// @nodoc
-class __$$TermsOfServiceImplCopyWithImpl<$Res>
-    extends _$TermsOfServiceCopyWithImpl<$Res, _$TermsOfServiceImpl>
-    implements _$$TermsOfServiceImplCopyWith<$Res> {
-  __$$TermsOfServiceImplCopyWithImpl(
-      _$TermsOfServiceImpl _value, $Res Function(_$TermsOfServiceImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-  }) {
-    return _then(_$TermsOfServiceImpl(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
 
 /// @nodoc
 
-class _$TermsOfServiceImpl extends _TermsOfService {
-  const _$TermsOfServiceImpl({required this.value}) : super._();
 
-  @override
-  final String value;
+class _TermsOfService extends TermsOfService {
+  const _TermsOfService({required this.value}): super._();
+  
 
-  @override
-  String toString() {
-    return 'TermsOfService(value: $value)';
-  }
+@override final  String value;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$TermsOfServiceImpl &&
-            (identical(other.value, value) || other.value == value));
-  }
+/// Create a copy of TermsOfService
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TermsOfServiceCopyWith<_TermsOfService> get copyWith => __$TermsOfServiceCopyWithImpl<_TermsOfService>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, value);
 
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$TermsOfServiceImplCopyWith<_$TermsOfServiceImpl> get copyWith =>
-      __$$TermsOfServiceImplCopyWithImpl<_$TermsOfServiceImpl>(
-          this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TermsOfService&&(identical(other.value, value) || other.value == value));
 }
 
-abstract class _TermsOfService extends TermsOfService {
-  const factory _TermsOfService({required final String value}) =
-      _$TermsOfServiceImpl;
-  const _TermsOfService._() : super._();
 
-  @override
-  String get value;
-  @override
-  @JsonKey(ignore: true)
-  _$$TermsOfServiceImplCopyWith<_$TermsOfServiceImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hash(runtimeType,value);
+
+@override
+String toString() {
+  return 'TermsOfService(value: $value)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$TermsOfServiceCopyWith<$Res> implements $TermsOfServiceCopyWith<$Res> {
+  factory _$TermsOfServiceCopyWith(_TermsOfService value, $Res Function(_TermsOfService) _then) = __$TermsOfServiceCopyWithImpl;
+@override @useResult
+$Res call({
+ String value
+});
+
+
+
+
+}
+/// @nodoc
+class __$TermsOfServiceCopyWithImpl<$Res>
+    implements _$TermsOfServiceCopyWith<$Res> {
+  __$TermsOfServiceCopyWithImpl(this._self, this._then);
+
+  final _TermsOfService _self;
+  final $Res Function(_TermsOfService) _then;
+
+/// Create a copy of TermsOfService
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? value = null,}) {
+  return _then(_TermsOfService(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

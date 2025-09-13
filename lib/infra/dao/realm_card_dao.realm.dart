@@ -1,3 +1,4 @@
+// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 part of 'realm_card_dao.dart';
@@ -6,6 +7,7 @@ part of 'realm_card_dao.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
+// coverage:ignore-file
 // ignore_for_file: type=lint
 class RealmCardDAO extends $RealmCardDAO
     with RealmEntity, RealmObjectBase, RealmObject {
@@ -39,7 +41,10 @@ class RealmCardDAO extends $RealmCardDAO
     RealmObjectBase.set(this, 'prefecture', prefecture);
     RealmObjectBase.set(this, 'volume', volume);
     RealmObjectBase.set<RealmList<RealmContactDAO>>(
-        this, 'contacts', RealmList<RealmContactDAO>(contacts));
+      this,
+      'contacts',
+      RealmList<RealmContactDAO>(contacts),
+    );
   }
 
   RealmCardDAO._();
@@ -143,6 +148,11 @@ class RealmCardDAO extends $RealmCardDAO
       RealmObjectBase.getChanges<RealmCardDAO>(this);
 
   @override
+  Stream<RealmObjectChanges<RealmCardDAO>> changesFor([
+    List<String>? keyPaths,
+  ]) => RealmObjectBase.getChangesFor<RealmCardDAO>(this, keyPaths);
+
+  @override
   RealmCardDAO freeze() => RealmObjectBase.freezeObject<RealmCardDAO>(this);
 
   EJsonValue toEJson() {
@@ -166,6 +176,7 @@ class RealmCardDAO extends $RealmCardDAO
 
   static EJsonValue _toEJson(RealmCardDAO value) => value.toEJson();
   static RealmCardDAO _fromEJson(EJsonValue ejson) {
+    if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
     return switch (ejson) {
       {
         'id': EJsonValue id,
@@ -178,10 +189,6 @@ class RealmCardDAO extends $RealmCardDAO
         'distributionLinkUrl': EJsonValue distributionLinkUrl,
         'distributionText': EJsonValue distributionText,
         'distributionOther': EJsonValue distributionOther,
-        'image': EJsonValue image,
-        'prefecture': EJsonValue prefecture,
-        'volume': EJsonValue volume,
-        'contacts': EJsonValue contacts,
       } =>
         RealmCardDAO(
           fromEJson(id),
@@ -194,10 +201,10 @@ class RealmCardDAO extends $RealmCardDAO
           fromEJson(distributionLinkUrl),
           fromEJson(distributionText),
           fromEJson(distributionOther),
-          image: fromEJson(image),
-          prefecture: fromEJson(prefecture),
-          volume: fromEJson(volume),
-          contacts: fromEJson(contacts),
+          image: fromEJson(ejson['image']),
+          prefecture: fromEJson(ejson['prefecture']),
+          volume: fromEJson(ejson['volume']),
+          contacts: fromEJson(ejson['contacts']),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -206,27 +213,47 @@ class RealmCardDAO extends $RealmCardDAO
   static final schema = () {
     RealmObjectBase.registerFactory(RealmCardDAO._);
     register(_toEJson, _fromEJson);
-    return SchemaObject(ObjectType.realmObject, RealmCardDAO, 'RealmCardDAO', [
-      SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
-      SchemaProperty('latitude', RealmPropertyType.double),
-      SchemaProperty('longitude', RealmPropertyType.double),
-      SchemaProperty('name', RealmPropertyType.string),
-      SchemaProperty('publicationDate', RealmPropertyType.timestamp),
-      SchemaProperty('distributionState', RealmPropertyType.string),
-      SchemaProperty('distributionLinkText', RealmPropertyType.string),
-      SchemaProperty('distributionLinkUrl', RealmPropertyType.string),
-      SchemaProperty('distributionText', RealmPropertyType.string),
-      SchemaProperty('distributionOther', RealmPropertyType.string),
-      SchemaProperty('image', RealmPropertyType.object,
-          optional: true, linkTarget: 'RealmImageDAO'),
-      SchemaProperty('prefecture', RealmPropertyType.object,
-          optional: true, linkTarget: 'RealmPrefectureDAO'),
-      SchemaProperty('volume', RealmPropertyType.object,
-          optional: true, linkTarget: 'RealmVolumeDAO'),
-      SchemaProperty('contacts', RealmPropertyType.object,
+    return const SchemaObject(
+      ObjectType.realmObject,
+      RealmCardDAO,
+      'RealmCardDAO',
+      [
+        SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
+        SchemaProperty('latitude', RealmPropertyType.double),
+        SchemaProperty('longitude', RealmPropertyType.double),
+        SchemaProperty('name', RealmPropertyType.string),
+        SchemaProperty('publicationDate', RealmPropertyType.timestamp),
+        SchemaProperty('distributionState', RealmPropertyType.string),
+        SchemaProperty('distributionLinkText', RealmPropertyType.string),
+        SchemaProperty('distributionLinkUrl', RealmPropertyType.string),
+        SchemaProperty('distributionText', RealmPropertyType.string),
+        SchemaProperty('distributionOther', RealmPropertyType.string),
+        SchemaProperty(
+          'image',
+          RealmPropertyType.object,
+          optional: true,
+          linkTarget: 'RealmImageDAO',
+        ),
+        SchemaProperty(
+          'prefecture',
+          RealmPropertyType.object,
+          optional: true,
+          linkTarget: 'RealmPrefectureDAO',
+        ),
+        SchemaProperty(
+          'volume',
+          RealmPropertyType.object,
+          optional: true,
+          linkTarget: 'RealmVolumeDAO',
+        ),
+        SchemaProperty(
+          'contacts',
+          RealmPropertyType.object,
           linkTarget: 'RealmContactDAO',
-          collectionType: RealmCollectionType.list),
-    ]);
+          collectionType: RealmCollectionType.list,
+        ),
+      ],
+    );
   }();
 
   @override
