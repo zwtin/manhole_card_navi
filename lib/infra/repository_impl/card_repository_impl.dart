@@ -7,6 +7,7 @@ import 'package:realm/realm.dart';
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/inquired_master_version.dart';
 import '/domain/entity/manhole_card.dart';
+import '/domain/entity/manhole_card_distribution_state.dart';
 import '/domain/entity/manhole_card_contact.dart';
 import '/domain/entity/manhole_card_contacts.dart';
 import '/domain/entity/manhole_card_image.dart';
@@ -87,7 +88,7 @@ class CardRepositoryImpl implements CardRepository {
                 doc['publication_date'] as String,
               ),
               contacts: contacts,
-              distributionState: ManholeCardDistributionState.values.byName(
+              distributionState: ManholeCardDistributionState.fromString(
                 doc['distribution_state'] as String,
               ),
               distributionLinkText: doc['distribution_link_text'] as String,

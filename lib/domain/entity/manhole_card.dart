@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '/domain/entity/manhole_card_contacts.dart';
+import '/domain/entity/manhole_card_distribution_state.dart';
 import '/domain/entity/manhole_card_image.dart';
 import '/domain/entity/manhole_card_prefecture.dart';
 import '/domain/entity/manhole_card_volume.dart';
@@ -28,8 +29,3 @@ abstract class ManholeCard with _$ManholeCard {
   const ManholeCard._();
 }
 
-enum ManholeCardDistributionState {
-  distributing,
-  stopped,
-  notClear,
-}

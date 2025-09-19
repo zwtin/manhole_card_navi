@@ -50,7 +50,7 @@ $Res call({
 });
 
 
-$ManholeCardContactsCopyWith<$Res> get contacts;$ManholeCardImageCopyWith<$Res> get image;$ManholeCardPrefectureCopyWith<$Res> get prefecture;$ManholeCardVolumeCopyWith<$Res> get volume;
+$ManholeCardDistributionStateCopyWith<$Res> get distributionState;$ManholeCardContactsCopyWith<$Res> get contacts;$ManholeCardImageCopyWith<$Res> get image;$ManholeCardPrefectureCopyWith<$Res> get prefecture;$ManholeCardVolumeCopyWith<$Res> get volume;
 
 }
 /// @nodoc
@@ -83,6 +83,15 @@ as ManholeCardVolume,
   ));
 }
 /// Create a copy of ManholeCard
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ManholeCardDistributionStateCopyWith<$Res> get distributionState {
+  
+  return $ManholeCardDistributionStateCopyWith<$Res>(_self.distributionState, (value) {
+    return _then(_self.copyWith(distributionState: value));
+  });
+}/// Create a copy of ManholeCard
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -178,7 +187,7 @@ $Res call({
 });
 
 
-@override $ManholeCardContactsCopyWith<$Res> get contacts;@override $ManholeCardImageCopyWith<$Res> get image;@override $ManholeCardPrefectureCopyWith<$Res> get prefecture;@override $ManholeCardVolumeCopyWith<$Res> get volume;
+@override $ManholeCardDistributionStateCopyWith<$Res> get distributionState;@override $ManholeCardContactsCopyWith<$Res> get contacts;@override $ManholeCardImageCopyWith<$Res> get image;@override $ManholeCardPrefectureCopyWith<$Res> get prefecture;@override $ManholeCardVolumeCopyWith<$Res> get volume;
 
 }
 /// @nodoc
@@ -212,6 +221,15 @@ as ManholeCardVolume,
 }
 
 /// Create a copy of ManholeCard
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ManholeCardDistributionStateCopyWith<$Res> get distributionState {
+  
+  return $ManholeCardDistributionStateCopyWith<$Res>(_self.distributionState, (value) {
+    return _then(_self.copyWith(distributionState: value));
+  });
+}/// Create a copy of ManholeCard
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')

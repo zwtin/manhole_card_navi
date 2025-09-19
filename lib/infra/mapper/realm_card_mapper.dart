@@ -1,4 +1,5 @@
 import '/domain/entity/manhole_card.dart';
+import '/domain/entity/manhole_card_distribution_state.dart';
 import '/infra/dao/realm_card_dao.dart';
 import '/infra/dao/realm_image_dao.dart';
 import '/infra/dao/realm_prefecture_dao.dart';
@@ -18,7 +19,7 @@ class RealmCardMapper {
       longitude: dao.longitude,
       name: dao.name,
       publicationDate: dao.publicationDate,
-      distributionState: ManholeCardDistributionState.values.byName(
+      distributionState: ManholeCardDistributionState.fromString(
         dao.distributionState,
       ),
       distributionLinkText: dao.distributionLinkText,
