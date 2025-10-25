@@ -8,7 +8,7 @@ sealed class ManholeCardDistributionState with _$ManholeCardDistributionState {
   const factory ManholeCardDistributionState.stopped() = Stopped;
   const factory ManholeCardDistributionState.notClear() = NotClear;
 
-  static ManholeCardDistributionState fromString(String value) {
+  factory ManholeCardDistributionState.fromString(String value) {
     switch (value) {
       case 'distributing':
         return const ManholeCardDistributionState.distributing();
@@ -17,12 +17,15 @@ sealed class ManholeCardDistributionState with _$ManholeCardDistributionState {
       case 'notClear':
         return const ManholeCardDistributionState.notClear();
       default:
-        throw ArgumentError('Unknown ManholeCardDistributionState value: $value');
+        throw ArgumentError(
+          'Unknown ManholeCardDistributionState value: $value',
+        );
     }
   }
 }
 
-extension ManholeCardDistributionStateExtension on ManholeCardDistributionState {
+extension ManholeCardDistributionStateExtension
+    on ManholeCardDistributionState {
   String toStringValue() {
     switch (runtimeType) {
       case const (Distributing):
@@ -32,7 +35,9 @@ extension ManholeCardDistributionStateExtension on ManholeCardDistributionState 
       case const (NotClear):
         return 'notClear';
       default:
-        throw StateError('Unknown ManholeCardDistributionState type: $runtimeType');
+        throw StateError(
+          'Unknown ManholeCardDistributionState type: $runtimeType',
+        );
     }
   }
 }
