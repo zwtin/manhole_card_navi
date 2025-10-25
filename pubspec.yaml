@@ -79,7 +79,7 @@ dependencies:
 
   introduction_screen: ^3.1.17
 
-  google_maps_flutter: ^2.12.2
+  google_maps_flutter: ^2.13.1
 
   intl: ^0.20.2
 
