@@ -1260,34 +1260,34 @@ packages:
     dependency: "direct main"
     description:
       name: realm
-      sha256: "05f3ebd928d301880fbf17cc4b793db59a5f56b4a373e8e3a66c56676afed24d"
+      sha256: "475b9635c781fe10b898447e86cf979e36966caefd1dd16efd53a3f03bbe30a6"
       url: "https://pub.dev"
     source: hosted
-    version: "20.1.1"
+    version: "20.2.0"
   realm_common:
     dependency: transitive
     description:
       name: realm_common
-      sha256: "738db1835d1d79d4ea73c6dc037d54a0062a26fb1c3fa6c5280b56e6d8d927cc"
+      sha256: efa7ddac1c31c5abfb4d43f74376ffacfc3f6193a83847969955e2dc4d7908b7
       url: "https://pub.dev"
     source: hosted
-    version: "20.1.1"
+    version: "20.2.0"
   realm_dart:
     dependency: transitive
     description:
       name: realm_dart
-      sha256: "6b6856f1f53ab30b9891355a38f064fb34829657677de2ec9f53157b257da4cb"
+      sha256: "6657fda24dbde1ba749730063c9152330d155536866e73056950d481ff0bed5c"
       url: "https://pub.dev"
     source: hosted
-    version: "20.1.1"
+    version: "20.2.0"
   realm_generator:
     dependency: transitive
     description:
       name: realm_generator
-      sha256: "4c9668f8e24601605480185fc38a03ccd83a4221961745d4f64aa3dca08263cc"
+      sha256: c2c90ad42e90865ed3becb864966c90d57384cb8d489135747548e1837a0dfc9
       url: "https://pub.dev"
     source: hosted
-    version: "20.1.1"
+    version: "20.2.0"
   rflutter_alert:
     dependency: "direct main"
     description:

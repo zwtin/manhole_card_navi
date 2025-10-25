@@ -58,7 +58,7 @@ dependencies:
   json_annotation: ^4.9.0
 
   # For local database
-  realm: ^20.1.1
+  realm: ^20.2.0
 
   # For bottom navigation bar
   convex_bottom_bar: ^3.2.0
