@@ -21,18 +21,13 @@ class DetailCardViewDataMapper {
   ) async {
     final cardDTO = parameter['cardDTO'] as CardDTO;
     final alreadyGet = parameter['alreadyGet'] as bool;
-    final String imageUrl;
-    if (alreadyGet) {
-      imageUrl = cardDTO.colorImageUrl;
-    } else {
-      imageUrl = cardDTO.grayImageUrl;
-    }
 
     final dateFormatter = DateFormat('yyyy/MM/dd');
 
     return DetailCardViewData(
       id: cardDTO.id,
-      imageUrl: imageUrl,
+      imageUrl: cardDTO.colorImageUrl,
+      alreadyGet: alreadyGet,
       name: cardDTO.name,
       prefecture: cardDTO.prefectureName,
       volume: cardDTO.volumeName,

@@ -48,8 +48,8 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
         return ListCardDTO(
           id: dao.id,
           name: dao.name,
-          colorImageUrl: dao.image?.colorResized ?? '',
-          grayImageUrl: dao.image?.grayResized ?? '',
+          colorImageUrl: dao.image?.colorOriginal ?? '',
+          grayImageUrl: dao.image?.colorOriginal ?? '',
           prefectureId: dao.prefecture?.id ?? '',
           prefectureName: dao.prefecture?.name ?? '',
           volumeId: dao.volume?.id ?? '',

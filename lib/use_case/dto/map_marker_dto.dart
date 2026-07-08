@@ -8,6 +8,7 @@ abstract class MapMarkerDTO with _$MapMarkerDTO {
     required String cardId,
     required String colorImageUrl,
     required String grayImageUrl,
+    required String distributionState,
     required double latitude,
     required double longitude,
   }) = _MapMarkerDTO;

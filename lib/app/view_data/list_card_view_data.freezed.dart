@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ListCardViewData {
 
- String get id; String get imageUrl; String get name; String get volume; String get publicationDate;
+ String get id; String get imageUrl; bool get alreadyGet; String get name; String get volume; String get publicationDate;
 /// Create a copy of ListCardViewData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $ListCardViewDataCopyWith<ListCardViewData> get copyWith => _$ListCardViewDataCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListCardViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.name, name) || other.name == name)&&(identical(other.volume, volume) || other.volume == volume)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListCardViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.alreadyGet, alreadyGet) || other.alreadyGet == alreadyGet)&&(identical(other.name, name) || other.name == name)&&(identical(other.volume, volume) || other.volume == volume)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,imageUrl,name,volume,publicationDate);
+int get hashCode => Object.hash(runtimeType,id,imageUrl,alreadyGet,name,volume,publicationDate);
 
 @override
 String toString() {
-  return 'ListCardViewData(id: $id, imageUrl: $imageUrl, name: $name, volume: $volume, publicationDate: $publicationDate)';
+  return 'ListCardViewData(id: $id, imageUrl: $imageUrl, alreadyGet: $alreadyGet, name: $name, volume: $volume, publicationDate: $publicationDate)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $ListCardViewDataCopyWith<$Res>  {
   factory $ListCardViewDataCopyWith(ListCardViewData value, $Res Function(ListCardViewData) _then) = _$ListCardViewDataCopyWithImpl;
 @useResult
 $Res call({
- String id, String imageUrl, String name, String volume, String publicationDate
+ String id, String imageUrl, bool alreadyGet, String name, String volume, String publicationDate
 });
 
 
@@ -63,11 +63,12 @@ class _$ListCardViewDataCopyWithImpl<$Res>
 
 /// Create a copy of ListCardViewData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? imageUrl = null,Object? name = null,Object? volume = null,Object? publicationDate = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? imageUrl = null,Object? alreadyGet = null,Object? name = null,Object? volume = null,Object? publicationDate = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,alreadyGet: null == alreadyGet ? _self.alreadyGet : alreadyGet // ignore: cast_nullable_to_non_nullable
+as bool,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,volume: null == volume ? _self.volume : volume // ignore: cast_nullable_to_non_nullable
 as String,publicationDate: null == publicationDate ? _self.publicationDate : publicationDate // ignore: cast_nullable_to_non_nullable
 as String,
@@ -81,11 +82,12 @@ as String,
 
 
 class _ListCardViewData extends ListCardViewData {
-  const _ListCardViewData({required this.id, required this.imageUrl, required this.name, required this.volume, required this.publicationDate}): super._();
+  const _ListCardViewData({required this.id, required this.imageUrl, required this.alreadyGet, required this.name, required this.volume, required this.publicationDate}): super._();
   
 
 @override final  String id;
 @override final  String imageUrl;
+@override final  bool alreadyGet;
 @override final  String name;
 @override final  String volume;
 @override final  String publicationDate;
@@ -100,16 +102,16 @@ _$ListCardViewDataCopyWith<_ListCardViewData> get copyWith => __$ListCardViewDat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListCardViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.name, name) || other.name == name)&&(identical(other.volume, volume) || other.volume == volume)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListCardViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.alreadyGet, alreadyGet) || other.alreadyGet == alreadyGet)&&(identical(other.name, name) || other.name == name)&&(identical(other.volume, volume) || other.volume == volume)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,imageUrl,name,volume,publicationDate);
+int get hashCode => Object.hash(runtimeType,id,imageUrl,alreadyGet,name,volume,publicationDate);
 
 @override
 String toString() {
-  return 'ListCardViewData(id: $id, imageUrl: $imageUrl, name: $name, volume: $volume, publicationDate: $publicationDate)';
+  return 'ListCardViewData(id: $id, imageUrl: $imageUrl, alreadyGet: $alreadyGet, name: $name, volume: $volume, publicationDate: $publicationDate)';
 }
 
 
@@ -120,7 +122,7 @@ abstract mixin class _$ListCardViewDataCopyWith<$Res> implements $ListCardViewDa
   factory _$ListCardViewDataCopyWith(_ListCardViewData value, $Res Function(_ListCardViewData) _then) = __$ListCardViewDataCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String imageUrl, String name, String volume, String publicationDate
+ String id, String imageUrl, bool alreadyGet, String name, String volume, String publicationDate
 });
 
 
@@ -137,11 +139,12 @@ class __$ListCardViewDataCopyWithImpl<$Res>
 
 /// Create a copy of ListCardViewData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? imageUrl = null,Object? name = null,Object? volume = null,Object? publicationDate = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? imageUrl = null,Object? alreadyGet = null,Object? name = null,Object? volume = null,Object? publicationDate = null,}) {
   return _then(_ListCardViewData(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,alreadyGet: null == alreadyGet ? _self.alreadyGet : alreadyGet // ignore: cast_nullable_to_non_nullable
+as bool,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,volume: null == volume ? _self.volume : volume // ignore: cast_nullable_to_non_nullable
 as String,publicationDate: null == publicationDate ? _self.publicationDate : publicationDate // ignore: cast_nullable_to_non_nullable
 as String,

@@ -15,6 +15,9 @@ class $AssetsImagesGen {
   /// Directory path: assets/images/license
   $AssetsImagesLicenseGen get license => const $AssetsImagesLicenseGen();
 
+  /// Directory path: assets/images/markers
+  $AssetsImagesMarkersGen get markers => const $AssetsImagesMarkersGen();
+
   /// Directory path: assets/images/terms
   $AssetsImagesTermsGen get terms => const $AssetsImagesTermsGen();
 
@@ -41,6 +44,25 @@ class $AssetsImagesLicenseGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [icon];
+}
+
+class $AssetsImagesMarkersGen {
+  const $AssetsImagesMarkersGen();
+
+  /// File path: assets/images/markers/frame_green.png
+  AssetGenImage get frameGreen =>
+      const AssetGenImage('assets/images/markers/frame_green.png');
+
+  /// File path: assets/images/markers/frame_red.png
+  AssetGenImage get frameRed =>
+      const AssetGenImage('assets/images/markers/frame_red.png');
+
+  /// File path: assets/images/markers/frame_yellow.png
+  AssetGenImage get frameYellow =>
+      const AssetGenImage('assets/images/markers/frame_yellow.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [frameGreen, frameRed, frameYellow];
 }
 
 class $AssetsImagesTermsGen {

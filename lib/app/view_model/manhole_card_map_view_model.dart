@@ -8,6 +8,7 @@ import 'package:logger/logger.dart';
 
 import '/app/mapper/map_markers_view_data_mapper.dart';
 import '/app/provider/alert_provider.dart';
+import '/app/service/marker_icon_builder.dart';
 import '/app/provider/pv_sender_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
@@ -77,6 +78,10 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   );
   bool myLocationEnabled = false;
   MapMarkersViewData markersViewData = const MapMarkersViewData(list: []);
+
+  /// マーカー生成の世代番号。生成中に新しい再読み込みが始まったら、古い世代の
+  /// プログレッシブ通知・最終結果を破棄するために使う。
+  int _markerGeneration = 0;
   MapState mapState = MapState.distribution;
   bool isShowModal = false;
   final List<MapMarkerDTO> _positionMarkerDTOList = [];
@@ -88,6 +93,9 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   _alreadyGetCardStreamSubscription;
 
   Future<void> onLoad() async {
+    // 枠 PNG のデコードを先行させ、最初のマーカー合成の待ちを減らす。
+    // 初期化フローを塞がないよう await しない。
+    unawaited(MarkerIconBuilder.preloadFrames());
     _ref.read(tabKeyStorageProvider).setMapKey(_key);
     _ref.read(tabKeyStorageProvider).setTabKey(0, _key);
     await onCameBack();
@@ -285,6 +293,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     _alreadyGetCardStreamSubscription = _alreadyGetCardQueryService
         .getStream()
         .listen((dtoList) async {
+          final generation = ++_markerGeneration;
           final newViewData = await MapMarkersViewDataMapper.convertToViewData(
             mapMarkerDTOList:
                 mapState == MapState.position
@@ -292,8 +301,18 @@ class ManholeCardMapViewModel extends ChangeNotifier {
                     : _distributionMarkerDTOList,
             alreadyGetCardDTOList: dtoList,
             centerCoordinate: _position,
+            onPartial: (partial) {
+              // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
+              if (generation != _markerGeneration) {
+                return;
+              }
+              markersViewData = partial;
+              notifyListeners();
+            },
           );
-          if (!newViewData.isEmpty) {
+          // 空結果でも最新世代なら反映する（近傍にマーカーが無い領域へ移動した
+          // ときに古いマーカーを消すため）。
+          if (generation == _markerGeneration) {
             markersViewData = newViewData;
             notifyListeners();
           }
@@ -303,7 +322,19 @@ class ManholeCardMapViewModel extends ChangeNotifier {
         });
   }
 
+  /// 最後にマーカー再生成した「モード + 中心座標」。同じ状態での重複再生成
+  /// （移動していない onCameraIdle や onCameraMove/Idle の重複）を防ぐ。
+  String? _lastReloadKey;
+
   Future<void> _reloadMarkerViewData() async {
+    final reloadKey =
+        '${mapState.name}_${_position.latitude}_${_position.longitude}';
+    if (reloadKey == _lastReloadKey) {
+      return;
+    }
+    _lastReloadKey = reloadKey;
+
+    final generation = ++_markerGeneration;
     final newViewData = await MapMarkersViewDataMapper.convertToViewData(
       mapMarkerDTOList:
           mapState == MapState.position
@@ -311,8 +342,18 @@ class ManholeCardMapViewModel extends ChangeNotifier {
               : _distributionMarkerDTOList,
       alreadyGetCardDTOList: _alreadyGetCardDTOList,
       centerCoordinate: _position,
+      onPartial: (partial) {
+        // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
+        if (generation != _markerGeneration) {
+          return;
+        }
+        markersViewData = partial;
+        notifyListeners();
+      },
     );
-    if (!newViewData.isEmpty) {
+    // 空結果でも最新世代なら反映する（近傍にマーカーが無い領域へ移動したときに
+    // 古いマーカーを消すため）。
+    if (generation == _markerGeneration) {
       markersViewData = newViewData;
       notifyListeners();
     }

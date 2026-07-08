@@ -47,33 +47,15 @@ class DistributionCardsQueryServiceImpl
 
       final dtoList = <MapMarkerDTO>[];
       for (final dao in daoList) {
-        final String colorImageUrl;
-        final String grayImageUrl;
-        switch (dao.distributionState) {
-          case 'distributing':
-            colorImageUrl = dao.image?.colorFrameGreen ?? '';
-            grayImageUrl = dao.image?.grayFrameGreen ?? '';
-            break;
-          case 'stopped':
-            colorImageUrl = dao.image?.colorFrameRed ?? '';
-            grayImageUrl = dao.image?.grayFrameRed ?? '';
-            break;
-          case 'notClear':
-            colorImageUrl = dao.image?.colorFrameYellow ?? '';
-            grayImageUrl = dao.image?.grayFrameYellow ?? '';
-            break;
-          default:
-            colorImageUrl = dao.image?.colorFrameYellow ?? '';
-            grayImageUrl = dao.image?.grayFrameYellow ?? '';
-            break;
-        }
+        final colorImageUrl = dao.image?.colorOriginal ?? '';
 
         for (final contact in dao.contacts) {
           dtoList.add(
             MapMarkerDTO(
               cardId: dao.id,
               colorImageUrl: colorImageUrl,
-              grayImageUrl: grayImageUrl,
+              grayImageUrl: colorImageUrl,
+              distributionState: dao.distributionState,
               latitude: contact.latitude,
               longitude: contact.longitude,
             ),

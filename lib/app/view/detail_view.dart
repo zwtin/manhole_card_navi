@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 import '/app/view_model/detail_view_model.dart';
+import '/app/widget/card_image.dart';
 import '/app/widget/common_widget.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/pv_sender_widget.dart';
@@ -73,6 +74,21 @@ class DetailView extends CommonWidget {
                                       final heroTag = const Uuid().v4();
                                       return GestureDetector(
                                         onTap: () async {
+                                          // 画像拡大（PhotoView）で使う原寸画像の
+                                          // デコード完了を待ってから遷移する。
+                                          // 遷移開始時に PhotoView が即 Hero を
+                                          // 構築でき、初回でも Hero が成立する。
+                                          // 先読みに失敗しても遷移は続行する。
+                                          try {
+                                            await precacheImage(
+                                              CachedNetworkImageProvider(
+                                                viewModel.viewData.imageUrl,
+                                              ),
+                                              context,
+                                            );
+                                          } on Exception {
+                                            // 先読み失敗時はそのまま遷移する。
+                                          }
                                           await ref
                                               .read(
                                                   detailViewModelProvider(key))
@@ -80,15 +96,24 @@ class DetailView extends CommonWidget {
                                         },
                                         child: Hero(
                                           tag: heroTag,
+                                          flightShuttleBuilder:
+                                              CardImage.heroFlightShuttleBuilder(
+                                            alreadyGet:
+                                                viewModel.viewData.alreadyGet,
+                                          ),
                                           child: SizedBox(
                                             width: 130,
                                             height: 180,
-                                            child: CachedNetworkImage(
+                                            // memCacheWidth を指定せず原寸デコード
+                                            // する。画像拡大（PhotoView）も原寸
+                                            // デコードのため、デコード済みビット
+                                            // マップが共有され、初回タップでも
+                                            // Hero 遷移が成立する。
+                                            child: CardImage(
                                               imageUrl:
                                                   viewModel.viewData.imageUrl,
-                                              fadeInDuration: const Duration(
-                                                microseconds: 0,
-                                              ),
+                                              alreadyGet:
+                                                  viewModel.viewData.alreadyGet,
                                             ),
                                           ),
                                         ),

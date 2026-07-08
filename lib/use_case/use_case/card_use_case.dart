@@ -51,7 +51,7 @@ class CardUseCase {
         id: card.id,
         name: card.name,
         colorImageUrl: card.image.colorOriginal,
-        grayImageUrl: card.image.grayOriginal,
+        grayImageUrl: card.image.colorOriginal,
         latitude: card.latitude,
         longitude: card.longitude,
         prefectureId: card.prefecture.id,

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MapMarkerDTO {
 
- String get cardId; String get colorImageUrl; String get grayImageUrl; double get latitude; double get longitude;
+ String get cardId; String get colorImageUrl; String get grayImageUrl; String get distributionState; double get latitude; double get longitude;
 /// Create a copy of MapMarkerDTO
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $MapMarkerDTOCopyWith<MapMarkerDTO> get copyWith => _$MapMarkerDTOCopyWithImpl<M
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MapMarkerDTO&&(identical(other.cardId, cardId) || other.cardId == cardId)&&(identical(other.colorImageUrl, colorImageUrl) || other.colorImageUrl == colorImageUrl)&&(identical(other.grayImageUrl, grayImageUrl) || other.grayImageUrl == grayImageUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MapMarkerDTO&&(identical(other.cardId, cardId) || other.cardId == cardId)&&(identical(other.colorImageUrl, colorImageUrl) || other.colorImageUrl == colorImageUrl)&&(identical(other.grayImageUrl, grayImageUrl) || other.grayImageUrl == grayImageUrl)&&(identical(other.distributionState, distributionState) || other.distributionState == distributionState)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,cardId,colorImageUrl,grayImageUrl,latitude,longitude);
+int get hashCode => Object.hash(runtimeType,cardId,colorImageUrl,grayImageUrl,distributionState,latitude,longitude);
 
 @override
 String toString() {
-  return 'MapMarkerDTO(cardId: $cardId, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, latitude: $latitude, longitude: $longitude)';
+  return 'MapMarkerDTO(cardId: $cardId, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, distributionState: $distributionState, latitude: $latitude, longitude: $longitude)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $MapMarkerDTOCopyWith<$Res>  {
   factory $MapMarkerDTOCopyWith(MapMarkerDTO value, $Res Function(MapMarkerDTO) _then) = _$MapMarkerDTOCopyWithImpl;
 @useResult
 $Res call({
- String cardId, String colorImageUrl, String grayImageUrl, double latitude, double longitude
+ String cardId, String colorImageUrl, String grayImageUrl, String distributionState, double latitude, double longitude
 });
 
 
@@ -63,11 +63,12 @@ class _$MapMarkerDTOCopyWithImpl<$Res>
 
 /// Create a copy of MapMarkerDTO
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? cardId = null,Object? colorImageUrl = null,Object? grayImageUrl = null,Object? latitude = null,Object? longitude = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? cardId = null,Object? colorImageUrl = null,Object? grayImageUrl = null,Object? distributionState = null,Object? latitude = null,Object? longitude = null,}) {
   return _then(_self.copyWith(
 cardId: null == cardId ? _self.cardId : cardId // ignore: cast_nullable_to_non_nullable
 as String,colorImageUrl: null == colorImageUrl ? _self.colorImageUrl : colorImageUrl // ignore: cast_nullable_to_non_nullable
 as String,grayImageUrl: null == grayImageUrl ? _self.grayImageUrl : grayImageUrl // ignore: cast_nullable_to_non_nullable
+as String,distributionState: null == distributionState ? _self.distributionState : distributionState // ignore: cast_nullable_to_non_nullable
 as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double,
@@ -81,12 +82,13 @@ as double,
 
 
 class _MapMarkerDTO extends MapMarkerDTO {
-  const _MapMarkerDTO({required this.cardId, required this.colorImageUrl, required this.grayImageUrl, required this.latitude, required this.longitude}): super._();
+  const _MapMarkerDTO({required this.cardId, required this.colorImageUrl, required this.grayImageUrl, required this.distributionState, required this.latitude, required this.longitude}): super._();
   
 
 @override final  String cardId;
 @override final  String colorImageUrl;
 @override final  String grayImageUrl;
+@override final  String distributionState;
 @override final  double latitude;
 @override final  double longitude;
 
@@ -100,16 +102,16 @@ _$MapMarkerDTOCopyWith<_MapMarkerDTO> get copyWith => __$MapMarkerDTOCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MapMarkerDTO&&(identical(other.cardId, cardId) || other.cardId == cardId)&&(identical(other.colorImageUrl, colorImageUrl) || other.colorImageUrl == colorImageUrl)&&(identical(other.grayImageUrl, grayImageUrl) || other.grayImageUrl == grayImageUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MapMarkerDTO&&(identical(other.cardId, cardId) || other.cardId == cardId)&&(identical(other.colorImageUrl, colorImageUrl) || other.colorImageUrl == colorImageUrl)&&(identical(other.grayImageUrl, grayImageUrl) || other.grayImageUrl == grayImageUrl)&&(identical(other.distributionState, distributionState) || other.distributionState == distributionState)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,cardId,colorImageUrl,grayImageUrl,latitude,longitude);
+int get hashCode => Object.hash(runtimeType,cardId,colorImageUrl,grayImageUrl,distributionState,latitude,longitude);
 
 @override
 String toString() {
-  return 'MapMarkerDTO(cardId: $cardId, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, latitude: $latitude, longitude: $longitude)';
+  return 'MapMarkerDTO(cardId: $cardId, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, distributionState: $distributionState, latitude: $latitude, longitude: $longitude)';
 }
 
 
@@ -120,7 +122,7 @@ abstract mixin class _$MapMarkerDTOCopyWith<$Res> implements $MapMarkerDTOCopyWi
   factory _$MapMarkerDTOCopyWith(_MapMarkerDTO value, $Res Function(_MapMarkerDTO) _then) = __$MapMarkerDTOCopyWithImpl;
 @override @useResult
 $Res call({
- String cardId, String colorImageUrl, String grayImageUrl, double latitude, double longitude
+ String cardId, String colorImageUrl, String grayImageUrl, String distributionState, double latitude, double longitude
 });
 
 
@@ -137,11 +139,12 @@ class __$MapMarkerDTOCopyWithImpl<$Res>
 
 /// Create a copy of MapMarkerDTO
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? cardId = null,Object? colorImageUrl = null,Object? grayImageUrl = null,Object? latitude = null,Object? longitude = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? cardId = null,Object? colorImageUrl = null,Object? grayImageUrl = null,Object? distributionState = null,Object? latitude = null,Object? longitude = null,}) {
   return _then(_MapMarkerDTO(
 cardId: null == cardId ? _self.cardId : cardId // ignore: cast_nullable_to_non_nullable
 as String,colorImageUrl: null == colorImageUrl ? _self.colorImageUrl : colorImageUrl // ignore: cast_nullable_to_non_nullable
 as String,grayImageUrl: null == grayImageUrl ? _self.grayImageUrl : grayImageUrl // ignore: cast_nullable_to_non_nullable
+as String,distributionState: null == distributionState ? _self.distributionState : distributionState // ignore: cast_nullable_to_non_nullable
 as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double,

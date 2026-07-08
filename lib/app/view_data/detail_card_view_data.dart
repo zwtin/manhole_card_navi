@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '/app/view_data/detail_contact_view_data.dart';
@@ -11,6 +9,7 @@ abstract class DetailCardViewData with _$DetailCardViewData {
   const factory DetailCardViewData({
     required String id,
     required String imageUrl,
+    required bool alreadyGet,
     required String name,
     required String prefecture,
     required String volume,

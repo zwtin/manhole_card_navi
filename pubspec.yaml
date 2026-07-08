@@ -101,6 +101,8 @@ dependencies:
 
   cached_network_image: ^3.4.1
 
+  flutter_cache_manager: ^3.4.1
+
   flutter_native_splash: ^2.4.6
 
 dev_dependencies:
@@ -138,6 +140,7 @@ flutter:
   assets:
     - assets/images/icons/
     - assets/images/license/
+    - assets/images/markers/
     - assets/images/terms/
     - assets/images/tutorials/
     - assets/lotties/
