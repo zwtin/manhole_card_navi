@@ -8,15 +8,6 @@ class RealmImageMapper {
     return ManholeCardImage(
       id: dao.id,
       colorOriginal: dao.colorOriginal,
-      colorResized: dao.colorResized,
-      colorFrameGreen: dao.colorFrameGreen,
-      colorFrameRed: dao.colorFrameRed,
-      colorFrameYellow: dao.colorFrameYellow,
-      grayOriginal: dao.grayOriginal,
-      grayResized: dao.grayResized,
-      grayFrameGreen: dao.grayFrameGreen,
-      grayFrameRed: dao.grayFrameRed,
-      grayFrameYellow: dao.grayFrameYellow,
     );
   }
 
@@ -26,15 +17,6 @@ class RealmImageMapper {
     return RealmImageDAO(
       entity.id,
       entity.colorOriginal,
-      entity.colorResized,
-      entity.colorFrameGreen,
-      entity.colorFrameRed,
-      entity.colorFrameYellow,
-      entity.grayOriginal,
-      entity.grayResized,
-      entity.grayFrameGreen,
-      entity.grayFrameRed,
-      entity.grayFrameYellow,
     );
   }
 }

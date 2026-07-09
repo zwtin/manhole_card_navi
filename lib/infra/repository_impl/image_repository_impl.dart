@@ -40,15 +40,6 @@ class ImageRepositoryImpl implements ImageRepository {
           return ManholeCardImage(
             id: doc['id'] as String,
             colorOriginal: doc['color_original'] as String,
-            colorResized: doc['color_resized'] as String,
-            colorFrameGreen: doc['color_frame_green'] as String,
-            colorFrameRed: doc['color_frame_red'] as String,
-            colorFrameYellow: doc['color_frame_yellow'] as String,
-            grayOriginal: doc['gray_original'] as String,
-            grayResized: doc['gray_resized'] as String,
-            grayFrameGreen: doc['gray_frame_green'] as String,
-            grayFrameRed: doc['gray_frame_red'] as String,
-            grayFrameYellow: doc['gray_frame_yellow'] as String,
           );
         },
       ).toList();

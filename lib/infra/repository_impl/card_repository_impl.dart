@@ -98,15 +98,6 @@ class CardRepositoryImpl implements CardRepository {
               image: ManholeCardImage(
                 id: doc['image_id'] as String,
                 colorOriginal: '',
-                colorResized: '',
-                colorFrameGreen: '',
-                colorFrameRed: '',
-                colorFrameYellow: '',
-                grayOriginal: '',
-                grayResized: '',
-                grayFrameGreen: '',
-                grayFrameRed: '',
-                grayFrameYellow: '',
               ),
               prefecture: ManholeCardPrefecture(
                 id: doc['prefecture_id'] as String,

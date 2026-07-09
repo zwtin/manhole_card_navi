@@ -34,15 +34,6 @@ class RealmCardMapper {
             RealmImageDAO(
               '',
               '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
             ),
       ),
       prefecture: RealmPrefectureMapper.convertToEntity(

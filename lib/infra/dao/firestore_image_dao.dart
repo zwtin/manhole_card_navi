@@ -8,15 +8,6 @@ abstract class FirestoreImageDAO with _$FirestoreImageDAO {
   const factory FirestoreImageDAO({
     required String id,
     required String colorOriginal,
-    required String colorResized,
-    required String colorFrameGreen,
-    required String colorFrameRed,
-    required String colorFrameYellow,
-    required String grayOriginal,
-    required String grayResized,
-    required String grayFrameGreen,
-    required String grayFrameRed,
-    required String grayFrameYellow,
   }) = _FirestoreImageDAO;
 
   const FirestoreImageDAO._();
