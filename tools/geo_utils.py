@@ -75,6 +75,18 @@ def validate_jp_latlon(lat, lon):
     return False, " / ".join(reasons)
 
 
+# --- Firestore GeoPoint の中間表現 ---
+# master JSON（中間ファイル）では GeoPoint を素の dict と区別する必要がある
+# （素の dict は Firestore の map になってしまうため）。センチネルキーで印を付ける。
+# build_master.py が書き、upload_master_to_firestore.py が読む。両者で共有する。
+GEO_KEY = "_geopoint"
+
+
+def geopoint(lat, lon):
+    """Firestore GeoPoint を表す中間 JSON 表現を返す。"""
+    return {GEO_KEY: {"lat": float(lat), "lon": float(lon)}}
+
+
 if __name__ == "__main__":
     # 簡易自己テスト
     assert abs(parse_dms_string("43°03'44.8\"N") - 43.062444) < 1e-5

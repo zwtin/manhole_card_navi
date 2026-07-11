@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
 """
-master_0003.json を Firestore の master/0003 配下に投入する。
+build_master.py が生成した master JSON を Firestore の master/{version} 配下に投入する。
 
-書き込み先:
-  master/0003                              : {id:"0003", created_at: <省略可>}
-  master/0003/prefectures/{id}             : {id, name}
-  master/0003/volumes/{id}                 : {id, name}
-  master/0003/images/{id}                  : {id, color_original}
-  master/0003/contacts/{id}                : {id,name,name_url,address,phone_number,latitude,longitude,time,time_other,other}
-  master/0003/cards/{id}                   : {id,name,prefecture_id,volume_id,image_id,publication_date,
-                                              latitude,longitude,distribution_state,distribution_text,
-                                              distribution_link_text,distribution_link_url,distribution_other}
-  master/0003/cards/{id}/contact_id/{cid}  : {id}
+書き込み先（新構造・3コレクション）:
+  master/{ver}                  : {id}
+  master/{ver}/prefectures/{id} : {id, name}
+  master/{ver}/volumes/{id}     : {id, name}
+  master/{ver}/cards/{id}       : {
+      id, name, prefecture_id, volume_id, publication_date,
+      location            : GeoPoint      マンホール座標
+      image               : string        master/v{ver}/images/{id}.jpg
+      distribution_place_html : string    配布場所HTML（そのまま）
+      distribution_points : [GeoPoint]    配布場所の座標（0〜複数）
+      stock_html          : string        在庫状況HTML（そのまま）
+      distribution_state  : string        distributing / stopped / notClear
+    }
+
+  ※ 旧構造の contacts / images コレクションと cards/{id}/contact_id サブコレクションは
+    廃止した。配布場所と画像はカードに埋め込む。--replace はそれらの残骸も削除する。
 
 特徴:
   - --target-version で指定したバージョンにだけ書き込む（他バージョンには触れない）
@@ -21,6 +27,7 @@ master_0003.json を Firestore の master/0003 配下に投入する。
       同じバージョンを上書きする際、今回のデータに無い古いカード等が残らないようにする。
       （--replace を付けないと、set は同一IDを上書きするだけで、消えたカードは残る）
   - --dry-run で書き込まず件数のみ表示
+  - GeoPoint / 配列 に対応（to_value 参照）
 
 認証: gcloud アクセストークン
 """
@@ -35,6 +42,8 @@ import urllib.error
 import urllib.parse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from geo_utils import GEO_KEY  # noqa: E402  （GeoPoint センチネルは geo_utils と共有）
 DEFAULT_MASTER_PATH = os.path.join(HERE, "data", "firestore", "master_0003.json")
 DEFAULT_PROJECT = "manhole-card-navi"
 
@@ -49,14 +58,34 @@ def token():
 
 
 def to_value(v):
-    """Python値 -> Firestore REST の Value 表現"""
+    """Python値 -> Firestore REST の Value 表現
+
+    対応する型:
+      None / bool / int / float / str
+      GeoPoint : {"_geopoint": {"lat": <float>, "lon": <float>}}
+      array    : list（要素は再帰的に変換。GeoPoint の配列も可）
+      map      : dict（GEO_KEY を持たないもの）
+    """
+    if v is None:
+        return {"nullValue": None}
+    # bool は int のサブクラスなので先に判定する
     if isinstance(v, bool):
         return {"booleanValue": v}
+    if isinstance(v, dict):
+        if GEO_KEY in v:
+            g = v[GEO_KEY]
+            return {"geoPointValue": {
+                "latitude": float(g["lat"]),
+                "longitude": float(g["lon"]),
+            }}
+        return {"mapValue": {"fields": {k: to_value(x) for k, x in v.items()}}}
+    if isinstance(v, list):
+        return {"arrayValue": {"values": [to_value(x) for x in v]}}
     if isinstance(v, int):
         return {"integerValue": str(v)}
     if isinstance(v, float):
         return {"doubleValue": v}
-    return {"stringValue": "" if v is None else str(v)}
+    return {"stringValue": str(v)}
 
 
 def doc_fields(d):
@@ -178,36 +207,23 @@ def main():
     ver = args.target_version
     root = f"master/{ver}"
 
+    # 新構造: cards / prefectures / volumes の3コレクションのみ。
+    # 配布場所（旧 contacts）と画像（旧 images）は card に埋め込むため、
+    # 独立したコレクション・サブコレクションは作らない。
     writes = []
     # master/{ver} ルート
     writes.append(make_write(project, root, {"id": ver}))
-    # prefectures
     for p in data["prefectures"]:
         writes.append(make_write(project, f"{root}/prefectures/{p['id']}", p))
-    # volumes
     for v in data["volumes"]:
         writes.append(make_write(project, f"{root}/volumes/{v['id']}", v))
-    # images
-    for im in data["images"]:
-        writes.append(make_write(project, f"{root}/images/{im['id']}", im))
-    # contacts
-    for c in data["contacts"]:
-        writes.append(make_write(project, f"{root}/contacts/{c['id']}", c))
-    # cards + contact_id サブコレクション
-    n_link = 0
     for card in data["cards"]:
-        cid = card["id"]
-        fields = {k: v for k, v in card.items() if k != "contact_ids"}
-        writes.append(make_write(project, f"{root}/cards/{cid}", fields))
-        for con_id in card.get("contact_ids", []):
-            writes.append(make_write(project, f"{root}/cards/{cid}/contact_id/{con_id}", {"id": con_id}))
-            n_link += 1
+        writes.append(make_write(project, f"{root}/cards/{card['id']}", card))
 
     print(f"投入先プロジェクト: {project}")
     print(f"書き込み対象: master/{ver}")
-    print(f"  prefectures {len(data['prefectures'])} / volumes {len(data['volumes'])} / "
-          f"images {len(data['images'])} / contacts {len(data['contacts'])} / cards {len(data['cards'])}")
-    print(f"  contact_id 紐付け {n_link}")
+    print(f"  cards {len(data['cards'])} / prefectures {len(data['prefectures'])} / "
+          f"volumes {len(data['volumes'])}")
     print(f"  総 write 数: {len(writes)}")
 
     if args.replace:

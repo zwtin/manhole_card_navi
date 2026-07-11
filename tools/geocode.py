@@ -83,21 +83,40 @@ def geocode_one(address, api_key):
     }
 
 
-def collect_addresses(dist):
+def collect_addresses(data):
+    """入力から住所文字列のユニークリストを取り出す。2形式を自動判別する。
+
+    - cards_base.json 形式（list）: 各カードの dist_addresses（AI抽出の確定住所）
+    - distribution_*.json 形式（dict）: card_id -> {locations: [{address}]}（旧形式）
+    """
     addrs = []
     seen = set()
-    for v in dist.values():
-        for loc in v.get("locations", []):
-            a = (loc.get("address") or "").strip()
-            if a and a not in seen:
-                seen.add(a)
-                addrs.append(a)
+
+    def add(a):
+        a = (a or "").strip()
+        if a and a not in seen:
+            seen.add(a)
+            addrs.append(a)
+
+    if isinstance(data, list):
+        # cards_base.json
+        for card in data:
+            for a in card.get("dist_addresses", []):
+                add(a)
+    else:
+        # distribution_*.json（旧形式）
+        for v in data.values():
+            for loc in v.get("locations", []):
+                add(loc.get("address"))
     return addrs
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--input", required=True, help="distribution_*.json")
+    ap.add_argument("--input",
+                    default=os.path.join(HERE, "data", "cards_base.json"),
+                    help="cards_base.json（dist_addresses を使う）または "
+                         "distribution_*.json（旧形式）")
     ap.add_argument("--dry-run", action="store_true", help="APIを呼ばずキャッシュ状況のみ表示")
     ap.add_argument("--sleep", type=float, default=0.05, help="リクエスト間の待機秒")
     ap.add_argument("--retry-failed", action="store_true", help="前回失敗した住所も再試行")
