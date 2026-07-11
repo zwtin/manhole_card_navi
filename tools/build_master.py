@@ -1,20 +1,33 @@
 #!/usr/bin/env python3
 """
-master/0003 として投入する完全なデータセットを生成する。
+新しい master バージョンとして投入する完全なデータセットを生成する。
+
+バージョン番号は --version で指定する（例 0004）。以下 {version} と表記。
 
 構成方針:
-  - 既存 master/0002 の cards / contacts / images / prefectures / volumes を「そのまま引き継ぐ」
-  - 新規76件を追記する:
+  - 既存 master の cards / contacts / images / prefectures / volumes を「そのまま引き継ぐ」
+    （ただし images.color_original は新形式 master/v{version}/images/{id}.jpg に正規化）
+  - 新規カードを追記する:
       * cards      : 新IDで追加。座標・弾数ID・都道府県ID・image_id・distribution_* を設定
-      * contacts   : 新規配布場所を 001545 から連番採番して追加
-      * images     : 新規画像を 001190 から連番採番して追加（color_original = Storage URL）
-      * volumes    : 第27弾(0026)・第28弾(0027) を追加
+      * contacts   : 新規配布場所を連番採番して追加
+      * images     : 新規画像を連番採番して追加
+                     （color_original = Hosting パス master/v{version}/images/{id}.jpg）
+      * volumes    : 新しい弾を追加
       * cards の contact_id 紐付け（サブコレクション）も生成
-  - prefectures は変更なし（既存48件そのまま）
+  - prefectures は変更なし（既存そのまま）
 
-出力: tools/data/firestore/master_0003.json
+カードID・座標:
+  - 新規カードのID・座標は cards_base.json の OCR確定値（ocr_id / ocr_lat_dms /
+    ocr_lon_dms）を優先し、無ければ manhole_coords_new.json にフォールバックする。
+
+画像配信:
+  - 画像は Firebase Hosting（CDN）から配信する。master には配信 URL ではなく
+    Hosting 上のパス（master/v{version}/images/{id}.jpg）のみを持たせ、ベース URL
+    （https://{projectId}.web.app）はアプリ側で付与する。
+
+出力: --out で指定（例 tools/data/firestore/master_{version}.json）
   {
-    "version": "0003",
+    "version": "{version}",
     "prefectures": [...],
     "volumes": [...],
     "images": [...],
@@ -42,21 +55,36 @@ from geo_utils import parse_dms_string, validate_jp_latlon  # noqa: E402
 HERE = os.path.dirname(os.path.abspath(__file__))
 FS = os.path.join(HERE, "data", "firestore")
 DATA = os.path.join(HERE, "data")
-DEFAULT_BUCKET = "manhole-card-navi.appspot.com"
 
 
 def load(path):
     return json.load(open(path, encoding="utf-8"))
 
 
+def image_filename(color_original):
+    """画像の color_original 値からファイル名（{id}.jpg）を取り出す。
+
+    旧形式の GCS 絶対 URL
+    （https://storage.googleapis.com/.../images/color/original/{id}.jpg）でも、
+    新形式のパス（master/v{version}/images/{id}.jpg）でも、末尾のファイル名を返す。
+    """
+    return color_original.rstrip("/").rsplit("/", 1)[-1]
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--bucket", default=DEFAULT_BUCKET,
-                    help="画像URLに使うStorageバケット（開発: manhole-card-navi-dev.appspot.com）")
-    ap.add_argument("--out", default=os.path.join(FS, "master_0003.json"),
-                    help="出力先JSONパス")
+    ap.add_argument("--version", required=True,
+                    help="master バージョン（例 0004）。画像パス master/v{version}/images/ に使う")
+    ap.add_argument("--out", default=None,
+                    help="出力先JSONパス（省略時は data/firestore/master_{version}.json）")
     args = ap.parse_args()
-    storage_original = f"https://storage.googleapis.com/{args.bucket}/images/color/original"
+    if args.out is None:
+        args.out = os.path.join(FS, f"master_{args.version}.json")
+    # 画像は Firebase Hosting から配信する。マスターデータには配信 URL ではなく
+    # Hosting 上のパスのみを持たせ、ベース URL（https://{projectId}.web.app）は
+    # アプリ側で付与する。バージョンをパスに含めることで、バージョン更新のたびに
+    # URL が変わり、クライアントのキャッシュを引かずに画像を差し替えできる。
+    image_dir = f"master/v{args.version}/images"
 
     # --- 既存 master/0002 ---
     ex_cards = load(os.path.join(FS, "cards.json"))
@@ -105,7 +133,13 @@ def main():
             fv = to_float(cc.get(k))
             cc[k] = fv if fv is not None else 0.0
         contacts_out.append(cc)
-    images_out = [dict(i) for i in ex_images]
+    # 既存 images（旧 master から引き継ぐ分）も、color_original を新形式の
+    # Hosting パス master/v{version}/images/{id}.jpg に正規化して引き継ぐ。
+    images_out = []
+    for i in ex_images:
+        ci = dict(i)
+        ci["color_original"] = f"{image_dir}/{image_filename(i['color_original'])}"
+        images_out.append(ci)
 
     cards_out = []
     for c in ex_cards:
@@ -123,11 +157,17 @@ def main():
     # ---- 新規76件を追加 ----
     for card_id, coord in new_coords.items():
         base = cards_base[card_id]
-        fs_id = coord["printed_id"]
+
+        # カードID・座標は OCR確定値（二重読み検証済みの ocr_*）を優先し、
+        # 無ければ従来の manhole_coords_new.json の値にフォールバックする。
+        # ocr_id はカード画像に印字された正規化ID（例 00-101-A001）。
+        fs_id = base.get("ocr_id") or coord["printed_id"]
+        lat_dms = base.get("ocr_lat_dms") or coord["lat_dms"]
+        lon_dms = base.get("ocr_lon_dms") or coord["lon_dms"]
 
         # 座標
-        lat = parse_dms_string(coord["lat_dms"])
-        lon = parse_dms_string(coord["lon_dms"])
+        lat = parse_dms_string(lat_dms)
+        lon = parse_dms_string(lon_dms)
         ok, reason = validate_jp_latlon(lat, lon)
         if not ok:
             warnings.append(f"{card_id} 座標NG: {reason}")
@@ -145,7 +185,7 @@ def main():
         next_image += 1
         images_out.append({
             "id": image_id,
-            "color_original": f"{storage_original}/{fs_id}.jpg",
+            "color_original": f"{image_dir}/{fs_id}.jpg",
         })
 
         # 配布場所（contacts）を新規登録し、contact_id を紐付け
@@ -203,7 +243,7 @@ def main():
     volumes_final = [{"id": k, "name": v} for k, v in sorted(volumes_out.items())]
 
     out = {
-        "version": "0003",
+        "version": args.version,
         "prefectures": prefectures_out,
         "volumes": volumes_final,
         "images": images_out,
@@ -214,8 +254,8 @@ def main():
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
 
-    print(f"master_0003.json 生成完了 -> {out_path}")
-    print(f"  画像バケット: {args.bucket}")
+    print(f"master JSON 生成完了 -> {out_path}")
+    print(f"  画像パス   : {image_dir}/{{id}}.jpg")
     print(f"  cards      : {len(cards_out)} (既存{len(ex_cards)} + 新規{len(new_coords)})")
     print(f"  contacts   : {len(contacts_out)} (既存{len(ex_contacts)} + 新規{len(contacts_out)-len(ex_contacts)})")
     print(f"  images     : {len(images_out)} (既存{len(ex_images)} + 新規{len(images_out)-len(ex_images)})")

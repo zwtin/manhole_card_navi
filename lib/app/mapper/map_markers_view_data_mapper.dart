@@ -3,6 +3,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import '/app/service/image_url_builder.dart';
 import '/app/service/marker_icon_builder.dart';
 import '/app/view_data/map_marker_view_data.dart';
 import '/app/view_data/map_markers_view_data.dart';
@@ -123,7 +124,7 @@ class MapMarkersViewDataMapper {
       id: '${dto.cardId}_${dto.latitude}_${dto.longitude}',
       cardId: dto.cardId,
       icon: icon,
-      imageUrl: dto.colorImageUrl,
+      imageUrl: ImageUrlBuilder.build(dto.colorImageUrl),
       latitude: dto.latitude,
       longitude: dto.longitude,
     );
@@ -179,7 +180,8 @@ class MapMarkersViewDataMapper {
       // 原本画像を DL。http.get はネットワーク待ちの間メイン Isolate を塞が
       // ないため、compute で別 Isolate を立てるより spawn コストがかからない。
       // 縮小デコードと合成（dart:ui）はメイン Isolate で行う必要がある。
-      final originalBytes = await _downloadImage(dto.colorImageUrl);
+      final originalBytes =
+          await _downloadImage(ImageUrlBuilder.build(dto.colorImageUrl));
       if (originalBytes == null || originalBytes.isEmpty) {
         return null;
       }

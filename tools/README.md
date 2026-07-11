@@ -29,10 +29,43 @@ Firestore に投入するための一連のスクリプト群。
 Firestore へ投入する場合はさらに:
 
 ```
-5. build_master_0003.py            既存master(0002) + 新規カード → master_0003.json
-6. upload_images_to_storage.py     新規カード画像を Storage へ（color/original・無加工）
-7. upload_master_to_firestore.py   master_0003.json を Firestore の master/0003 へ
+5. ocr_cards.py                    全カード画像を二重OCR → ID・座標を確定（cards_base.json に ocr_*）
+6. build_master.py            既存master + 新規カード → master_{version}.json（ocr_id ベース）
+7. deploy_images_to_hosting.py     gk-p.jp から画像取得 → {ocr_id}.jpg で Hosting 配置・デプロイ
+8. upload_master_to_firestore.py   master_{version}.json を Firestore の master/{version} へ
 ```
+
+### スキルで実行する（推奨）
+
+一連の作業は Claude Code のスキルにまとめてある。手順を覚えずに実行できる。
+
+- **`/update-master`** — gk-p.jp の最新データで新 master バージョンを発行する（上記1〜8 ＋ Remote Config 案内）。マンホールカードの新弾が出たとき（約3ヶ月ごと）に実行。
+- **`/cleanup-old-images`** — 旧バージョンの画像を Hosting から削除する後片付け。全端末が新バージョンへ移行しきった後に、別タイミングで実行。
+
+### ID・座標の正の情報源は「カード画像のOCR」
+
+カード記載のID（例 `00-101-A001`）と度分秒座標は、カード画像に印字されている。これを正とする。
+
+- **人力データや画像URLからの推定は使わない**（過去の人力IDには誤り・重複があった）。
+- 誤読を防ぐため、全カードを**二重読み**（2エージェント独立読み）し、一致したものだけ確定。
+  不一致は人間が目視で確定する（`ocr_cards.py` が不一致を `out/ocr_conflicts.json` に出す）。
+- 確定値は `cards_base.json` に `ocr_id` / `ocr_lat_dms` / `ocr_lon_dms` として保存し、
+  以降の全処理（build_master・deploy_images）はこの値を使う。
+
+### 画像配信について（Firebase Hosting）
+
+カード画像は **Firebase Hosting（Fastly CDN・10GB/月まで無料）** から配信する。
+
+- master データには配信 URL ではなくパス `master/v{version}/images/{ocr_id}.jpg` のみを保持する。
+  ベース URL（`https://{projectId}.web.app`）はアプリ側で付与するため、開発／本番で
+  自動的に配信先が切り替わる。
+- バージョンをパスに含めることで、master バージョン更新のたびに URL が変わり、
+  アプリのキャッシュ（`cached_network_image`）を引かずに画像を差し替えできる。
+  画像ファイルには `Cache-Control: public, max-age=31536000, immutable` を付与する
+  （`firebase.json` の hosting.headers で設定）。
+- 画像は gk-p.jp から取得して Hosting に配置する（`deploy_images_to_hosting.py`）。
+- 旧バージョンの画像は、全端末が新バージョンへ移行しきるまで残す
+  （`delete_images_from_hosting.py` / `/cleanup-old-images` で後片付け）。
 
 ## セットアップ
 
@@ -91,22 +124,43 @@ python3 tools/build_csv.py --coords manhole_coords_pilot.json --dist distributio
 `cards / contacts / images / prefectures / volumes` の各コレクションと、
 `cards/{id}/contact_id/{cid}` サブコレクション（カード⇔配布場所の紐付け）。
 
+**通常は `/update-master` スキルで実行する**（下記は個別コマンドの参考）。
+
 ```bash
-# 1) 投入データ生成（既存master/0002を引き継ぎ + 新規カードを追記）
-python3 tools/build_master_0003.py
-#    --bucket <bucket>   画像URLに使うStorageバケット
-#    --out <path>        出力先
+# 1) 全カード画像を二重OCR → cards_base.json に ocr_id / ocr_lat_dms / ocr_lon_dms を確定
+#    （2エージェント独立読み → ocr_raw.json を作り、以下を実行）
+python3 tools/ocr_cards.py --dry-run   # 確定/不一致の件数
+python3 tools/ocr_cards.py             # 確定分を cards_base.json へ、不一致を out/ocr_conflicts.json へ
+#    不一致は ocr_resolved.json に人手で確定値を書いて再実行
 
-# 2) 新規カード画像を Storage へ（color/original のみ・無加工でアップ）
-python3 tools/upload_images_to_storage.py --bucket manhole-card-navi.appspot.com
-python3 tools/upload_images_to_storage.py --dry-run   # 対象確認のみ
+# 2) 投入データ生成（既存masterを引き継ぎ + 新規カードを ocr_id ベースで追記）
+#    images.color_original は master/v{version}/images/{ocr_id}.jpg 形式で出力される
+python3 tools/build_master.py --version 0004 --out tools/data/firestore/master_0004.json
+#    --version <ver>   master バージョン（画像パスに使う）
 
-# 3) Firestore へ投入（既存versionには触れず新versionを作る・冪等batch write）
+# 3) gk-p.jp から画像取得 → {ocr_id}.jpg で Firebase Hosting に配置
+python3 tools/deploy_images_to_hosting.py --version 0004 --project prod --dry-run  # 件数確認
+python3 tools/deploy_images_to_hosting.py --version 0004 --project prod --deploy   # DL→配置+デプロイ
+
+# 4) Firestore へ投入（指定version以外には触れない・冪等batch write）
+#    --replace: 投入前に master/{version} を全削除。既存バージョンの上書き更新で
+#               古いカードの残存を防ぐ（新規バージョンなら無害なので常に付けてよい）
 python3 tools/upload_master_to_firestore.py \
   --project manhole-card-navi \
-  --input tools/data/firestore/master_0003.json \
-  --target-version 0003
-python3 tools/upload_master_to_firestore.py ... --dry-run   # 件数確認のみ
+  --input tools/data/firestore/master_0004.json \
+  --target-version 0004 --replace
+python3 tools/upload_master_to_firestore.py ... --replace --dry-run   # 件数確認のみ
+
+# 5) Remote Config の inquired_master_version を新バージョンに更新（アプリが新masterを参照）
+```
+
+#### 旧バージョン画像の後片付け（別スキル `/cleanup-old-images`）
+
+全端末が新バージョンへ移行しきった後に、旧バージョンの画像を Hosting から削除する。
+
+```bash
+python3 tools/delete_images_from_hosting.py --version 0002 --project prod --dry-run
+python3 tools/delete_images_from_hosting.py --version 0002 --project prod --deploy
 ```
 
 ### スキーマ上の注意点
@@ -116,8 +170,10 @@ python3 tools/upload_master_to_firestore.py ... --dry-run   # 件数確認のみ
 - `cards.latitude/longitude` は必ず `double` で投入する
   （既存データに経度が整数値のカード（明石=135, 鎌ケ谷=140）があり、
   文字列化しないよう float に正規化している）
-- 画像は既存挙動に合わせ、加工せず原本JPEGをそのまま `images/color/original/{id}.jpg` へ。
-  `frame_*` 等の加工画像はアプリで未使用のためアップしない。
+- 画像は加工せず原本JPEGをそのまま Hosting の `master/v{version}/images/{id}.jpg` へ配置する。
+  `frame_*` 等の加工画像はアプリで未使用のため配置しない。
+- master の `images.color_original` には Hosting 上のパスのみを保持する
+  （配信 URL のベースはアプリ側で付与）。
 
 ## ファイル一覧
 
@@ -128,6 +184,8 @@ python3 tools/upload_master_to_firestore.py ... --dry-run   # 件数確認のみ
 | `geo_utils.py` | DMS→10進変換・日本範囲バリデーション |
 | `geocode.py` | 住所→座標（Google Geocoding API・キャッシュ） |
 | `build_csv.py` | 中間データ → 正規化CSV 2ファイル |
-| `build_master_0003.py` | 既存master + 新規 → 投入用JSON生成 |
-| `upload_images_to_storage.py` | 新規画像を Storage へ |
+| `ocr_cards.py` | 全カード画像の二重OCR結果を確定し cards_base.json に ocr_* を書き込み |
+| `build_master.py` | 既存master + 新規 → 投入用JSON生成（ocr_id ベース） |
+| `deploy_images_to_hosting.py` | gk-p.jp から画像取得 → {ocr_id}.jpg で Hosting 配置・デプロイ |
+| `delete_images_from_hosting.py` | 旧バージョン画像を Hosting から削除（後片付け） |
 | `upload_master_to_firestore.py` | master バージョンを Firestore へ投入 |
