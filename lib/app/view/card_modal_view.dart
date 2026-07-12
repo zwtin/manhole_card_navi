@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '/app/view_model/card_modal_view_model.dart';
 import '/app/widget/common_widget.dart';
 import '/app/widget/custom_text.dart';
+import '/app/widget/html_content.dart';
 import '/app/widget/pv_sender_widget.dart';
 import '/app/widget/router_widget.dart';
 
@@ -81,58 +82,31 @@ class CardModalView extends CommonWidget {
                           ],
                         ),
                       ),
-                      ...viewModel.viewData.contacts.map(
-                        (contactViewData) {
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              16,
-                              0,
-                              16,
-                              16,
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  width: 120,
-                                  child: BodyLargeText(
-                                    '配布場所',
-                                  ),
+                      if (viewModel.viewData.distributionPlaceHtml.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            16,
+                            0,
+                            16,
+                            16,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                width: 120,
+                                child: BodyLargeText(
+                                  '配布場所',
                                 ),
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      if (contactViewData.nameUrl.isNotEmpty)
-                                        TextButton(
-                                          onPressed: () async {
-                                            final uri = Uri.parse(
-                                                contactViewData.nameUrl);
-                                            if (await canLaunchUrl(uri)) {
-                                              launchUrl(
-                                                uri,
-                                                mode: LaunchMode.inAppWebView,
-                                              );
-                                            }
-                                          },
-                                          child: BodyLargeLinkText(
-                                            contactViewData.name,
-                                          ),
-                                        ),
-                                      if (contactViewData.nameUrl.isEmpty)
-                                        BodyLargeText(
-                                          contactViewData.name,
-                                        ),
-                                    ],
-                                  ),
+                              ),
+                              Flexible(
+                                child: HtmlContent(
+                                  viewModel.viewData.distributionPlaceHtml,
                                 ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                              ),
+                            ],
+                          ),
+                        ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                         child: Row(
@@ -145,34 +119,8 @@ class CardModalView extends CommonWidget {
                               ),
                             ),
                             Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (viewModel
-                                      .viewData.distributionLinkText.isNotEmpty)
-                                    TextButton(
-                                      onPressed: () async {
-                                        final uri = Uri.parse(viewModel
-                                            .viewData.distributionLinkUrl);
-                                        if (await canLaunchUrl(uri)) {
-                                          launchUrl(
-                                            uri,
-                                            mode: LaunchMode.inAppWebView,
-                                          );
-                                        }
-                                      },
-                                      child: BodyLargeLinkText(
-                                        viewModel.viewData.distributionLinkText,
-                                      ),
-                                    ),
-                                  BodyLargeText(
-                                    viewModel.viewData.distributionText,
-                                  ),
-                                  BodyLargeText(
-                                    viewModel.viewData.distributionOther,
-                                  ),
-                                ],
+                              child: HtmlContent(
+                                viewModel.viewData.stockHtml,
                               ),
                             ),
                           ],

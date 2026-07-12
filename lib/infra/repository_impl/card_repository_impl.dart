@@ -2,25 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
-import 'package:realm/realm.dart';
+// GeoPoint は cloud_firestore と realm の両方にあるため、Firestore 側を使う。
+import 'package:realm/realm.dart' hide GeoPoint;
 
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/inquired_master_version.dart';
 import '/domain/entity/manhole_card.dart';
+import '/domain/entity/manhole_card_distribution_point.dart';
+import '/domain/entity/manhole_card_distribution_points.dart';
 import '/domain/entity/manhole_card_distribution_state.dart';
-import '/domain/entity/manhole_card_contact.dart';
-import '/domain/entity/manhole_card_contacts.dart';
-import '/domain/entity/manhole_card_image.dart';
 import '/domain/entity/manhole_card_prefecture.dart';
 import '/domain/entity/manhole_card_volume.dart';
 import '/domain/entity/manhole_cards.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/card_repository.dart';
 import '/infra/dao/realm_card_dao.dart';
-import '/infra/dao/realm_contact_dao.dart';
-import '/infra/dao/realm_image_dao.dart';
-import '/infra/dao/realm_prefecture_dao.dart';
-import '/infra/dao/realm_volume_dao.dart';
+import '/infra/dao/realm_configuration.dart';
 import '/infra/mapper/realm_card_mapper.dart';
 import '/infra/mapper/realm_cards_mapper.dart';
 
@@ -41,76 +38,56 @@ class CardRepositoryImpl implements CardRepository {
     required InquiredMasterVersion inquiredMasterVersion,
   }) async {
     try {
+      // 配布場所・画像はカードに埋め込まれているため、cards の 1 クエリだけで
+      // 全カードが揃う。都道府県名・弾名は id のみ持ち、あとで引き当てる。
       final cardsQuerySnapshot = await _firestore
           .collection('master')
           .doc(inquiredMasterVersion.value)
           .collection('cards')
           .get();
-      final cardList = await Future.wait(
-        cardsQuerySnapshot.docs.map(
-          (doc) async {
-            final cardId = doc['id'] as String;
 
-            final contactsQuerySnapshot = await _firestore
-                .collection('master')
-                .doc(inquiredMasterVersion.value)
-                .collection('cards')
-                .doc(cardId)
-                .collection('contact_id')
-                .get();
-            final contactList = contactsQuerySnapshot.docs.map((element) {
-              return ManholeCardContact(
-                address: '',
-                id: element['id'] as String,
-                latitude: 0.0,
-                longitude: 0.0,
-                name: '',
-                nameUrl: '',
-                other: '',
-                phoneNumber: '',
-                time: '',
-                timeOther: '',
-              );
-            }).toList();
-            final contacts = ManholeCardContacts(list: contactList);
+      final cardList = cardsQuerySnapshot.docs.map(
+        (doc) {
+          final location = doc['location'] as GeoPoint;
+          final geoPointList = doc['distribution_points'] as List<dynamic>;
+          final distributionPoints = geoPointList
+              .whereType<GeoPoint>()
+              .map(
+                (geoPoint) => ManholeCardDistributionPoint(
+                  latitude: geoPoint.latitude,
+                  longitude: geoPoint.longitude,
+                ),
+              )
+              .toList();
 
-            final latitudeNum = doc['latitude'] as num;
-            var latitude = latitudeNum.toDouble();
-            final longitudeNum = doc['longitude'] as num;
-            var longitude = longitudeNum.toDouble();
-
-            return ManholeCard(
-              id: doc['id'] as String,
-              latitude: latitude,
-              longitude: longitude,
-              name: doc['name'] as String,
-              publicationDate: DateFormat('yyyy/MM/dd').parse(
-                doc['publication_date'] as String,
-              ),
-              contacts: contacts,
-              distributionState: ManholeCardDistributionState.fromString(
-                doc['distribution_state'] as String,
-              ),
-              distributionLinkText: doc['distribution_link_text'] as String,
-              distributionLinkUrl: doc['distribution_link_url'] as String,
-              distributionText: doc['distribution_text'] as String,
-              distributionOther: doc['distribution_other'] as String,
-              image: ManholeCardImage(
-                id: doc['image_id'] as String,
-                colorOriginal: '',
-              ),
-              prefecture: ManholeCardPrefecture(
-                id: doc['prefecture_id'] as String,
-                name: '',
-              ),
-              volume: ManholeCardVolume(
-                id: doc['volume_id'] as String,
-                name: '',
-              ),
-            );
-          },
-        ),
-      );
+          return ManholeCard(
+            id: doc['id'] as String,
+            latitude: location.latitude,
+            longitude: location.longitude,
+            name: doc['name'] as String,
+            publicationDate: DateFormat('yyyy/MM/dd').parse(
+              doc['publication_date'] as String,
+            ),
+            distributionState: ManholeCardDistributionState.fromString(
+              doc['distribution_state'] as String,
+            ),
+            image: doc['image'] as String,
+            distributionPlaceHtml: doc['distribution_place_html'] as String,
+            stockHtml: doc['stock_html'] as String,
+            distributionPoints: ManholeCardDistributionPoints(
+              list: distributionPoints,
+            ),
+            prefecture: ManholeCardPrefecture(
+              id: doc['prefecture_id'] as String,
+              name: '',
+            ),
+            volume: ManholeCardVolume(
+              id: doc['volume_id'] as String,
+              name: '',
+            ),
+          );
+        },
+      ).toList();
 
       return Result.success(
         ManholeCards(
@@ -134,24 +111,10 @@ class CardRepositoryImpl implements CardRepository {
   @override
   Future<Result<void>> deleteMaster() async {
     try {
-      var config = Configuration.local(
-        [
-          RealmCardDAO.schema,
-          RealmContactDAO.schema,
-          RealmImageDAO.schema,
-          RealmPrefectureDAO.schema,
-          RealmVolumeDAO.schema,
-        ],
-        shouldDeleteIfMigrationNeeded: true,
-      );
-      var realm = Realm(config);
+      var realm = RealmConfiguration.open();
 
       realm.write(() {
         realm.deleteAll<RealmCardDAO>();
-        realm.deleteAll<RealmContactDAO>();
-        realm.deleteAll<RealmImageDAO>();
-        realm.deleteAll<RealmPrefectureDAO>();
-        realm.deleteAll<RealmVolumeDAO>();
       });
       realm.close();
 
@@ -175,14 +138,7 @@ class CardRepositoryImpl implements CardRepository {
     required ManholeCards manholeCards,
   }) async {
     try {
-      var config = Configuration.local([
-        RealmCardDAO.schema,
-        RealmContactDAO.schema,
-        RealmImageDAO.schema,
-        RealmPrefectureDAO.schema,
-        RealmVolumeDAO.schema,
-      ]);
-      var realm = Realm(config);
+      var realm = RealmConfiguration.open();
 
       final realmCards = RealmCardsMapper.convertFromEntity(
         entity: manholeCards,
@@ -216,14 +172,7 @@ class CardRepositoryImpl implements CardRepository {
     required String id,
   }) async {
     try {
-      var config = Configuration.local([
-        RealmCardDAO.schema,
-        RealmContactDAO.schema,
-        RealmImageDAO.schema,
-        RealmPrefectureDAO.schema,
-        RealmVolumeDAO.schema,
-      ]);
-      var realm = Realm(config);
+      var realm = RealmConfiguration.open();
 
       final daoOrNull = realm
           .all<RealmCardDAO>()
@@ -237,9 +186,9 @@ class CardRepositoryImpl implements CardRepository {
           text: 'データが見つかりませんでした。',
         );
       }
-      final contact = RealmCardMapper.convertToEntity(dao: daoOrNull);
+      final card = RealmCardMapper.convertToEntity(dao: daoOrNull);
       realm.close();
-      return Result.success(contact);
+      return Result.success(card);
     } on CustomException catch (customException) {
       return Result.failure(
         customException,

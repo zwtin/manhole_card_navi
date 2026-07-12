@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 import '/app/view_model/detail_view_model.dart';
 import '/app/widget/card_image.dart';
 import '/app/widget/common_widget.dart';
 import '/app/widget/custom_text.dart';
+import '/app/widget/html_content.dart';
 import '/app/widget/pv_sender_widget.dart';
 import '/app/widget/router_widget.dart';
 
@@ -207,82 +207,34 @@ class DetailView extends CommonWidget {
                                       ],
                                     ),
                                   ),
-                                  ...viewModel.viewData.contacts.map(
-                                    (contactViewData) {
-                                      return Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                          16,
-                                          8,
-                                          16,
-                                          8,
-                                        ),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const SizedBox(
-                                              width: 120,
-                                              child: BodyLargeText(
-                                                '配布場所',
-                                              ),
+                                  if (viewModel
+                                      .viewData.distributionPlaceHtml.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        16,
+                                        8,
+                                        16,
+                                        8,
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(
+                                            width: 120,
+                                            child: BodyLargeText(
+                                              '配布場所',
                                             ),
-                                            Flexible(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  if (contactViewData
-                                                      .nameUrl.isNotEmpty)
-                                                    TextButton(
-                                                      onPressed: () async {
-                                                        final uri = Uri.parse(
-                                                            contactViewData
-                                                                .nameUrl);
-                                                        if (await canLaunchUrl(
-                                                            uri)) {
-                                                          launchUrl(
-                                                            uri,
-                                                            mode: LaunchMode
-                                                                .inAppWebView,
-                                                          );
-                                                        }
-                                                      },
-                                                      child: BodyLargeLinkText(
-                                                        contactViewData.name,
-                                                      ),
-                                                    ),
-                                                  if (contactViewData
-                                                      .nameUrl.isEmpty)
-                                                    BodyLargeText(
-                                                      contactViewData.name,
-                                                    ),
-                                                  BodyLargeText(
-                                                    contactViewData.address,
-                                                  ),
-                                                  BodyLargeText(
-                                                    contactViewData.phoneNumber,
-                                                  ),
-                                                  BodyLargeText(
-                                                    contactViewData.other,
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 8,
-                                                  ),
-                                                  BodyLargeText(
-                                                    contactViewData.time,
-                                                  ),
-                                                  BodyLargeText(
-                                                    contactViewData.timeOther,
-                                                  ),
-                                                ],
-                                              ),
+                                          ),
+                                          Flexible(
+                                            child: HtmlContent(
+                                              viewModel.viewData
+                                                  .distributionPlaceHtml,
                                             ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   Padding(
                                     padding:
                                         const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -295,43 +247,8 @@ class DetailView extends CommonWidget {
                                           child: BodyLargeText('在庫状況'),
                                         ),
                                         Flexible(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              if (viewModel
-                                                  .viewData
-                                                  .distributionLinkText
-                                                  .isNotEmpty)
-                                                TextButton(
-                                                  onPressed: () async {
-                                                    final uri = Uri.parse(
-                                                        viewModel.viewData
-                                                            .distributionLinkUrl);
-                                                    if (await canLaunchUrl(
-                                                        uri)) {
-                                                      launchUrl(
-                                                        uri,
-                                                        mode: LaunchMode
-                                                            .inAppWebView,
-                                                      );
-                                                    }
-                                                  },
-                                                  child: BodyLargeLinkText(
-                                                    viewModel.viewData
-                                                        .distributionLinkText,
-                                                  ),
-                                                ),
-                                              BodyLargeText(
-                                                viewModel
-                                                    .viewData.distributionText,
-                                              ),
-                                              BodyLargeText(
-                                                viewModel
-                                                    .viewData.distributionOther,
-                                              ),
-                                            ],
+                                          child: HtmlContent(
+                                            viewModel.viewData.stockHtml,
                                           ),
                                         ),
                                       ],

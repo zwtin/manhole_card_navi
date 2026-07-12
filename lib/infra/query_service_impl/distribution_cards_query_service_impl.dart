@@ -1,14 +1,10 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:realm/realm.dart';
 
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/result.dart';
 import '/infra/dao/realm_card_dao.dart';
-import '/infra/dao/realm_contact_dao.dart';
-import '/infra/dao/realm_image_dao.dart';
-import '/infra/dao/realm_prefecture_dao.dart';
-import '/infra/dao/realm_volume_dao.dart';
+import '/infra/dao/realm_configuration.dart';
 import '/use_case/dto/map_marker_dto.dart';
 import '/use_case/query_service/distribution_cards_query_service.dart';
 
@@ -28,14 +24,7 @@ class DistributionCardsQueryServiceImpl
   @override
   Future<Result<List<MapMarkerDTO>>> fetch() async {
     try {
-      final config = Configuration.local([
-        RealmCardDAO.schema,
-        RealmContactDAO.schema,
-        RealmImageDAO.schema,
-        RealmPrefectureDAO.schema,
-        RealmVolumeDAO.schema,
-      ]);
-      var realm = Realm(config);
+      var realm = RealmConfiguration.open();
 
       final daoList = realm.all<RealmCardDAO>();
       if (daoList.isEmpty) {
@@ -45,19 +34,17 @@ class DistributionCardsQueryServiceImpl
         );
       }
 
+      // 配布場所は 1 カードに 0〜複数ある。地点ごとに 1 マーカーを立てる。
       final dtoList = <MapMarkerDTO>[];
       for (final dao in daoList) {
-        final colorImageUrl = dao.image?.colorOriginal ?? '';
-
-        for (final contact in dao.contacts) {
+        for (final point in dao.distributionPoints) {
           dtoList.add(
             MapMarkerDTO(
               cardId: dao.id,
-              colorImageUrl: colorImageUrl,
-              grayImageUrl: colorImageUrl,
+              imagePath: dao.image,
               distributionState: dao.distributionState,
-              latitude: contact.latitude,
-              longitude: contact.longitude,
+              latitude: point.latitude,
+              longitude: point.longitude,
             ),
           );
         }

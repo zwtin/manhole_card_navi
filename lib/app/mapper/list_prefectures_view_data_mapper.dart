@@ -56,7 +56,7 @@ class ListPrefecturesViewDataMapper {
                     }
                     return ListCardViewData(
                       id: dto.id,
-                      imageUrl: ImageUrlBuilder.build(dto.colorImageUrl),
+                      imageUrl: ImageUrlBuilder.build(dto.imagePath),
                       alreadyGet: alreadyGet,
                       name: dto.name,
                       volume: dto.volumeName,

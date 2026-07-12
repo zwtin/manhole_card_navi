@@ -9,6 +9,7 @@ import '/domain/entity/manhole_card_prefecture.dart';
 import '/domain/entity/manhole_card_prefectures.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/prefecture_repository.dart';
+import '/infra/dao/realm_configuration.dart';
 import '/infra/dao/realm_prefecture_dao.dart';
 import '/infra/mapper/realm_prefecture_mapper.dart';
 import '/infra/mapper/realm_prefectures_mapper.dart';
@@ -65,13 +66,7 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
   @override
   Future<Result<void>> deleteMaster() async {
     try {
-      var config = Configuration.local(
-        [
-          RealmPrefectureDAO.schema,
-        ],
-        shouldDeleteIfMigrationNeeded: true,
-      );
-      var realm = Realm(config);
+      var realm = RealmConfiguration.open();
 
       realm.write(() {
         realm.deleteAll<RealmPrefectureDAO>();
@@ -98,10 +93,7 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
     required ManholeCardPrefectures manholeCardPrefectures,
   }) async {
     try {
-      var config = Configuration.local([
-        RealmPrefectureDAO.schema,
-      ]);
-      var realm = Realm(config);
+      var realm = RealmConfiguration.open();
 
       final realmPrefectures = RealmPrefecturesMapper.convertFromEntity(
         entity: manholeCardPrefectures,
@@ -135,10 +127,7 @@ class PrefectureRepositoryImpl implements PrefectureRepository {
     required String id,
   }) async {
     try {
-      var config = Configuration.local([
-        RealmPrefectureDAO.schema,
-      ]);
-      var realm = Realm(config);
+      var realm = RealmConfiguration.open();
 
       final daoOrNull = realm
           .all<RealmPrefectureDAO>()

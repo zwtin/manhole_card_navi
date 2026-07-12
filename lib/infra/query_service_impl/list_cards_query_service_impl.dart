@@ -1,14 +1,10 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:realm/realm.dart';
 
 import '/domain/entity/custom_exception.dart';
 import '/domain/entity/result.dart';
 import '/infra/dao/realm_card_dao.dart';
-import '/infra/dao/realm_contact_dao.dart';
-import '/infra/dao/realm_image_dao.dart';
-import '/infra/dao/realm_prefecture_dao.dart';
-import '/infra/dao/realm_volume_dao.dart';
+import '/infra/dao/realm_configuration.dart';
 import '/use_case/dto/list_card_dto.dart';
 import '/use_case/query_service/list_cards_query_service.dart';
 
@@ -27,14 +23,7 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
   @override
   Future<Result<List<ListCardDTO>>> fetch() async {
     try {
-      final config = Configuration.local([
-        RealmCardDAO.schema,
-        RealmContactDAO.schema,
-        RealmImageDAO.schema,
-        RealmPrefectureDAO.schema,
-        RealmVolumeDAO.schema,
-      ]);
-      var realm = Realm(config);
+      var realm = RealmConfiguration.open();
 
       final cardDAOList = realm.all<RealmCardDAO>();
       if (cardDAOList.isEmpty) {
@@ -48,8 +37,7 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
         return ListCardDTO(
           id: dao.id,
           name: dao.name,
-          colorImageUrl: dao.image?.colorOriginal ?? '',
-          grayImageUrl: dao.image?.colorOriginal ?? '',
+          imagePath: dao.image,
           prefectureId: dao.prefecture?.id ?? '',
           prefectureName: dao.prefecture?.name ?? '',
           volumeId: dao.volume?.id ?? '',

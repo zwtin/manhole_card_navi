@@ -124,7 +124,7 @@ class MapMarkersViewDataMapper {
       id: '${dto.cardId}_${dto.latitude}_${dto.longitude}',
       cardId: dto.cardId,
       icon: icon,
-      imageUrl: ImageUrlBuilder.build(dto.colorImageUrl),
+      imageUrl: ImageUrlBuilder.build(dto.imagePath),
       latitude: dto.latitude,
       longitude: dto.longitude,
     );
@@ -172,7 +172,7 @@ class MapMarkersViewDataMapper {
       return fromDisk;
     }
 
-    if (dto.colorImageUrl.isEmpty) {
+    if (dto.imagePath.isEmpty) {
       return null;
     }
 
@@ -181,7 +181,7 @@ class MapMarkersViewDataMapper {
       // ないため、compute で別 Isolate を立てるより spawn コストがかからない。
       // 縮小デコードと合成（dart:ui）はメイン Isolate で行う必要がある。
       final originalBytes =
-          await _downloadImage(ImageUrlBuilder.build(dto.colorImageUrl));
+          await _downloadImage(ImageUrlBuilder.build(dto.imagePath));
       if (originalBytes == null || originalBytes.isEmpty) {
         return null;
       }

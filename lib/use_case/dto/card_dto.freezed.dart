@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CardDTO {
 
- String get id; String get name; String get colorImageUrl; String get grayImageUrl; double get latitude; double get longitude; String get prefectureId; String get prefectureName; String get volumeId; String get volumeName; DateTime get publicationDate; String get distributionLinkText; String get distributionLinkUrl; String get distributionText; String get distributionOther; List<ContactDTO> get contacts;
+ String get id; String get name;/// カード画像の Firebase Hosting 上のパス。
+ String get imagePath; double get latitude; double get longitude; String get prefectureId; String get prefectureName; String get volumeId; String get volumeName; DateTime get publicationDate; String get distributionPlaceHtml; String get stockHtml;
 /// Create a copy of CardDTO
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +27,16 @@ $CardDTOCopyWith<CardDTO> get copyWith => _$CardDTOCopyWithImpl<CardDTO>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CardDTO&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.colorImageUrl, colorImageUrl) || other.colorImageUrl == colorImageUrl)&&(identical(other.grayImageUrl, grayImageUrl) || other.grayImageUrl == grayImageUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.prefectureId, prefectureId) || other.prefectureId == prefectureId)&&(identical(other.prefectureName, prefectureName) || other.prefectureName == prefectureName)&&(identical(other.volumeId, volumeId) || other.volumeId == volumeId)&&(identical(other.volumeName, volumeName) || other.volumeName == volumeName)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate)&&(identical(other.distributionLinkText, distributionLinkText) || other.distributionLinkText == distributionLinkText)&&(identical(other.distributionLinkUrl, distributionLinkUrl) || other.distributionLinkUrl == distributionLinkUrl)&&(identical(other.distributionText, distributionText) || other.distributionText == distributionText)&&(identical(other.distributionOther, distributionOther) || other.distributionOther == distributionOther)&&const DeepCollectionEquality().equals(other.contacts, contacts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CardDTO&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.imagePath, imagePath) || other.imagePath == imagePath)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.prefectureId, prefectureId) || other.prefectureId == prefectureId)&&(identical(other.prefectureName, prefectureName) || other.prefectureName == prefectureName)&&(identical(other.volumeId, volumeId) || other.volumeId == volumeId)&&(identical(other.volumeName, volumeName) || other.volumeName == volumeName)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate)&&(identical(other.distributionPlaceHtml, distributionPlaceHtml) || other.distributionPlaceHtml == distributionPlaceHtml)&&(identical(other.stockHtml, stockHtml) || other.stockHtml == stockHtml));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,colorImageUrl,grayImageUrl,latitude,longitude,prefectureId,prefectureName,volumeId,volumeName,publicationDate,distributionLinkText,distributionLinkUrl,distributionText,distributionOther,const DeepCollectionEquality().hash(contacts));
+int get hashCode => Object.hash(runtimeType,id,name,imagePath,latitude,longitude,prefectureId,prefectureName,volumeId,volumeName,publicationDate,distributionPlaceHtml,stockHtml);
 
 @override
 String toString() {
-  return 'CardDTO(id: $id, name: $name, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, latitude: $latitude, longitude: $longitude, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther, contacts: $contacts)';
+  return 'CardDTO(id: $id, name: $name, imagePath: $imagePath, latitude: $latitude, longitude: $longitude, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate, distributionPlaceHtml: $distributionPlaceHtml, stockHtml: $stockHtml)';
 }
 
 
@@ -46,7 +47,7 @@ abstract mixin class $CardDTOCopyWith<$Res>  {
   factory $CardDTOCopyWith(CardDTO value, $Res Function(CardDTO) _then) = _$CardDTOCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String colorImageUrl, String grayImageUrl, double latitude, double longitude, String prefectureId, String prefectureName, String volumeId, String volumeName, DateTime publicationDate, String distributionLinkText, String distributionLinkUrl, String distributionText, String distributionOther, List<ContactDTO> contacts
+ String id, String name, String imagePath, double latitude, double longitude, String prefectureId, String prefectureName, String volumeId, String volumeName, DateTime publicationDate, String distributionPlaceHtml, String stockHtml
 });
 
 
@@ -63,12 +64,11 @@ class _$CardDTOCopyWithImpl<$Res>
 
 /// Create a copy of CardDTO
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? colorImageUrl = null,Object? grayImageUrl = null,Object? latitude = null,Object? longitude = null,Object? prefectureId = null,Object? prefectureName = null,Object? volumeId = null,Object? volumeName = null,Object? publicationDate = null,Object? distributionLinkText = null,Object? distributionLinkUrl = null,Object? distributionText = null,Object? distributionOther = null,Object? contacts = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? imagePath = null,Object? latitude = null,Object? longitude = null,Object? prefectureId = null,Object? prefectureName = null,Object? volumeId = null,Object? volumeName = null,Object? publicationDate = null,Object? distributionPlaceHtml = null,Object? stockHtml = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,colorImageUrl: null == colorImageUrl ? _self.colorImageUrl : colorImageUrl // ignore: cast_nullable_to_non_nullable
-as String,grayImageUrl: null == grayImageUrl ? _self.grayImageUrl : grayImageUrl // ignore: cast_nullable_to_non_nullable
+as String,imagePath: null == imagePath ? _self.imagePath : imagePath // ignore: cast_nullable_to_non_nullable
 as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double,prefectureId: null == prefectureId ? _self.prefectureId : prefectureId // ignore: cast_nullable_to_non_nullable
@@ -76,12 +76,9 @@ as String,prefectureName: null == prefectureName ? _self.prefectureName : prefec
 as String,volumeId: null == volumeId ? _self.volumeId : volumeId // ignore: cast_nullable_to_non_nullable
 as String,volumeName: null == volumeName ? _self.volumeName : volumeName // ignore: cast_nullable_to_non_nullable
 as String,publicationDate: null == publicationDate ? _self.publicationDate : publicationDate // ignore: cast_nullable_to_non_nullable
-as DateTime,distributionLinkText: null == distributionLinkText ? _self.distributionLinkText : distributionLinkText // ignore: cast_nullable_to_non_nullable
-as String,distributionLinkUrl: null == distributionLinkUrl ? _self.distributionLinkUrl : distributionLinkUrl // ignore: cast_nullable_to_non_nullable
-as String,distributionText: null == distributionText ? _self.distributionText : distributionText // ignore: cast_nullable_to_non_nullable
-as String,distributionOther: null == distributionOther ? _self.distributionOther : distributionOther // ignore: cast_nullable_to_non_nullable
-as String,contacts: null == contacts ? _self.contacts : contacts // ignore: cast_nullable_to_non_nullable
-as List<ContactDTO>,
+as DateTime,distributionPlaceHtml: null == distributionPlaceHtml ? _self.distributionPlaceHtml : distributionPlaceHtml // ignore: cast_nullable_to_non_nullable
+as String,stockHtml: null == stockHtml ? _self.stockHtml : stockHtml // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -92,13 +89,13 @@ as List<ContactDTO>,
 
 
 class _CardDTO extends CardDTO {
-  const _CardDTO({required this.id, required this.name, required this.colorImageUrl, required this.grayImageUrl, required this.latitude, required this.longitude, required this.prefectureId, required this.prefectureName, required this.volumeId, required this.volumeName, required this.publicationDate, required this.distributionLinkText, required this.distributionLinkUrl, required this.distributionText, required this.distributionOther, required final  List<ContactDTO> contacts}): _contacts = contacts,super._();
+  const _CardDTO({required this.id, required this.name, required this.imagePath, required this.latitude, required this.longitude, required this.prefectureId, required this.prefectureName, required this.volumeId, required this.volumeName, required this.publicationDate, required this.distributionPlaceHtml, required this.stockHtml}): super._();
   
 
 @override final  String id;
 @override final  String name;
-@override final  String colorImageUrl;
-@override final  String grayImageUrl;
+/// カード画像の Firebase Hosting 上のパス。
+@override final  String imagePath;
 @override final  double latitude;
 @override final  double longitude;
 @override final  String prefectureId;
@@ -106,17 +103,8 @@ class _CardDTO extends CardDTO {
 @override final  String volumeId;
 @override final  String volumeName;
 @override final  DateTime publicationDate;
-@override final  String distributionLinkText;
-@override final  String distributionLinkUrl;
-@override final  String distributionText;
-@override final  String distributionOther;
- final  List<ContactDTO> _contacts;
-@override List<ContactDTO> get contacts {
-  if (_contacts is EqualUnmodifiableListView) return _contacts;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_contacts);
-}
-
+@override final  String distributionPlaceHtml;
+@override final  String stockHtml;
 
 /// Create a copy of CardDTO
 /// with the given fields replaced by the non-null parameter values.
@@ -128,16 +116,16 @@ _$CardDTOCopyWith<_CardDTO> get copyWith => __$CardDTOCopyWithImpl<_CardDTO>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CardDTO&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.colorImageUrl, colorImageUrl) || other.colorImageUrl == colorImageUrl)&&(identical(other.grayImageUrl, grayImageUrl) || other.grayImageUrl == grayImageUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.prefectureId, prefectureId) || other.prefectureId == prefectureId)&&(identical(other.prefectureName, prefectureName) || other.prefectureName == prefectureName)&&(identical(other.volumeId, volumeId) || other.volumeId == volumeId)&&(identical(other.volumeName, volumeName) || other.volumeName == volumeName)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate)&&(identical(other.distributionLinkText, distributionLinkText) || other.distributionLinkText == distributionLinkText)&&(identical(other.distributionLinkUrl, distributionLinkUrl) || other.distributionLinkUrl == distributionLinkUrl)&&(identical(other.distributionText, distributionText) || other.distributionText == distributionText)&&(identical(other.distributionOther, distributionOther) || other.distributionOther == distributionOther)&&const DeepCollectionEquality().equals(other._contacts, _contacts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CardDTO&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.imagePath, imagePath) || other.imagePath == imagePath)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.prefectureId, prefectureId) || other.prefectureId == prefectureId)&&(identical(other.prefectureName, prefectureName) || other.prefectureName == prefectureName)&&(identical(other.volumeId, volumeId) || other.volumeId == volumeId)&&(identical(other.volumeName, volumeName) || other.volumeName == volumeName)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate)&&(identical(other.distributionPlaceHtml, distributionPlaceHtml) || other.distributionPlaceHtml == distributionPlaceHtml)&&(identical(other.stockHtml, stockHtml) || other.stockHtml == stockHtml));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,colorImageUrl,grayImageUrl,latitude,longitude,prefectureId,prefectureName,volumeId,volumeName,publicationDate,distributionLinkText,distributionLinkUrl,distributionText,distributionOther,const DeepCollectionEquality().hash(_contacts));
+int get hashCode => Object.hash(runtimeType,id,name,imagePath,latitude,longitude,prefectureId,prefectureName,volumeId,volumeName,publicationDate,distributionPlaceHtml,stockHtml);
 
 @override
 String toString() {
-  return 'CardDTO(id: $id, name: $name, colorImageUrl: $colorImageUrl, grayImageUrl: $grayImageUrl, latitude: $latitude, longitude: $longitude, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate, distributionLinkText: $distributionLinkText, distributionLinkUrl: $distributionLinkUrl, distributionText: $distributionText, distributionOther: $distributionOther, contacts: $contacts)';
+  return 'CardDTO(id: $id, name: $name, imagePath: $imagePath, latitude: $latitude, longitude: $longitude, prefectureId: $prefectureId, prefectureName: $prefectureName, volumeId: $volumeId, volumeName: $volumeName, publicationDate: $publicationDate, distributionPlaceHtml: $distributionPlaceHtml, stockHtml: $stockHtml)';
 }
 
 
@@ -148,7 +136,7 @@ abstract mixin class _$CardDTOCopyWith<$Res> implements $CardDTOCopyWith<$Res> {
   factory _$CardDTOCopyWith(_CardDTO value, $Res Function(_CardDTO) _then) = __$CardDTOCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String colorImageUrl, String grayImageUrl, double latitude, double longitude, String prefectureId, String prefectureName, String volumeId, String volumeName, DateTime publicationDate, String distributionLinkText, String distributionLinkUrl, String distributionText, String distributionOther, List<ContactDTO> contacts
+ String id, String name, String imagePath, double latitude, double longitude, String prefectureId, String prefectureName, String volumeId, String volumeName, DateTime publicationDate, String distributionPlaceHtml, String stockHtml
 });
 
 
@@ -165,12 +153,11 @@ class __$CardDTOCopyWithImpl<$Res>
 
 /// Create a copy of CardDTO
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? colorImageUrl = null,Object? grayImageUrl = null,Object? latitude = null,Object? longitude = null,Object? prefectureId = null,Object? prefectureName = null,Object? volumeId = null,Object? volumeName = null,Object? publicationDate = null,Object? distributionLinkText = null,Object? distributionLinkUrl = null,Object? distributionText = null,Object? distributionOther = null,Object? contacts = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? imagePath = null,Object? latitude = null,Object? longitude = null,Object? prefectureId = null,Object? prefectureName = null,Object? volumeId = null,Object? volumeName = null,Object? publicationDate = null,Object? distributionPlaceHtml = null,Object? stockHtml = null,}) {
   return _then(_CardDTO(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,colorImageUrl: null == colorImageUrl ? _self.colorImageUrl : colorImageUrl // ignore: cast_nullable_to_non_nullable
-as String,grayImageUrl: null == grayImageUrl ? _self.grayImageUrl : grayImageUrl // ignore: cast_nullable_to_non_nullable
+as String,imagePath: null == imagePath ? _self.imagePath : imagePath // ignore: cast_nullable_to_non_nullable
 as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double,prefectureId: null == prefectureId ? _self.prefectureId : prefectureId // ignore: cast_nullable_to_non_nullable
@@ -178,12 +165,9 @@ as String,prefectureName: null == prefectureName ? _self.prefectureName : prefec
 as String,volumeId: null == volumeId ? _self.volumeId : volumeId // ignore: cast_nullable_to_non_nullable
 as String,volumeName: null == volumeName ? _self.volumeName : volumeName // ignore: cast_nullable_to_non_nullable
 as String,publicationDate: null == publicationDate ? _self.publicationDate : publicationDate // ignore: cast_nullable_to_non_nullable
-as DateTime,distributionLinkText: null == distributionLinkText ? _self.distributionLinkText : distributionLinkText // ignore: cast_nullable_to_non_nullable
-as String,distributionLinkUrl: null == distributionLinkUrl ? _self.distributionLinkUrl : distributionLinkUrl // ignore: cast_nullable_to_non_nullable
-as String,distributionText: null == distributionText ? _self.distributionText : distributionText // ignore: cast_nullable_to_non_nullable
-as String,distributionOther: null == distributionOther ? _self.distributionOther : distributionOther // ignore: cast_nullable_to_non_nullable
-as String,contacts: null == contacts ? _self._contacts : contacts // ignore: cast_nullable_to_non_nullable
-as List<ContactDTO>,
+as DateTime,distributionPlaceHtml: null == distributionPlaceHtml ? _self.distributionPlaceHtml : distributionPlaceHtml // ignore: cast_nullable_to_non_nullable
+as String,stockHtml: null == stockHtml ? _self.stockHtml : stockHtml // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
