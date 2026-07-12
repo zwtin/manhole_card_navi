@@ -33,6 +33,7 @@ class DetailCardViewDataMapper {
       volume: cardDTO.volumeName,
       publicationDate: dateFormatter.format(cardDTO.publicationDate.toLocal()),
       distributionPlaceHtml: cardDTO.distributionPlaceHtml,
+      distributionTimeHtml: cardDTO.distributionTimeHtml,
       stockHtml: cardDTO.stockHtml,
     );
   }

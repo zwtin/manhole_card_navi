@@ -24,6 +24,9 @@ class $RealmCardDAO {
   /// 配布場所の HTML。
   late String distributionPlaceHtml;
 
+  /// 配布時間の HTML。
+  late String distributionTimeHtml;
+
   /// 在庫状況の HTML。
   late String stockHtml;
 

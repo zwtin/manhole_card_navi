@@ -235,6 +235,34 @@ class DetailView extends CommonWidget {
                                         ],
                                       ),
                                     ),
+                                  if (viewModel
+                                      .viewData.distributionTimeHtml.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        16,
+                                        8,
+                                        16,
+                                        8,
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(
+                                            width: 120,
+                                            child: BodyLargeText(
+                                              '配布時間',
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: HtmlContent(
+                                              viewModel
+                                                  .viewData.distributionTimeHtml,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   Padding(
                                     padding:
                                         const EdgeInsets.fromLTRB(16, 8, 16, 8),

@@ -58,6 +58,7 @@ class CardUseCase {
         volumeName: card.volume.name,
         publicationDate: card.publicationDate,
         distributionPlaceHtml: card.distributionPlaceHtml,
+        distributionTimeHtml: card.distributionTimeHtml,
         stockHtml: card.stockHtml,
       ),
     );

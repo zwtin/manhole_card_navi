@@ -24,6 +24,9 @@ abstract class ManholeCard with _$ManholeCard {
     /// 配布場所の HTML。施設名・住所・電話が混在したまま保持する。
     required String distributionPlaceHtml,
 
+    /// 配布時間の HTML。曜日・時間帯・休業日が混在したまま保持する。
+    required String distributionTimeHtml,
+
     /// 在庫状況の HTML。
     required String stockHtml,
 

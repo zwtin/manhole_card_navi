@@ -22,6 +22,7 @@ class RealmCardMapper {
       ),
       image: dao.image,
       distributionPlaceHtml: dao.distributionPlaceHtml,
+      distributionTimeHtml: dao.distributionTimeHtml,
       stockHtml: dao.stockHtml,
       distributionPoints: RealmDistributionPointsMapper.convertToEntity(
         daoList: dao.distributionPoints.toList(),

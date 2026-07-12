@@ -18,6 +18,7 @@ abstract class CardDTO with _$CardDTO {
     required String volumeName,
     required DateTime publicationDate,
     required String distributionPlaceHtml,
+    required String distributionTimeHtml,
     required String stockHtml,
   }) = _CardDTO;
   const CardDTO._();

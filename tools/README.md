@@ -60,8 +60,8 @@ Firestore へ投入する場合はさらに:
 一致したものだけ確定し、不一致は人間が目視で確定する
 （`out/ocr_conflicts.json` / `out/dist_conflicts.json` に出力される）。
 
-**配布場所は分離しない。** 施設名・住所・電話が混在した HTML をそのまま保持し、アプリで
-表示する。地図表示に必要な座標だけを別途 GeoPoint の配列として持つ。
+**配布場所・配布時間・在庫状況は分離しない。** サイトのセルの HTML をそのまま保持し、
+アプリで表示する。地図表示に必要な配布場所の座標だけを別途 GeoPoint の配列として持つ。
 
 ### master 構造（3コレクション）
 
@@ -74,6 +74,7 @@ cards/{ocr_id}
   image                   : string        master/v{version}/images/{id}.jpg
   distribution_place_html : string        配布場所HTML（サイトのまま）
   distribution_points     : [GeoPoint]    配布場所の座標（0〜複数）
+  distribution_time_html  : string        配布時間HTML（サイトのまま）
   stock_html              : string        在庫状況HTML（サイトのまま）
   distribution_state      : string        distributing / stopped / notClear
 prefectures/{id} : {id, name}

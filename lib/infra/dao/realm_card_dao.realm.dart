@@ -20,6 +20,7 @@ class RealmCardDAO extends $RealmCardDAO
     String distributionState,
     String image,
     String distributionPlaceHtml,
+    String distributionTimeHtml,
     String stockHtml, {
     Iterable<RealmDistributionPointDAO> distributionPoints = const [],
     RealmPrefectureDAO? prefecture,
@@ -33,6 +34,7 @@ class RealmCardDAO extends $RealmCardDAO
     RealmObjectBase.set(this, 'distributionState', distributionState);
     RealmObjectBase.set(this, 'image', image);
     RealmObjectBase.set(this, 'distributionPlaceHtml', distributionPlaceHtml);
+    RealmObjectBase.set(this, 'distributionTimeHtml', distributionTimeHtml);
     RealmObjectBase.set(this, 'stockHtml', stockHtml);
     RealmObjectBase.set<RealmList<RealmDistributionPointDAO>>(
       this,
@@ -94,6 +96,13 @@ class RealmCardDAO extends $RealmCardDAO
       RealmObjectBase.set(this, 'distributionPlaceHtml', value);
 
   @override
+  String get distributionTimeHtml =>
+      RealmObjectBase.get<String>(this, 'distributionTimeHtml') as String;
+  @override
+  set distributionTimeHtml(String value) =>
+      RealmObjectBase.set(this, 'distributionTimeHtml', value);
+
+  @override
   String get stockHtml =>
       RealmObjectBase.get<String>(this, 'stockHtml') as String;
   @override
@@ -145,6 +154,7 @@ class RealmCardDAO extends $RealmCardDAO
       'distributionState': distributionState.toEJson(),
       'image': image.toEJson(),
       'distributionPlaceHtml': distributionPlaceHtml.toEJson(),
+      'distributionTimeHtml': distributionTimeHtml.toEJson(),
       'stockHtml': stockHtml.toEJson(),
       'distributionPoints': distributionPoints.toEJson(),
       'prefecture': prefecture.toEJson(),
@@ -165,6 +175,7 @@ class RealmCardDAO extends $RealmCardDAO
         'distributionState': EJsonValue distributionState,
         'image': EJsonValue image,
         'distributionPlaceHtml': EJsonValue distributionPlaceHtml,
+        'distributionTimeHtml': EJsonValue distributionTimeHtml,
         'stockHtml': EJsonValue stockHtml,
       } =>
         RealmCardDAO(
@@ -176,6 +187,7 @@ class RealmCardDAO extends $RealmCardDAO
           fromEJson(distributionState),
           fromEJson(image),
           fromEJson(distributionPlaceHtml),
+          fromEJson(distributionTimeHtml),
           fromEJson(stockHtml),
           distributionPoints: fromEJson(ejson['distributionPoints']),
           prefecture: fromEJson(ejson['prefecture']),
@@ -201,6 +213,7 @@ class RealmCardDAO extends $RealmCardDAO
         SchemaProperty('distributionState', RealmPropertyType.string),
         SchemaProperty('image', RealmPropertyType.string),
         SchemaProperty('distributionPlaceHtml', RealmPropertyType.string),
+        SchemaProperty('distributionTimeHtml', RealmPropertyType.string),
         SchemaProperty('stockHtml', RealmPropertyType.string),
         SchemaProperty(
           'distributionPoints',

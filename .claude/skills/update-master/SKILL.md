@@ -26,7 +26,7 @@ gk-p.jp の最新データで、Firebase Hosting（画像）と Firestore（mast
 
 **master 構造（3コレクション）**:
 - `cards/{ocr_id}` — 自治体名・都道府県ID・弾ID・発行日・マンホール座標(GeoPoint)・
-  画像パス・配布場所HTML・配布場所座標(GeoPoint配列)・在庫状況HTML・配布状態
+  画像パス・配布場所HTML・配布場所座標(GeoPoint配列)・配布時間HTML・在庫状況HTML・配布状態
 - `prefectures/{id}` — 都道府県マスタ
 - `volumes/{id}` — 弾マスタ
 
@@ -172,8 +172,8 @@ python3 tools/build_master.py --version {VERSION}
 
 - **全カードを cards_base.json から毎回まるごと再生成する**（既存 master は引き継がない）。
   弾の追加・カードの増減・在庫状況の変化がすべて自動で反映される。
-- 出力構造は 3コレクション（cards / prefectures / volumes）。
-  カードは配布場所HTML・配布場所座標（GeoPoint配列）・画像パスを直接持つ。
+- 出力構造は 3コレクション（cards / prefectures / volumes）。カードは配布場所HTML・
+  配布場所座標（GeoPoint配列）・配布時間HTML・在庫状況HTML・画像パスを直接持つ。
 - OCR や AI抽出が未実行のカードがあると、**どのカードの何が足りないかを表示して中断**する。
 - 警告（未ジオコーディングの住所・日本範囲外の座標など）が出たら内容を確認する。
 

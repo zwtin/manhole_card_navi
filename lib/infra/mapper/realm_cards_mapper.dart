@@ -20,6 +20,7 @@ class RealmCardsMapper {
           element.distributionState.toStringValue(),
           element.image,
           element.distributionPlaceHtml,
+          element.distributionTimeHtml,
           element.stockHtml,
         );
         dao.prefecture = RealmPrefectureMapper.convertFromEntity(

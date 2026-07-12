@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DetailCardViewData {
 
- String get id; String get imageUrl; bool get alreadyGet; String get name; String get prefecture; String get volume; String get publicationDate; String get distributionPlaceHtml; String get stockHtml;
+ String get id; String get imageUrl; bool get alreadyGet; String get name; String get prefecture; String get volume; String get publicationDate; String get distributionPlaceHtml; String get distributionTimeHtml; String get stockHtml;
 /// Create a copy of DetailCardViewData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $DetailCardViewDataCopyWith<DetailCardViewData> get copyWith => _$DetailCardView
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DetailCardViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.alreadyGet, alreadyGet) || other.alreadyGet == alreadyGet)&&(identical(other.name, name) || other.name == name)&&(identical(other.prefecture, prefecture) || other.prefecture == prefecture)&&(identical(other.volume, volume) || other.volume == volume)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate)&&(identical(other.distributionPlaceHtml, distributionPlaceHtml) || other.distributionPlaceHtml == distributionPlaceHtml)&&(identical(other.stockHtml, stockHtml) || other.stockHtml == stockHtml));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DetailCardViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.alreadyGet, alreadyGet) || other.alreadyGet == alreadyGet)&&(identical(other.name, name) || other.name == name)&&(identical(other.prefecture, prefecture) || other.prefecture == prefecture)&&(identical(other.volume, volume) || other.volume == volume)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate)&&(identical(other.distributionPlaceHtml, distributionPlaceHtml) || other.distributionPlaceHtml == distributionPlaceHtml)&&(identical(other.distributionTimeHtml, distributionTimeHtml) || other.distributionTimeHtml == distributionTimeHtml)&&(identical(other.stockHtml, stockHtml) || other.stockHtml == stockHtml));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,imageUrl,alreadyGet,name,prefecture,volume,publicationDate,distributionPlaceHtml,stockHtml);
+int get hashCode => Object.hash(runtimeType,id,imageUrl,alreadyGet,name,prefecture,volume,publicationDate,distributionPlaceHtml,distributionTimeHtml,stockHtml);
 
 @override
 String toString() {
-  return 'DetailCardViewData(id: $id, imageUrl: $imageUrl, alreadyGet: $alreadyGet, name: $name, prefecture: $prefecture, volume: $volume, publicationDate: $publicationDate, distributionPlaceHtml: $distributionPlaceHtml, stockHtml: $stockHtml)';
+  return 'DetailCardViewData(id: $id, imageUrl: $imageUrl, alreadyGet: $alreadyGet, name: $name, prefecture: $prefecture, volume: $volume, publicationDate: $publicationDate, distributionPlaceHtml: $distributionPlaceHtml, distributionTimeHtml: $distributionTimeHtml, stockHtml: $stockHtml)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $DetailCardViewDataCopyWith<$Res>  {
   factory $DetailCardViewDataCopyWith(DetailCardViewData value, $Res Function(DetailCardViewData) _then) = _$DetailCardViewDataCopyWithImpl;
 @useResult
 $Res call({
- String id, String imageUrl, bool alreadyGet, String name, String prefecture, String volume, String publicationDate, String distributionPlaceHtml, String stockHtml
+ String id, String imageUrl, bool alreadyGet, String name, String prefecture, String volume, String publicationDate, String distributionPlaceHtml, String distributionTimeHtml, String stockHtml
 });
 
 
@@ -63,7 +63,7 @@ class _$DetailCardViewDataCopyWithImpl<$Res>
 
 /// Create a copy of DetailCardViewData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? imageUrl = null,Object? alreadyGet = null,Object? name = null,Object? prefecture = null,Object? volume = null,Object? publicationDate = null,Object? distributionPlaceHtml = null,Object? stockHtml = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? imageUrl = null,Object? alreadyGet = null,Object? name = null,Object? prefecture = null,Object? volume = null,Object? publicationDate = null,Object? distributionPlaceHtml = null,Object? distributionTimeHtml = null,Object? stockHtml = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -73,6 +73,7 @@ as String,prefecture: null == prefecture ? _self.prefecture : prefecture // igno
 as String,volume: null == volume ? _self.volume : volume // ignore: cast_nullable_to_non_nullable
 as String,publicationDate: null == publicationDate ? _self.publicationDate : publicationDate // ignore: cast_nullable_to_non_nullable
 as String,distributionPlaceHtml: null == distributionPlaceHtml ? _self.distributionPlaceHtml : distributionPlaceHtml // ignore: cast_nullable_to_non_nullable
+as String,distributionTimeHtml: null == distributionTimeHtml ? _self.distributionTimeHtml : distributionTimeHtml // ignore: cast_nullable_to_non_nullable
 as String,stockHtml: null == stockHtml ? _self.stockHtml : stockHtml // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -85,7 +86,7 @@ as String,
 
 
 class _DetailCardViewData extends DetailCardViewData {
-  const _DetailCardViewData({required this.id, required this.imageUrl, required this.alreadyGet, required this.name, required this.prefecture, required this.volume, required this.publicationDate, required this.distributionPlaceHtml, required this.stockHtml}): super._();
+  const _DetailCardViewData({required this.id, required this.imageUrl, required this.alreadyGet, required this.name, required this.prefecture, required this.volume, required this.publicationDate, required this.distributionPlaceHtml, required this.distributionTimeHtml, required this.stockHtml}): super._();
   
 
 @override final  String id;
@@ -96,6 +97,7 @@ class _DetailCardViewData extends DetailCardViewData {
 @override final  String volume;
 @override final  String publicationDate;
 @override final  String distributionPlaceHtml;
+@override final  String distributionTimeHtml;
 @override final  String stockHtml;
 
 /// Create a copy of DetailCardViewData
@@ -108,16 +110,16 @@ _$DetailCardViewDataCopyWith<_DetailCardViewData> get copyWith => __$DetailCardV
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DetailCardViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.alreadyGet, alreadyGet) || other.alreadyGet == alreadyGet)&&(identical(other.name, name) || other.name == name)&&(identical(other.prefecture, prefecture) || other.prefecture == prefecture)&&(identical(other.volume, volume) || other.volume == volume)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate)&&(identical(other.distributionPlaceHtml, distributionPlaceHtml) || other.distributionPlaceHtml == distributionPlaceHtml)&&(identical(other.stockHtml, stockHtml) || other.stockHtml == stockHtml));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DetailCardViewData&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.alreadyGet, alreadyGet) || other.alreadyGet == alreadyGet)&&(identical(other.name, name) || other.name == name)&&(identical(other.prefecture, prefecture) || other.prefecture == prefecture)&&(identical(other.volume, volume) || other.volume == volume)&&(identical(other.publicationDate, publicationDate) || other.publicationDate == publicationDate)&&(identical(other.distributionPlaceHtml, distributionPlaceHtml) || other.distributionPlaceHtml == distributionPlaceHtml)&&(identical(other.distributionTimeHtml, distributionTimeHtml) || other.distributionTimeHtml == distributionTimeHtml)&&(identical(other.stockHtml, stockHtml) || other.stockHtml == stockHtml));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,imageUrl,alreadyGet,name,prefecture,volume,publicationDate,distributionPlaceHtml,stockHtml);
+int get hashCode => Object.hash(runtimeType,id,imageUrl,alreadyGet,name,prefecture,volume,publicationDate,distributionPlaceHtml,distributionTimeHtml,stockHtml);
 
 @override
 String toString() {
-  return 'DetailCardViewData(id: $id, imageUrl: $imageUrl, alreadyGet: $alreadyGet, name: $name, prefecture: $prefecture, volume: $volume, publicationDate: $publicationDate, distributionPlaceHtml: $distributionPlaceHtml, stockHtml: $stockHtml)';
+  return 'DetailCardViewData(id: $id, imageUrl: $imageUrl, alreadyGet: $alreadyGet, name: $name, prefecture: $prefecture, volume: $volume, publicationDate: $publicationDate, distributionPlaceHtml: $distributionPlaceHtml, distributionTimeHtml: $distributionTimeHtml, stockHtml: $stockHtml)';
 }
 
 
@@ -128,7 +130,7 @@ abstract mixin class _$DetailCardViewDataCopyWith<$Res> implements $DetailCardVi
   factory _$DetailCardViewDataCopyWith(_DetailCardViewData value, $Res Function(_DetailCardViewData) _then) = __$DetailCardViewDataCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String imageUrl, bool alreadyGet, String name, String prefecture, String volume, String publicationDate, String distributionPlaceHtml, String stockHtml
+ String id, String imageUrl, bool alreadyGet, String name, String prefecture, String volume, String publicationDate, String distributionPlaceHtml, String distributionTimeHtml, String stockHtml
 });
 
 
@@ -145,7 +147,7 @@ class __$DetailCardViewDataCopyWithImpl<$Res>
 
 /// Create a copy of DetailCardViewData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? imageUrl = null,Object? alreadyGet = null,Object? name = null,Object? prefecture = null,Object? volume = null,Object? publicationDate = null,Object? distributionPlaceHtml = null,Object? stockHtml = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? imageUrl = null,Object? alreadyGet = null,Object? name = null,Object? prefecture = null,Object? volume = null,Object? publicationDate = null,Object? distributionPlaceHtml = null,Object? distributionTimeHtml = null,Object? stockHtml = null,}) {
   return _then(_DetailCardViewData(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -155,6 +157,7 @@ as String,prefecture: null == prefecture ? _self.prefecture : prefecture // igno
 as String,volume: null == volume ? _self.volume : volume // ignore: cast_nullable_to_non_nullable
 as String,publicationDate: null == publicationDate ? _self.publicationDate : publicationDate // ignore: cast_nullable_to_non_nullable
 as String,distributionPlaceHtml: null == distributionPlaceHtml ? _self.distributionPlaceHtml : distributionPlaceHtml // ignore: cast_nullable_to_non_nullable
+as String,distributionTimeHtml: null == distributionTimeHtml ? _self.distributionTimeHtml : distributionTimeHtml // ignore: cast_nullable_to_non_nullable
 as String,stockHtml: null == stockHtml ? _self.stockHtml : stockHtml // ignore: cast_nullable_to_non_nullable
 as String,
   ));

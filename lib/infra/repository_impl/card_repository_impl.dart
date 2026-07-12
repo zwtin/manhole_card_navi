@@ -73,6 +73,7 @@ class CardRepositoryImpl implements CardRepository {
             ),
             image: doc['image'] as String,
             distributionPlaceHtml: doc['distribution_place_html'] as String,
+            distributionTimeHtml: doc['distribution_time_html'] as String,
             stockHtml: doc['stock_html'] as String,
             distributionPoints: ManholeCardDistributionPoints(
               list: distributionPoints,

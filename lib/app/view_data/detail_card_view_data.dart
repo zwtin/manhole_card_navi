@@ -13,6 +13,7 @@ abstract class DetailCardViewData with _$DetailCardViewData {
     required String volume,
     required String publicationDate,
     required String distributionPlaceHtml,
+    required String distributionTimeHtml,
     required String stockHtml,
   }) = _DetailCardViewData;
   const DetailCardViewData._();
