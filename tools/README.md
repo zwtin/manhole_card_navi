@@ -29,7 +29,8 @@ Firestore に投入するための一連のスクリプト群。
 Firestore へ投入する場合はさらに:
 
 ```
-5. ocr_cards.py                    全カード画像を二重OCR → ID・座標を確定（cards_base に ocr_*）
+0. remap_card_ids.py               新弾でシフトした card_id へ前回の中間成果物・画像を移送（再パース直後に必須）
+5. ocr_cards.py                    新規カード画像を二重OCR → ID・座標を確定（cards_base に ocr_*）
 6. extract_distribution.py         配布場所HTMLをAI抽出 → 住所・在庫状況を確定（cards_base に dist_*）
 7. geocode.py                      配布場所の住所 → 緯度経度（Google Geocoding API・キャッシュ）
 8. build_master.py                 全カードを毎回まるごと再生成 → master_{version}.json
@@ -105,7 +106,10 @@ volumes/{id}     : {id, name}
 ## セットアップ
 
 ```bash
-# Python標準ライブラリのみで動作（追加パッケージ不要）。画像サイズ確認に PIL を使う箇所は任意。
+# ほぼ Python標準ライブラリのみで動作する。
+# deploy_images_to_hosting.py だけ Pillow を使う（非JPEG画像のJPEG変換のため）
+pip3 install Pillow
+
 # gcloud CLI で認証しておく（Firestore/Storage 操作時）
 gcloud auth login
 ```
@@ -207,21 +211,35 @@ python3 tools/delete_images_from_hosting.py --version 0002 --project prod --depl
 ### スキーマ上の注意点
 
 - `prefecture_id` は都道府県コードを3桁ゼロ埋め（`000`=国機関 … `047`=沖縄県）。
-  `volume_id` は弾番号−1 を4桁ゼロ埋め（第01弾=`0000` … 第28弾=`0027`）。
+  `volume_id` は弾番号−1 を4桁ゼロ埋め（第01弾=`0000` … 第29弾=`0028`）。
   どちらも `cards_base` から決定論的に導出するのでハードコードしない。
 - 座標は Firestore の **GeoPoint** で持つ（`location` と `distribution_points`）。
   中間 JSON では `{"_geopoint": {"lat": …, "lon": …}}` というセンチネル形式で表し、
   `upload_master_to_firestore.py` が `geoPointValue` に変換する（定義は `geo_utils.py`）。
 - 配布場所が 0 個のカードもある（`distribution_points` が空配列）。
-- 画像は加工せず原本JPEGをそのまま Hosting の `master/v{version}/images/{id}.jpg` へ配置する。
+- 画像は原本をそのまま Hosting の `master/v{version}/images/{id}.jpg` へ配置する。
+  ただし gk-p.jp には拡張子が `.png` のカードがあり（柏市 `12-217-A001`）、Hosting は `.jpg` に
+  `Content-Type: image/jpeg` を返すため、**非JPEGだけ JPEG に変換してから配置する**。
   カードの `image` フィールドは Hosting 上のパスのみを保持する
   （配信 URL のベース `https://{projectId}.web.app` はアプリ側で付与）。
+
+### `card_id` は恒久IDではない（重要）
+
+`parse_cards.py` が振る `card_id`（`card_0001`…）は gk-p.jp の**行順の連番**にすぎない。
+新弾のカードは都道府県ごとの途中に挿入されるため、**新弾が出ると挿入位置より後ろの card_id が
+全部シフトする**（0004 発行時は24枚の追加で1265件中1231件がズレた）。
+
+前回の中間成果物（`ocr_raw.json` / `dist_raw.json` / `images/{card_id}.jpg` など）をそのまま
+使い回すと、カードと画像・座標の対応が入れ替わる。しかも二重OCRでは検出できない。
+再パースしたら **`remap_card_ids.py` で安定キー `image_url` を介して移送する**。
+カードの恒久的な同一性は `image_url` で判断すること。
 
 ## ファイル一覧
 
 | スクリプト | 役割 |
 |---|---|
 | `parse_cards.py` | 一覧HTML → カード基礎データ（cards_base.json） |
+| `remap_card_ids.py` | 新弾でシフトした `card_id` に、前回の中間成果物と画像を `image_url` 経由で移送 |
 | `download_images.py` | カード画像DL（Referer付き・冪等） |
 | `ocr_cards.py` | 画像の二重OCR結果を確定 → cards_base に `ocr_id` / `ocr_lat_dms` / `ocr_lon_dms` |
 | `extract_distribution.py` | 配布場所のAI抽出結果を確定 → cards_base に `dist_addresses` / `dist_state`（キーワードルールで相互検算） |
