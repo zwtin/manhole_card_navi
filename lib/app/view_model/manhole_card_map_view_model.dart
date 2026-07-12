@@ -83,7 +83,21 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   /// プログレッシブ通知・最終結果を破棄するために使う。
   int _markerGeneration = 0;
   MapState mapState = MapState.distribution;
-  bool isShowModal = false;
+
+  /// 表示中のモーダル枚数。詳細画面の「マップで見る」では、旧モーダルを閉じてから
+  /// 新モーダルを表示するが、閉じた通知（onCameBack）が新モーダル表示より後に届く。
+  /// 単純な bool だと後から false で上書きされ、モーダルが出たままマップが全画面に
+  /// 戻ってしまうため、枚数で管理する。
+  int _showingModalCount = 0;
+  bool get isShowModal => _showingModalCount > 0;
+
+  /// マップ表示エリア（ナビゲーションエリアと下タブエリアの間）の高さ。View の
+  /// レイアウト時に通知される。
+  double _mapAreaHeight = 0.0;
+
+  /// モーダルの高さ。マップ表示エリアの 2/3 を占め、残り 1/3 がマップとして見える。
+  double get modalHeight => _mapAreaHeight * 2.0 / 3.0;
+
   final List<MapMarkerDTO> _positionMarkerDTOList = [];
   final List<MapMarkerDTO> _distributionMarkerDTOList = [];
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
@@ -110,6 +124,11 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   Future<void> setGoogleMapController(GoogleMapController controller) async {
     mapController = controller;
+  }
+
+  /// レイアウト中に呼ばれるため notifyListeners しない。
+  void setMapAreaHeight(double height) {
+    _mapAreaHeight = height;
   }
 
   Future<void> updateMyLocationEnabled() async {
@@ -389,12 +408,15 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   }
 
   Future<void> _showModal() async {
-    isShowModal = true;
+    _showingModalCount++;
     notifyListeners();
   }
 
   Future<void> _closeModal() async {
-    isShowModal = false;
+    if (_showingModalCount == 0) {
+      return;
+    }
+    _showingModalCount--;
     notifyListeners();
   }
 
@@ -409,6 +431,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
             key: UniqueKey(),
             cardId: cardId,
             position: position,
+            height: modalHeight,
           ),
         );
   }

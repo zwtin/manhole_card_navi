@@ -19,29 +19,28 @@ class CardModalView extends CommonWidget {
     super.key,
     required this.cardId,
     required this.position,
+    required this.height,
   });
 
   final String cardId;
   final LatLng position;
 
+  /// ドラッグハンドル領域を含むモーダル全体の高さ。マップ側が表示エリアの 2/3 を
+  /// 指定する。
+  final double height;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(cardModalViewModelProvider(key));
 
-    useEffect(
-      () {
-        WidgetsBinding.instance.addPostFrameCallback(
-          (_) async {
-            await ref.read(cardModalViewModelProvider(key)).onLoad(
-                  cardId,
-                  position,
-                );
-          },
-        );
-        return null;
-      },
-      const [],
-    );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await ref
+            .read(cardModalViewModelProvider(key))
+            .onLoad(cardId, position);
+      });
+      return null;
+    }, const []);
 
     return PVSenderWidget(
       key: key,
@@ -49,159 +48,182 @@ class CardModalView extends CommonWidget {
       child: RouterWidget(
         key: key,
         parent: this,
-        child: SingleChildScrollView(
+        child: SizedBox(
+          // BottomSheet がドラッグハンドルの分だけ上に余白を足すため、その分を引く。
+          height: height - kMinInteractiveDimension,
           child: SafeArea(
-            child: viewModel.isLoading
-                ? const SizedBox(
-                    height: 300,
-                    child: Center(
-                      child: CircularProgressIndicator(),
+            child:
+                viewModel.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    16,
+                                    0,
+                                    16,
+                                    16,
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        width: 120,
+                                        child: BodyLargeText('名前'),
+                                      ),
+                                      Flexible(
+                                        child: BodyLargeText(
+                                          viewModel.viewData.name,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                if (viewModel
+                                    .viewData
+                                    .distributionPlaceHtml
+                                    .isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      0,
+                                      16,
+                                      16,
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(
+                                          width: 120,
+                                          child: BodyLargeText('配布場所'),
+                                        ),
+                                        Flexible(
+                                          child: HtmlContent(
+                                            viewModel
+                                                .viewData
+                                                .distributionPlaceHtml,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    16,
+                                    0,
+                                    16,
+                                    16,
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        width: 120,
+                                        child: BodyLargeText('在庫状況'),
+                                      ),
+                                      Flexible(
+                                        child: HtmlContent(
+                                          viewModel.viewData.stockHtml,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 48,
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (Platform.isAndroid) {
+                                await openGoogleMap(viewModel.viewData);
+                              } else if (Platform.isIOS) {
+                                await showSelectMapModal(
+                                  context,
+                                  viewModel.viewData,
+                                );
+                              }
+                            },
+                            child: TitleMediumText(
+                              '別アプリで開く',
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  0,
+                                  16,
+                                  0,
+                                ),
+                                child: OutlinedButton(
+                                  onPressed: () async {
+                                    await ref
+                                        .read(cardModalViewModelProvider(key))
+                                        .onTapDetailButton();
+                                  },
+                                  child: SizedBox(
+                                    height: 48,
+                                    child: Center(
+                                      child: TitleMediumText(
+                                        '詳細を見る',
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  0,
+                                  16,
+                                  0,
+                                ),
+                                child: OutlinedButton(
+                                  onPressed: () async {
+                                    await ref
+                                        .read(cardModalViewModelProvider(key))
+                                        .onTapAlreadyGetButton();
+                                  },
+                                  child: SizedBox(
+                                    height: 48,
+                                    child: Center(
+                                      child: TitleMediumText(
+                                        viewModel.alreadyGetActionButtonTitle,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                      ],
                     ),
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(
-                              width: 120,
-                              child: BodyLargeText(
-                                '名前',
-                              ),
-                            ),
-                            Flexible(
-                              child: BodyLargeText(
-                                viewModel.viewData.name,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (viewModel.viewData.distributionPlaceHtml.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            16,
-                            0,
-                            16,
-                            16,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                width: 120,
-                                child: BodyLargeText(
-                                  '配布場所',
-                                ),
-                              ),
-                              Flexible(
-                                child: HtmlContent(
-                                  viewModel.viewData.distributionPlaceHtml,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(
-                              width: 120,
-                              child: BodyLargeText(
-                                '在庫状況',
-                              ),
-                            ),
-                            Flexible(
-                              child: HtmlContent(
-                                viewModel.viewData.stockHtml,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 48,
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            if (Platform.isAndroid) {
-                              await openGoogleMap(
-                                viewModel.viewData,
-                              );
-                            } else if (Platform.isIOS) {
-                              await showSelectMapModal(
-                                context,
-                                viewModel.viewData,
-                              );
-                            }
-                          },
-                          child: TitleMediumText(
-                            '別アプリで開く',
-                            color: Theme.of(context).colorScheme.surface,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                              child: OutlinedButton(
-                                onPressed: () async {
-                                  await ref
-                                      .read(cardModalViewModelProvider(key))
-                                      .onTapDetailButton();
-                                },
-                                child: SizedBox(
-                                  height: 48,
-                                  child: Center(
-                                    child: TitleMediumText(
-                                      '詳細を見る',
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                              child: OutlinedButton(
-                                onPressed: () async {
-                                  await ref
-                                      .read(cardModalViewModelProvider(key))
-                                      .onTapAlreadyGetButton();
-                                },
-                                child: SizedBox(
-                                  height: 48,
-                                  child: Center(
-                                    child: TitleMediumText(
-                                      viewModel.alreadyGetActionButtonTitle,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                    ],
-                  ),
           ),
         ),
       ),
@@ -221,9 +243,7 @@ class CardModalView extends CommonWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  title: const TitleMediumText(
-                    'Apple Map で開く',
-                  ),
+                  title: const TitleMediumText('Apple Map で開く'),
                   tileColor: Colors.transparent,
                   onTap: () async {
                     Navigator.of(modalContext).pop();
@@ -231,18 +251,14 @@ class CardModalView extends CommonWidget {
                   },
                 ),
                 ListTile(
-                  title: const TitleMediumText(
-                    'Google Map で開く',
-                  ),
+                  title: const TitleMediumText('Google Map で開く'),
                   tileColor: Colors.transparent,
                   onTap: () async {
                     Navigator.of(modalContext).pop();
                     await openGoogleMap(viewData);
                   },
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -262,10 +278,7 @@ class CardModalView extends CommonWidget {
       },
     );
     if (await canLaunchUrl(uri)) {
-      launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
+      launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
@@ -279,10 +292,7 @@ class CardModalView extends CommonWidget {
       },
     );
     if (await canLaunchUrl(uri)) {
-      launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
+      launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
