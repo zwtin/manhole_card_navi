@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
 import '/app/view_model/manhole_card_list_view_model.dart';
+import '/app/widget/card_image.dart';
 import '/app/widget/common_widget.dart';
 import '/app/widget/custom_text.dart';
 import '/app/widget/pv_sender_widget.dart';
@@ -201,11 +201,11 @@ class ManholeCardListView extends CommonWidget {
                                   child: Row(
                                     children: [
                                       SizedBox(
-                                        child: CachedNetworkImage(
+                                        child: CardImage(
                                           imageUrl: cardViewData.imageUrl,
-                                          fadeInDuration: const Duration(
-                                            microseconds: 0,
-                                          ),
+                                          alreadyGet: cardViewData.alreadyGet,
+                                          memCacheWidth: 260,
+                                          maxWidthDiskCache: 520,
                                         ),
                                       ),
                                       const SizedBox(

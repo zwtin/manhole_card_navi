@@ -7,8 +7,9 @@ abstract class ListCardDTO with _$ListCardDTO {
   const factory ListCardDTO({
     required String id,
     required String name,
-    required String colorImageUrl,
-    required String grayImageUrl,
+
+    /// カード画像の Firebase Hosting 上のパス。
+    required String imagePath,
     required String prefectureId,
     required String prefectureName,
     required String volumeId,

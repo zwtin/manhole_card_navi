@@ -7,6 +7,7 @@ abstract class ListCardViewData with _$ListCardViewData {
   const factory ListCardViewData({
     required String id,
     required String imageUrl,
+    required bool alreadyGet,
     required String name,
     required String volume,
     required String publicationDate,

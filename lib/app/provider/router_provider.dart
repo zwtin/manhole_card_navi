@@ -59,6 +59,7 @@ class RouterNotifier extends StateNotifier<RouterViewData> {
   Future<void> presentImage({
     required String cardId,
     required String imageUrl,
+    required bool alreadyGet,
     required String imageTag,
   }) async {
     state = RouterViewData(
@@ -66,6 +67,7 @@ class RouterNotifier extends StateNotifier<RouterViewData> {
       nextWidget: ImageDetailView(
         cardId: cardId,
         imageUrl: imageUrl,
+        alreadyGet: alreadyGet,
         imageTag: imageTag,
       ),
     );

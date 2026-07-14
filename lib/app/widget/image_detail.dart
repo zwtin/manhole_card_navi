@@ -4,14 +4,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
+import '/app/widget/card_image.dart';
+
 class ImageDetail extends StatefulWidget {
   const ImageDetail({
     super.key,
     required this.imageUrl,
+    required this.alreadyGet,
     required this.imageTag,
   });
 
   final String imageUrl;
+  final bool alreadyGet;
   final String imageTag;
 
   @override
@@ -86,21 +90,38 @@ class ImageDetailViewState extends State<ImageDetail> {
         child: AnimatedContainer(
           duration: Duration(milliseconds: photoViewAnimationDurationMilliSec),
           transform: photoViewTransform,
-          child: PhotoView(
-            backgroundDecoration:
-                const BoxDecoration(color: Colors.transparent),
-            imageProvider: CachedNetworkImageProvider(widget.imageUrl),
-            heroAttributes: PhotoViewHeroAttributes(
-                tag: widget.imageTag, transitionOnUserGestures: true),
-            minScale: PhotoViewComputedScale.contained,
-            scaleStateChangedCallback: (state) {
-              setState(() {
-                scaleState = state;
-              });
-            },
-          ),
+          child: _buildPhotoView(),
         ),
       ),
+    );
+  }
+
+  Widget _buildPhotoView() {
+    final photoView = PhotoView(
+      backgroundDecoration: const BoxDecoration(color: Colors.transparent),
+      imageProvider: CachedNetworkImageProvider(widget.imageUrl),
+      heroAttributes: PhotoViewHeroAttributes(
+        tag: widget.imageTag,
+        transitionOnUserGestures: true,
+        // Hero 飛行中も所持状況に応じた色を維持する。両側に指定がある場合は
+        // 遷移先（この PhotoView 側）の flightShuttleBuilder が優先される。
+        flightShuttleBuilder: CardImage.heroFlightShuttleBuilder(
+          alreadyGet: widget.alreadyGet,
+        ),
+      ),
+      minScale: PhotoViewComputedScale.contained,
+      scaleStateChangedCallback: (state) {
+        setState(() {
+          scaleState = state;
+        });
+      },
+    );
+    if (widget.alreadyGet) {
+      return photoView;
+    }
+    return ColorFiltered(
+      colorFilter: const ColorFilter.matrix(CardImage.grayscaleMatrix),
+      child: photoView,
     );
   }
 

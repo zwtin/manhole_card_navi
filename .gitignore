@@ -62,3 +62,14 @@ app.*.map.json
 
 # Claude settings
 .claude/settings.local.json
+
+# マンホールカード スクレイピングツール（tools/）
+# スクリプト本体（*.py）と README のみコミットし、以下は除外する:
+#   - data/       : スクレイピング/ジオコーディング/DBダンプ等の生成物（実行で再生成可能）
+#   - images/     : gk-p.jp のカード画像（他者著作物・容量大。実行でDL可能）
+#   - out/        : 生成されたCSV（実行で再生成可能）
+#   - .DS_Store
+tools/data/
+tools/images/
+tools/out/
+tools/**/.DS_Store

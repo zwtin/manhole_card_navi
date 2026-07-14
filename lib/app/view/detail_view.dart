@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 import '/app/view_model/detail_view_model.dart';
+import '/app/widget/card_image.dart';
 import '/app/widget/common_widget.dart';
 import '/app/widget/custom_text.dart';
+import '/app/widget/html_content.dart';
 import '/app/widget/pv_sender_widget.dart';
 import '/app/widget/router_widget.dart';
 
@@ -73,6 +74,21 @@ class DetailView extends CommonWidget {
                                       final heroTag = const Uuid().v4();
                                       return GestureDetector(
                                         onTap: () async {
+                                          // 画像拡大（PhotoView）で使う原寸画像の
+                                          // デコード完了を待ってから遷移する。
+                                          // 遷移開始時に PhotoView が即 Hero を
+                                          // 構築でき、初回でも Hero が成立する。
+                                          // 先読みに失敗しても遷移は続行する。
+                                          try {
+                                            await precacheImage(
+                                              CachedNetworkImageProvider(
+                                                viewModel.viewData.imageUrl,
+                                              ),
+                                              context,
+                                            );
+                                          } on Exception {
+                                            // 先読み失敗時はそのまま遷移する。
+                                          }
                                           await ref
                                               .read(
                                                   detailViewModelProvider(key))
@@ -80,15 +96,24 @@ class DetailView extends CommonWidget {
                                         },
                                         child: Hero(
                                           tag: heroTag,
+                                          flightShuttleBuilder:
+                                              CardImage.heroFlightShuttleBuilder(
+                                            alreadyGet:
+                                                viewModel.viewData.alreadyGet,
+                                          ),
                                           child: SizedBox(
                                             width: 130,
                                             height: 180,
-                                            child: CachedNetworkImage(
+                                            // memCacheWidth を指定せず原寸デコード
+                                            // する。画像拡大（PhotoView）も原寸
+                                            // デコードのため、デコード済みビット
+                                            // マップが共有され、初回タップでも
+                                            // Hero 遷移が成立する。
+                                            child: CardImage(
                                               imageUrl:
                                                   viewModel.viewData.imageUrl,
-                                              fadeInDuration: const Duration(
-                                                microseconds: 0,
-                                              ),
+                                              alreadyGet:
+                                                  viewModel.viewData.alreadyGet,
                                             ),
                                           ),
                                         ),
@@ -182,82 +207,62 @@ class DetailView extends CommonWidget {
                                       ],
                                     ),
                                   ),
-                                  ...viewModel.viewData.contacts.map(
-                                    (contactViewData) {
-                                      return Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                          16,
-                                          8,
-                                          16,
-                                          8,
-                                        ),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const SizedBox(
-                                              width: 120,
-                                              child: BodyLargeText(
-                                                '配布場所',
-                                              ),
+                                  if (viewModel
+                                      .viewData.distributionPlaceHtml.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        16,
+                                        8,
+                                        16,
+                                        8,
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(
+                                            width: 120,
+                                            child: BodyLargeText(
+                                              '配布場所',
                                             ),
-                                            Flexible(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  if (contactViewData
-                                                      .nameUrl.isNotEmpty)
-                                                    TextButton(
-                                                      onPressed: () async {
-                                                        final uri = Uri.parse(
-                                                            contactViewData
-                                                                .nameUrl);
-                                                        if (await canLaunchUrl(
-                                                            uri)) {
-                                                          launchUrl(
-                                                            uri,
-                                                            mode: LaunchMode
-                                                                .inAppWebView,
-                                                          );
-                                                        }
-                                                      },
-                                                      child: BodyLargeLinkText(
-                                                        contactViewData.name,
-                                                      ),
-                                                    ),
-                                                  if (contactViewData
-                                                      .nameUrl.isEmpty)
-                                                    BodyLargeText(
-                                                      contactViewData.name,
-                                                    ),
-                                                  BodyLargeText(
-                                                    contactViewData.address,
-                                                  ),
-                                                  BodyLargeText(
-                                                    contactViewData.phoneNumber,
-                                                  ),
-                                                  BodyLargeText(
-                                                    contactViewData.other,
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 8,
-                                                  ),
-                                                  BodyLargeText(
-                                                    contactViewData.time,
-                                                  ),
-                                                  BodyLargeText(
-                                                    contactViewData.timeOther,
-                                                  ),
-                                                ],
-                                              ),
+                                          ),
+                                          Flexible(
+                                            child: HtmlContent(
+                                              viewModel.viewData
+                                                  .distributionPlaceHtml,
                                             ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  if (viewModel
+                                      .viewData.distributionTimeHtml.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        16,
+                                        8,
+                                        16,
+                                        8,
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(
+                                            width: 120,
+                                            child: BodyLargeText(
+                                              '配布時間',
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: HtmlContent(
+                                              viewModel
+                                                  .viewData.distributionTimeHtml,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   Padding(
                                     padding:
                                         const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -270,43 +275,8 @@ class DetailView extends CommonWidget {
                                           child: BodyLargeText('在庫状況'),
                                         ),
                                         Flexible(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              if (viewModel
-                                                  .viewData
-                                                  .distributionLinkText
-                                                  .isNotEmpty)
-                                                TextButton(
-                                                  onPressed: () async {
-                                                    final uri = Uri.parse(
-                                                        viewModel.viewData
-                                                            .distributionLinkUrl);
-                                                    if (await canLaunchUrl(
-                                                        uri)) {
-                                                      launchUrl(
-                                                        uri,
-                                                        mode: LaunchMode
-                                                            .inAppWebView,
-                                                      );
-                                                    }
-                                                  },
-                                                  child: BodyLargeLinkText(
-                                                    viewModel.viewData
-                                                        .distributionLinkText,
-                                                  ),
-                                                ),
-                                              BodyLargeText(
-                                                viewModel
-                                                    .viewData.distributionText,
-                                              ),
-                                              BodyLargeText(
-                                                viewModel
-                                                    .viewData.distributionOther,
-                                              ),
-                                            ],
+                                          child: HtmlContent(
+                                            viewModel.viewData.stockHtml,
                                           ),
                                         ),
                                       ],

@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
+import '/app/service/image_url_builder.dart';
 import '/app/view_data/detail_card_view_data.dart';
-import '/app/view_data/detail_contact_view_data.dart';
 import '/use_case/dto/card_dto.dart';
 
 class DetailCardViewDataMapper {
@@ -21,40 +21,20 @@ class DetailCardViewDataMapper {
   ) async {
     final cardDTO = parameter['cardDTO'] as CardDTO;
     final alreadyGet = parameter['alreadyGet'] as bool;
-    final String imageUrl;
-    if (alreadyGet) {
-      imageUrl = cardDTO.colorImageUrl;
-    } else {
-      imageUrl = cardDTO.grayImageUrl;
-    }
 
     final dateFormatter = DateFormat('yyyy/MM/dd');
 
     return DetailCardViewData(
       id: cardDTO.id,
-      imageUrl: imageUrl,
+      imageUrl: ImageUrlBuilder.build(cardDTO.imagePath),
+      alreadyGet: alreadyGet,
       name: cardDTO.name,
       prefecture: cardDTO.prefectureName,
       volume: cardDTO.volumeName,
       publicationDate: dateFormatter.format(cardDTO.publicationDate.toLocal()),
-      contacts: cardDTO.contacts.map(
-        (contactDTO) {
-          return DetailContactViewData(
-            id: contactDTO.id,
-            name: contactDTO.name,
-            nameUrl: contactDTO.nameUrl,
-            address: contactDTO.address,
-            phoneNumber: contactDTO.phoneNumber,
-            other: contactDTO.other,
-            time: contactDTO.time,
-            timeOther: contactDTO.timeOther,
-          );
-        },
-      ).toList(),
-      distributionLinkText: cardDTO.distributionLinkText,
-      distributionLinkUrl: cardDTO.distributionLinkUrl,
-      distributionText: cardDTO.distributionText,
-      distributionOther: cardDTO.distributionOther,
+      distributionPlaceHtml: cardDTO.distributionPlaceHtml,
+      distributionTimeHtml: cardDTO.distributionTimeHtml,
+      stockHtml: cardDTO.stockHtml,
     );
   }
 }

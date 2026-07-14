@@ -9,6 +9,7 @@ import '/domain/entity/manhole_card_volume.dart';
 import '/domain/entity/manhole_card_volumes.dart';
 import '/domain/entity/result.dart';
 import '/domain/repository/volume_repository.dart';
+import '/infra/dao/realm_configuration.dart';
 import '/infra/dao/realm_volume_dao.dart';
 import '/infra/mapper/realm_volume_mapper.dart';
 import '/infra/mapper/realm_volumes_mapper.dart';
@@ -65,13 +66,7 @@ class VolumeRepositoryImpl implements VolumeRepository {
   @override
   Future<Result<void>> deleteMaster() async {
     try {
-      var config = Configuration.local(
-        [
-          RealmVolumeDAO.schema,
-        ],
-        shouldDeleteIfMigrationNeeded: true,
-      );
-      var realm = Realm(config);
+      var realm = RealmConfiguration.open();
 
       realm.write(() {
         realm.deleteAll<RealmVolumeDAO>();
@@ -98,10 +93,7 @@ class VolumeRepositoryImpl implements VolumeRepository {
     required ManholeCardVolumes manholeCardVolumes,
   }) async {
     try {
-      var config = Configuration.local([
-        RealmVolumeDAO.schema,
-      ]);
-      var realm = Realm(config);
+      var realm = RealmConfiguration.open();
 
       final realmVolumes = RealmVolumesMapper.convertFromEntity(
         entity: manholeCardVolumes,
@@ -135,10 +127,7 @@ class VolumeRepositoryImpl implements VolumeRepository {
     required String id,
   }) async {
     try {
-      var config = Configuration.local([
-        RealmVolumeDAO.schema,
-      ]);
-      var realm = Realm(config);
+      var realm = RealmConfiguration.open();
 
       final daoOrNull = realm
           .all<RealmVolumeDAO>()

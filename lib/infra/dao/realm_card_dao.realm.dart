@@ -18,14 +18,13 @@ class RealmCardDAO extends $RealmCardDAO
     String name,
     DateTime publicationDate,
     String distributionState,
-    String distributionLinkText,
-    String distributionLinkUrl,
-    String distributionText,
-    String distributionOther, {
-    RealmImageDAO? image,
+    String image,
+    String distributionPlaceHtml,
+    String distributionTimeHtml,
+    String stockHtml, {
+    Iterable<RealmDistributionPointDAO> distributionPoints = const [],
     RealmPrefectureDAO? prefecture,
     RealmVolumeDAO? volume,
-    Iterable<RealmContactDAO> contacts = const [],
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'latitude', latitude);
@@ -33,18 +32,17 @@ class RealmCardDAO extends $RealmCardDAO
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'publicationDate', publicationDate);
     RealmObjectBase.set(this, 'distributionState', distributionState);
-    RealmObjectBase.set(this, 'distributionLinkText', distributionLinkText);
-    RealmObjectBase.set(this, 'distributionLinkUrl', distributionLinkUrl);
-    RealmObjectBase.set(this, 'distributionText', distributionText);
-    RealmObjectBase.set(this, 'distributionOther', distributionOther);
     RealmObjectBase.set(this, 'image', image);
+    RealmObjectBase.set(this, 'distributionPlaceHtml', distributionPlaceHtml);
+    RealmObjectBase.set(this, 'distributionTimeHtml', distributionTimeHtml);
+    RealmObjectBase.set(this, 'stockHtml', stockHtml);
+    RealmObjectBase.set<RealmList<RealmDistributionPointDAO>>(
+      this,
+      'distributionPoints',
+      RealmList<RealmDistributionPointDAO>(distributionPoints),
+    );
     RealmObjectBase.set(this, 'prefecture', prefecture);
     RealmObjectBase.set(this, 'volume', volume);
-    RealmObjectBase.set<RealmList<RealmContactDAO>>(
-      this,
-      'contacts',
-      RealmList<RealmContactDAO>(contacts),
-    );
   }
 
   RealmCardDAO._();
@@ -86,39 +84,38 @@ class RealmCardDAO extends $RealmCardDAO
       RealmObjectBase.set(this, 'distributionState', value);
 
   @override
-  String get distributionLinkText =>
-      RealmObjectBase.get<String>(this, 'distributionLinkText') as String;
+  String get image => RealmObjectBase.get<String>(this, 'image') as String;
   @override
-  set distributionLinkText(String value) =>
-      RealmObjectBase.set(this, 'distributionLinkText', value);
+  set image(String value) => RealmObjectBase.set(this, 'image', value);
 
   @override
-  String get distributionLinkUrl =>
-      RealmObjectBase.get<String>(this, 'distributionLinkUrl') as String;
+  String get distributionPlaceHtml =>
+      RealmObjectBase.get<String>(this, 'distributionPlaceHtml') as String;
   @override
-  set distributionLinkUrl(String value) =>
-      RealmObjectBase.set(this, 'distributionLinkUrl', value);
+  set distributionPlaceHtml(String value) =>
+      RealmObjectBase.set(this, 'distributionPlaceHtml', value);
 
   @override
-  String get distributionText =>
-      RealmObjectBase.get<String>(this, 'distributionText') as String;
+  String get distributionTimeHtml =>
+      RealmObjectBase.get<String>(this, 'distributionTimeHtml') as String;
   @override
-  set distributionText(String value) =>
-      RealmObjectBase.set(this, 'distributionText', value);
+  set distributionTimeHtml(String value) =>
+      RealmObjectBase.set(this, 'distributionTimeHtml', value);
 
   @override
-  String get distributionOther =>
-      RealmObjectBase.get<String>(this, 'distributionOther') as String;
+  String get stockHtml =>
+      RealmObjectBase.get<String>(this, 'stockHtml') as String;
   @override
-  set distributionOther(String value) =>
-      RealmObjectBase.set(this, 'distributionOther', value);
+  set stockHtml(String value) => RealmObjectBase.set(this, 'stockHtml', value);
 
   @override
-  RealmImageDAO? get image =>
-      RealmObjectBase.get<RealmImageDAO>(this, 'image') as RealmImageDAO?;
+  RealmList<RealmDistributionPointDAO> get distributionPoints =>
+      RealmObjectBase.get<RealmDistributionPointDAO>(this, 'distributionPoints')
+          as RealmList<RealmDistributionPointDAO>;
   @override
-  set image(covariant RealmImageDAO? value) =>
-      RealmObjectBase.set(this, 'image', value);
+  set distributionPoints(
+    covariant RealmList<RealmDistributionPointDAO> value,
+  ) => throw RealmUnsupportedSetError();
 
   @override
   RealmPrefectureDAO? get prefecture =>
@@ -134,14 +131,6 @@ class RealmCardDAO extends $RealmCardDAO
   @override
   set volume(covariant RealmVolumeDAO? value) =>
       RealmObjectBase.set(this, 'volume', value);
-
-  @override
-  RealmList<RealmContactDAO> get contacts =>
-      RealmObjectBase.get<RealmContactDAO>(this, 'contacts')
-          as RealmList<RealmContactDAO>;
-  @override
-  set contacts(covariant RealmList<RealmContactDAO> value) =>
-      throw RealmUnsupportedSetError();
 
   @override
   Stream<RealmObjectChanges<RealmCardDAO>> get changes =>
@@ -163,14 +152,13 @@ class RealmCardDAO extends $RealmCardDAO
       'name': name.toEJson(),
       'publicationDate': publicationDate.toEJson(),
       'distributionState': distributionState.toEJson(),
-      'distributionLinkText': distributionLinkText.toEJson(),
-      'distributionLinkUrl': distributionLinkUrl.toEJson(),
-      'distributionText': distributionText.toEJson(),
-      'distributionOther': distributionOther.toEJson(),
       'image': image.toEJson(),
+      'distributionPlaceHtml': distributionPlaceHtml.toEJson(),
+      'distributionTimeHtml': distributionTimeHtml.toEJson(),
+      'stockHtml': stockHtml.toEJson(),
+      'distributionPoints': distributionPoints.toEJson(),
       'prefecture': prefecture.toEJson(),
       'volume': volume.toEJson(),
-      'contacts': contacts.toEJson(),
     };
   }
 
@@ -185,10 +173,10 @@ class RealmCardDAO extends $RealmCardDAO
         'name': EJsonValue name,
         'publicationDate': EJsonValue publicationDate,
         'distributionState': EJsonValue distributionState,
-        'distributionLinkText': EJsonValue distributionLinkText,
-        'distributionLinkUrl': EJsonValue distributionLinkUrl,
-        'distributionText': EJsonValue distributionText,
-        'distributionOther': EJsonValue distributionOther,
+        'image': EJsonValue image,
+        'distributionPlaceHtml': EJsonValue distributionPlaceHtml,
+        'distributionTimeHtml': EJsonValue distributionTimeHtml,
+        'stockHtml': EJsonValue stockHtml,
       } =>
         RealmCardDAO(
           fromEJson(id),
@@ -197,14 +185,13 @@ class RealmCardDAO extends $RealmCardDAO
           fromEJson(name),
           fromEJson(publicationDate),
           fromEJson(distributionState),
-          fromEJson(distributionLinkText),
-          fromEJson(distributionLinkUrl),
-          fromEJson(distributionText),
-          fromEJson(distributionOther),
-          image: fromEJson(ejson['image']),
+          fromEJson(image),
+          fromEJson(distributionPlaceHtml),
+          fromEJson(distributionTimeHtml),
+          fromEJson(stockHtml),
+          distributionPoints: fromEJson(ejson['distributionPoints']),
           prefecture: fromEJson(ejson['prefecture']),
           volume: fromEJson(ejson['volume']),
-          contacts: fromEJson(ejson['contacts']),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -224,15 +211,15 @@ class RealmCardDAO extends $RealmCardDAO
         SchemaProperty('name', RealmPropertyType.string),
         SchemaProperty('publicationDate', RealmPropertyType.timestamp),
         SchemaProperty('distributionState', RealmPropertyType.string),
-        SchemaProperty('distributionLinkText', RealmPropertyType.string),
-        SchemaProperty('distributionLinkUrl', RealmPropertyType.string),
-        SchemaProperty('distributionText', RealmPropertyType.string),
-        SchemaProperty('distributionOther', RealmPropertyType.string),
+        SchemaProperty('image', RealmPropertyType.string),
+        SchemaProperty('distributionPlaceHtml', RealmPropertyType.string),
+        SchemaProperty('distributionTimeHtml', RealmPropertyType.string),
+        SchemaProperty('stockHtml', RealmPropertyType.string),
         SchemaProperty(
-          'image',
+          'distributionPoints',
           RealmPropertyType.object,
-          optional: true,
-          linkTarget: 'RealmImageDAO',
+          linkTarget: 'RealmDistributionPointDAO',
+          collectionType: RealmCollectionType.list,
         ),
         SchemaProperty(
           'prefecture',
@@ -245,12 +232,6 @@ class RealmCardDAO extends $RealmCardDAO
           RealmPropertyType.object,
           optional: true,
           linkTarget: 'RealmVolumeDAO',
-        ),
-        SchemaProperty(
-          'contacts',
-          RealmPropertyType.object,
-          linkTarget: 'RealmContactDAO',
-          collectionType: RealmCollectionType.list,
         ),
       ],
     );

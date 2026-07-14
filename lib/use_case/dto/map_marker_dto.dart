@@ -6,8 +6,10 @@ part 'map_marker_dto.freezed.dart';
 abstract class MapMarkerDTO with _$MapMarkerDTO {
   const factory MapMarkerDTO({
     required String cardId,
-    required String colorImageUrl,
-    required String grayImageUrl,
+
+    /// カード画像の Firebase Hosting 上のパス。
+    required String imagePath,
+    required String distributionState,
     required double latitude,
     required double longitude,
   }) = _MapMarkerDTO;

@@ -7,7 +7,6 @@ import '/domain/entity/result.dart';
 import '/domain/repository/card_repository.dart';
 import '/infra/repository_impl/card_repository_impl.dart';
 import '/use_case/dto/card_dto.dart';
-import '/use_case/dto/contact_dto.dart';
 
 final cardUseCaseProvider = Provider.autoDispose<CardUseCase>(
   (ref) {
@@ -50,8 +49,7 @@ class CardUseCase {
       CardDTO(
         id: card.id,
         name: card.name,
-        colorImageUrl: card.image.colorOriginal,
-        grayImageUrl: card.image.grayOriginal,
+        imagePath: card.image,
         latitude: card.latitude,
         longitude: card.longitude,
         prefectureId: card.prefecture.id,
@@ -59,24 +57,9 @@ class CardUseCase {
         volumeId: card.volume.id,
         volumeName: card.volume.name,
         publicationDate: card.publicationDate,
-        distributionLinkText: card.distributionLinkText,
-        distributionLinkUrl: card.distributionLinkUrl,
-        distributionText: card.distributionText,
-        distributionOther: card.distributionOther,
-        contacts: card.contacts.map((contact) {
-          return ContactDTO(
-            id: contact.id,
-            name: contact.name,
-            nameUrl: contact.nameUrl,
-            address: contact.address,
-            phoneNumber: contact.phoneNumber,
-            latitude: contact.latitude,
-            longitude: contact.longitude,
-            other: contact.other,
-            time: contact.time,
-            timeOther: contact.timeOther,
-          );
-        }).toList(),
+        distributionPlaceHtml: card.distributionPlaceHtml,
+        distributionTimeHtml: card.distributionTimeHtml,
+        stockHtml: card.stockHtml,
       ),
     );
   }

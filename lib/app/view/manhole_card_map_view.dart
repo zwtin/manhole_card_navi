@@ -121,65 +121,80 @@ class ManholeCardMapView extends CommonWidget {
               ),
             ],
           ),
-          body: Stack(
-            children: [
-              Container(color: Theme.of(context).colorScheme.background),
-              Column(
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              // モーダルはこの表示エリアの 2/3 を占めるため、マップを残り 1/3 に
+              // 縮めて、ピンが見えている範囲の中央に来るようにする。
+              ref
+                  .read(manholeCardMapViewModelProvider(key))
+                  .setMapAreaHeight(constraints.maxHeight);
+              return Stack(
                 children: [
-                  Flexible(
-                    child: GoogleMap(
-                      initialCameraPosition: viewModel.initialCameraPosition,
-                      onMapCreated: (controller) async {
-                        ref
-                            .read(manholeCardMapViewModelProvider(key))
-                            .setGoogleMapController(controller);
-                        ref
-                            .read(manholeCardMapViewModelProvider(key))
-                            .updateMyLocationEnabled();
-                      },
-                      mapToolbarEnabled: false,
-                      mapType: MapType.normal,
-                      minMaxZoomPreference: const MinMaxZoomPreference(5, 17),
-                      rotateGesturesEnabled: false,
-                      zoomControlsEnabled: false,
-                      tiltGesturesEnabled: false,
-                      myLocationEnabled: viewModel.myLocationEnabled,
-                      myLocationButtonEnabled: false,
-                      markers:
-                          viewModel.markersViewData.map((viewData) {
-                            return Marker(
-                              markerId: MarkerId(viewData.id),
-                              icon: BitmapDescriptor.fromBytes(viewData.icon),
-                              position: LatLng(
-                                viewData.latitude,
-                                viewData.longitude,
-                              ),
-                              onTap: () {
-                                ref
-                                    .read(manholeCardMapViewModelProvider(key))
-                                    .onTapMarker(viewData.id);
-                              },
-                            );
-                          }).toSet(),
-                      onCameraMove: (position) async {
-                        ref
-                            .read(manholeCardMapViewModelProvider(key))
-                            .onCameraMove(position);
-                      },
-                      onCameraIdle: () async {
-                        ref
-                            .read(manholeCardMapViewModelProvider(key))
-                            .onCameraIdle();
-                      },
-                    ),
+                  Container(color: Theme.of(context).colorScheme.background),
+                  Column(
+                    children: [
+                      Flexible(
+                        child: GoogleMap(
+                          initialCameraPosition:
+                              viewModel.initialCameraPosition,
+                          onMapCreated: (controller) async {
+                            ref
+                                .read(manholeCardMapViewModelProvider(key))
+                                .setGoogleMapController(controller);
+                            ref
+                                .read(manholeCardMapViewModelProvider(key))
+                                .updateMyLocationEnabled();
+                          },
+                          mapToolbarEnabled: false,
+                          mapType: MapType.normal,
+                          minMaxZoomPreference: const MinMaxZoomPreference(
+                            5,
+                            17,
+                          ),
+                          rotateGesturesEnabled: false,
+                          zoomControlsEnabled: false,
+                          tiltGesturesEnabled: false,
+                          myLocationEnabled: viewModel.myLocationEnabled,
+                          myLocationButtonEnabled: false,
+                          markers:
+                              viewModel.markersViewData.map((viewData) {
+                                return Marker(
+                                  markerId: MarkerId(viewData.id),
+                                  icon: BitmapDescriptor.fromBytes(
+                                    viewData.icon,
+                                  ),
+                                  position: LatLng(
+                                    viewData.latitude,
+                                    viewData.longitude,
+                                  ),
+                                  onTap: () {
+                                    ref
+                                        .read(
+                                          manholeCardMapViewModelProvider(key),
+                                        )
+                                        .onTapMarker(viewData.id);
+                                  },
+                                );
+                              }).toSet(),
+                          onCameraMove: (position) async {
+                            ref
+                                .read(manholeCardMapViewModelProvider(key))
+                                .onCameraMove(position);
+                          },
+                          onCameraIdle: () async {
+                            ref
+                                .read(manholeCardMapViewModelProvider(key))
+                                .onCameraIdle();
+                          },
+                        ),
+                      ),
+                      if (viewModel.isShowModal)
+                        SizedBox(height: viewModel.modalHeight),
+                    ],
                   ),
-                  if (viewModel.isShowModal)
-                    const SizedBox(
-                      height: 300, // 適した値を取得するのが難しいので、仮値
-                    ),
                 ],
-              ),
-            ],
+              );
+            },
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
