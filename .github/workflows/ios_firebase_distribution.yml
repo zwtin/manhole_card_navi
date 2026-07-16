@@ -7,10 +7,15 @@
 # 以下の Secret を登録してください。
 # ============================================================================
 #
-# 【dart-define】
+# 【dart-define】(base64 エンコードして登録)
 #   PRODUCTION_ENV
-#     - dart_defines/production.env の中身をそのまま貼り付けたもの
-#       (appId / appDisplayName / appName / flavor / *_apiKey などのキー群)
+#     - dart_defines/production.env を base64 エンコードした文字列
+#       生成例: base64 -i dart_defines/production.env | pbcopy
+#   DEVELOPMENT_ENV
+#     - dart_defines/development.env を base64 エンコードした文字列
+#       生成例: base64 -i dart_defines/development.env | pbcopy
+#     ※ workflow_dispatch の入力 flavor で production / development を切り替えます。
+#       使う側のファイル (両方登録しておけば実行時に選択) をデコードして利用します。
 #
 # 【コード署名】
 #   IOS_DIST_CERTIFICATE_BASE64
@@ -39,6 +44,14 @@ name: iOS Firebase App Distribution
 on:
   workflow_dispatch:
     inputs:
+      flavor:
+        description: 'ビルドするフレーバー (使用する dart-define を切り替え)'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - development
       flutter_version:
         description: 'Flutter のバージョン (pubspec の Dart ^3.7.2 に対応)'
         required: true
@@ -81,12 +94,28 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Create dart_defines/production.env
+      - name: Create dart-define env file
+        env:
+          FLAVOR: ${{ github.event.inputs.flavor }}
+          PRODUCTION_ENV_BASE64: ${{ secrets.PRODUCTION_ENV }}
+          DEVELOPMENT_ENV_BASE64: ${{ secrets.DEVELOPMENT_ENV }}
         run: |
+          set -euo pipefail
           mkdir -p dart_defines
-          cat > dart_defines/production.env <<'EOF'
-          ${{ secrets.PRODUCTION_ENV }}
-          EOF
+          if [ "$FLAVOR" = "development" ]; then
+            ENV_FILE="dart_defines/development.env"
+            echo "$DEVELOPMENT_ENV_BASE64" | base64 --decode > "$ENV_FILE"
+          else
+            ENV_FILE="dart_defines/production.env"
+            echo "$PRODUCTION_ENV_BASE64" | base64 --decode > "$ENV_FILE"
+          fi
+          # 空 (Secret 未登録 or デコード失敗) を検知
+          if [ ! -s "$ENV_FILE" ]; then
+            echo "$ENV_FILE が空です。Secret が正しく登録されているか確認してください" >&2
+            exit 1
+          fi
+          echo "ENV_FILE=$ENV_FILE" >> "$GITHUB_ENV"
+          echo "使用する dart-define: $ENV_FILE"
 
       - name: Flutter pub get
         run: flutter pub get
@@ -198,7 +227,7 @@ jobs:
           set -euo pipefail
           flutter build ipa \
             --release \
-            --dart-define-from-file=dart_defines/production.env \
+            --dart-define-from-file="$ENV_FILE" \
             --export-options-plist="$RUNNER_TEMP/ExportOptions.plist"
 
       - name: Locate IPA
