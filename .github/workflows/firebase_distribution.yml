@@ -39,6 +39,10 @@
 #       ※ キーには Firebase 配布用に必要な権限 (App Manager 等) を付与してください。
 #       ※ エクスポート方式は development 固定 (entitlements の
 #         aps-environment=development と整合。テスター端末の UDID 登録が必要)。
+#   FIREBASE_JSON
+#     - プロジェクト直下の firebase.json を base64 化した文字列
+#       生成例: base64 -i firebase.json | pbcopy
+#       ※ flutterfire upload-crashlytics-symbols ビルドフェーズが参照します。
 #   GOOGLE_SERVICE_INFO_PLIST_PRODUCTION
 #     - production 用 GoogleService-Info.plist を base64 化した文字列
 #       生成例: base64 -i ios/production/GoogleService-Info.plist | pbcopy
@@ -195,6 +199,20 @@ jobs:
           flutter pub global activate flutterfire_cli
           # ビルドフェーズが参照できるよう pub-cache/bin を PATH に追加
           echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+
+      - name: Setup firebase.json
+        env:
+          FIREBASE_JSON_BASE64: ${{ secrets.FIREBASE_JSON }}
+        run: |
+          set -euo pipefail
+          # flutterfire upload-crashlytics-symbols がプロジェクト直下の firebase.json を
+          # 参照する。gitignore されているため Secret から配置する。
+          echo "$FIREBASE_JSON_BASE64" | base64 --decode > firebase.json
+          if [ ! -s firebase.json ]; then
+            echo "firebase.json が空です。FIREBASE_JSON を確認してください" >&2
+            exit 1
+          fi
+          echo "配置: firebase.json"
 
       - name: Setup App Store Connect API key
         env:
