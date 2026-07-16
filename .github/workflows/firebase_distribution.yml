@@ -187,6 +187,15 @@ jobs:
       # - name: Run build_runner
       #   run: flutter pub run build_runner build --delete-conflicting-outputs
 
+      - name: Install FlutterFire CLI
+        run: |
+          set -euo pipefail
+          # Xcode の Runner ターゲットに flutterfire upload-crashlytics-symbols を
+          # 呼ぶビルドフェーズがあり、flutterfire CLI が未導入だとビルドが失敗するため導入する。
+          flutter pub global activate flutterfire_cli
+          # ビルドフェーズが参照できるよう pub-cache/bin を PATH に追加
+          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+
       - name: Setup App Store Connect API key
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
