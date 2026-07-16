@@ -1,13 +1,14 @@
-# iOS アプリをビルド・アーカイブして IPA を作成し、Firebase App Distribution で配布するワークフロー。
+# iOS / Android アプリをビルドして Firebase App Distribution で配布するワークフロー。
 #
 # 手動実行 (workflow_dispatch) で起動します。
+# platform 入力で ios / android / both を選択できます。
 #
 # ============================================================================
 # 事前に GitHub リポジトリの Settings > Secrets and variables > Actions に
-# 以下の Secret を登録してください。
+# 以下の Secret を登録してください。(バイナリ系はすべて base64 エンコード)
 # ============================================================================
 #
-# 【dart-define】(base64 エンコードして登録)
+# 【共通: dart-define】
 #   PRODUCTION_ENV
 #     - dart_defines/production.env を base64 エンコードした文字列
 #       生成例: base64 -i dart_defines/production.env | pbcopy
@@ -15,9 +16,15 @@
 #     - dart_defines/development.env を base64 エンコードした文字列
 #       生成例: base64 -i dart_defines/development.env | pbcopy
 #     ※ workflow_dispatch の入力 flavor で production / development を切り替えます。
-#       使う側のファイル (両方登録しておけば実行時に選択) をデコードして利用します。
 #
-# 【コード署名】
+# 【共通: Firebase】
+#   FIREBASE_SERVICE_ACCOUNT
+#     - Firebase App Distribution 権限を持つサービスアカウント鍵 (JSON) の中身
+#       ロール例: Firebase App Distribution Admin
+#
+# 【iOS】
+#   FIREBASE_IOS_APP_ID
+#     - Firebase コンソールの iOS アプリの App ID (例: 1:1234567890:ios:abcdef...)
 #   IOS_DIST_CERTIFICATE_BASE64
 #     - 配布用証明書 (.p12) を base64 エンコードした文字列
 #       生成例: base64 -i Certificates.p12 | pbcopy
@@ -31,19 +38,38 @@
 #   KEYCHAIN_PASSWORD
 #     - CI 上に作成する一時キーチェーンのパスワード (任意の文字列)
 #
-# 【Firebase】
-#   FIREBASE_IOS_APP_ID
-#     - Firebase コンソールの iOS アプリの App ID (例: 1:1234567890:ios:abcdef...)
-#   FIREBASE_SERVICE_ACCOUNT
-#     - Firebase App Distribution 権限を持つサービスアカウント鍵 (JSON) の中身
-#       ロール例: Firebase App Distribution Admin
+# 【Android】
+#   FIREBASE_ANDROID_APP_ID
+#     - Firebase コンソールの Android アプリの App ID (例: 1:1234567890:android:abcdef...)
+#   ANDROID_KEYSTORE_BASE64
+#     - リリース署名用キーストア (.jks/.keystore) を base64 化した文字列
+#       生成例: base64 -i upload-keystore.jks | pbcopy
+#   ANDROID_KEYSTORE_PASSWORD
+#     - キーストアのパスワード (key.properties の releaseStorePassword)
+#   ANDROID_KEY_ALIAS
+#     - キーエイリアス (key.properties の releaseKeyAlias)
+#   ANDROID_KEY_PASSWORD
+#     - キーのパスワード (key.properties の releaseKeyPassword)
+#   GOOGLE_SERVICES_JSON_PRODUCTION
+#     - production 用 google-services.json を base64 化した文字列
+#   GOOGLE_SERVICES_JSON_DEVELOPMENT
+#     - development 用 google-services.json を base64 化した文字列
 # ============================================================================
 
-name: iOS Firebase App Distribution
+name: iOS / Android Firebase App Distribution
 
 on:
   workflow_dispatch:
     inputs:
+      platform:
+        description: '配布対象のプラットフォーム'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - ios
+          - android
       flavor:
         description: 'ビルドするフレーバー (使用する dart-define を切り替え)'
         required: true
@@ -57,7 +83,7 @@ on:
         required: true
         default: '3.29.2'
       export_method:
-        description: 'IPA のエクスポート方式'
+        description: '[iOS] IPA のエクスポート方式'
         required: true
         default: 'ad-hoc'
         type: choice
@@ -75,8 +101,12 @@ on:
         default: 'workflow_dispatch による配布'
 
 jobs:
-  build-and-distribute:
+  # ==========================================================================
+  # iOS
+  # ==========================================================================
+  build-ios:
     name: Build & Distribute iOS
+    if: ${{ github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'both' }}
     runs-on: macos-15
     timeout-minutes: 60
 
@@ -109,7 +139,6 @@ jobs:
             ENV_FILE="dart_defines/production.env"
             echo "$PRODUCTION_ENV_BASE64" | base64 --decode > "$ENV_FILE"
           fi
-          # 空 (Secret 未登録 or デコード失敗) を検知
           if [ ! -s "$ENV_FILE" ]; then
             echo "$ENV_FILE が空です。Secret が正しく登録されているか確認してください" >&2
             exit 1
@@ -249,7 +278,7 @@ jobs:
           path: ${{ steps.ipa.outputs.path }}
           if-no-files-found: error
 
-      - name: Distribute to Firebase App Distribution
+      - name: Distribute to Firebase App Distribution (iOS)
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
@@ -262,3 +291,127 @@ jobs:
         if: always()
         run: |
           security delete-keychain "$RUNNER_TEMP/app-signing.keychain-db" || true
+
+  # ==========================================================================
+  # Android
+  # ==========================================================================
+  build-android:
+    name: Build & Distribute Android
+    if: ${{ github.event.inputs.platform == 'android' || github.event.inputs.platform == 'both' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ github.event.inputs.flutter_version }}
+          channel: stable
+          cache: true
+
+      - name: Create dart-define env file
+        env:
+          FLAVOR: ${{ github.event.inputs.flavor }}
+          PRODUCTION_ENV_BASE64: ${{ secrets.PRODUCTION_ENV }}
+          DEVELOPMENT_ENV_BASE64: ${{ secrets.DEVELOPMENT_ENV }}
+        run: |
+          set -euo pipefail
+          mkdir -p dart_defines
+          if [ "$FLAVOR" = "development" ]; then
+            ENV_FILE="dart_defines/development.env"
+            echo "$DEVELOPMENT_ENV_BASE64" | base64 --decode > "$ENV_FILE"
+          else
+            ENV_FILE="dart_defines/production.env"
+            echo "$PRODUCTION_ENV_BASE64" | base64 --decode > "$ENV_FILE"
+          fi
+          if [ ! -s "$ENV_FILE" ]; then
+            echo "$ENV_FILE が空です。Secret が正しく登録されているか確認してください" >&2
+            exit 1
+          fi
+          echo "ENV_FILE=$ENV_FILE" >> "$GITHUB_ENV"
+          echo "使用する dart-define: $ENV_FILE"
+
+      - name: Setup google-services.json
+        env:
+          FLAVOR: ${{ github.event.inputs.flavor }}
+          GOOGLE_SERVICES_JSON_PRODUCTION: ${{ secrets.GOOGLE_SERVICES_JSON_PRODUCTION }}
+          GOOGLE_SERVICES_JSON_DEVELOPMENT: ${{ secrets.GOOGLE_SERVICES_JSON_DEVELOPMENT }}
+        run: |
+          set -euo pipefail
+          DEST="android/app/src/${FLAVOR}/google-services.json"
+          mkdir -p "android/app/src/${FLAVOR}"
+          if [ "$FLAVOR" = "development" ]; then
+            echo "$GOOGLE_SERVICES_JSON_DEVELOPMENT" | base64 --decode > "$DEST"
+          else
+            echo "$GOOGLE_SERVICES_JSON_PRODUCTION" | base64 --decode > "$DEST"
+          fi
+          if [ ! -s "$DEST" ]; then
+            echo "$DEST が空です。Secret が正しく登録されているか確認してください" >&2
+            exit 1
+          fi
+          echo "配置: $DEST"
+
+      - name: Setup Android signing (keystore + key.properties)
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          # storeFile は app モジュール (android/app) からの相対パスで解決される
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/release-keystore.jks
+          cat > android/key.properties <<EOF
+          releaseKeyAlias=${ANDROID_KEY_ALIAS}
+          releaseKeyPassword=${ANDROID_KEY_PASSWORD}
+          releaseStoreFile=release-keystore.jks
+          releaseStorePassword=${ANDROID_KEYSTORE_PASSWORD}
+          EOF
+          echo "key.properties を生成しました"
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build APK
+        run: |
+          set -euo pipefail
+          flutter build apk \
+            --release \
+            --dart-define-from-file="$ENV_FILE"
+
+      - name: Locate APK
+        id: apk
+        run: |
+          set -euo pipefail
+          APK_PATH=$(find build/app/outputs -name "*.apk" | head -n 1)
+          if [ -z "$APK_PATH" ]; then
+            echo "APK が見つかりませんでした" >&2
+            exit 1
+          fi
+          echo "path=$APK_PATH" >> "$GITHUB_OUTPUT"
+          echo "生成された APK: $APK_PATH"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: ${{ steps.apk.outputs.path }}
+          if-no-files-found: error
+
+      - name: Distribute to Firebase App Distribution (Android)
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          groups: ${{ github.event.inputs.tester_groups }}
+          releaseNotes: ${{ github.event.inputs.release_notes }}
+          file: ${{ steps.apk.outputs.path }}
