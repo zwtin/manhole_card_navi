@@ -85,9 +85,9 @@ on:
           - development
           - production
       flutter_version:
-        description: 'Flutter のバージョン (ローカル: 3.41.9 / Dart 3.11.5)'
-        required: true
-        default: '3.41.9'
+        description: 'Flutter のバージョン (空ならリポジトリの .fvmrc を使用)'
+        required: false
+        default: ''
       export_method:
         description: '[iOS] IPA のエクスポート方式'
         required: true
@@ -126,10 +126,24 @@ jobs:
         with:
           xcode-version: '26.4.1'
 
+      - name: Resolve Flutter version
+        id: flutter_version
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.flutter_version }}
+        run: |
+          set -euo pipefail
+          if [ -n "$INPUT_VERSION" ]; then
+            VER="$INPUT_VERSION"
+          else
+            VER=$(python3 -c "import json; print(json.load(open('.fvmrc'))['flutter'])")
+          fi
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "使用する Flutter: $VER"
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ github.event.inputs.flutter_version }}
+          flutter-version: ${{ steps.flutter_version.outputs.version }}
           channel: stable
           cache: true
 
@@ -350,10 +364,24 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Resolve Flutter version
+        id: flutter_version
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.flutter_version }}
+        run: |
+          set -euo pipefail
+          if [ -n "$INPUT_VERSION" ]; then
+            VER="$INPUT_VERSION"
+          else
+            VER=$(python3 -c "import json; print(json.load(open('.fvmrc'))['flutter'])")
+          fi
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "使用する Flutter: $VER"
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ github.event.inputs.flutter_version }}
+          flutter-version: ${{ steps.flutter_version.outputs.version }}
           channel: stable
           cache: true
 
