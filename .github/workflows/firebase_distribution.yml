@@ -37,6 +37,14 @@
 #         プロファイルを使用してください (app-store プロファイルは実機直接インストール不可)。
 #   KEYCHAIN_PASSWORD
 #     - CI 上に作成する一時キーチェーンのパスワード (任意の文字列)
+#   GOOGLE_SERVICE_INFO_PLIST_PRODUCTION
+#     - production 用 GoogleService-Info.plist を base64 化した文字列
+#       生成例: base64 -i ios/production/GoogleService-Info.plist | pbcopy
+#   GOOGLE_SERVICE_INFO_PLIST_DEVELOPMENT
+#     - development 用 GoogleService-Info.plist を base64 化した文字列
+#       生成例: base64 -i ios/development/GoogleService-Info.plist | pbcopy
+#     ※ Xcode のビルドフェーズで ios/<flavor>/GoogleService-Info.plist を
+#       Runner にコピーして同梱するため、iOS ビルドにも plist が必要です。
 #
 # 【Android】
 #   FIREBASE_ANDROID_APP_ID
@@ -145,6 +153,29 @@ jobs:
           fi
           echo "ENV_FILE=$ENV_FILE" >> "$GITHUB_ENV"
           echo "使用する dart-define: $ENV_FILE"
+
+      - name: Setup GoogleService-Info.plist
+        env:
+          FLAVOR: ${{ github.event.inputs.flavor }}
+          PLIST_PRODUCTION: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_PRODUCTION }}
+          PLIST_DEVELOPMENT: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_DEVELOPMENT }}
+        run: |
+          set -euo pipefail
+          # Xcode のビルドフェーズが ios/<flavor>/GoogleService-Info.plist を
+          # ios/Runner/GoogleService-Info.plist にコピーして同梱する
+          DEST_DIR="ios/${FLAVOR}"
+          DEST="${DEST_DIR}/GoogleService-Info.plist"
+          mkdir -p "$DEST_DIR"
+          if [ "$FLAVOR" = "development" ]; then
+            echo "$PLIST_DEVELOPMENT" | base64 --decode > "$DEST"
+          else
+            echo "$PLIST_PRODUCTION" | base64 --decode > "$DEST"
+          fi
+          if [ ! -s "$DEST" ]; then
+            echo "$DEST が空です。Secret が正しく登録されているか確認してください" >&2
+            exit 1
+          fi
+          echo "配置: $DEST"
 
       - name: Flutter pub get
         run: flutter pub get
