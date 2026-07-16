@@ -85,9 +85,9 @@ on:
           - development
           - production
       flutter_version:
-        description: 'Flutter のバージョン (pubspec の Dart ^3.7.2 に対応)'
+        description: 'Flutter のバージョン (ローカル: 3.41.9 / Dart 3.11.5)'
         required: true
-        default: '3.29.2'
+        default: '3.41.9'
       export_method:
         description: '[iOS] IPA のエクスポート方式'
         required: true
