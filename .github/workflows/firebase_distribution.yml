@@ -33,8 +33,8 @@
 #     - App Store Connect API キー (.p8) を base64 化した文字列
 #       生成例: base64 -i AuthKey_XXXXXXXXXX.p8 | pbcopy
 #       ※ キーには Firebase 配布用に必要な権限 (App Manager 等) を付与してください。
-#       ※ エクスポート方式は flavor に応じて切替 (development->development /
-#         production->ad-hoc)。いずれもテスター端末の UDID 登録が必要。
+#       ※ エクスポート方式は development 固定 (entitlements の
+#         aps-environment=development と整合。テスター端末の UDID 登録が必要)。
 #   GOOGLE_SERVICE_INFO_PLIST_PRODUCTION
 #     - production 用 GoogleService-Info.plist を base64 化した文字列
 #       生成例: base64 -i ios/production/GoogleService-Info.plist | pbcopy
@@ -250,25 +250,16 @@ jobs:
           codesign -d --entitlements :- "$APP" 2>/dev/null || true
 
       - name: Generate ExportOptions.plist
-        env:
-          FLAVOR: ${{ github.event.inputs.flavor }}
         run: |
           set -euo pipefail
-          # flavor に応じてエクスポート方式を切り替える
-          #   development -> development / production -> ad-hoc
-          if [ "$FLAVOR" = "production" ]; then
-            METHOD="ad-hoc"
-          else
-            METHOD="development"
-          fi
-          echo "エクスポート方式: $METHOD (flavor=$FLAVOR)"
+          # entitlements の aps-environment=development と整合する development 方式で固定
           cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
           <dict>
             <key>method</key>
-            <string>${METHOD}</string>
+            <string>development</string>
             <key>teamID</key>
             <string>PBU8Y745DH</string>
             <key>signingStyle</key>
