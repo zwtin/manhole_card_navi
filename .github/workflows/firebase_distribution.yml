@@ -21,10 +21,10 @@
 #   FIREBASE_SERVICE_ACCOUNT
 #     - Firebase App Distribution 権限を持つサービスアカウント鍵 (JSON) の中身
 #       ロール例: Firebase App Distribution Admin
+#     ※ Firebase App ID (iOS/Android) は GoogleService-Info.plist /
+#       google-services.json から自動抽出するため Secret 登録は不要です。
 #
 # 【iOS】(App Store Connect API キーによる Cloud-managed 証明書で自動署名)
-#   FIREBASE_IOS_APP_ID
-#     - Firebase コンソールの iOS アプリの App ID (例: 1:1234567890:ios:abcdef...)
 #   ASC_KEY_ID
 #     - App Store Connect API キーの Key ID
 #   ASC_ISSUER_ID
@@ -45,8 +45,6 @@
 #       Runner にコピーして同梱するため、iOS ビルドにも plist が必要です。
 #
 # 【Android】
-#   FIREBASE_ANDROID_APP_ID
-#     - Firebase コンソールの Android アプリの App ID (例: 1:1234567890:android:abcdef...)
 #   ANDROID_KEYSTORE_BASE64
 #     - リリース署名用キーストア (.jks/.keystore) を base64 化した文字列
 #       生成例: base64 -i upload-keystore.jks | pbcopy
@@ -167,6 +165,14 @@ jobs:
             exit 1
           fi
           echo "配置: $DEST"
+          # plist から Firebase iOS App ID (GOOGLE_APP_ID) を抽出
+          APP_ID=$(/usr/libexec/PlistBuddy -c "Print :GOOGLE_APP_ID" "$DEST")
+          if [ -z "$APP_ID" ]; then
+            echo "GOOGLE_APP_ID を plist から取得できませんでした" >&2
+            exit 1
+          fi
+          echo "FIREBASE_IOS_APP_ID=$APP_ID" >> "$GITHUB_ENV"
+          echo "Firebase iOS App ID: $APP_ID"
 
       - name: Flutter pub get
         run: flutter pub get
@@ -309,7 +315,7 @@ jobs:
       - name: Distribute to Firebase App Distribution (iOS)
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
-          appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
+          appId: ${{ env.FIREBASE_IOS_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           groups: testers
           releaseNotes: ${{ github.event.inputs.release_notes }}
@@ -396,6 +402,35 @@ jobs:
             exit 1
           fi
           echo "配置: $DEST"
+          # applicationId (package名) に対応する mobilesdk_app_id を抽出
+          APP_ID=$(python3 - "$DEST" "$ENV_FILE" <<'PY'
+          import json, sys
+          dest, envf = sys.argv[1], sys.argv[2]
+          pkg = None
+          for line in open(envf):
+              line = line.strip()
+              if line.startswith('appId='):
+                  pkg = line.split('=', 1)[1]
+                  break
+          data = json.load(open(dest))
+          clients = data.get('client', [])
+          app_id = None
+          for c in clients:
+              info = c.get('client_info', {})
+              if info.get('android_client_info', {}).get('package_name') == pkg:
+                  app_id = info.get('mobilesdk_app_id')
+                  break
+          if app_id is None and clients:
+              app_id = clients[0].get('client_info', {}).get('mobilesdk_app_id')
+          print(app_id or '')
+          PY
+          )
+          if [ -z "$APP_ID" ]; then
+            echo "mobilesdk_app_id を google-services.json から取得できませんでした" >&2
+            exit 1
+          fi
+          echo "FIREBASE_ANDROID_APP_ID=$APP_ID" >> "$GITHUB_ENV"
+          echo "Firebase Android App ID: $APP_ID"
 
       - name: Setup Android signing (keystore + key.properties)
         env:
@@ -447,7 +482,7 @@ jobs:
       - name: Distribute to Firebase App Distribution (Android)
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
-          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          appId: ${{ env.FIREBASE_ANDROID_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           groups: testers
           releaseNotes: ${{ github.event.inputs.release_notes }}
