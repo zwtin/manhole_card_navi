@@ -336,8 +336,9 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
+          # ローカルの Gradle JDK (21) に合わせる
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
       - name: Resolve Flutter version
         id: flutter_version
