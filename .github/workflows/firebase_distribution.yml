@@ -17,10 +17,14 @@
 #       生成例: base64 -i dart_defines/development.env | pbcopy
 #     ※ workflow_dispatch の入力 flavor で production / development を切り替えます。
 #
-# 【共通: Firebase】
-#   FIREBASE_SERVICE_ACCOUNT
-#     - Firebase App Distribution 権限を持つサービスアカウント鍵 (JSON) の中身
-#       ロール例: Firebase App Distribution Admin
+# 【共通: Firebase】(flavor で配布先プロジェクトを切り替え)
+#   FIREBASE_SERVICE_ACCOUNT_DEVELOPMENT
+#     - development プロジェクト (manholecardnavidev) の App Distribution 権限を
+#       持つサービスアカウント鍵 (JSON) の中身
+#   FIREBASE_SERVICE_ACCOUNT_PRODUCTION
+#     - production プロジェクト (manholecardnavi) の App Distribution 権限を
+#       持つサービスアカウント鍵 (JSON) の中身
+#       ロール例: Firebase App Distribution Admin (JSON はそのまま登録・base64不要)
 #     ※ Firebase App ID (iOS/Android) は GoogleService-Info.plist /
 #       google-services.json から自動抽出するため Secret 登録は不要です。
 #
@@ -316,7 +320,7 @@ jobs:
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ env.FIREBASE_IOS_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          serviceCredentialsFileContent: ${{ github.event.inputs.flavor == 'development' && secrets.FIREBASE_SERVICE_ACCOUNT_DEVELOPMENT || secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}
           groups: testers
           releaseNotes: ${{ github.event.inputs.release_notes }}
           file: ${{ steps.ipa.outputs.path }}
@@ -483,7 +487,7 @@ jobs:
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ env.FIREBASE_ANDROID_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          serviceCredentialsFileContent: ${{ github.event.inputs.flavor == 'development' && secrets.FIREBASE_SERVICE_ACCOUNT_DEVELOPMENT || secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}
           groups: testers
           releaseNotes: ${{ github.event.inputs.release_notes }}
           file: ${{ steps.apk.outputs.path }}
