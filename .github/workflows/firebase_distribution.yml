@@ -1,0 +1,489 @@
+# iOS / Android アプリをビルドして Firebase App Distribution で配布するワークフロー。
+#
+# 手動実行 (workflow_dispatch) で起動します。
+# platform 入力で ios / android / both を選択できます。
+#
+# ============================================================================
+# 事前に GitHub リポジトリの Settings > Secrets and variables > Actions に
+# 以下の Secret を登録してください。(バイナリ系はすべて base64 エンコード)
+# ============================================================================
+#
+# 【共通: dart-define】
+#   PRODUCTION_ENV
+#     - dart_defines/production.env を base64 エンコードした文字列
+#       生成例: base64 -i dart_defines/production.env | pbcopy
+#   DEVELOPMENT_ENV
+#     - dart_defines/development.env を base64 エンコードした文字列
+#       生成例: base64 -i dart_defines/development.env | pbcopy
+#     ※ workflow_dispatch の入力 flavor で production / development を切り替えます。
+#
+# 【共通: Firebase】
+#   FIREBASE_SERVICE_ACCOUNT
+#     - Firebase App Distribution 権限を持つサービスアカウント鍵 (JSON) の中身
+#       ロール例: Firebase App Distribution Admin
+#     ※ Firebase App ID (iOS/Android) は GoogleService-Info.plist /
+#       google-services.json から自動抽出するため Secret 登録は不要です。
+#
+# 【iOS】(App Store Connect API キーによる Cloud-managed 証明書で自動署名)
+#   ASC_KEY_ID
+#     - App Store Connect API キーの Key ID
+#   ASC_ISSUER_ID
+#     - App Store Connect API キーの Issuer ID
+#   ASC_KEY_P8_BASE64
+#     - App Store Connect API キー (.p8) を base64 化した文字列
+#       生成例: base64 -i AuthKey_XXXXXXXXXX.p8 | pbcopy
+#       ※ キーには Firebase 配布用に必要な権限 (App Manager 等) を付与してください。
+#       ※ エクスポート方式は development 固定 (entitlements の
+#         aps-environment=development と整合。テスター端末の UDID 登録が必要)。
+#   GOOGLE_SERVICE_INFO_PLIST_PRODUCTION
+#     - production 用 GoogleService-Info.plist を base64 化した文字列
+#       生成例: base64 -i ios/production/GoogleService-Info.plist | pbcopy
+#   GOOGLE_SERVICE_INFO_PLIST_DEVELOPMENT
+#     - development 用 GoogleService-Info.plist を base64 化した文字列
+#       生成例: base64 -i ios/development/GoogleService-Info.plist | pbcopy
+#     ※ Xcode のビルドフェーズで ios/<flavor>/GoogleService-Info.plist を
+#       Runner にコピーして同梱するため、iOS ビルドにも plist が必要です。
+#
+# 【Android】
+#   ANDROID_KEYSTORE_BASE64
+#     - リリース署名用キーストア (.jks/.keystore) を base64 化した文字列
+#       生成例: base64 -i upload-keystore.jks | pbcopy
+#   ANDROID_KEYSTORE_PASSWORD
+#     - キーストアのパスワード (key.properties の releaseStorePassword)
+#   ANDROID_KEY_ALIAS
+#     - キーエイリアス (key.properties の releaseKeyAlias)
+#   ANDROID_KEY_PASSWORD
+#     - キーのパスワード (key.properties の releaseKeyPassword)
+#   GOOGLE_SERVICES_JSON_PRODUCTION
+#     - production 用 google-services.json を base64 化した文字列
+#   GOOGLE_SERVICES_JSON_DEVELOPMENT
+#     - development 用 google-services.json を base64 化した文字列
+# ============================================================================
+
+name: iOS / Android Firebase App Distribution
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: '配布対象のプラットフォーム'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - ios
+          - android
+      flavor:
+        description: 'ビルドするフレーバー (使用する dart-define を切り替え)'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+      release_notes:
+        description: '配布時のリリースノート'
+        required: true
+
+jobs:
+  # ==========================================================================
+  # iOS
+  # ==========================================================================
+  build-ios:
+    name: Build & Distribute iOS
+    if: ${{ github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'both' }}
+    runs-on: macos-26
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ローカルの Xcode 26.4.1 (17E202) に合わせる
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.4.1'
+
+      - name: Resolve Flutter version
+        id: flutter_version
+        run: |
+          set -euo pipefail
+          VER=$(python3 -c "import json; print(json.load(open('.fvmrc'))['flutter'])")
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "使用する Flutter: $VER"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter_version.outputs.version }}
+          channel: stable
+          cache: true
+
+      - name: Create dart-define env file
+        env:
+          FLAVOR: ${{ github.event.inputs.flavor }}
+          PRODUCTION_ENV_BASE64: ${{ secrets.PRODUCTION_ENV }}
+          DEVELOPMENT_ENV_BASE64: ${{ secrets.DEVELOPMENT_ENV }}
+        run: |
+          set -euo pipefail
+          mkdir -p dart_defines
+          if [ "$FLAVOR" = "development" ]; then
+            ENV_FILE="dart_defines/development.env"
+            echo "$DEVELOPMENT_ENV_BASE64" | base64 --decode > "$ENV_FILE"
+          else
+            ENV_FILE="dart_defines/production.env"
+            echo "$PRODUCTION_ENV_BASE64" | base64 --decode > "$ENV_FILE"
+          fi
+          if [ ! -s "$ENV_FILE" ]; then
+            echo "$ENV_FILE が空です。Secret が正しく登録されているか確認してください" >&2
+            exit 1
+          fi
+          echo "ENV_FILE=$ENV_FILE" >> "$GITHUB_ENV"
+          echo "使用する dart-define: $ENV_FILE"
+
+      - name: Setup GoogleService-Info.plist
+        env:
+          FLAVOR: ${{ github.event.inputs.flavor }}
+          PLIST_PRODUCTION: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_PRODUCTION }}
+          PLIST_DEVELOPMENT: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_DEVELOPMENT }}
+        run: |
+          set -euo pipefail
+          # Xcode のビルドフェーズが ios/<flavor>/GoogleService-Info.plist を
+          # ios/Runner/GoogleService-Info.plist にコピーして同梱する
+          DEST_DIR="ios/${FLAVOR}"
+          DEST="${DEST_DIR}/GoogleService-Info.plist"
+          mkdir -p "$DEST_DIR"
+          if [ "$FLAVOR" = "development" ]; then
+            echo "$PLIST_DEVELOPMENT" | base64 --decode > "$DEST"
+          else
+            echo "$PLIST_PRODUCTION" | base64 --decode > "$DEST"
+          fi
+          if [ ! -s "$DEST" ]; then
+            echo "$DEST が空です。Secret が正しく登録されているか確認してください" >&2
+            exit 1
+          fi
+          echo "配置: $DEST"
+          # plist から Firebase iOS App ID (GOOGLE_APP_ID) を抽出
+          APP_ID=$(/usr/libexec/PlistBuddy -c "Print :GOOGLE_APP_ID" "$DEST")
+          if [ -z "$APP_ID" ]; then
+            echo "GOOGLE_APP_ID を plist から取得できませんでした" >&2
+            exit 1
+          fi
+          echo "FIREBASE_IOS_APP_ID=$APP_ID" >> "$GITHUB_ENV"
+          echo "Firebase iOS App ID: $APP_ID"
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      # 生成ファイル (*.g.dart / *.freezed.dart / *.realm.dart) はリポジトリに
+      # コミット済みのため通常は不要です。モデル変更を CI 側で反映したい場合は
+      # 下記コメントを解除してください。
+      # - name: Run build_runner
+      #   run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Setup App Store Connect API key
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+        run: |
+          set -euo pipefail
+          KEY_PATH="$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
+          echo "$ASC_KEY_P8_BASE64" | base64 --decode > "$KEY_PATH"
+          if [ ! -s "$KEY_PATH" ]; then
+            echo "API キー(.p8)が空です。ASC_KEY_P8_BASE64 を確認してください" >&2
+            exit 1
+          fi
+          echo "ASC_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+
+      - name: Build Flutter (unsigned) & install pods
+        run: |
+          set -euo pipefail
+          # Pod 導入・Generated.xcconfig 生成・Dart コンパイルまでを行う。
+          # 署名は後段の xcodebuild archive で Cloud-managed 証明書により実施するため
+          # ここでは署名しない。
+          flutter build ios --release --no-codesign \
+            --dart-define-from-file="$ENV_FILE"
+
+      - name: Compute DART_DEFINES
+        run: |
+          set -euo pipefail
+          # xcodebuild を直接叩くと scheme の pre-action (extract_dart_defines.sh) が
+          # DART_DEFINES 未設定で Dart-Defines.xcconfig を空にしてしまうため、
+          # env ファイルから DART_DEFINES (カンマ区切り base64 の KEY=VALUE) を再構成する。
+          DEFINES=""
+          while IFS= read -r line || [ -n "$line" ]; do
+            [ -z "$line" ] && continue
+            case "$line" in \#*) continue ;; esac
+            enc=$(printf '%s' "$line" | base64 | tr -d '\n')
+            if [ -z "$DEFINES" ]; then DEFINES="$enc"; else DEFINES="$DEFINES,$enc"; fi
+          done < "$ENV_FILE"
+          echo "DART_DEFINES=$DEFINES" >> "$GITHUB_ENV"
+
+      - name: Archive (Cloud-managed signing)
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          xcodebuild archive \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -destination 'generic/platform=iOS' \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM=PBU8Y745DH
+
+      - name: Verify archive signing & entitlements
+        run: |
+          set -euo pipefail
+          APP="$RUNNER_TEMP/Runner.xcarchive/Products/Applications/Runner.app"
+          echo "===== 署名情報 ====="
+          codesign -dv "$APP" 2>&1 || true
+          echo "===== 埋め込み entitlements (aps-environment が含まれることを確認) ====="
+          codesign -d --entitlements :- "$APP" 2>/dev/null || true
+
+      - name: Generate ExportOptions.plist
+        run: |
+          set -euo pipefail
+          # entitlements の aps-environment=development と整合する development 方式で固定
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>development</string>
+            <key>teamID</key>
+            <string>PBU8Y745DH</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>compileBitcode</key>
+            <false/>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>stripSwiftSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+          echo "===== ExportOptions.plist ====="
+          cat "$RUNNER_TEMP/ExportOptions.plist"
+
+      - name: Export IPA (Cloud-managed signing)
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -exportPath "$RUNNER_TEMP/ipa" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+      - name: Locate IPA
+        id: ipa
+        run: |
+          set -euo pipefail
+          IPA_PATH=$(find "$RUNNER_TEMP/ipa" -name "*.ipa" | head -n 1)
+          if [ -z "$IPA_PATH" ]; then
+            echo "IPA が見つかりませんでした" >&2
+            exit 1
+          fi
+          echo "path=$IPA_PATH" >> "$GITHUB_OUTPUT"
+          echo "生成された IPA: $IPA_PATH"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ${{ steps.ipa.outputs.path }}
+          if-no-files-found: error
+
+      - name: Distribute to Firebase App Distribution (iOS)
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ env.FIREBASE_IOS_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          groups: testers
+          releaseNotes: ${{ github.event.inputs.release_notes }}
+          file: ${{ steps.ipa.outputs.path }}
+
+      - name: Cleanup API key
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP"/AuthKey_*.p8 || true
+
+  # ==========================================================================
+  # Android
+  # ==========================================================================
+  build-android:
+    name: Build & Distribute Android
+    if: ${{ github.event.inputs.platform == 'android' || github.event.inputs.platform == 'both' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          # ローカルの Gradle JDK (21) に合わせる
+          distribution: temurin
+          java-version: '21'
+
+      - name: Resolve Flutter version
+        id: flutter_version
+        run: |
+          set -euo pipefail
+          VER=$(python3 -c "import json; print(json.load(open('.fvmrc'))['flutter'])")
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "使用する Flutter: $VER"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter_version.outputs.version }}
+          channel: stable
+          cache: true
+
+      - name: Create dart-define env file
+        env:
+          FLAVOR: ${{ github.event.inputs.flavor }}
+          PRODUCTION_ENV_BASE64: ${{ secrets.PRODUCTION_ENV }}
+          DEVELOPMENT_ENV_BASE64: ${{ secrets.DEVELOPMENT_ENV }}
+        run: |
+          set -euo pipefail
+          mkdir -p dart_defines
+          if [ "$FLAVOR" = "development" ]; then
+            ENV_FILE="dart_defines/development.env"
+            echo "$DEVELOPMENT_ENV_BASE64" | base64 --decode > "$ENV_FILE"
+          else
+            ENV_FILE="dart_defines/production.env"
+            echo "$PRODUCTION_ENV_BASE64" | base64 --decode > "$ENV_FILE"
+          fi
+          if [ ! -s "$ENV_FILE" ]; then
+            echo "$ENV_FILE が空です。Secret が正しく登録されているか確認してください" >&2
+            exit 1
+          fi
+          echo "ENV_FILE=$ENV_FILE" >> "$GITHUB_ENV"
+          echo "使用する dart-define: $ENV_FILE"
+
+      - name: Setup google-services.json
+        env:
+          FLAVOR: ${{ github.event.inputs.flavor }}
+          GOOGLE_SERVICES_JSON_PRODUCTION: ${{ secrets.GOOGLE_SERVICES_JSON_PRODUCTION }}
+          GOOGLE_SERVICES_JSON_DEVELOPMENT: ${{ secrets.GOOGLE_SERVICES_JSON_DEVELOPMENT }}
+        run: |
+          set -euo pipefail
+          DEST="android/app/src/${FLAVOR}/google-services.json"
+          mkdir -p "android/app/src/${FLAVOR}"
+          if [ "$FLAVOR" = "development" ]; then
+            echo "$GOOGLE_SERVICES_JSON_DEVELOPMENT" | base64 --decode > "$DEST"
+          else
+            echo "$GOOGLE_SERVICES_JSON_PRODUCTION" | base64 --decode > "$DEST"
+          fi
+          if [ ! -s "$DEST" ]; then
+            echo "$DEST が空です。Secret が正しく登録されているか確認してください" >&2
+            exit 1
+          fi
+          echo "配置: $DEST"
+          # applicationId (package名) に対応する mobilesdk_app_id を抽出
+          APP_ID=$(python3 - "$DEST" "$ENV_FILE" <<'PY'
+          import json, sys
+          dest, envf = sys.argv[1], sys.argv[2]
+          pkg = None
+          for line in open(envf):
+              line = line.strip()
+              if line.startswith('appId='):
+                  pkg = line.split('=', 1)[1]
+                  break
+          data = json.load(open(dest))
+          clients = data.get('client', [])
+          app_id = None
+          for c in clients:
+              info = c.get('client_info', {})
+              if info.get('android_client_info', {}).get('package_name') == pkg:
+                  app_id = info.get('mobilesdk_app_id')
+                  break
+          if app_id is None and clients:
+              app_id = clients[0].get('client_info', {}).get('mobilesdk_app_id')
+          print(app_id or '')
+          PY
+          )
+          if [ -z "$APP_ID" ]; then
+            echo "mobilesdk_app_id を google-services.json から取得できませんでした" >&2
+            exit 1
+          fi
+          echo "FIREBASE_ANDROID_APP_ID=$APP_ID" >> "$GITHUB_ENV"
+          echo "Firebase Android App ID: $APP_ID"
+
+      - name: Setup Android signing (keystore + key.properties)
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          # storeFile は app モジュール (android/app) からの相対パスで解決される
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/release-keystore.jks
+          cat > android/key.properties <<EOF
+          releaseKeyAlias=${ANDROID_KEY_ALIAS}
+          releaseKeyPassword=${ANDROID_KEY_PASSWORD}
+          releaseStoreFile=release-keystore.jks
+          releaseStorePassword=${ANDROID_KEYSTORE_PASSWORD}
+          EOF
+          echo "key.properties を生成しました"
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build APK
+        run: |
+          set -euo pipefail
+          flutter build apk \
+            --release \
+            --dart-define-from-file="$ENV_FILE"
+
+      - name: Locate APK
+        id: apk
+        run: |
+          set -euo pipefail
+          APK_PATH=$(find build/app/outputs -name "*.apk" | head -n 1)
+          if [ -z "$APK_PATH" ]; then
+            echo "APK が見つかりませんでした" >&2
+            exit 1
+          fi
+          echo "path=$APK_PATH" >> "$GITHUB_OUTPUT"
+          echo "生成された APK: $APK_PATH"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: ${{ steps.apk.outputs.path }}
+          if-no-files-found: error
+
+      - name: Distribute to Firebase App Distribution (Android)
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ env.FIREBASE_ANDROID_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          groups: testers
+          releaseNotes: ${{ github.event.inputs.release_notes }}
+          file: ${{ steps.apk.outputs.path }}
