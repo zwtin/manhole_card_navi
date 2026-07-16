@@ -241,6 +241,15 @@ jobs:
             CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM=PBU8Y745DH
 
+      - name: Verify archive signing & entitlements
+        run: |
+          set -euo pipefail
+          APP="$RUNNER_TEMP/Runner.xcarchive/Products/Applications/Runner.app"
+          echo "===== 署名情報 ====="
+          codesign -dv "$APP" 2>&1 || true
+          echo "===== 埋め込み entitlements (aps-environment が含まれることを確認) ====="
+          codesign -d --entitlements :- "$APP" 2>/dev/null || true
+
       - name: Generate ExportOptions.plist
         env:
           EXPORT_METHOD: ${{ github.event.inputs.export_method }}
