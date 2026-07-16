@@ -343,14 +343,24 @@ jobs:
           path: ${{ steps.ipa.outputs.path }}
           if-no-files-found: error
 
+      # wzieba/Firebase-Distribution-Github-Action は Docker コンテナアクションで
+      # Linux ランナーでしか動かないため、macOS では firebase CLI で直接配布する。
       - name: Distribute to Firebase App Distribution (iOS)
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{ env.FIREBASE_IOS_APP_ID }}
-          serviceCredentialsFileContent: ${{ github.event.inputs.flavor == 'development' && secrets.FIREBASE_SERVICE_ACCOUNT_DEVELOPMENT || secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}
-          groups: testers
-          releaseNotes: ${{ github.event.inputs.release_notes }}
-          file: ${{ steps.ipa.outputs.path }}
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ github.event.inputs.flavor == 'development' && secrets.FIREBASE_SERVICE_ACCOUNT_DEVELOPMENT || secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}
+          RELEASE_NOTES: ${{ github.event.inputs.release_notes }}
+          IPA_PATH: ${{ steps.ipa.outputs.path }}
+        run: |
+          set -euo pipefail
+          SA_FILE="$RUNNER_TEMP/firebase-service-account.json"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$SA_FILE"
+          export GOOGLE_APPLICATION_CREDENTIALS="$SA_FILE"
+          npm install -g firebase-tools
+          firebase appdistribution:distribute "$IPA_PATH" \
+            --app "$FIREBASE_IOS_APP_ID" \
+            --groups testers \
+            --release-notes "$RELEASE_NOTES"
+          rm -f "$SA_FILE"
 
       - name: Cleanup API key
         if: always()
