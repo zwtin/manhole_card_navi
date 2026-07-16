@@ -47,11 +47,11 @@ on:
       flavor:
         description: 'ビルドするフレーバー (使用する dart-define を切り替え)'
         required: true
-        default: 'production'
+        default: 'development'
         type: choice
         options:
-          - production
           - development
+          - production
       flutter_version:
         description: 'Flutter のバージョン (pubspec の Dart ^3.7.2 に対応)'
         required: true
