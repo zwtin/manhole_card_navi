@@ -418,15 +418,26 @@ class _QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // アプリの TextButtonTheme は余白を 0 にしているため、そのままだと
+    // 「すべて」「クリア」が密着してタップしづらい。各ボタンに横余白を与えて
+    // タップ領域を広げ、区切りの前後にも間隔を確保する。
+    final style = TextButton.styleFrom(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      minimumSize: Size.zero,
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      foregroundColor: palette.sub,
+    );
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         TextButton(
+          style: style,
           onPressed: onSelectAll,
           child: TitleSmallText('すべて', color: palette.sub),
         ),
         Text('|', style: TextStyle(color: palette.chipBorder)),
         TextButton(
+          style: style,
           onPressed: onClear,
           child: TitleSmallText('クリア', color: palette.sub),
         ),
