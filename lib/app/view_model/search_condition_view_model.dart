@@ -202,24 +202,20 @@ class SearchConditionViewModel extends ChangeNotifier {
     if (result is! Success<List<ListCardDTO>>) {
       return;
     }
-    final byVolume = <String, ({String name, DateTime latest})>{};
+    final byVolume = <String, String>{};
     for (final dto in result.value) {
       if (dto.volumeId.isEmpty) {
         continue;
       }
-      final existing = byVolume[dto.volumeId];
-      if (existing == null || dto.publicationDate.isAfter(existing.latest)) {
-        byVolume[dto.volumeId] = (
-          name: dto.volumeName,
-          latest: dto.publicationDate,
-        );
-      }
+      byVolume.putIfAbsent(dto.volumeId, () => dto.volumeName);
     }
     final entries = byVolume.entries.toList()
-      // 新しい弾を上に表示する。
-      ..sort((a, b) => b.value.latest.compareTo(a.value.latest));
+      // volumeId は「弾番号 - 1」を 4 桁ゼロ埋めした値（第01弾=0000 … 第18弾=0017）
+      // なので、ID の降順に並べれば発行日データの揺れに依存せず新しい弾から表示できる。
+      // （発行日ソートでは 17弾/18弾 の発行日が同日・逆転していると順序が狂っていた）
+      ..sort((a, b) => b.key.compareTo(a.key));
     _volumeOptions =
-        entries.map((entry) => (id: entry.key, name: entry.value.name)).toList();
+        entries.map((entry) => (id: entry.key, name: entry.value)).toList();
   }
 
   Future<void> sendPV() async {
