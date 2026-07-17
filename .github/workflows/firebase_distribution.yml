@@ -228,13 +228,28 @@ jobs:
           fi
           echo "ASC_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
 
-      - name: Build Flutter (unsigned) & install pods
+      # CocoaPods 関連をキャッシュして pod install / Firebase ソース取得を短縮する。
+      # Podfile.lock が変わらない限り前回の ios/Pods を再利用でき、pod install は
+      # ほぼ no-op になる。
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            pods-${{ runner.os }}-
+
+      - name: Configure iOS project & install pods
         run: |
           set -euo pipefail
-          # Pod 導入・Generated.xcconfig 生成・Dart コンパイルまでを行う。
-          # 署名は後段の xcodebuild archive で Cloud-managed 証明書により実施するため
-          # ここでは署名しない。
-          flutter build ios --release --no-codesign \
+          # Generated.xcconfig 生成・pod install のみを行い、コンパイルはしない。
+          # 実際のコンパイル (Dart / ネイティブ) は後段の xcodebuild archive が
+          # 1 回だけ実施する。--no-codesign でフルビルドすると archive と二重に
+          # コンパイルすることになるため、--config-only にして重複を排除している。
+          # (Flutter の実装上 --config-only でも pod install は実行される)
+          flutter build ios --release --config-only \
             --dart-define-from-file="$ENV_FILE"
 
       - name: Compute DART_DEFINES
@@ -252,6 +267,17 @@ jobs:
           done < "$ENV_FILE"
           echo "DART_DEFINES=$DEFINES" >> "$GITHUB_ENV"
 
+      # archive の DerivedData をキャッシュする。変更の少ない Pod (Firebase 一式) の
+      # コンパイル済みオブジェクトを再利用でき、フルコンパイルになりがちな archive を
+      # 短縮できる。依存関係が変わったら (Podfile.lock / pubspec.lock) キャッシュを破棄。
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/DerivedData
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}
+          restore-keys: |
+            deriveddata-${{ runner.os }}-
+
       - name: Archive (Cloud-managed signing)
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
@@ -263,11 +289,13 @@ jobs:
             -scheme Runner \
             -configuration Release \
             -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
             -destination 'generic/platform=iOS' \
             -allowProvisioningUpdates \
             -authenticationKeyPath "$ASC_KEY_PATH" \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            COMPILER_INDEX_STORE_ENABLE=NO \
             CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM=PBU8Y745DH
 
