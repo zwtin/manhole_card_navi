@@ -1,0 +1,234 @@
+# main ブランチの CI キャッシュを温めるワークフロー。
+#
+# GitHub Actions のキャッシュは「同じブランチ」か「デフォルトブランチ(main)」の
+# スコープしか参照できない。配布ワークフロー (firebase_distribution.yml) は
+# workflow_dispatch 専用で feature ブランチから実行されるため、放置すると main に
+# キャッシュが載らず、新規ブランチの初回は常にコールドになる。
+#
+# このワークフローは main への push 時に、配布ワークフローと「同じキー」で
+# 以下のキャッシュを main スコープに保存する。これにより新規ブランチの初回でも
+# restore-keys 経由で main のキャッシュを継承でき、初回から温まる。
+#   - Flutter SDK      (subosito/flutter-action の cache:true)
+#   - pub パッケージ    (~/.pub-cache)
+#   - CocoaPods        (ios/Pods, ~/Library/Caches/CocoaPods)
+#   - DerivedData      (署名なしビルドで Pod 等のコンパイル済みオブジェクトを生成)
+#
+# ※ DerivedData の温めは iOS をフルコンパイルするため macOS 時間を消費する。
+#   iOS/Flutter に影響しない push で無駄に走らないよう paths でフィルタしている。
+name: Warm CI caches (main)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'lib/**'
+      - 'ios/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - '.fvmrc'
+      - '.github/workflows/cache_warm.yml'
+  workflow_dispatch:
+
+# 連続 push で温めジョブが積み上がらないよう、古い実行はキャンセルする。
+concurrency:
+  group: cache-warm-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ==========================================================================
+  # iOS 用キャッシュの温め (SDK / pub / Pods / DerivedData)
+  # ==========================================================================
+  warm-ios:
+    name: Warm iOS caches
+    runs-on: macos-26
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 配布ワークフローと同じ Xcode を使う (DerivedData の互換性のため)
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.4.1'
+
+      - name: Resolve Flutter version
+        id: flutter_version
+        run: |
+          set -euo pipefail
+          VER=$(python3 -c "import json; print(json.load(open('.fvmrc'))['flutter'])")
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "使用する Flutter: $VER"
+
+      # cache:true で Flutter SDK を main スコープにキャッシュする
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter_version.outputs.version }}
+          channel: stable
+          cache: true
+
+      # 配布ワークフローと同じキーで pub パッケージをキャッシュ
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-
+
+      # 配布ワークフローと同じキーで CocoaPods をキャッシュ
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            pods-${{ runner.os }}-
+
+      # DerivedData は sha 込みキーで毎回フレッシュに保存する。
+      # 配布側は restore-keys でこの最新キャッシュを拾う。
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/DerivedData
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}-${{ github.sha }}
+          restore-keys: |
+            deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}-
+            deriveddata-${{ runner.os }}-
+
+      # 温めは flavor に依存しない Pod コンパイルが主目的。配布 dispatch の既定に
+      # 合わせて development を使う。
+      - name: Create dart-define env file
+        env:
+          DEVELOPMENT_ENV_BASE64: ${{ secrets.DEVELOPMENT_ENV }}
+        run: |
+          set -euo pipefail
+          mkdir -p dart_defines
+          ENV_FILE="dart_defines/development.env"
+          echo "$DEVELOPMENT_ENV_BASE64" | base64 --decode > "$ENV_FILE"
+          if [ ! -s "$ENV_FILE" ]; then
+            echo "$ENV_FILE が空です。DEVELOPMENT_ENV を確認してください" >&2
+            exit 1
+          fi
+          echo "ENV_FILE=$ENV_FILE" >> "$GITHUB_ENV"
+
+      # Xcode のビルドフェーズが GoogleService-Info.plist をコピーするため配置が必要
+      - name: Setup GoogleService-Info.plist
+        env:
+          PLIST_DEVELOPMENT: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_DEVELOPMENT }}
+        run: |
+          set -euo pipefail
+          DEST_DIR="ios/development"
+          DEST="${DEST_DIR}/GoogleService-Info.plist"
+          mkdir -p "$DEST_DIR"
+          echo "$PLIST_DEVELOPMENT" | base64 --decode > "$DEST"
+          if [ ! -s "$DEST" ]; then
+            echo "$DEST が空です。GOOGLE_SERVICE_INFO_PLIST_DEVELOPMENT を確認してください" >&2
+            exit 1
+          fi
+          echo "配置: $DEST"
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      # Xcode の Runner ターゲットに flutterfire upload-crashlytics-symbols を呼ぶ
+      # ビルドフェーズがあり、未導入だとビルドが失敗するため導入する。
+      - name: Install FlutterFire CLI
+        run: |
+          set -euo pipefail
+          flutter pub global activate flutterfire_cli
+          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+
+      # flutterfire upload-crashlytics-symbols がプロジェクト直下の firebase.json を参照する
+      - name: Setup firebase.json
+        env:
+          FIREBASE_JSON_BASE64: ${{ secrets.FIREBASE_JSON }}
+        run: |
+          set -euo pipefail
+          echo "$FIREBASE_JSON_BASE64" | base64 --decode > firebase.json
+          if [ ! -s firebase.json ]; then
+            echo "firebase.json が空です。FIREBASE_JSON を確認してください" >&2
+            exit 1
+          fi
+
+      - name: Configure iOS project & install pods
+        run: |
+          set -euo pipefail
+          flutter build ios --release --config-only \
+            --dart-define-from-file="$ENV_FILE"
+
+      - name: Compute DART_DEFINES
+        run: |
+          set -euo pipefail
+          DEFINES=""
+          while IFS= read -r line || [ -n "$line" ]; do
+            [ -z "$line" ] && continue
+            case "$line" in \#*) continue ;; esac
+            enc=$(printf '%s' "$line" | base64 | tr -d '\n')
+            if [ -z "$DEFINES" ]; then DEFINES="$enc"; else DEFINES="$DEFINES,$enc"; fi
+          done < "$ENV_FILE"
+          echo "DART_DEFINES=$DEFINES" >> "$GITHUB_ENV"
+
+      # 署名なしでフルコンパイルし、DerivedData に Pod 等のコンパイル済み
+      # オブジェクトを生成する。配布側の archive はこれを再利用して短縮される。
+      # 署名・配布はしないため ASC キー等の秘密情報は不要。
+      - name: Build (unsigned) to warm DerivedData
+        run: |
+          set -euo pipefail
+          xcodebuild build \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO
+
+  # ==========================================================================
+  # Android 用キャッシュの温め (SDK / pub) ※ 安価なので合わせて温める
+  # ==========================================================================
+  warm-android:
+    name: Warm Android caches
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Resolve Flutter version
+        id: flutter_version
+        run: |
+          set -euo pipefail
+          VER=$(python3 -c "import json; print(json.load(open('.fvmrc'))['flutter'])")
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "使用する Flutter: $VER"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter_version.outputs.version }}
+          channel: stable
+          cache: true
+
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-
+
+      - name: Flutter pub get
+        run: flutter pub get
