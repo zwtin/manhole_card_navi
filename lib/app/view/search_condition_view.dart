@@ -293,7 +293,10 @@ class _Palette {
 
   factory _Palette.of(BuildContext context) {
     final theme = Theme.of(context);
-    final dark = theme.brightness == Brightness.dark;
+    // このアプリの darkTheme は brightness を light のまま色だけ差し替えているため、
+    // theme.brightness ではダーク判定できない。実際に効いている surface 色
+    // （ダークテーマでは暗色 #222222）の明るさで判定する。
+    final dark = theme.colorScheme.surface.computeLuminance() < 0.5;
     return _Palette(
       dark: dark,
       primary: theme.primaryColor,
