@@ -527,6 +527,17 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final labelWidget = Text(
+      label,
+      style: TextStyle(
+        fontSize: 13.5,
+        fontWeight: FontWeight.w600,
+        color: selected
+            ? palette.onPrimary
+            : Theme.of(context).textTheme.titleMedium?.color,
+      ),
+    );
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
@@ -539,32 +550,34 @@ class _FilterChip extends StatelessWidget {
             color: selected ? palette.primary : palette.chipBorder,
           ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+        // ON 状態（チェック＋テキスト）の幅を常に確保しておき、ON/OFF を切り替えても
+        // チップ幅が変わらない（＝後続のチップがズレない）ようにする。見せる内容は
+        // 中央寄せで、OFF はテキストのみ、ON はチェックマークを含めて中央に配置する。
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            // チェックマークのスペースは常に確保する。ON/OFF でチップ幅が変わって
-            // 後続のチップ位置がズレるのを防ぐため、未選択でも同じ幅の空きを取る。
-            SizedBox(
-              width: 16,
-              height: 16,
-              child: selected
-                  ? Icon(Icons.check, size: 16, color: palette.onPrimary)
-                  : null,
+            // 幅を固定するための不可視サイザー。常に ON 状態の内容を占有させる。
+            Opacity(
+              opacity: 0,
+              child: _content(labelWidget, withCheck: true),
             ),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 13.5,
-                fontWeight: FontWeight.w600,
-                color: selected
-                    ? palette.onPrimary
-                    : Theme.of(context).textTheme.titleMedium?.color,
-              ),
-            ),
+            _content(labelWidget, withCheck: selected),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _content(Widget labelWidget, {required bool withCheck}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (withCheck) ...[
+          Icon(Icons.check, size: 16, color: palette.onPrimary),
+          const SizedBox(width: 4),
+        ],
+        labelWidget,
+      ],
     );
   }
 }
