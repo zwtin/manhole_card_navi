@@ -248,7 +248,7 @@ jobs:
           path: |
             ios/Pods
             ~/Library/Caches/CocoaPods
-          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock') }}
+          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile') }}
           restore-keys: |
             pods-${{ runner.os }}-
 
@@ -287,9 +287,9 @@ jobs:
           path: ${{ runner.temp }}/DerivedData
           # sha を含めて毎回フレッシュに保存しつつ、restore-keys で
           # main の温めジョブが保存した最新の DerivedData を拾えるようにする。
-          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}-${{ github.sha }}
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile', 'pubspec.lock') }}-${{ github.sha }}
           restore-keys: |
-            deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}-
+            deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile', 'pubspec.lock') }}-
             deriveddata-${{ runner.os }}-
 
       - name: Archive (Cloud-managed signing)

@@ -86,7 +86,7 @@ jobs:
           path: |
             ios/Pods
             ~/Library/Caches/CocoaPods
-          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock') }}
+          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile') }}
           restore-keys: |
             pods-${{ runner.os }}-
 
@@ -96,9 +96,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ runner.temp }}/DerivedData
-          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}-${{ github.sha }}
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile', 'pubspec.lock') }}-${{ github.sha }}
           restore-keys: |
-            deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}-
+            deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile', 'pubspec.lock') }}-
             deriveddata-${{ runner.os }}-
 
       # 温めは flavor に依存しない Pod コンパイルが主目的。配布 dispatch の既定に
