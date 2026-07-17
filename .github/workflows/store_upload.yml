@@ -1,0 +1,594 @@
+# iOS / Android アプリを production フレーバーでビルドし、
+# App Store Connect (TestFlight) と Google Play Console にアップロードするワークフロー。
+#
+# 手動実行 (workflow_dispatch) で起動します。
+# platform 入力で ios / android / both を選択できます。
+# フレーバーは production 固定です (ストア配信は production のみ)。
+#
+# ============================================================================
+# 事前に GitHub リポジトリの Settings > Secrets and variables > Actions に
+# 以下の Secret を登録してください。(バイナリ系はすべて base64 エンコード)
+#
+# ※ 多くの Secret は既存の Firebase App Distribution ワークフローと共通です。
+#   本ワークフロー用に新規で必要なのは PLAY_SERVICE_ACCOUNT_JSON のみです。
+# ============================================================================
+#
+# 【共通: dart-define】
+#   PRODUCTION_ENV
+#     - dart_defines/production.env を base64 エンコードした文字列
+#       生成例: base64 -i dart_defines/production.env | pbcopy
+#
+# 【iOS】(App Store Connect API キーによる Cloud-managed 証明書で自動署名)
+#   ASC_KEY_ID
+#     - App Store Connect API キーの Key ID
+#   ASC_ISSUER_ID
+#     - App Store Connect API キーの Issuer ID
+#   ASC_KEY_P8_BASE64
+#     - App Store Connect API キー (.p8) を base64 化した文字列
+#       生成例: base64 -i AuthKey_XXXXXXXXXX.p8 | pbcopy
+#       ※ キーには App Store 配信に必要な権限 (App Manager 等) を付与してください。
+#       ※ App Store 配信では entitlements の aps-environment を production に
+#         上書きしてアーカイブします (App Store / TestFlight は production APNs)。
+#   FIREBASE_JSON
+#     - プロジェクト直下の firebase.json を base64 化した文字列
+#       生成例: base64 -i firebase.json | pbcopy
+#       ※ flutterfire upload-crashlytics-symbols ビルドフェーズが参照します。
+#   GOOGLE_SERVICE_INFO_PLIST_PRODUCTION
+#     - production 用 GoogleService-Info.plist を base64 化した文字列
+#       生成例: base64 -i ios/production/GoogleService-Info.plist | pbcopy
+#
+# 【Android】
+#   ANDROID_KEYSTORE_BASE64
+#     - リリース署名用キーストア (.jks/.keystore) を base64 化した文字列
+#       生成例: base64 -i upload-keystore.jks | pbcopy
+#   ANDROID_KEYSTORE_PASSWORD
+#     - キーストアのパスワード (key.properties の releaseStorePassword)
+#   ANDROID_KEY_ALIAS
+#     - キーエイリアス (key.properties の releaseKeyAlias)
+#   ANDROID_KEY_PASSWORD
+#     - キーのパスワード (key.properties の releaseKeyPassword)
+#   GOOGLE_SERVICES_JSON_PRODUCTION
+#     - production 用 google-services.json を base64 化した文字列
+#   PLAY_SERVICE_ACCOUNT_JSON  ★このワークフロー用に新規で必要
+#     - Google Play Developer API を叩けるサービスアカウント鍵 (JSON) の中身。
+#       Google Play Console > ユーザーと権限 で該当サービスアカウントに
+#       「リリースを管理」権限を付与してください。(JSON はそのまま登録・base64不要)
+# ============================================================================
+
+name: iOS App Store / Android Play Console Upload
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'アップロード対象のプラットフォーム'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - ios
+          - android
+      android_track:
+        description: 'Play Console のアップロード先トラック'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+      android_status:
+        description: 'Play Console リリースのステータス'
+        required: true
+        default: 'draft'
+        type: choice
+        options:
+          - draft       # 下書き (Console 上で手動公開)
+          - completed   # 即時ロールアウト
+          - inProgress  # 段階的ロールアウト
+
+env:
+  # ストア配信は production フレーバー固定
+  FLAVOR: production
+
+jobs:
+  # ==========================================================================
+  # iOS -> App Store Connect (TestFlight)
+  # ==========================================================================
+  upload-ios:
+    name: Build & Upload iOS (App Store Connect)
+    if: ${{ github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'both' }}
+    runs-on: macos-26
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ローカルの Xcode 26.4.1 (17E202) に合わせる
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.4.1'
+
+      - name: Resolve Flutter version
+        id: flutter_version
+        run: |
+          set -euo pipefail
+          VER=$(python3 -c "import json; print(json.load(open('.fvmrc'))['flutter'])")
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "使用する Flutter: $VER"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter_version.outputs.version }}
+          channel: stable
+          cache: true
+
+      - name: Create dart-define env file
+        env:
+          PRODUCTION_ENV_BASE64: ${{ secrets.PRODUCTION_ENV }}
+        run: |
+          set -euo pipefail
+          mkdir -p dart_defines
+          ENV_FILE="dart_defines/production.env"
+          echo "$PRODUCTION_ENV_BASE64" | base64 --decode > "$ENV_FILE"
+          if [ ! -s "$ENV_FILE" ]; then
+            echo "$ENV_FILE が空です。Secret PRODUCTION_ENV を確認してください" >&2
+            exit 1
+          fi
+          echo "ENV_FILE=$ENV_FILE" >> "$GITHUB_ENV"
+          echo "使用する dart-define: $ENV_FILE"
+
+      - name: Setup GoogleService-Info.plist
+        env:
+          PLIST_PRODUCTION: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_PRODUCTION }}
+        run: |
+          set -euo pipefail
+          # Xcode のビルドフェーズが ios/<flavor>/GoogleService-Info.plist を
+          # ios/Runner/GoogleService-Info.plist にコピーして同梱する
+          DEST_DIR="ios/${FLAVOR}"
+          DEST="${DEST_DIR}/GoogleService-Info.plist"
+          mkdir -p "$DEST_DIR"
+          echo "$PLIST_PRODUCTION" | base64 --decode > "$DEST"
+          if [ ! -s "$DEST" ]; then
+            echo "$DEST が空です。Secret GOOGLE_SERVICE_INFO_PLIST_PRODUCTION を確認してください" >&2
+            exit 1
+          fi
+          echo "配置: $DEST"
+
+      # App Store / TestFlight は production APNs 環境で動作するため、
+      # コミット済みの entitlements (aps-environment=development) を production に
+      # 上書きしてからアーカイブする。development のままだと本番でプッシュ通知が
+      # 届かない (Firebase App Distribution 用ワークフローとはここが異なる)。
+      - name: Override entitlements to production APNs
+        run: |
+          set -euo pipefail
+          cat > ios/Runner/Runner.entitlements <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+          	<key>aps-environment</key>
+          	<string>production</string>
+          </dict>
+          </plist>
+          EOF
+          echo "===== Runner.entitlements (production) ====="
+          cat ios/Runner/Runner.entitlements
+
+      # ダウンロード済み pub パッケージ (~/.pub-cache) をキャッシュし、
+      # flutter pub get のパッケージ取得を短縮する。flutter-action の cache:true は
+      # SDK 本体しかキャッシュしないため別途キャッシュする。
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      # 生成ファイル (*.g.dart / *.freezed.dart / *.realm.dart) は git 管理せず、
+      # ビルドのたびに build_runner で生成する。
+      - name: Run build_runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Install FlutterFire CLI
+        run: |
+          set -euo pipefail
+          # Xcode の Runner ターゲットに flutterfire upload-crashlytics-symbols を
+          # 呼ぶビルドフェーズがあり、flutterfire CLI が未導入だとビルドが失敗するため導入する。
+          flutter pub global activate flutterfire_cli
+          # ビルドフェーズが参照できるよう pub-cache/bin を PATH に追加
+          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+
+      - name: Setup firebase.json
+        env:
+          FIREBASE_JSON_BASE64: ${{ secrets.FIREBASE_JSON }}
+        run: |
+          set -euo pipefail
+          # flutterfire upload-crashlytics-symbols がプロジェクト直下の firebase.json を
+          # 参照する。gitignore されているため Secret から配置する。
+          echo "$FIREBASE_JSON_BASE64" | base64 --decode > firebase.json
+          if [ ! -s firebase.json ]; then
+            echo "firebase.json が空です。FIREBASE_JSON を確認してください" >&2
+            exit 1
+          fi
+          echo "配置: firebase.json"
+
+      - name: Setup App Store Connect API key
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+        run: |
+          set -euo pipefail
+          KEY_PATH="$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
+          echo "$ASC_KEY_P8_BASE64" | base64 --decode > "$KEY_PATH"
+          if [ ! -s "$KEY_PATH" ]; then
+            echo "API キー(.p8)が空です。ASC_KEY_P8_BASE64 を確認してください" >&2
+            exit 1
+          fi
+          echo "ASC_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+          # altool は ~/.appstoreconnect/private_keys/AuthKey_<KEYID>.p8 を参照するため
+          # 同じ鍵をそこにも配置する。
+          mkdir -p "$HOME/.appstoreconnect/private_keys"
+          cp "$KEY_PATH" "$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+
+      # CocoaPods 関連をキャッシュして pod install / Firebase ソース取得を短縮する。
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile') }}
+          restore-keys: |
+            pods-${{ runner.os }}-
+
+      # コミット済み Podfile.lock は旧構成(ソースビルドの Firestore)で、
+      # FirebaseSharedSwift を 11.12.0 に固定している。これが Podfile の
+      # invertase binary Firestore (SharedSwift = 11.10.0) と競合し pod install が
+      # 失敗する。ロックが旧構成のままの場合のみ破棄し、ランナー上で再解決させる。
+      - name: Regenerate stale Podfile.lock (precompiled Firestore)
+        run: |
+          set -euo pipefail
+          if ! grep -q 'FirebaseFirestoreBinary' ios/Podfile.lock 2>/dev/null; then
+            echo "Podfile.lock が旧構成(ソース Firestore)のため再生成します"
+            rm -f ios/Podfile.lock
+          else
+            echo "Podfile.lock は既にバイナリ Firestore 構成です。そのまま使用します"
+          fi
+
+      - name: Configure iOS project & install pods
+        run: |
+          set -euo pipefail
+          # Generated.xcconfig 生成・pod install のみを行い、コンパイルはしない。
+          # 実際のコンパイルは後段の xcodebuild archive が 1 回だけ実施する。
+          flutter build ios --release --config-only \
+            --dart-define-from-file="$ENV_FILE"
+
+      - name: Compute DART_DEFINES
+        run: |
+          set -euo pipefail
+          # xcodebuild を直接叩くと scheme の pre-action (extract_dart_defines.sh) が
+          # DART_DEFINES 未設定で Dart-Defines.xcconfig を空にしてしまうため、
+          # env ファイルから DART_DEFINES (カンマ区切り base64 の KEY=VALUE) を再構成する。
+          DEFINES=""
+          while IFS= read -r line || [ -n "$line" ]; do
+            [ -z "$line" ] && continue
+            case "$line" in \#*) continue ;; esac
+            enc=$(printf '%s' "$line" | base64 | tr -d '\n')
+            if [ -z "$DEFINES" ]; then DEFINES="$enc"; else DEFINES="$DEFINES,$enc"; fi
+          done < "$ENV_FILE"
+          echo "DART_DEFINES=$DEFINES" >> "$GITHUB_ENV"
+
+      # archive の DerivedData をキャッシュする。変更の少ない Pod (Firebase 一式) の
+      # コンパイル済みオブジェクトを再利用でき、フルコンパイルになりがちな archive を短縮できる。
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/DerivedData
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile', 'pubspec.lock') }}-${{ github.sha }}
+          restore-keys: |
+            deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile', 'pubspec.lock') }}-
+            deriveddata-${{ runner.os }}-
+
+      - name: Archive (Cloud-managed signing)
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          # App Store 配信用の distribution 証明書 / プロビジョニングプロファイルを
+          # ASC API キーで Cloud-managed 自動署名 (-allowProvisioningUpdates) する。
+          xcodebuild archive \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            -destination 'generic/platform=iOS' \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM=PBU8Y745DH
+
+      - name: Verify archive signing & entitlements
+        run: |
+          set -euo pipefail
+          APP="$RUNNER_TEMP/Runner.xcarchive/Products/Applications/Runner.app"
+          echo "===== 署名情報 ====="
+          codesign -dv "$APP" 2>&1 || true
+          echo "===== 埋め込み entitlements (aps-environment=production を確認) ====="
+          codesign -d --entitlements :- "$APP" 2>/dev/null || true
+
+      - name: Generate ExportOptions.plist
+        run: |
+          set -euo pipefail
+          # App Store 配信方式。Xcode 15 以降は app-store-connect。
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>teamID</key>
+            <string>PBU8Y745DH</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>destination</key>
+            <string>export</string>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>stripSwiftSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+          echo "===== ExportOptions.plist ====="
+          cat "$RUNNER_TEMP/ExportOptions.plist"
+
+      - name: Export IPA (App Store signing)
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -exportPath "$RUNNER_TEMP/ipa" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+      - name: Locate IPA
+        id: ipa
+        run: |
+          set -euo pipefail
+          IPA_PATH=$(find "$RUNNER_TEMP/ipa" -name "*.ipa" | head -n 1)
+          if [ -z "$IPA_PATH" ]; then
+            echo "IPA が見つかりませんでした" >&2
+            exit 1
+          fi
+          echo "path=$IPA_PATH" >> "$GITHUB_OUTPUT"
+          echo "生成された IPA: $IPA_PATH"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ${{ steps.ipa.outputs.path }}
+          if-no-files-found: error
+
+      - name: Validate IPA (App Store Connect)
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          IPA_PATH: ${{ steps.ipa.outputs.path }}
+        run: |
+          set -euo pipefail
+          # アップロード前に検証し、問題があれば早期に失敗させる。
+          xcrun altool --validate-app \
+            --type ios \
+            --file "$IPA_PATH" \
+            --apiKey "$ASC_KEY_ID" \
+            --apiIssuer "$ASC_ISSUER_ID"
+
+      - name: Upload to App Store Connect (TestFlight)
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          IPA_PATH: ${{ steps.ipa.outputs.path }}
+        run: |
+          set -euo pipefail
+          # App Store Connect にアップロード。処理完了後 TestFlight に反映される。
+          # ビルド番号が既存と重複すると失敗するため、pubspec.yaml の +buildNumber を
+          # 事前にインクリメントしておくこと。
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$IPA_PATH" \
+            --apiKey "$ASC_KEY_ID" \
+            --apiIssuer "$ASC_ISSUER_ID"
+
+      - name: Cleanup API key
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP"/AuthKey_*.p8 || true
+          rm -f "$HOME/.appstoreconnect/private_keys/"AuthKey_*.p8 || true
+
+  # ==========================================================================
+  # Android -> Google Play Console
+  # ==========================================================================
+  upload-android:
+    name: Build & Upload Android (Play Console)
+    if: ${{ github.event.inputs.platform == 'android' || github.event.inputs.platform == 'both' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          # ローカルの Gradle JDK (21) に合わせる
+          distribution: temurin
+          java-version: '21'
+
+      - name: Resolve Flutter version
+        id: flutter_version
+        run: |
+          set -euo pipefail
+          VER=$(python3 -c "import json; print(json.load(open('.fvmrc'))['flutter'])")
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "使用する Flutter: $VER"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter_version.outputs.version }}
+          channel: stable
+          cache: true
+
+      - name: Create dart-define env file
+        env:
+          PRODUCTION_ENV_BASE64: ${{ secrets.PRODUCTION_ENV }}
+        run: |
+          set -euo pipefail
+          mkdir -p dart_defines
+          ENV_FILE="dart_defines/production.env"
+          echo "$PRODUCTION_ENV_BASE64" | base64 --decode > "$ENV_FILE"
+          if [ ! -s "$ENV_FILE" ]; then
+            echo "$ENV_FILE が空です。Secret PRODUCTION_ENV を確認してください" >&2
+            exit 1
+          fi
+          echo "ENV_FILE=$ENV_FILE" >> "$GITHUB_ENV"
+          echo "使用する dart-define: $ENV_FILE"
+
+      - name: Setup google-services.json
+        env:
+          GOOGLE_SERVICES_JSON_PRODUCTION: ${{ secrets.GOOGLE_SERVICES_JSON_PRODUCTION }}
+        run: |
+          set -euo pipefail
+          DEST="android/app/src/${FLAVOR}/google-services.json"
+          mkdir -p "android/app/src/${FLAVOR}"
+          echo "$GOOGLE_SERVICES_JSON_PRODUCTION" | base64 --decode > "$DEST"
+          if [ ! -s "$DEST" ]; then
+            echo "$DEST が空です。Secret GOOGLE_SERVICES_JSON_PRODUCTION を確認してください" >&2
+            exit 1
+          fi
+          echo "配置: $DEST"
+          # applicationId (package名) を env ファイルから抽出し、Play Console の
+          # packageName として利用する。
+          PKG=$(grep -E '^appId=' "$ENV_FILE" | head -n 1 | cut -d= -f2-)
+          if [ -z "$PKG" ]; then
+            echo "appId を $ENV_FILE から取得できませんでした" >&2
+            exit 1
+          fi
+          echo "ANDROID_PACKAGE_NAME=$PKG" >> "$GITHUB_ENV"
+          echo "Android package name: $PKG"
+
+      - name: Setup Android signing (keystore + key.properties)
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          # storeFile は app モジュール (android/app) からの相対パスで解決される
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/release-keystore.jks
+          cat > android/key.properties <<EOF
+          releaseKeyAlias=${ANDROID_KEY_ALIAS}
+          releaseKeyPassword=${ANDROID_KEY_PASSWORD}
+          releaseStoreFile=release-keystore.jks
+          releaseStorePassword=${ANDROID_KEYSTORE_PASSWORD}
+          EOF
+          echo "key.properties を生成しました"
+
+      # ダウンロード済み pub パッケージ (~/.pub-cache) をキャッシュし、
+      # flutter pub get のパッケージ取得を短縮する。
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      # 生成ファイル (*.g.dart / *.freezed.dart / *.realm.dart) は git 管理せず、
+      # ビルドのたびに build_runner で生成する。
+      - name: Run build_runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # Play Console は APK ではなく App Bundle (AAB) を要求する。
+      - name: Build App Bundle (AAB)
+        run: |
+          set -euo pipefail
+          flutter build appbundle \
+            --release \
+            --dart-define-from-file="$ENV_FILE"
+
+      - name: Locate AAB
+        id: aab
+        run: |
+          set -euo pipefail
+          AAB_PATH=$(find build/app/outputs/bundle -name "*.aab" | head -n 1)
+          if [ -z "$AAB_PATH" ]; then
+            echo "AAB が見つかりませんでした" >&2
+            exit 1
+          fi
+          echo "path=$AAB_PATH" >> "$GITHUB_OUTPUT"
+          echo "生成された AAB: $AAB_PATH"
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab
+          path: ${{ steps.aab.outputs.path }}
+          if-no-files-found: error
+
+      - name: Write Play service account json
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          set -euo pipefail
+          SA_FILE="$RUNNER_TEMP/play-service-account.json"
+          printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON" > "$SA_FILE"
+          if [ ! -s "$SA_FILE" ]; then
+            echo "Play サービスアカウント JSON が空です。PLAY_SERVICE_ACCOUNT_JSON を確認してください" >&2
+            exit 1
+          fi
+          echo "PLAY_SA_FILE=$SA_FILE" >> "$GITHUB_ENV"
+
+      - name: Upload to Google Play Console
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: ${{ env.PLAY_SA_FILE }}
+          packageName: ${{ env.ANDROID_PACKAGE_NAME }}
+          releaseFiles: ${{ steps.aab.outputs.path }}
+          track: ${{ github.event.inputs.android_track }}
+          status: ${{ github.event.inputs.android_status }}
+          # ネイティブデバッグシンボルは build.gradle の debugSymbolLevel 'FULL' により
+          # AAB へ自動同梱されるため、mappingFile / debugSymbols の個別指定は不要。
+
+      - name: Cleanup Play service account json
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/play-service-account.json" || true
