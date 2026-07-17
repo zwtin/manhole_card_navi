@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '/app/provider/alert_provider.dart';
 import '/app/provider/router_provider.dart';
@@ -33,6 +37,9 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
   final Key? _key;
   final Ref _ref;
   final _logger = Logger();
+
+  /// App Store のアプリ ID（マンホールカードナビ）
+  static const _iosAppStoreId = '6466788859';
 
   final AnalyticsUseCase _analyticsUseCase;
   final CheckAppUpdateUseCase _checkAppUpdateUseCase;
@@ -84,9 +91,10 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
     if (needAppUpdateDTO.value) {
       _ref.read(alertProvider.notifier).show(
             title: 'エラー',
-            message: '最新バージョンのアプリをお使いください',
+            message: '最新のバージョンがリリースされています。アプリをアップデートしてください。',
             okButtonTitle: 'OK',
             okButtonAction: () async {
+              await _openStore();
               await _checkNeedUpdate();
             },
             cancelButtonTitle: null,
@@ -95,6 +103,24 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
       return const Result.success(false);
     }
     return const Result.success(true);
+  }
+
+  /// ストア（App Store / Play Store）を開く。
+  Future<void> _openStore() async {
+    final Uri uri;
+    if (Platform.isIOS) {
+      uri = Uri.parse('https://apps.apple.com/jp/app/id$_iosAppStoreId');
+    } else if (Platform.isAndroid) {
+      final packageInfo = await PackageInfo.fromPlatform();
+      uri = Uri.parse(
+        'https://play.google.com/store/apps/details?id=${packageInfo.packageName}',
+      );
+    } else {
+      return;
+    }
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   Future<void> _transitionToCheckMasterUpdateView() async {
