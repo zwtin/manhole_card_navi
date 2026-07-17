@@ -31,6 +31,14 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
+  # Firestore をソースからビルドすると abseil / gRPC / BoringSSL / leveldb の
+  # C++ コンパイルに 10〜15 分かかり、CI のビルド時間の大半を占める。
+  # invertase のプリコンパイル済みフレームワークに差し替えてソースビルドを回避する。
+  # tag は FirebaseFirestore のバージョン (Podfile.lock: 11.10.0) と一致させること。
+  pod 'FirebaseFirestore',
+    :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git',
+    :tag => '11.10.0'
+
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
     inherit! :search_paths
