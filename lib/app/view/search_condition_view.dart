@@ -187,13 +187,12 @@ class SearchConditionView extends CommonWidget {
                 palette: palette,
                 title: 'マップ表示',
                 pill: 'マップのみ',
-                helpText: '地図に表示する座標の種類。一覧には影響しません。',
                 child: _Segmented<MapCoordinateType>(
                   palette: palette,
                   value: viewModel.coordinateType,
                   options: const [
                     ('配布場所', MapCoordinateType.distribution),
-                    ('蓋の座標', MapCoordinateType.position),
+                    ('蓋', MapCoordinateType.position),
                   ],
                   onChanged: (value) {
                     ref
