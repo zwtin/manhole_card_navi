@@ -224,7 +224,9 @@ class CardModalView extends CommonWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
+                        // 下タブ(少し上にはみ出す形)とボタンが被らないよう、
+                        // CardDetailView と同じ 40px の余白を下に取ってボタンを持ち上げる。
+                        const SizedBox(height: 40),
                       ],
                     ),
           ),
