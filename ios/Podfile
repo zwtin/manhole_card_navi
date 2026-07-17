@@ -38,6 +38,10 @@ target 'Runner' do
   pod 'FirebaseFirestore',
     :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git',
     :tag => '11.10.0'
+  # invertase の binary Firestore (11.10.0) は FirebaseSharedSwift を = 11.10.0 で
+  # 厳密固定して要求する。他の Firebase pod の制約は ~> 11.0 と緩いため、そのままだと
+  # FirebaseSharedSwift が 11.12.0 に浮いて競合する。Firestore と揃えて 11.10.0 に固定する。
+  pod 'FirebaseSharedSwift', '11.10.0'
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
