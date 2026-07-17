@@ -42,6 +42,7 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
           prefectureName: dao.prefecture?.name ?? '',
           volumeId: dao.volume?.id ?? '',
           volumeName: dao.volume?.name ?? '',
+          distributionState: dao.distributionState,
           publicationDate: dao.publicationDate,
         );
       }).toList();

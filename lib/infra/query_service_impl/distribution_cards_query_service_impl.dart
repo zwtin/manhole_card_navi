@@ -43,6 +43,7 @@ class DistributionCardsQueryServiceImpl
               cardId: dao.id,
               imagePath: dao.image,
               distributionState: dao.distributionState,
+              volumeId: dao.volume?.id ?? '',
               latitude: point.latitude,
               longitude: point.longitude,
             ),

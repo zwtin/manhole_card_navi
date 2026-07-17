@@ -13,17 +13,22 @@ import '/app/provider/pv_sender_provider.dart';
 import '/app/provider/router_provider.dart';
 import '/app/provider/tab_key_storage_provider.dart';
 import '/app/view/card_modal_view.dart';
+import '/app/view/search_condition_view.dart';
 import '/app/view_data/map_markers_view_data.dart';
 import '/app/view_model/bottom_tab_view_model.dart';
+import '/domain/entity/map_coordinate_type.dart';
 import '/domain/entity/result.dart';
+import '/domain/entity/search_condition.dart';
 import '/infra/query_service_impl/already_get_card_query_service_impl.dart';
 import '/infra/query_service_impl/distribution_cards_query_service_impl.dart';
 import '/infra/query_service_impl/position_cards_query_service_impl.dart';
+import '/infra/query_service_impl/search_condition_query_service_impl.dart';
 import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/dto/map_marker_dto.dart';
 import '/use_case/query_service/already_get_card_query_service.dart';
 import '/use_case/query_service/distribution_cards_query_service.dart';
 import '/use_case/query_service/position_cards_query_service.dart';
+import '/use_case/query_service/search_condition_query_service.dart';
 import '/use_case/use_case/analytics_use_case.dart';
 
 final manholeCardMapViewModelProvider = ChangeNotifierProvider.family
@@ -34,11 +39,10 @@ final manholeCardMapViewModelProvider = ChangeNotifierProvider.family
         ref.watch(alreadyGetCardQueryServiceProvider),
         ref.watch(distributionCardsQueryServiceProvider),
         ref.watch(positionCardsQueryServiceProvider),
+        ref.watch(searchConditionQueryServiceProvider),
         ref.watch(analyticsUseCaseProvider),
       );
     });
-
-enum MapState { position, distribution }
 
 class ManholeCardMapViewModel extends ChangeNotifier {
   ManholeCardMapViewModel(
@@ -47,6 +51,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     this._alreadyGetCardQueryService,
     this._distributionCardsQueryService,
     this._positionCardsQueryService,
+    this._searchConditionQueryService,
     this._analyticsUseCase,
   );
 
@@ -57,19 +62,21 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final AlreadyGetCardQueryService _alreadyGetCardQueryService;
   final DistributionCardsQueryService _distributionCardsQueryService;
   final PositionCardsQueryService _positionCardsQueryService;
+  final SearchConditionQueryService _searchConditionQueryService;
 
   final AnalyticsUseCase _analyticsUseCase;
 
   String get navigationTitle {
-    switch (mapState) {
-      case MapState.distribution:
+    switch (_coordinateType) {
+      case MapCoordinateType.distribution:
         return '配布場所マップ';
-      case MapState.position:
+      case MapCoordinateType.position:
         return '蓋マップ';
-      default:
-        return '';
     }
   }
+
+  /// 有効な絞り込みの数。検索ボタンのバッジ表示に使う。
+  int get activeFilterCount => _searchCondition.activeFilterCount;
 
   GoogleMapController? mapController;
   CameraPosition initialCameraPosition = const CameraPosition(
@@ -82,7 +89,15 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   /// マーカー生成の世代番号。生成中に新しい再読み込みが始まったら、古い世代の
   /// プログレッシブ通知・最終結果を破棄するために使う。
   int _markerGeneration = 0;
-  MapState mapState = MapState.distribution;
+
+  SearchCondition _searchCondition = SearchCondition.initial();
+
+  MapCoordinateType get _coordinateType => _searchCondition.map.coordinateType;
+
+  List<MapMarkerDTO> get _currentMarkerDTOList =>
+      _coordinateType == MapCoordinateType.position
+          ? _positionMarkerDTOList
+          : _distributionMarkerDTOList;
 
   /// 表示中のモーダル枚数。詳細画面の「マップで見る」では、旧モーダルを閉じてから
   /// 新モーダルを表示するが、閉じた通知（onCameBack）が新モーダル表示より後に届く。
@@ -103,8 +118,8 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
   double _zoom = 12.0;
   LatLng _position = const LatLng(35.680212, 139.757669);
-  late StreamSubscription<List<AlreadyGetCardDTO>>
-  _alreadyGetCardStreamSubscription;
+  StreamSubscription<List<AlreadyGetCardDTO>>? _alreadyGetCardStreamSubscription;
+  StreamSubscription<SearchCondition>? _searchConditionStreamSubscription;
 
   Future<void> onLoad() async {
     // 枠 PNG のデコードを先行させ、最初のマーカー合成の待ちを減らす。
@@ -113,13 +128,19 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     _ref.read(tabKeyStorageProvider).setMapKey(_key);
     _ref.read(tabKeyStorageProvider).setTabKey(0, _key);
     await onCameBack();
+    await _loadSearchCondition();
     await _fetchMarker();
     await _listenAlreadyGetCard();
+    await _listenSearchCondition();
   }
 
-  Future<void> onChangeMapState(MapState newMapState) async {
-    mapState = newMapState;
-    await _fetchMarker();
+  /// 検索条件画面へ遷移する。
+  Future<void> onTapSearchCondition() async {
+    await _ref.read(routerProvider(_key).notifier).present(
+          nextWidget: SearchConditionView(
+            key: UniqueKey(),
+          ),
+        );
   }
 
   Future<void> setGoogleMapController(GoogleMapController controller) async {
@@ -182,7 +203,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
   Future<void> onTapCheckWithMapButton(String cardId) async {
     final MapMarkerDTO? dto;
-    if (mapState == MapState.position) {
+    if (_coordinateType == MapCoordinateType.position) {
       dto =
           _positionMarkerDTOList
               .where((element) => element.cardId == cardId)
@@ -237,7 +258,8 @@ class ManholeCardMapViewModel extends ChangeNotifier {
       name: 'screen_pv',
       parameters: {
         'screen_name': 'manhole_card_map_view',
-        'map_state': mapState.name,
+        'coordinate_type': _coordinateType.name,
+        'active_filter_count': activeFilterCount,
       },
     );
   }
@@ -253,10 +275,17 @@ class ManholeCardMapViewModel extends ChangeNotifier {
     _ref.read(pvSendProvider.notifier).send();
   }
 
+  Future<void> _loadSearchCondition() async {
+    final result = await _searchConditionQueryService.get();
+    if (result is Success<SearchCondition>) {
+      _searchCondition = result.value;
+    }
+  }
+
   Future<void> _fetchMarker() async {
-    if (mapState == MapState.position) {
+    if (_coordinateType == MapCoordinateType.position) {
       await _fetchPositionMarker();
-    } else if (mapState == MapState.distribution) {
+    } else {
       await _fetchDistributionMarker();
     }
     await _reloadMarkerViewData();
@@ -314,12 +343,10 @@ class ManholeCardMapViewModel extends ChangeNotifier {
         .listen((dtoList) async {
           final generation = ++_markerGeneration;
           final newViewData = await MapMarkersViewDataMapper.convertToViewData(
-            mapMarkerDTOList:
-                mapState == MapState.position
-                    ? _positionMarkerDTOList
-                    : _distributionMarkerDTOList,
+            mapMarkerDTOList: _currentMarkerDTOList,
             alreadyGetCardDTOList: dtoList,
             centerCoordinate: _position,
+            searchCondition: _searchCondition.common,
             onPartial: (partial) {
               // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
               if (generation != _markerGeneration) {
@@ -341,13 +368,31 @@ class ManholeCardMapViewModel extends ChangeNotifier {
         });
   }
 
-  /// 最後にマーカー再生成した「モード + 中心座標」。同じ状態での重複再生成
-  /// （移動していない onCameraIdle や onCameraMove/Idle の重複）を防ぐ。
+  Future<void> _listenSearchCondition() async {
+    _searchConditionStreamSubscription = _searchConditionQueryService
+        .getStream()
+        .listen((condition) async {
+          _searchCondition = condition;
+          // 座標種別が変わっていれば、対応するマーカーを遅延取得する。
+          if (_coordinateType == MapCoordinateType.position) {
+            await _fetchPositionMarker();
+          } else {
+            await _fetchDistributionMarker();
+          }
+          await _reloadMarkerViewData();
+          // タイトル・フィルタバッジを更新する。
+          notifyListeners();
+        });
+  }
+
+  /// 最後にマーカー再生成した「座標種別 + 絞り込み条件 + 中心座標」。同じ状態での
+  /// 重複再生成を防ぐ。
   String? _lastReloadKey;
 
   Future<void> _reloadMarkerViewData() async {
     final reloadKey =
-        '${mapState.name}_${_position.latitude}_${_position.longitude}';
+        '${_coordinateType.name}_${_searchCondition.common.hashCode}_'
+        '${_position.latitude}_${_position.longitude}';
     if (reloadKey == _lastReloadKey) {
       return;
     }
@@ -355,12 +400,10 @@ class ManholeCardMapViewModel extends ChangeNotifier {
 
     final generation = ++_markerGeneration;
     final newViewData = await MapMarkersViewDataMapper.convertToViewData(
-      mapMarkerDTOList:
-          mapState == MapState.position
-              ? _positionMarkerDTOList
-              : _distributionMarkerDTOList,
+      mapMarkerDTOList: _currentMarkerDTOList,
       alreadyGetCardDTOList: _alreadyGetCardDTOList,
       centerCoordinate: _position,
+      searchCondition: _searchCondition.common,
       onPartial: (partial) {
         // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
         if (generation != _markerGeneration) {
@@ -440,6 +483,7 @@ class ManholeCardMapViewModel extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _logger.d('ManholeCardMapViewModel dispose');
-    _alreadyGetCardStreamSubscription.cancel();
+    _alreadyGetCardStreamSubscription?.cancel();
+    _searchConditionStreamSubscription?.cancel();
   }
 }

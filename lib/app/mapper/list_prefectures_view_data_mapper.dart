@@ -6,7 +6,7 @@ import '/app/view_data/list_card_view_data.dart';
 import '/app/view_data/list_cards_view_data.dart';
 import '/app/view_data/list_prefecture_view_data.dart';
 import '/app/view_data/list_prefectures_view_data.dart';
-import '/app/view_model/manhole_card_list_view_model.dart';
+import '/domain/entity/search_condition.dart';
 import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/dto/list_card_dto.dart';
 
@@ -14,12 +14,12 @@ class ListPrefecturesViewDataMapper {
   static Future<ListPrefecturesViewData> convertToViewData({
     required List<ListCardDTO> listCardDTOList,
     required List<AlreadyGetCardDTO> alreadyGetCardDTOList,
-    required ListState listState,
+    required CommonSearchCondition searchCondition,
   }) async {
     final map = <String, dynamic>{};
     map['listCardDTOList'] = listCardDTOList;
     map['alreadyGetCardDTOList'] = alreadyGetCardDTOList;
-    map['listState'] = listState;
+    map['searchCondition'] = searchCondition;
     return compute(_convert, map);
   }
 
@@ -29,9 +29,22 @@ class ListPrefecturesViewDataMapper {
     final listCardDTOList = parameter['listCardDTOList'] as List<ListCardDTO>;
     final alreadyGetCardDTOList =
         parameter['alreadyGetCardDTOList'] as List<AlreadyGetCardDTO>;
-    final listState = parameter['listState'] as ListState;
+    final searchCondition = parameter['searchCondition'] as CommonSearchCondition;
 
-    final prefectureIdList = listCardDTOList
+    final alreadyGetIds =
+        alreadyGetCardDTOList.map((dto) => dto.cardId).toSet();
+
+    // 弾数・配布状態で絞り込んだ「母集団」。取得状態フィルタ（表示）はこの後で適用
+    // する。都道府県ヘッダの分数はこの母集団を基準にする。
+    final universe = listCardDTOList
+        .where(
+          (dto) =>
+              searchCondition.matchesVolume(dto.volumeId) &&
+              searchCondition.matchesDistributionState(dto.distributionState),
+        )
+        .toList();
+
+    final prefectureIdList = universe
         .map(
           (listCardDTO) {
             return listCardDTO.prefectureId;
@@ -44,14 +57,15 @@ class ListPrefecturesViewDataMapper {
     final prefectureList = prefectureIdList
         .map(
           (id) {
-            final cardList = listCardDTOList
-                .where((dto) => dto.prefectureId == id)
+            final universeInPrefecture =
+                universe.where((dto) => dto.prefectureId == id).toList();
+            final cardList = universeInPrefecture
                 .map(
                   (dto) {
-                    final alreadyGet = alreadyGetCardDTOList
-                        .map((e) => e.cardId)
-                        .contains(dto.id);
-                    if (listState == ListState.alreadyGet && !alreadyGet) {
+                    final alreadyGet = alreadyGetIds.contains(dto.id);
+                    if (!searchCondition.matchesDisplay(
+                      alreadyGet: alreadyGet,
+                    )) {
                       return null;
                     }
                     return ListCardViewData(
@@ -71,19 +85,12 @@ class ListPrefecturesViewDataMapper {
               return null;
             }
 
-            final prefectureName = listCardDTOList
-                .firstWhere((dto) => dto.prefectureId == id)
-                .prefectureName;
+            final prefectureName = universeInPrefecture.first.prefectureName;
 
-            // 分数の計算
-            final totalCardsInPrefecture = listCardDTOList
-                .where((dto) => dto.prefectureId == id)
-                .length;
-            final alreadyGetCardsInPrefecture = listCardDTOList
-                .where((dto) => dto.prefectureId == id)
-                .where((dto) => alreadyGetCardDTOList
-                    .map((e) => e.cardId)
-                    .contains(dto.id))
+            // 分数の計算（母集団基準）。
+            final totalCardsInPrefecture = universeInPrefecture.length;
+            final alreadyGetCardsInPrefecture = universeInPrefecture
+                .where((dto) => alreadyGetIds.contains(dto.id))
                 .length;
 
             return ListPrefectureViewData(

@@ -144,6 +144,9 @@ class CardModalView extends CommonWidget {
                             ),
                           ),
                         ),
+                        // 在庫状況のリンクと「別アプリで開く」ボタンが近すぎて
+                        // 押し間違えやすいため、間に少し余白を入れる。
+                        const SizedBox(height: 12),
                         Container(
                           height: 48,
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -221,7 +224,9 @@ class CardModalView extends CommonWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
+                        // 下タブ(少し上にはみ出す形)とボタンが被らないよう、
+                        // CardDetailView と同じ 40px の余白を下に取ってボタンを持ち上げる。
+                        const SizedBox(height: 40),
                       ],
                     ),
           ),
