@@ -288,6 +288,11 @@ class DetailView extends CommonWidget {
                           ),
                           Column(
                             children: [
+                              // 在庫状況のリンクと下のボタンが近すぎて押し間違えやすい
+                              // ため、区切り線の上に少し余白を入れて間隔を空ける。
+                              const SizedBox(
+                                height: 12,
+                              ),
                               const Divider(),
                               const SizedBox(
                                 height: 8,
