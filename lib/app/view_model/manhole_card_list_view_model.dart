@@ -70,7 +70,7 @@ class ManholeCardListViewModel extends ChangeNotifier {
   String get navigationTitle {
     final totalCount = _listCardDTOList.length;
     final alreadyGetCount = _alreadyGetCardDTOList.length;
-    return 'マンホールカード　$alreadyGetCount/$totalCount';
+    return 'リスト　$alreadyGetCount/$totalCount';
   }
 
   /// 有効な絞り込みの数。検索ボタンのバッジ表示に使う。
