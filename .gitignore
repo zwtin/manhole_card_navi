@@ -33,6 +33,13 @@ migrate_working_dir/
 .pub/
 /build/
 
+# コード生成の成果物（Freezed / JsonSerializable / Realm）は差分管理しない。
+# モデルから再生成可能なため、CI・ローカルとも build_runner で都度生成する:
+#   fvm flutter pub run build_runner build --delete-conflicting-outputs
+*.freezed.dart
+*.g.dart
+*.realm.dart
+
 # Symbolication related
 app.*.symbols
 
