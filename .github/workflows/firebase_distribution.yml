@@ -196,11 +196,10 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      # 生成ファイル (*.g.dart / *.freezed.dart / *.realm.dart) はリポジトリに
-      # コミット済みのため通常は不要です。モデル変更を CI 側で反映したい場合は
-      # 下記コメントを解除してください。
-      # - name: Run build_runner
-      #   run: flutter pub run build_runner build --delete-conflicting-outputs
+      # 生成ファイル (*.g.dart / *.freezed.dart / *.realm.dart) は git 管理せず、
+      # ビルドのたびに build_runner で生成する。
+      - name: Run build_runner
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Install FlutterFire CLI
         run: |
@@ -562,6 +561,11 @@ jobs:
 
       - name: Flutter pub get
         run: flutter pub get
+
+      # 生成ファイル (*.g.dart / *.freezed.dart / *.realm.dart) は git 管理せず、
+      # ビルドのたびに build_runner で生成する。
+      - name: Run build_runner
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build APK
         run: |

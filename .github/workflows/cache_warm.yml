@@ -136,6 +136,11 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
+      # 生成ファイル (*.g.dart / *.freezed.dart / *.realm.dart) は git 管理せず、
+      # 後段の xcodebuild が Dart をコンパイルするため事前に生成しておく。
+      - name: Run build_runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
       # Xcode の Runner ターゲットに flutterfire upload-crashlytics-symbols を呼ぶ
       # ビルドフェーズがあり、未導入だとビルドが失敗するため導入する。
       - name: Install FlutterFire CLI
