@@ -285,8 +285,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ runner.temp }}/DerivedData
-          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}
+          # sha を含めて毎回フレッシュに保存しつつ、restore-keys で
+          # main の温めジョブが保存した最新の DerivedData を拾えるようにする。
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}-${{ github.sha }}
           restore-keys: |
+            deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'pubspec.lock') }}-
             deriveddata-${{ runner.os }}-
 
       - name: Archive (Cloud-managed signing)
