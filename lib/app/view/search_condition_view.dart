@@ -61,6 +61,15 @@ class SearchConditionView extends CommonWidget {
             ),
             actions: [
               TextButton(
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  foregroundColor: palette.sub,
+                ),
                 onPressed: () {
                   ref
                       .read(searchConditionViewModelProvider(key))
