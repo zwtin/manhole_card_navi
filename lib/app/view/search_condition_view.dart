@@ -520,10 +520,16 @@ class _FilterChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (selected) ...[
-              Icon(Icons.check, size: 16, color: palette.onPrimary),
-              const SizedBox(width: 4),
-            ],
+            // チェックマークのスペースは常に確保する。ON/OFF でチップ幅が変わって
+            // 後続のチップ位置がズレるのを防ぐため、未選択でも同じ幅の空きを取る。
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: selected
+                  ? Icon(Icons.check, size: 16, color: palette.onPrimary)
+                  : null,
+            ),
+            const SizedBox(width: 4),
             Text(
               label,
               style: TextStyle(
