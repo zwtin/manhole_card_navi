@@ -252,6 +252,22 @@ jobs:
           restore-keys: |
             pods-${{ runner.os }}-
 
+      # コミット済み Podfile.lock は旧構成(ソースビルドの Firestore)で、
+      # FirebaseSharedSwift を 11.12.0 に固定している。これが Podfile の
+      # invertase binary Firestore (SharedSwift = 11.10.0) と競合し pod install が
+      # 失敗する。ロックが旧構成のままの場合のみ破棄し、ランナー上で再解決させる。
+      # (FlutterFire プラグインが Firebase を 11.10.0 に厳密固定するため、再解決しても
+      #  バージョンは安定する。バイナリ構成で再生成された後は破棄しない = 自己修復型)
+      - name: Regenerate stale Podfile.lock (precompiled Firestore)
+        run: |
+          set -euo pipefail
+          if ! grep -q 'FirebaseFirestoreBinary' ios/Podfile.lock 2>/dev/null; then
+            echo "Podfile.lock が旧構成(ソース Firestore)のため再生成します"
+            rm -f ios/Podfile.lock
+          else
+            echo "Podfile.lock は既にバイナリ Firestore 構成です。そのまま使用します"
+          fi
+
       - name: Configure iOS project & install pods
         run: |
           set -euo pipefail
