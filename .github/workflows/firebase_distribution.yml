@@ -39,6 +39,10 @@
 #       ※ キーには Firebase 配布用に必要な権限 (App Manager 等) を付与してください。
 #       ※ エクスポート方式は development 固定 (entitlements の
 #         aps-environment=development と整合。テスター端末の UDID 登録が必要)。
+#   FIREBASE_JSON
+#     - プロジェクト直下の firebase.json を base64 化した文字列
+#       生成例: base64 -i firebase.json | pbcopy
+#       ※ flutterfire upload-crashlytics-symbols ビルドフェーズが参照します。
 #   GOOGLE_SERVICE_INFO_PLIST_PRODUCTION
 #     - production 用 GoogleService-Info.plist を base64 化した文字列
 #       生成例: base64 -i ios/production/GoogleService-Info.plist | pbcopy
@@ -187,6 +191,29 @@ jobs:
       # - name: Run build_runner
       #   run: flutter pub run build_runner build --delete-conflicting-outputs
 
+      - name: Install FlutterFire CLI
+        run: |
+          set -euo pipefail
+          # Xcode の Runner ターゲットに flutterfire upload-crashlytics-symbols を
+          # 呼ぶビルドフェーズがあり、flutterfire CLI が未導入だとビルドが失敗するため導入する。
+          flutter pub global activate flutterfire_cli
+          # ビルドフェーズが参照できるよう pub-cache/bin を PATH に追加
+          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+
+      - name: Setup firebase.json
+        env:
+          FIREBASE_JSON_BASE64: ${{ secrets.FIREBASE_JSON }}
+        run: |
+          set -euo pipefail
+          # flutterfire upload-crashlytics-symbols がプロジェクト直下の firebase.json を
+          # 参照する。gitignore されているため Secret から配置する。
+          echo "$FIREBASE_JSON_BASE64" | base64 --decode > firebase.json
+          if [ ! -s firebase.json ]; then
+            echo "firebase.json が空です。FIREBASE_JSON を確認してください" >&2
+            exit 1
+          fi
+          echo "配置: firebase.json"
+
       - name: Setup App Store Connect API key
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
@@ -316,14 +343,24 @@ jobs:
           path: ${{ steps.ipa.outputs.path }}
           if-no-files-found: error
 
+      # wzieba/Firebase-Distribution-Github-Action は Docker コンテナアクションで
+      # Linux ランナーでしか動かないため、macOS では firebase CLI で直接配布する。
       - name: Distribute to Firebase App Distribution (iOS)
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{ env.FIREBASE_IOS_APP_ID }}
-          serviceCredentialsFileContent: ${{ github.event.inputs.flavor == 'development' && secrets.FIREBASE_SERVICE_ACCOUNT_DEVELOPMENT || secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}
-          groups: testers
-          releaseNotes: ${{ github.event.inputs.release_notes }}
-          file: ${{ steps.ipa.outputs.path }}
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ github.event.inputs.flavor == 'development' && secrets.FIREBASE_SERVICE_ACCOUNT_DEVELOPMENT || secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}
+          RELEASE_NOTES: ${{ github.event.inputs.release_notes }}
+          IPA_PATH: ${{ steps.ipa.outputs.path }}
+        run: |
+          set -euo pipefail
+          SA_FILE="$RUNNER_TEMP/firebase-service-account.json"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$SA_FILE"
+          export GOOGLE_APPLICATION_CREDENTIALS="$SA_FILE"
+          npm install -g firebase-tools
+          firebase appdistribution:distribute "$IPA_PATH" \
+            --app "$FIREBASE_IOS_APP_ID" \
+            --groups testers \
+            --release-notes "$RELEASE_NOTES"
+          rm -f "$SA_FILE"
 
       - name: Cleanup API key
         if: always()
