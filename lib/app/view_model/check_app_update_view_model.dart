@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '/app/provider/alert_provider.dart';
@@ -40,6 +39,9 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
 
   /// App Store のアプリ ID（マンホールカードナビ）
   static const _iosAppStoreId = '6466788859';
+
+  /// Play Store のパッケージ名（本番）
+  static const _androidPackageName = 'com.zwtin.manholecardnavi';
 
   final AnalyticsUseCase _analyticsUseCase;
   final CheckAppUpdateUseCase _checkAppUpdateUseCase;
@@ -111,9 +113,10 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
     if (Platform.isIOS) {
       uri = Uri.parse('https://apps.apple.com/jp/app/id$_iosAppStoreId');
     } else if (Platform.isAndroid) {
-      final packageInfo = await PackageInfo.fromPlatform();
+      // フレーバーによってパッケージ名が変わるため、
+      // ストア遷移先は本番のパッケージ名を固定で指定する。
       uri = Uri.parse(
-        'https://play.google.com/store/apps/details?id=${packageInfo.packageName}',
+        'https://play.google.com/store/apps/details?id=$_androidPackageName',
       );
     } else {
       return;
