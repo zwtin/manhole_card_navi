@@ -92,9 +92,9 @@ class CheckAppUpdateViewModel extends ChangeNotifier {
     final needAppUpdateDTO = (result as Success<NeedAppUpdateDTO>).value;
     if (needAppUpdateDTO.value) {
       _ref.read(alertProvider.notifier).show(
-            title: 'エラー',
+            title: 'バージョンエラー',
             message: '最新のバージョンがリリースされています。アプリをアップデートしてください。',
-            okButtonTitle: 'OK',
+            okButtonTitle: 'ストアを開く',
             okButtonAction: () async {
               await _openStore();
               await _checkNeedUpdate();
