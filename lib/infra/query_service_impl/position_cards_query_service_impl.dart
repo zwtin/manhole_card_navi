@@ -40,6 +40,7 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
             cardId: dao.id,
             imagePath: dao.image,
             distributionState: dao.distributionState,
+            volumeId: dao.volume?.id ?? '',
             latitude: dao.latitude,
             longitude: dao.longitude,
           ),

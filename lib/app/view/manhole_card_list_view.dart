@@ -55,80 +55,18 @@ class ManholeCardListView extends CommonWidget {
             ),
             actions: <Widget>[
               IconButton(
-                icon: const Icon(
-                  Icons.menu,
+                tooltip: '検索条件',
+                icon: Badge.count(
+                  count: viewModel.activeFilterCount,
+                  isLabelVisible: viewModel.activeFilterCount > 0,
+                  child: const Icon(
+                    Icons.tune,
+                  ),
                 ),
                 onPressed: () {
-                  showModalBottomSheet<int>(
-                    context: context,
-                    builder: (modalContext) {
-                      return SingleChildScrollView(
-                        child: SafeArea(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ListTile(
-                                leading: viewModel.listState == ListState.all
-                                    ? SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: Icon(
-                                          Icons.check,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      )
-                                    : const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                title: const TitleMediumText(
-                                  'すべて',
-                                ),
-                                tileColor: Colors.transparent,
-                                onTap: () async {
-                                  Navigator.of(modalContext).pop();
-                                  ref
-                                      .read(
-                                          manholeCardListViewModelProvider(key))
-                                      .onChangeMapState(ListState.all);
-                                },
-                              ),
-                              ListTile(
-                                leading: viewModel.listState ==
-                                        ListState.alreadyGet
-                                    ? SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: Icon(
-                                          Icons.check,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      )
-                                    : const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                title: const TitleMediumText(
-                                  '取得済みのみ',
-                                ),
-                                tileColor: Colors.transparent,
-                                onTap: () async {
-                                  Navigator.of(modalContext).pop();
-                                  ref
-                                      .read(
-                                          manholeCardListViewModelProvider(key))
-                                      .onChangeMapState(ListState.alreadyGet);
-                                },
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  );
+                  ref
+                      .read(manholeCardListViewModelProvider(key))
+                      .onTapSearchCondition();
                 },
               ),
             ],

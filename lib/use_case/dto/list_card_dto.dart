@@ -14,6 +14,9 @@ abstract class ListCardDTO with _$ListCardDTO {
     required String prefectureName,
     required String volumeId,
     required String volumeName,
+
+    /// 配布状態の文字列値（'distributing' / 'stopped' / 'notClear'）。
+    required String distributionState,
     required DateTime publicationDate,
   }) = _ListCardDTO;
   const ListCardDTO._();

@@ -7,6 +7,7 @@ import '/app/service/image_url_builder.dart';
 import '/app/service/marker_icon_builder.dart';
 import '/app/view_data/map_marker_view_data.dart';
 import '/app/view_data/map_markers_view_data.dart';
+import '/domain/entity/search_condition.dart';
 import '/use_case/dto/already_get_card_dto.dart';
 import '/use_case/dto/map_marker_dto.dart';
 
@@ -58,14 +59,25 @@ class MapMarkersViewDataMapper {
     required List<MapMarkerDTO> mapMarkerDTOList,
     required List<AlreadyGetCardDTO> alreadyGetCardDTOList,
     required LatLng centerCoordinate,
+    required CommonSearchCondition searchCondition,
     void Function(MapMarkersViewData partial)? onPartial,
   }) async {
+    final alreadyGetIds = alreadyGetCardDTOList.map((e) => e.cardId).toSet();
+
+    // 近傍 30 件に絞る前に、横断フィルタ（弾数・配布状態・取得状態）を適用する。
+    // 先に絞ることで、フィルタ対象外のカードが近傍枠を消費しないようにする。
+    final filtered = mapMarkerDTOList.where((dto) {
+      return searchCondition.matchesVolume(dto.volumeId) &&
+          searchCondition.matchesDistributionState(dto.distributionState) &&
+          searchCondition.matchesDisplay(
+            alreadyGet: alreadyGetIds.contains(dto.cardId),
+          );
+    }).toList();
+
     final takedList = _selectNearest(
-      mapMarkerDTOList: mapMarkerDTOList,
+      mapMarkerDTOList: filtered,
       centerCoordinate: centerCoordinate,
     );
-
-    final alreadyGetIds = alreadyGetCardDTOList.map((e) => e.cardId).toSet();
 
     final results = <MapMarkerViewData>[];
 

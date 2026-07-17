@@ -10,6 +10,9 @@ abstract class MapMarkerDTO with _$MapMarkerDTO {
     /// カード画像の Firebase Hosting 上のパス。
     required String imagePath,
     required String distributionState,
+
+    /// 弾（volume）の ID。弾数による絞り込みに使う。
+    required String volumeId,
     required double latitude,
     required double longitude,
   }) = _MapMarkerDTO;

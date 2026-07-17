@@ -52,71 +52,16 @@ class ManholeCardMapView extends CommonWidget {
             ),
             actions: <Widget>[
               IconButton(
-                icon: const Icon(Icons.menu),
+                tooltip: '検索条件',
+                icon: Badge.count(
+                  count: viewModel.activeFilterCount,
+                  isLabelVisible: viewModel.activeFilterCount > 0,
+                  child: const Icon(Icons.tune),
+                ),
                 onPressed: () {
-                  showModalBottomSheet<int>(
-                    context: context,
-                    builder: (modalContext) {
-                      return SingleChildScrollView(
-                        child: SafeArea(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ListTile(
-                                leading:
-                                    viewModel.mapState == MapState.distribution
-                                        ? SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: Icon(
-                                            Icons.check,
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                        )
-                                        : const SizedBox(width: 20, height: 20),
-                                title: const TitleMediumText('配布場所マップ'),
-                                tileColor: Colors.transparent,
-                                onTap: () async {
-                                  Navigator.of(modalContext).pop();
-                                  ref
-                                      .read(
-                                        manholeCardMapViewModelProvider(key),
-                                      )
-                                      .onChangeMapState(MapState.distribution);
-                                },
-                              ),
-                              ListTile(
-                                leading:
-                                    viewModel.mapState == MapState.position
-                                        ? SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: Icon(
-                                            Icons.check,
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                        )
-                                        : const SizedBox(width: 20, height: 20),
-                                title: const TitleMediumText('蓋マップ'),
-                                tileColor: Colors.transparent,
-                                onTap: () async {
-                                  Navigator.of(modalContext).pop();
-                                  ref
-                                      .read(
-                                        manholeCardMapViewModelProvider(key),
-                                      )
-                                      .onChangeMapState(MapState.position);
-                                },
-                              ),
-                              const SizedBox(height: 30),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  );
+                  ref
+                      .read(manholeCardMapViewModelProvider(key))
+                      .onTapSearchCondition();
                 },
               ),
             ],
