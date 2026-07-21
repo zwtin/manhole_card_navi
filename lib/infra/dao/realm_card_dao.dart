@@ -18,7 +18,7 @@ class $RealmCardDAO {
   late DateTime publicationDate;
   late String distributionState;
 
-  /// カード画像の Firebase Hosting 上のパス。
+  /// カード画像の配信用フル URL。
   late String image;
 
   /// 配布場所の HTML。

@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
-import '/app/service/image_url_builder.dart';
 import '/app/view_data/detail_card_view_data.dart';
 import '/use_case/dto/card_dto.dart';
 
@@ -26,7 +25,7 @@ class DetailCardViewDataMapper {
 
     return DetailCardViewData(
       id: cardDTO.id,
-      imageUrl: ImageUrlBuilder.build(cardDTO.imagePath),
+      imageUrl: cardDTO.imagePath,
       alreadyGet: alreadyGet,
       name: cardDTO.name,
       prefecture: cardDTO.prefectureName,
