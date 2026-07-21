@@ -8,7 +8,7 @@ abstract class CardDTO with _$CardDTO {
     required String id,
     required String name,
 
-    /// カード画像の Firebase Hosting 上のパス。
+    /// カード画像の配信用フル URL（Firestore 格納値をそのまま利用）。
     required String imagePath,
     required double latitude,
     required double longitude,

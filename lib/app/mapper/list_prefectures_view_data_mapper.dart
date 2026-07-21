@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
-import '/app/service/image_url_builder.dart';
 import '/app/view_data/list_card_view_data.dart';
 import '/app/view_data/list_cards_view_data.dart';
 import '/app/view_data/list_prefecture_view_data.dart';
@@ -70,7 +69,7 @@ class ListPrefecturesViewDataMapper {
                     }
                     return ListCardViewData(
                       id: dto.id,
-                      imageUrl: ImageUrlBuilder.build(dto.imagePath),
+                      imageUrl: dto.imagePath,
                       alreadyGet: alreadyGet,
                       name: dto.name,
                       volume: dto.volumeName,

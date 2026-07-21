@@ -71,7 +71,7 @@ class CardRepositoryImpl implements CardRepository {
             distributionState: ManholeCardDistributionState.fromString(
               doc['distribution_state'] as String,
             ),
-            image: doc['image'] as String,
+            image: doc['image_url'] as String,
             distributionPlaceHtml: doc['distribution_place_html'] as String,
             distributionTimeHtml: doc['distribution_time_html'] as String,
             stockHtml: doc['stock_html'] as String,

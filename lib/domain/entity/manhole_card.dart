@@ -17,8 +17,8 @@ abstract class ManholeCard with _$ManholeCard {
     required DateTime publicationDate,
     required ManholeCardDistributionState distributionState,
 
-    /// カード画像の Firebase Hosting 上のパス。
-    /// 例: `master/v0003/images/00-101-A001.jpg`
+    /// カード画像の配信用フル URL。Firestore にそのまま格納された値を用いる。
+    /// 例: `https://images.example.com/master/v0003/images/00-101-A001.jpg`
     required String image,
 
     /// 配布場所の HTML。施設名・住所・電話が混在したまま保持する。

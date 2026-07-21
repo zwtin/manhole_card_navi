@@ -7,7 +7,7 @@ abstract class MapMarkerDTO with _$MapMarkerDTO {
   const factory MapMarkerDTO({
     required String cardId,
 
-    /// カード画像の Firebase Hosting 上のパス。
+    /// カード画像の配信用フル URL（Firestore 格納値をそのまま利用）。
     required String imagePath,
     required String distributionState,
 
