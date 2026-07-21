@@ -28,7 +28,9 @@
 #     ※ Firebase App ID (iOS/Android) は GoogleService-Info.plist /
 #       google-services.json から自動抽出するため Secret 登録は不要です。
 #
-# 【iOS】(App Store Connect API キーによる Cloud-managed 証明書で自動署名)
+# 【iOS】(App Store Connect API キーによる Cloud-managed 証明書で署名)
+#   ※ アーカイブは署名なしで作成し、署名は export 時に一度だけ実施します。
+#     アーカイブ時に署名するとランナー上で証明書が毎回新規生成されてしまうため。
 #   ASC_KEY_ID
 #     - App Store Connect API キーの Key ID
 #   ASC_ISSUER_ID
@@ -307,10 +309,13 @@ jobs:
             deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile', 'pubspec.lock') }}-
             deriveddata-${{ runner.os }}-
 
-      - name: Archive (Cloud-managed signing)
-        env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      # アーカイブ時に自動署名すると、使い捨てランナー上に署名 ID が無いため
+      # Xcode がその場で新しい証明書 (Apple Development) を Apple Developer 上に
+      # 生成してしまい、実行のたびに証明書が増え続ける。
+      # そこでアーカイブは「署名なし」で行い、署名は後段の export で
+      # Cloud-managed 証明書によって一度だけ実施する。Cloud-managed 証明書は
+      # 秘密鍵を Apple 側が管理するため、使い捨て環境でも再利用され新規発行されない。
+      - name: Archive (署名なし)
         run: |
           set -euo pipefail
           xcodebuild archive \
@@ -320,13 +325,21 @@ jobs:
             -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
             -derivedDataPath "$RUNNER_TEMP/DerivedData" \
             -destination 'generic/platform=iOS' \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$ASC_KEY_PATH" \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             COMPILER_INDEX_STORE_ENABLE=NO \
-            CODE_SIGN_STYLE=Automatic \
-            DEVELOPMENT_TEAM=PBU8Y745DH
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      # 署名なしアーカイブでは entitlements (aps-environment 等) が .app に
+      # 埋め込まれない。後段の export でこれらが保持されるよう、ここで ad-hoc
+      # 署名 (--sign -) を使って Runner.entitlements を埋め込んでおく。
+      # 実際の署名は export 時に Cloud-managed 証明書で上書きされる。
+      - name: Embed entitlements (ad-hoc)
+        run: |
+          set -euo pipefail
+          APP="$RUNNER_TEMP/Runner.xcarchive/Products/Applications/Runner.app"
+          codesign --force --sign - \
+            --entitlements ios/Runner/Runner.entitlements \
+            "$APP"
 
       - name: Verify archive signing & entitlements
         run: |
