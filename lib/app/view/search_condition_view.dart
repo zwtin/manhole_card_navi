@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -458,7 +459,11 @@ class _QuickActions extends StatelessWidget {
 }
 
 /// 単一選択のセグメントコントロール。
-class _Segmented<T> extends StatelessWidget {
+///
+/// 見た目はアプリの配色（トラック＝`track` / 選択中＝`primary`）に合わせつつ、
+/// 選択位置の移動やドラッグ操作は [CupertinoSlidingSegmentedControl] に任せて
+/// スライドアニメーションを得る。
+class _Segmented<T extends Object> extends StatelessWidget {
   const _Segmented({
     required this.palette,
     required this.options,
@@ -473,39 +478,53 @@ class _Segmented<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: palette.track,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: options.map((option) {
-          final selected = option.$2 == value;
-          return Expanded(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => onChanged(option.$2),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 9),
-                decoration: BoxDecoration(
-                  color: selected ? palette.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(9),
+    // CupertinoSlidingSegmentedControl は子孫に Cupertino 既定のテキストスタイル
+    // （SF Pro / fontSize 17 など）を敷くため、Material 側の既定スタイルをここで
+    // 取得しておき、各セグメントへ明示的に適用してフォントを従来どおりに保つ。
+    final baseTextStyle = DefaultTextStyle.of(context).style;
+
+    return SizedBox(
+      // 幅いっぱいのタイトな制約を与えることで、各セグメントが均等幅になる。
+      width: double.infinity,
+      // トラックの角丸は本体側が持つ固定値（8）より従来の 12 の方がカードや
+      // チップと揃うため、背景は透明にして外側の DecoratedBox で描画する。
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: palette.track,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: CupertinoSlidingSegmentedControl<T>(
+          groupValue: value,
+          backgroundColor: Colors.transparent,
+          thumbColor: palette.primary,
+          padding: const EdgeInsets.all(4),
+          onValueChanged: (newValue) {
+            if (newValue != null) {
+              onChanged(newValue);
+            }
+          },
+          children: {
+            for (final option in options)
+              option.$2: AnimatedDefaultTextStyle(
+                // サム（選択中の塗り）のスライドに合わせて文字色も滑らかに変える。
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                textAlign: TextAlign.center,
+                style: baseTextStyle.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: option.$2 == value ? palette.onPrimary : palette.sub,
                 ),
-                alignment: Alignment.center,
-                child: Text(
-                  option.$1,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: selected ? palette.onPrimary : palette.sub,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 9),
+                  child: Text(
+                    option.$1,
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
+          },
+        ),
       ),
     );
   }
