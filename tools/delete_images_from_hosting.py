@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
-旧 master バージョンの画像を Firebase Hosting から削除して再デプロイする。
+【旧世代用】旧 master バージョンの画像を Firebase Hosting から削除して再デプロイする。
+
+現行の配信先は Cloudflare R2（削除は delete_images_from_r2.py）。このスクリプトは
+Hosting に残る旧 master（0004 以前）の画像を片付けるために残している。
+旧アプリ向けに旧 master を返している間は消さないこと（cleanup-old-images スキル参照）。
 
 用途:
   - バージョン更新後、全端末が新バージョンへ移行しきった後の後片付け。

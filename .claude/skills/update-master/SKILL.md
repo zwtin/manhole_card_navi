@@ -1,11 +1,11 @@
 ---
 name: update-master
-description: gk-p.jp の最新マンホールカードデータで新しい master バージョンを発行する。全カード画像を gk-p.jp から取得し、カード記載のID・座標を二重OCRで正確に読み取り、画像を Firebase Hosting に配置し、master データを Firestore に投入するまでの一連の作業を行う。マンホールカードの新弾が出たとき（約3ヶ月ごと）のリリース作業で使う。
+description: gk-p.jp の最新マンホールカードデータで新しい master バージョンを発行する。全カード画像を gk-p.jp から取得し、カード記載のID・座標を二重OCRで正確に読み取り、画像を Cloudflare R2 に配置し、master データを Firestore に投入するまでの一連の作業を行う。マンホールカードの新弾が出たとき（約3ヶ月ごと）のリリース作業で使う。
 ---
 
 # update-master — 新 master バージョンの発行
 
-gk-p.jp の最新データで、Firebase Hosting（画像）と Firestore（master データ）を新バージョンに更新する。
+gk-p.jp の最新データで、Cloudflare R2（画像）と Firestore（master データ）を新バージョンに更新する。
 
 ## このスキルの原則（重要）
 
@@ -33,7 +33,8 @@ gk-p.jp の行順の連番にすぎない。新弾のカードは都道府県ご
 
 **master 構造（3コレクション）**:
 - `cards/{ocr_id}` — 自治体名・都道府県ID・弾ID・発行日・マンホール座標(GeoPoint)・
-  画像パス・配布場所HTML・配布場所座標(GeoPoint配列)・配布時間HTML・在庫状況HTML・配布状態
+  画像URL（`image_url` = R2 の配信フルURL）・配布場所HTML・配布場所座標(GeoPoint配列)・
+  配布時間HTML・在庫状況HTML・配布状態
 - `prefectures/{id}` — 都道府県マスタ
 - `volumes/{id}` — 弾マスタ
 
@@ -43,11 +44,16 @@ gk-p.jp の行順の連番にすぎない。新弾のカードは都道府県ご
 ## 前提
 
 - 作業ディレクトリ: `/Users/zwtin/Documents/github/manhole_card_navi`
-- Firebase プロジェクトのローカルディレクトリ:
-  - prod: `~/Documents/github/firebase/manhole_card_navi`
-  - dev: `~/Documents/github/firebase/manhole_card_navi_dev`
-- 認証: `gcloud auth login`（Firestore投入）、`firebase login`（Hostingデプロイ）が済んでいること
-- 新しいバージョン番号を決める（既存の最新が 0003 なら 0004）。以下 `{VERSION}` と表記。
+- 画像配信は **Cloudflare R2**（egress 無料）。バケットと配信ドメインは dev / prod で分かれている
+  （定義は `tools/r2_utils.py`）。
+- 認証:
+  - `gcloud auth login` … Firestore 投入
+  - R2 の認証情報を環境変数で渡す（`~/.zshenv` などに export しておく。**リポジトリには置かない**）:
+    `R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`
+  - `boto3` が必要（未導入なら `pip3 install --user boto3`）
+- 新しいバージョン番号を決める（既存の最新が 0005 なら 0006）。以下 `{VERSION}` と表記。
+  0005 は R2 移行のために 0004 の内容を引き継いで発行したもの（`migrate_master_to_r2.py`）で、
+  gk-p.jp の再取得は通していない。**次に新弾が出たら通常ルートで 0006 を発行する。**
 
 ## 手順
 
@@ -236,14 +242,21 @@ python3 tools/geocode.py              # 未キャッシュの住所だけ問い�
 
 ### 8. master データ生成
 
+**dev と prod で R2 の配信ドメインが違うので、master JSON も `--project` ごとに作る。**
+
 ```bash
-python3 tools/build_master.py --version {VERSION}
+python3 tools/build_master.py --version {VERSION} --project dev
+python3 tools/build_master.py --version {VERSION} --project prod
+# → tools/data/firestore/master_{VERSION}_dev.json / master_{VERSION}_prod.json
 ```
 
 - **全カードを cards_base.json から毎回まるごと再生成する**（既存 master は引き継がない）。
   弾の追加・カードの増減・在庫状況の変化がすべて自動で反映される。
 - 出力構造は 3コレクション（cards / prefectures / volumes）。カードは配布場所HTML・
-  配布場所座標（GeoPoint配列）・配布時間HTML・在庫状況HTML・画像パスを直接持つ。
+  配布場所座標（GeoPoint配列）・配布時間HTML・在庫状況HTML・画像URLを直接持つ。
+- 画像は `image_url`（R2 の配信フルURL `{ベースURL}/master/v{VERSION}/images/{ID}.jpg`）。
+  **旧アプリが見ていた `image`（パスのみ）は出力しない。** 旧アプリは Remote Config の
+  アプリバージョン条件で旧 master に留まるので、新 master に両方を持たせる必要はない（手順11）。
 - OCR や AI抽出が未実行のカードがあると、**どのカードの何が足りないかを表示して中断**する。
 - 警告（未ジオコーディングの住所・日本範囲外の座標など）が出たら内容を確認する。
 
@@ -252,33 +265,46 @@ python3 tools/build_master.py --version {VERSION}
 `distribution_time_html` が埋まった（0003 は当該フィールド追加前に生成されていて全件 None だった）」
 「`distribution_place_html` が1件変化」。**説明のつかない差分があれば、移送か抽出のミスを疑う。**
 
-### 9. 画像を Firebase Hosting へ配置・デプロイ
+R2 移行後の初回（0005）は、**画像フィールドが `image`（Hosting のパス）から `image_url`
+（R2 のフルURL）に置き換わる**ので、全件でそのフィールド差分が出る。これは想定どおり。
+dev 用と prod 用の JSON は `image_url` のドメインだけが違う（それ以外は完全一致するはず）。
+
+### 9. 画像を Cloudflare R2 へアップロード
+
+R2 の認証情報が export されていることを確認してから実行する
+（`R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`）。
 
 ```bash
 # dev で検証
-python3 tools/deploy_images_to_hosting.py --version {VERSION} --project dev --dry-run   # 件数確認
-python3 tools/deploy_images_to_hosting.py --version {VERSION} --project dev --deploy    # DL→配置→deploy
+python3 tools/deploy_images_to_r2.py --version {VERSION} --project dev --dry-run    # 件数・R2の既存差分
+python3 tools/deploy_images_to_r2.py --version {VERSION} --project dev --limit 3    # まず3件で疎通確認
+python3 tools/deploy_images_to_r2.py --version {VERSION} --project dev              # 全件
 
 # 問題なければ prod
-python3 tools/deploy_images_to_hosting.py --version {VERSION} --project prod --deploy
+python3 tools/deploy_images_to_r2.py --version {VERSION} --project prod --dry-run
+python3 tools/deploy_images_to_r2.py --version {VERSION} --project prod
 ```
 
-- gk-p.jp から全画像をDLし、`{ocr_id}.jpg` で `public/master/v{VERSION}/images/` に配置してデプロイする。
+- gk-p.jp から全画像をDLし、`master/v{VERSION}/images/{ocr_id}.jpg` として R2 にアップロードする。
   全1289件で15〜20分かかるのでバックグラウンドで回す。
-- gk-p.jp には拡張子が `.png` のカードがある（柏市 `12-217-A001`）。Hosting は `.jpg` に対して
-  `Content-Type: image/jpeg` を返すので、**非JPEGは JPEG に変換してから配置する**
-  （`deploy_images_to_hosting.py` が自動でやる。ログに `[変換]` と出る）。
+- **R2 に既にあるオブジェクトはスキップする**ので、中断しても再実行すれば続きから進む
+  （やり直したいときは `--overwrite`）。
+- gk-p.jp には拡張子が `.png` のカードがある（柏市 `12-217-A001`）。R2 は拡張子から
+  Content-Type を推測しないので、**非JPEGは JPEG に変換し、`Content-Type: image/jpeg` を
+  明示してアップロードする**（スクリプトが自動でやる。ログに `[変換]` と出る）。
+- `Cache-Control: public, max-age=31536000, immutable` を付ける。URL に master バージョンが
+  入っており同じURLの中身は変わらないので、長期キャッシュしてよい。
 - 「ocr_id が無くスキップ」が出たら、そのカードはOCR未確定 → 手順4に戻る。
-- 「配置ID重複」が出たら、`ocr_id` に重複がある → 手順4で解消する。
-- DL失敗があればデプロイ前に原因を確認する。
+- 「アップロードID重複」が出たら、`ocr_id` に重複がある → 手順4で解消する。
+- DL/アップロード失敗があれば master 投入前に原因を確認する。
 
-**デプロイ前後の検証**:
-- 配置ディレクトリの全ファイルが JPEG か（`file -b *.jpg | sort | uniq -c`）。
-- master JSON が要求する画像名と、実際に配置されたファイルが過不足なく一致するか。
-- デプロイ後、実URLを叩いて 200 と `Content-Type: image/jpeg` を確認する:
-  `curl -s -o /dev/null -w "%{http_code} %{content_type}\n" https://manhole-card-navi-dev.web.app/master/v{VERSION}/images/{ID}.jpg`
-- Hosting はコンテンツハッシュで重複排除するので、**新規アップロードが数十件しか出なくても正常**
-  （既存バージョンと同じ内容の画像は再利用される）。
+**検証（スクリプトが自動で出す）**:
+- アップロード後に R2 を再一覧し、**今回の対象が過不足なく存在するか**を照合する
+  （`✅ 今回の対象はすべて R2 に存在します` が出ること）。`余剰` が出たら旧IDの残骸を疑う。
+- 1件について**配信URLを HEAD で叩き、`200` と `Content-Type: image/jpeg`** を表示する。
+  200 にならないならバケットの公開設定（カスタムドメイン接続）を確認する。
+- 手動で確認するときは:
+  `curl -s -o /dev/null -w "%{http_code} %{content_type}\n" {配信ベースURL}/master/v{VERSION}/images/{ID}.jpg`
 
 ### 10. Firestore に master 投入
 
@@ -286,45 +312,95 @@ python3 tools/deploy_images_to_hosting.py --version {VERSION} --project prod --d
 投入する。**既存バージョンを上書き更新する場合に必須**（今回のデータに無くなった古いカード等の
 残存を防ぐ）。新規バージョンなら削除対象が無いだけで無害なので、**常に付けてよい**。
 
+**プロジェクトに対応する master JSON を入れる**（dev には `_dev`、prod には `_prod`）。
+取り違えると dev の画像ドメインを prod のアプリが参照してしまうので、スクリプトが
+`image_url` のドメインを検査して不一致なら中止する。
+
 ```bash
 # dev
 python3 tools/upload_master_to_firestore.py --project manhole-card-navi-dev \
-  --input tools/data/firestore/master_{VERSION}.json --target-version {VERSION} --replace --dry-run
+  --input tools/data/firestore/master_{VERSION}_dev.json --target-version {VERSION} --replace --dry-run
 python3 tools/upload_master_to_firestore.py --project manhole-card-navi-dev \
-  --input tools/data/firestore/master_{VERSION}.json --target-version {VERSION} --replace
+  --input tools/data/firestore/master_{VERSION}_dev.json --target-version {VERSION} --replace
 
 # prod
 python3 tools/upload_master_to_firestore.py --project manhole-card-navi \
-  --input tools/data/firestore/master_{VERSION}.json --target-version {VERSION} --replace
+  --input tools/data/firestore/master_{VERSION}_prod.json --target-version {VERSION} --replace
 ```
 
 - 指定した `{VERSION}` 以外のバージョンには一切触れない。
 - `--replace` 有り: `master/{VERSION}` を全削除 → 投入（既存バージョンの更新でも古いデータが残らない）。
 - `--replace` 無し: 同一IDは上書きされるが、今回のデータに無い古いドキュメントは残る。
+- `image_url` の検査でドメイン不一致が出たら、`--input` と `--project` の対応を間違えている。
 
 **投入後は Firestore から読み戻して検証する**（スクリプトは REST API を使うので、検証も
 `gcloud auth print-access-token` + REST でよい。`google-cloud-firestore` は入っていない）:
 - 各コレクションの件数（count 集計クエリ）が master JSON と一致するか。
-- 新規カードを1件読み、`location`（GeoPoint）が正しい位置を指すか、`image` が
-  `master/v{VERSION}/images/{ID}.jpg` か、`distribution_points` / `distribution_time_html` が入っているか。
+- 新規カードを1件読み、`location`（GeoPoint）が正しい位置を指すか、`image_url` が
+  `{配信ベースURL}/master/v{VERSION}/images/{ID}.jpg`（プロジェクトに対応したドメイン）か、
+  `distribution_points` / `distribution_time_html` が入っているか。
+- 読み戻した `image_url` をそのまま curl して 200 / `image/jpeg` が返るか。
 
 ### 11. Remote Config の切り替え（手動）
 
-Firestore と Hosting の準備ができたら、**Firebase コンソールで Remote Config の `inquired_master_version` を `{VERSION}` に更新**するようユーザーに案内する。これで全端末が新バージョンを参照し始める。
+Firestore と R2 の準備ができたら、**Firebase コンソールで Remote Config の
+`inquired_master_version` を `{VERSION}` に更新**するようユーザーに案内する。
+これで端末が新バージョンを参照し始める（アプリは `FirebaseRemoteConfig.getString('inquired_master_version')`
+で参照先の master バージョンを決めている）。
 
 - dev で動作確認 → prod、の順で切り替える。
 - 切り替え後、実機で画像・地図が正しく表示されるか確認する。
 
+**新アプリを公開するときは「アプリバージョン条件」で新旧 master を出し分ける（重要）**
+
+画像フィールドの仕様がアプリ世代で違うため、**master バージョンをアプリ世代に対応させて振り分ける**。
+これで強制アップデートなしに無停止で移行できる。
+
+| アプリ世代 | 画像の参照方法 | 渡す master |
+|---|---|---|
+| 旧（〜1.4.0+9） | `image`（パス）に `https://{projectId}.web.app/` を前置（`ImageUrlBuilder`） | 旧 master（`0004`。`image` パス・Hosting 配信） |
+| 新（PR #14 以降） | `image_url` をそのまま使う | 新 master（`{VERSION}`。`image_url` = R2 のフルURL） |
+
+- Remote Config の**デフォルト値は旧 master のまま**にし、**「アプリのバージョン」条件を追加して
+  新アプリにだけ新 master を返す**。デフォルトを旧に置くのが安全側（想定外の古い版が新 master を
+  引いて画像が出ない、という事故を防ぐ）。
+- 条件は **iOS / Android それぞれ**必要。Firebase の条件エディタで使える演算子（完全一致・含む・
+  正規表現など）に合わせて、新アプリのバージョン（ストア公開する版）を指定する。
+- 新アプリがストアで公開される前に条件を入れておくと、審査中の版で先に確認できる（TestFlight・内部テスト）。
+- **旧 master に新アプリを向けてはいけない。** 新アプリは `doc['image_url'] as String`
+  （`card_repository_impl.dart`）で読むため、`image_url` を持たない旧 master を返すと
+  画像が出ないどころか**カード取得自体が失敗する**。逆（旧アプリに新 master）も画像が出ない。
+  条件設定を変えたら、必ず両世代で実機確認する。
+- アプリは `setDefaults` を使っておらず、起動時に `fetchAndActivate()` を待ってから
+  参照バージョンを決める（`main.dart`）。アプリ内に旧バージョンが焼き込まれてはいない。
+- 旧アプリの利用者が十分減ったら、旧 master・Hosting の旧画像・アプリバージョン条件を撤去する
+  （今回はやらない。TODO として残す）。
+
 ## 完了後の注意
 
 - 旧バージョンの画像は**まだ削除しない**。全端末が新バージョンへ移行しきるまで残す。後片付けは別スキル `/cleanup-old-images` で、移行完了後（数日〜）に行う。
+  **旧アプリ向けに旧 master を返し続けている間（手順11のアプリバージョン条件）は、その世代の
+  画像も現役**なので消さない。
 - **中間ファイルは消さないこと。** `ocr_raw.json` / `ocr_resolved.json` / `dist_raw.json` /
   `dist_resolved.json` / `geocode_cache.json` / `tools/images/` / `cards_base.json` は次回の
   移送（手順2）と差分実行の土台になる。消すと全1289件の再OCRが必要になる。
 
 ## トラブル時
 
-- gk-p.jp が 403: Referer が必要。`download_images.py` / `deploy_images_to_hosting.py` は Referer 付きで取得している。
+- gk-p.jp が 403: Referer が必要。`download_images.py` / `deploy_images_to_r2.py` は Referer 付きで取得している。
+- R2 で認証エラー（`InvalidAccessKeyId` / `SignatureDoesNotMatch`）: 環境変数の
+  `R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` を確認する。
+  アカウントIDはエンドポイント `https://{ACCOUNT_ID}.r2.cloudflarestorage.com` に使われる。
+- R2 で `NoSuchBucket` / `AccessDenied`: バケット名（`tools/r2_utils.py` の `BUCKETS`）と
+  API トークンの対象バケット・権限（Object Read & Write）を確認する。
+- 配信URLが 404: バケットにカスタムドメインが接続されていない、またはパスが違う。
+  `--dry-run` でキー（`master/v{VERSION}/images/{ID}.jpg`）を確認する。
+- 配信URLの `Content-Type` が `image/jpeg` でない: アップロード時に明示していない古い
+  オブジェクトの可能性。`--overwrite` で置き直す。
+- 配信URLが 403: Cloudflare が User-Agent で弾いている。`Python-urllib/3.9`（Python の
+  既定UA）は 403 になる。**検証スクリプトはブラウザ相当の UA を付けること**
+  （`deploy_images_to_r2.py` は付けている）。curl の既定UA や Flutter の
+  `Dart/x.x (dart:io)` は 200 なので、アプリ側の実害は無い（0005 移行時に実測確認済み）。
 - OCRの不一致が多い: 画像が不鮮明な可能性。該当画像を目視して `ocr_resolved.json` で確定する。
 - 座標が日本範囲外で弾かれる: 読み取り誤り（緯度経度の取り違え等）。目視で確定する。
 - **カードと画像・座標がちぐはぐ**: `card_id` のシフト（手順2の移送漏れ）を疑う。`cards_base_prev.json`

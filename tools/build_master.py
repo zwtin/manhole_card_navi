@@ -26,7 +26,7 @@ gk-p.jp の全カードから master バージョンを「毎回まるごと」�
       volume_id               : "0026"
       publication_date        : "2022/08/06"
       location                : GeoPoint       マンホール座標（OCR確定）
-      image                   : "master/v{version}/images/{id}.jpg"
+      image_url               : "{R2配信ベースURL}/master/v{version}/images/{id}.jpg"
       distribution_place_html : 配布場所HTML（サイトのまま）
       distribution_points     : [GeoPoint]     配布場所の座標（0〜複数）
       distribution_time_html  : 配布時間HTML（サイトのまま）
@@ -37,6 +37,14 @@ gk-p.jp の全カードから master バージョンを「毎回まるごと」�
 
   ※ 旧構造の contacts / images コレクションは廃止。配布場所と画像はカードに埋め込む。
 
+画像 URL（image_url）:
+  画像は Cloudflare R2 から配信する。cards には配信 URL を**フルで**持たせる。
+  アプリは image_url をそのまま画像 URL として使う（ベース URL をアプリ側で組み立てない）。
+  R2 のバケットは dev / prod で分かれており配信ドメインも異なるので、
+  **--project ごとに master JSON を作る**（出力ファイル名に dev / prod が入る）。
+  ※ 入力 cards_base.json にも image_url があるが、あちらは「gk-p.jp 上のソース画像 URL」。
+    ここで出力する image_url は R2 の配信 URL であり、別物。
+
 入力:
   tools/data/cards_base.json    parse_cards.py の出力に、以下が付与されていること
       ocr_id / ocr_lat_dms / ocr_lon_dms   … ocr_cards.py（画像の二重OCR）
@@ -46,8 +54,9 @@ gk-p.jp の全カードから master バージョンを「毎回まるごと」�
 前提が欠けていれば、どのカードの何が足りないかを表示して中断する。
 
 使い方:
-  python3 tools/build_master.py --version 0004
-  python3 tools/build_master.py --version 0004 --out path/to/master.json
+  python3 tools/build_master.py --version 0005 --project dev
+  python3 tools/build_master.py --version 0005 --project prod
+  python3 tools/build_master.py --version 0005 --project prod --out path/to/master.json
 """
 import argparse
 import json
@@ -57,6 +66,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import r2_utils  # noqa: E402  （R2 の配信ベース URL・キー計算）
 from geo_utils import geopoint, parse_dms_string, validate_jp_latlon  # noqa: E402
 from parse_cards import PREF_BY_CODE  # noqa: E402  （都道府県コード -> 名前）
 
@@ -85,16 +95,21 @@ def volume_id_of(edition):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--version", required=True,
-                    help="master バージョン（例 0004）。画像パス master/v{version}/images/ に使う")
+                    help="master バージョン（例 0005）。画像URL master/v{version}/images/ に使う")
+    ap.add_argument("--project", required=True, choices=list(r2_utils.PROJECTS),
+                    help="投入先（dev / prod）。R2 の配信ベース URL が切り替わる")
+    ap.add_argument("--base-url", default=None,
+                    help="R2 配信ベース URL を明示指定（既定は project から解決）")
     ap.add_argument("--out", default=None,
-                    help="出力先JSONパス（省略時は data/firestore/master_{version}.json）")
+                    help="出力先JSONパス（省略時は data/firestore/master_{version}_{project}.json）")
     args = ap.parse_args()
     if args.out is None:
-        args.out = os.path.join(FS, f"master_{args.version}.json")
+        args.out = os.path.join(FS, f"master_{args.version}_{args.project}.json")
 
-    # 画像は Firebase Hosting から配信する。master には配信 URL ではなく Hosting 上の
-    # パスのみを持たせ、ベース URL（https://{projectId}.web.app）はアプリ側で付与する。
-    image_dir = f"master/v{args.version}/images"
+    # 画像は Cloudflare R2 から配信する。master には配信 URL をフルで持たせ、
+    # アプリは image_url をそのまま使う（ベース URL をアプリ側で組み立てない）。
+    # 配信ドメインは dev / prod で異なるため、master JSON も project ごとに作る。
+    base_url = r2_utils.base_url_of(args.project, args.base_url)
 
     cards_base = load(os.path.join(DATA, "cards_base.json"))
     geocache = load(os.path.join(DATA, "geocode_cache.json"))
@@ -188,7 +203,7 @@ def main():
             "volume_id": vol_id,
             "publication_date": c["issued_date"],
             "location": geopoint(lat, lon),
-            "image": f"{image_dir}/{fs_id}.jpg",
+            "image_url": r2_utils.image_url(base_url, args.version, fs_id),
             "distribution_place_html": c.get("distribution_html", ""),
             "distribution_points": points,
             "distribution_time_html": c.get("distribution_time_html", ""),
@@ -210,7 +225,8 @@ def main():
     no_point = sum(1 for c in cards_out if not c["distribution_points"])
 
     print(f"master JSON 生成完了 -> {args.out}")
-    print(f"  画像パス   : {image_dir}/{{id}}.jpg")
+    print(f"  投入先     : {args.project}")
+    print(f"  画像URL    : {r2_utils.image_url(base_url, args.version, '{id}')}")
     print(f"  cards      : {len(cards_out)}")
     print(f"  prefectures: {len(prefectures_out)}")
     print(f"  volumes    : {len(volumes_out)}  ({volumes_out[0]['name']} 〜 {volumes_out[-1]['name']})")
