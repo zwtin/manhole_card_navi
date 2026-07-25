@@ -10,6 +10,9 @@ Firestore に投入するための一連のスクリプト群。
 
 - Google Geocoding API キー … 実行時に環境変数 `GOOGLE_GEOCODING_API_KEY` から読む
 - Firestore / Storage の認証 … `gcloud auth` のアクセストークンを使う
+- Cloudflare R2（画像配信）の認証 … 実行時に環境変数から読む
+  （`R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`）。
+  バケット名と配信ベース URL は機密ではないので `r2_utils.py` の定数に持つ
 
 生成データ（`data/`）とカード画像（`images/`）は `.gitignore` で除外している
 （DBダンプ・他者著作物・API結果・容量のため）。いずれも下記の手順で再生成できる。
@@ -33,8 +36,8 @@ Firestore へ投入する場合はさらに:
 5. ocr_cards.py                    新規カード画像を二重OCR → ID・座標を確定（cards_base に ocr_*）
 6. extract_distribution.py         配布場所HTMLをAI抽出 → 住所・在庫状況を確定（cards_base に dist_*）
 7. geocode.py                      配布場所の住所 → 緯度経度（Google Geocoding API・キャッシュ）
-8. build_master.py                 全カードを毎回まるごと再生成 → master_{version}.json
-9. deploy_images_to_hosting.py     gk-p.jp から画像取得 → {ocr_id}.jpg で Hosting 配置・デプロイ
+8. build_master.py                 全カードを毎回まるごと再生成 → master_{version}_{project}.json
+9. deploy_images_to_r2.py          gk-p.jp から画像取得 → {ocr_id}.jpg で Cloudflare R2 にアップロード
 10. upload_master_to_firestore.py  master_{version}.json を Firestore の master/{version} へ
 ```
 
@@ -43,7 +46,7 @@ Firestore へ投入する場合はさらに:
 一連の作業は Claude Code のスキルにまとめてある。手順を覚えずに実行できる。
 
 - **`/update-master`** — gk-p.jp の最新データで新 master バージョンを発行する（上記の全手順 ＋ Remote Config 案内）。マンホールカードの新弾が出たとき（約3ヶ月ごと）に実行。
-- **`/cleanup-old-images`** — 旧バージョンの画像を Hosting から削除する後片付け。全端末が新バージョンへ移行しきった後に、別タイミングで実行。
+- **`/cleanup-old-images`** — 旧バージョンの画像を R2（旧世代は Hosting）から削除する後片付け。全端末が新バージョンへ移行しきった後に、別タイミングで実行。
 
 ### データの正の情報源は「gk-p.jp のサイトのみ」
 
@@ -72,7 +75,7 @@ Firestore へ投入する場合はさらに:
 cards/{ocr_id}
   id, name, prefecture_id, volume_id, publication_date
   location                : GeoPoint      マンホール座標（OCR確定）
-  image                   : string        master/v{version}/images/{id}.jpg
+  image_url               : string        {R2ベースURL}/master/v{version}/images/{id}.jpg
   distribution_place_html : string        配布場所HTML（サイトのまま）
   distribution_points     : [GeoPoint]    配布場所の座標（0〜複数）
   distribution_time_html  : string        配布時間HTML（サイトのまま）
@@ -88,30 +91,44 @@ volumes/{id}     : {id, name}
   廃止した。配布場所と画像はカードに埋め込む。
   → master 取得時の読み取りが約5,500件・1,268クエリから、約1,340件・3クエリに減る。
 
-### 画像配信について（Firebase Hosting）
+### 画像配信について（Cloudflare R2）
 
-カード画像は **Firebase Hosting（Fastly CDN・10GB/月まで無料）** から配信する。
+カード画像は **Cloudflare R2（egress 無料）** から配信する。
+Cloud Storage（egress 課金）→ Firebase Hosting → R2 と移してきた。
 
-- master データには配信 URL ではなくパス `master/v{version}/images/{ocr_id}.jpg` のみを保持する。
-  ベース URL（`https://{projectId}.web.app`）はアプリ側で付与するため、開発／本番で
-  自動的に配信先が切り替わる。
-- バージョンをパスに含めることで、master バージョン更新のたびに URL が変わり、
-  アプリのキャッシュ（`cached_network_image`）を引かずに画像を差し替えできる。
-  画像ファイルには `Cache-Control: public, max-age=31536000, immutable` を付与する
-  （`firebase.json` の hosting.headers で設定）。
-- 画像は gk-p.jp から取得して Hosting に配置する（`deploy_images_to_hosting.py`）。
+- master データには **配信 URL をフルで**持たせる（`image_url`）。アプリはその値をそのまま
+  画像 URL として使う（旧アプリのようにアプリ側でベース URL を組み立てない）。
+- バケットは dev / prod で分け、配信ドメインも別。**そのため master JSON も
+  `--project` ごとに生成する**（`master_{version}_dev.json` / `master_{version}_prod.json`）。
+  定義は `r2_utils.py` の `BUCKETS` / `PUBLIC_BASE_URLS`。
+- オブジェクトキーにバージョンを含める（`master/v{version}/images/{ocr_id}.jpg`）ので、
+  master バージョン更新のたびに URL が変わり、アプリのキャッシュ（`cached_network_image`）を
+  引かずに画像を差し替えできる。アップロード時に
+  `Cache-Control: public, max-age=31536000, immutable` と `Content-Type: image/jpeg` を付ける
+  （R2 は拡張子から Content-Type を推測しないので明示が必須）。
+- 画像は gk-p.jp から取得して R2 にアップロードする（`deploy_images_to_r2.py`）。
 - 旧バージョンの画像は、全端末が新バージョンへ移行しきるまで残す
-  （`delete_images_from_hosting.py` / `/cleanup-old-images` で後片付け）。
+  （`delete_images_from_r2.py` / `/cleanup-old-images` で後片付け）。
+- **アプリ世代の移行**: 旧アプリ（〜1.4.0+9）は `image` パス＋Hosting 配信を前提にしている。
+  Remote Config の `inquired_master_version` をアプリバージョン条件で出し分け、
+  旧アプリには旧 master（`image` パス）、新アプリには新 master（`image_url`）を返す。
+  旧アプリの利用者が減るまで Hosting の旧画像も残す（`deploy_images_to_hosting.py` /
+  `delete_images_from_hosting.py` は旧世代用として残置）。
 
 ## セットアップ
 
 ```bash
 # ほぼ Python標準ライブラリのみで動作する。
-# deploy_images_to_hosting.py だけ Pillow を使う（非JPEG画像のJPEG変換のため）
-pip3 install Pillow
+# deploy_images_to_r2.py が Pillow（非JPEG画像のJPEG変換）と boto3（R2 の S3互換API）を使う
+pip3 install --user Pillow boto3
 
-# gcloud CLI で認証しておく（Firestore/Storage 操作時）
+# gcloud CLI で認証しておく（Firestore 操作時）
 gcloud auth login
+
+# R2 の認証情報を export しておく（~/.zshenv 等。リポジトリには置かない）
+export R2_ACCOUNT_ID=xxxxx
+export R2_ACCESS_KEY_ID=xxxxx
+export R2_SECRET_ACCESS_KEY=xxxxx
 ```
 
 ## 使い方
@@ -180,33 +197,63 @@ python3 tools/geocode.py --dry-run     # 問い合わせ件数の確認
 python3 tools/geocode.py
 
 # 4) 投入データ生成（全カードを毎回まるごと再生成）
-python3 tools/build_master.py --version 0004
+#    dev / prod で R2 の配信ドメインが違うので project ごとに作る
+python3 tools/build_master.py --version 0005 --project dev
+python3 tools/build_master.py --version 0005 --project prod
 #    OCR や AI抽出が未実行のカードがあれば、何が足りないかを表示して中断する
 
-# 5) gk-p.jp から画像取得 → {ocr_id}.jpg で Firebase Hosting に配置
-python3 tools/deploy_images_to_hosting.py --version 0004 --project prod --dry-run  # 件数確認
-python3 tools/deploy_images_to_hosting.py --version 0004 --project prod --deploy   # DL→配置+デプロイ
+# 5) gk-p.jp から画像取得 → {ocr_id}.jpg で Cloudflare R2 にアップロード
+python3 tools/deploy_images_to_r2.py --version 0005 --project prod --dry-run  # 件数・R2の差分
+python3 tools/deploy_images_to_r2.py --version 0005 --project prod --limit 3  # 疎通確認
+python3 tools/deploy_images_to_r2.py --version 0005 --project prod           # 全件（既存はスキップ）
 
 # 6) Firestore へ投入（指定version以外には触れない・冪等batch write）
 #    --replace: 投入前に master/{version} を全削除。既存バージョンの上書き更新で
 #               古いカードや旧構造の残骸を残さない（新規バージョンなら無害）
 python3 tools/upload_master_to_firestore.py \
   --project manhole-card-navi \
-  --input tools/data/firestore/master_0004.json \
-  --target-version 0004 --replace
+  --input tools/data/firestore/master_0005_prod.json \
+  --target-version 0005 --replace
 python3 tools/upload_master_to_firestore.py ... --replace --dry-run   # 件数確認のみ
 
 # 7) Remote Config の inquired_master_version を新バージョンに更新（アプリが新masterを参照）
+#    新アプリ公開時はアプリバージョン条件で新旧 master を出し分ける（画像配信についての項を参照）
 ```
 
 #### 旧バージョン画像の後片付け（別スキル `/cleanup-old-images`）
 
-全端末が新バージョンへ移行しきった後に、旧バージョンの画像を Hosting から削除する。
+全端末が新バージョンへ移行しきった後に、旧バージョンの画像を削除する。
 
 ```bash
-python3 tools/delete_images_from_hosting.py --version 0002 --project prod --dry-run
-python3 tools/delete_images_from_hosting.py --version 0002 --project prod --deploy
+# R2 世代（0005 以降）
+python3 tools/delete_images_from_r2.py --version 0003 --project prod --dry-run
+python3 tools/delete_images_from_r2.py --version 0003 --project prod
+
+# Hosting 世代（0004 以前）。旧アプリ向けの旧 master を引退させた後
+python3 tools/delete_images_from_hosting.py --version 0004 --project prod --dry-run
+python3 tools/delete_images_from_hosting.py --version 0004 --project prod --deploy
 ```
+
+#### R2 移行（一度きり・0004 → 0005）
+
+新アプリ（PR #14 以降）は `image_url` を読むため、公開前に `image_url` を持つ master が要る。
+新弾を待たずに用意するため、**0004 の中身をそのまま引き継いだ 0005** を作る。
+カードの中身（座標・配布場所・在庫状況）は 0004 と完全に同一で、画像フィールドだけ差し替わる。
+
+```bash
+# 1) Firestore の master/0004 から image_url 版 0005 を生成（dev / prod で配信ドメインが違う）
+python3 tools/migrate_master_to_r2.py --source-version 0004 --target-version 0005 --project dev
+python3 tools/migrate_master_to_r2.py --source-version 0004 --target-version 0005 --project prod
+
+# 2) Hosting v0004 の確定JPEG を R2 の master/v0005/images/ へコピー
+#    （gk-p.jp から取り直さないので、現行ユーザーが見ている画像とバイト同一）
+python3 tools/deploy_images_to_r2.py --version 0005 --project dev \
+  --cards tools/data/firestore/image_copy_0004.json --sleep 0
+
+# 3) Firestore へ投入 → Remote Config をアプリバージョン条件で出し分け（/update-master 手順11）
+```
+
+次回の新弾からは通常ルート（`/update-master` → `build_master.py`）に戻る。
 
 ### スキーマ上の注意点
 
@@ -217,11 +264,12 @@ python3 tools/delete_images_from_hosting.py --version 0002 --project prod --depl
   中間 JSON では `{"_geopoint": {"lat": …, "lon": …}}` というセンチネル形式で表し、
   `upload_master_to_firestore.py` が `geoPointValue` に変換する（定義は `geo_utils.py`）。
 - 配布場所が 0 個のカードもある（`distribution_points` が空配列）。
-- 画像は原本をそのまま Hosting の `master/v{version}/images/{id}.jpg` へ配置する。
-  ただし gk-p.jp には拡張子が `.png` のカードがあり（柏市 `12-217-A001`）、Hosting は `.jpg` に
-  `Content-Type: image/jpeg` を返すため、**非JPEGだけ JPEG に変換してから配置する**。
-  カードの `image` フィールドは Hosting 上のパスのみを保持する
-  （配信 URL のベース `https://{projectId}.web.app` はアプリ側で付与）。
+- 画像は原本をそのまま R2 の `master/v{version}/images/{id}.jpg` へアップロードする。
+  ただし gk-p.jp には拡張子が `.png` のカードがあり（柏市 `12-217-A001`）、**非JPEGだけ
+  JPEG に変換してから**アップロードし、`Content-Type: image/jpeg` を明示する
+  （R2 は拡張子から Content-Type を推測しない）。
+  カードの `image_url` フィールドは R2 の配信 URL をフルで保持する（アプリはそのまま使う）。
+  なお `cards_base.json` にも `image_url` があるが、あちらは gk-p.jp 上のソース画像 URL で別物。
 
 ### `card_id` は恒久IDではない（重要）
 
@@ -245,8 +293,12 @@ python3 tools/delete_images_from_hosting.py --version 0002 --project prod --depl
 | `extract_distribution.py` | 配布場所のAI抽出結果を確定 → cards_base に `dist_addresses` / `dist_state`（キーワードルールで相互検算） |
 | `geocode.py` | 住所→座標（Google Geocoding API・キャッシュ） |
 | `geo_utils.py` | DMS→10進変換・日本範囲バリデーション・GeoPoint中間表現 |
-| `build_master.py` | 全カードを毎回まるごと再生成 → 投入用JSON（3コレクション・GeoPoint） |
-| `deploy_images_to_hosting.py` | gk-p.jp から画像取得 → {ocr_id}.jpg で Hosting 配置・デプロイ |
-| `delete_images_from_hosting.py` | 旧バージョン画像を Hosting から削除（後片付け） |
+| `build_master.py` | 全カードを毎回まるごと再生成 → 投入用JSON（3コレクション・GeoPoint・`--project` ごと） |
+| `r2_utils.py` | R2 の接続設定（バケット・配信ベースURL・認証）とオブジェクトキー計算 |
+| `deploy_images_to_r2.py` | gk-p.jp から画像取得 → {ocr_id}.jpg で R2 にアップロード（既存はスキップ） |
+| `delete_images_from_r2.py` | 旧バージョン画像を R2 から削除（後片付け） |
+| `migrate_master_to_r2.py` | 【R2移行用・一度きり】既存 master を土台に image → image_url の新バージョンを生成＋画像コピー用JSON出力 |
+| `deploy_images_to_hosting.py` | 【旧世代用】gk-p.jp から画像取得 → {ocr_id}.jpg で Hosting 配置・デプロイ |
+| `delete_images_from_hosting.py` | 【旧世代用】旧バージョン画像を Hosting から削除（後片付け） |
 | `upload_master_to_firestore.py` | master バージョンを Firestore へ投入（GeoPoint/配列対応・`--replace`） |
 | `build_csv.py` | 中間データ → 正規化CSV 2ファイル（分析用・パイプライン外） |

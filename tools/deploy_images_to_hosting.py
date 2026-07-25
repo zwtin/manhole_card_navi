@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
-カード原本画像を gk-p.jp からダウンロードし、Firebase Hosting の
+【旧世代用】カード原本画像を gk-p.jp からダウンロードし、Firebase Hosting の
 master/v{version}/images/ 配下へ {id}.jpg で配置してデプロイする。
+
+現行の配信先は Cloudflare R2（deploy_images_to_r2.py）。このスクリプトは
+旧アプリ（〜1.4.0+9。master の image パスに .web.app を前置する世代）向けに
+旧 master（0004 以前）の画像を Hosting で配信し続けるために残している。
+旧アプリの利用者が十分減ったら、このスクリプトごと撤去してよい。
 
 背景:
   従来は画像を Cloud Storage に置き、master に GCS の絶対 URL を保存していた。
