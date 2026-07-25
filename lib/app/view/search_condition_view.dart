@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -458,7 +459,11 @@ class _QuickActions extends StatelessWidget {
 }
 
 /// 単一選択のセグメントコントロール。
-class _Segmented<T> extends StatelessWidget {
+///
+/// 見た目はアプリの配色（トラック＝`track` / 選択中＝`primary`）に合わせつつ、
+/// 選択位置の移動やドラッグ操作は [CupertinoSlidingSegmentedControl] に任せて
+/// スライドアニメーションを得る。
+class _Segmented<T extends Object> extends StatelessWidget {
   const _Segmented({
     required this.palette,
     required this.options,
@@ -473,39 +478,95 @@ class _Segmented<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: palette.track,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: options.map((option) {
-          final selected = option.$2 == value;
-          return Expanded(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => onChanged(option.$2),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 9),
-                decoration: BoxDecoration(
-                  color: selected ? palette.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  option.$1,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: selected ? palette.onPrimary : palette.sub,
-                  ),
-                ),
+    return SizedBox(
+      // 幅いっぱいのタイトな制約を与えることで、各セグメントが均等幅になる。
+      width: double.infinity,
+      // トラックの角丸は本体側が持つ固定値（9）より従来の 12 の方がカードや
+      // チップと揃うため、背景は透明にして外側の DecoratedBox で描画する。
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: palette.track,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: CupertinoSlidingSegmentedControl<T>(
+          groupValue: value,
+          backgroundColor: Colors.transparent,
+          thumbColor: palette.primary,
+          padding: const EdgeInsets.all(4),
+          onValueChanged: (newValue) {
+            if (newValue != null) {
+              onChanged(newValue);
+            }
+          },
+          children: {
+            for (final option in options)
+              option.$2: _SegmentLabel(
+                label: option.$1,
+                selected: option.$2 == value,
+                selectedColor: palette.onPrimary,
+                unselectedColor: palette.sub,
               ),
-            ),
-          );
-        }).toList(),
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// セグメント 1 つ分のラベル。
+///
+/// [CupertinoSlidingSegmentedControl] はサムをドラッグしている間 `onValueChanged`
+/// を呼ばず、指を離した時点で初めて通知する。そのため [selected]（= groupValue と
+/// の一致）だけを見ていると、スライド中は文字色が変わらず指を離してから切り替わって
+/// しまう。
+///
+/// 一方で本体は「今サムがいるセグメント」に `FontWeight.w600`、それ以外に `w500` の
+/// [DefaultTextStyle] をドラッグ中もリアルタイムに敷いている。ここではその継承された
+/// フォントウェイトから現在の選択位置を読み取り、サムの移動に追従して文字色を変える。
+/// 想定外のウェイトだった場合（SDK 側の実装変更）は [selected] にフォールバックし、
+/// 指を離した時点で色が変わる従来の挙動になる。
+class _SegmentLabel extends StatelessWidget {
+  const _SegmentLabel({
+    required this.label,
+    required this.selected,
+    required this.selectedColor,
+    required this.unselectedColor,
+  });
+
+  final String label;
+  final bool selected;
+  final Color selectedColor;
+  final Color unselectedColor;
+
+  @override
+  Widget build(BuildContext context) {
+    // 本体が敷いたスタイル（アプリ既定のスタイル＋ウェイト／サイズ）を土台にする。
+    final inheritedStyle = DefaultTextStyle.of(context).style;
+    final bool highlighted;
+    if (inheritedStyle.fontWeight == FontWeight.w600) {
+      highlighted = true;
+    } else if (inheritedStyle.fontWeight == FontWeight.w500) {
+      highlighted = false;
+    } else {
+      highlighted = selected;
+    }
+
+    return AnimatedDefaultTextStyle(
+      // サムの移動に合わせて文字色を滑らかに変える。
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeInOut,
+      textAlign: TextAlign.center,
+      style: inheritedStyle.copyWith(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: highlighted ? selectedColor : unselectedColor,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 9),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
