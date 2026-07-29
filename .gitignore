@@ -54,6 +54,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Gradle 9 が出力するレポート類。ビルド成果物自体は従来どおり /build/ に出る。
+/android/build/
+
 **/firebase.json
 
 **/dart_defines/development.env

@@ -69,6 +69,12 @@ android {
     compileSdk 36
     ndkVersion "28.2.13676358"
 
+    // AGP 9 から resValue は既定で無効。defaultConfig で app_name と
+    // android_apiKey を dart-define から注入しているため明示的に有効化する。
+    buildFeatures {
+        resValues true
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
