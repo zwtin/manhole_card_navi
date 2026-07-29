@@ -33,6 +33,9 @@ migrate_working_dir/
 .pub/
 /build/
 
+# fvm が生成する SDK へのシンボリックリンク。使用バージョンは .fvmrc で管理する。
+.fvm/
+
 # コード生成の成果物（Freezed / JsonSerializable / Realm）は差分管理しない。
 # モデルから再生成可能なため、CI・ローカルとも build_runner で都度生成する:
 #   fvm flutter pub run build_runner build --delete-conflicting-outputs

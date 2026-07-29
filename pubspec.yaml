@@ -131,6 +131,17 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
 
+  # Flutter 3.44 から Swift Package Manager が既定で有効になったが、iOS は
+  # CocoaPods 構成を維持する。SPM を有効にすると cloud_firestore が SPM 経由で
+  # FirebaseFirestore を取り込み、ios/Podfile で指定している invertase の
+  # プリコンパイル版と duplicate symbols (307 個) を起こしてリンクに失敗する。
+  # SPM へ寄せるには invertase 版をやめる必要があり、Firestore のソースビルドで
+  # ビルド時間が延びる。加えて flutter_app_badge_control /
+  # flutter_keyboard_visibility / google_maps_flutter_ios / realm が SPM 非対応で
+  # どのみち CocoaPods 併用が残るため、当面は CocoaPods に一本化しておく。
+  config:
+    enable-swift-package-manager: false
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
