@@ -62,10 +62,19 @@ FutureOr<void> main() async {
       );
     },
     (error, stack) {
-      FirebaseCrashlytics.instance.recordError(
-        error,
-        stack,
-      );
+      // Firebase の初期化前に例外が起きると FirebaseCrashlytics.instance への
+      // アクセス自体が [core/no-app] を投げ、元の例外が失われてしまう。
+      // まずログへ出し、記録の失敗が元の例外を覆い隠さないようにする。
+      debugPrint('Uncaught zone error: $error');
+      debugPrintStack(stackTrace: stack);
+      try {
+        FirebaseCrashlytics.instance.recordError(
+          error,
+          stack,
+        );
+      } catch (e) {
+        debugPrint('Crashlytics へ記録できませんでした: $e');
+      }
     },
   );
 }
