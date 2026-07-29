@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -68,6 +69,32 @@ class App extends HookConsumerWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      // 戻る操作は常に Flutter 側で処理すると Android へ伝える。
+      //
+      // 既定の実装は、ツリーを流れてきた NavigationNotification の canHandlePop を
+      // そのまま SystemNavigator.setFrameworkHandlesBack へ渡す。本アプリはタブごとに
+      // Navigator を持つため、BottomTabView の Route (PopScope があるので true) の後に
+      // タブ内 Navigator のルート Route (pop 不可なので false) の通知が届き、false で
+      // 上書きされてしまう。targetSdk 35 まではこの値が無視されていたが、36 では
+      // enableOnBackInvokedCallback が既定で有効になり実際に効くようになったため、
+      // OS 側が戻るを処理してアプリがバックグラウンドへ送られる。
+      //
+      // 実際の戻る挙動は BottomTabView の PopScope が一手に引き受け、タブのルートでは
+      // タブ切り替えや SystemNavigator.pop() を自前で行うので、常に true でよい。
+      // 分岐は既定実装 (WidgetsApp._defaultOnNavigationNotification) に合わせている。
+      onNavigationNotification: (notification) {
+        switch (WidgetsBinding.instance.lifecycleState) {
+          case null:
+          case AppLifecycleState.detached:
+          case AppLifecycleState.inactive:
+            return false;
+          case AppLifecycleState.resumed:
+          case AppLifecycleState.hidden:
+          case AppLifecycleState.paused:
+            SystemNavigator.setFrameworkHandlesBack(true);
+            return true;
+        }
+      },
       theme: Theme.of(context).copyWith(
         appBarTheme: Theme.of(context).appBarTheme.copyWith(
               color: ColorName.lightContentsBackground,
