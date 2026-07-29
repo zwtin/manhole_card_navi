@@ -6,6 +6,30 @@ import '/app/view/check_app_update_view.dart';
 import '/app_view_model.dart';
 import '/gen/colors.gen.dart';
 
+/// ページ遷移アニメーション。Android は Flutter 3.43 までの既定である
+/// [ZoomPageTransitionsBuilder] に固定する。
+///
+/// Flutter 3.44 から Android の既定が [PredictiveBackPageTransitionsBuilder] に
+/// 変わったが、本アプリの Navigator 構成とは噛み合わない。予測型バックは Route ごとに
+/// WidgetsBindingObserver を登録してジェスチャーを受け取る実装で、その有効条件が
+/// `route.isCurrent && route.popGestureEnabled` になっている。ここでの isCurrent は
+/// 「その Route が属する Navigator の中で最上位か」であり、アプリ全体で最前面かでは
+/// ない。
+///
+/// 本アプリはタブごとに Navigator を持ち、画像詳細 (ImageDetailView) だけを
+/// FadeInRoute で root Navigator へ push している。この状態でエッジスワイプすると、
+/// タブ内 Navigator の最上位であるカード詳細 (DetailView) が「自分が最前面」と判断して
+/// ジェスチャーを処理してしまい、最前面の画像詳細ではなく背面のカード詳細が閉じる。
+/// FadeInRoute は独自の transitionsBuilder を持つため予測型バックの observer を
+/// 登録せず、ジェスチャーに反応できないことも要因。
+final _pageTransitionsTheme = PageTransitionsTheme(
+  builders: <TargetPlatform, PageTransitionsBuilder>{
+    // iOS などは Flutter の既定のままにして、Android だけ差し替える。
+    ...const PageTransitionsTheme().builders,
+    TargetPlatform.android: const ZoomPageTransitionsBuilder(),
+  },
+);
+
 class App extends HookConsumerWidget {
   const App({
     super.key,
@@ -189,6 +213,7 @@ class App extends HookConsumerWidget {
         progressIndicatorTheme: const ProgressIndicatorThemeData(
           color: ColorName.lightPrimary,
         ),
+        pageTransitionsTheme: _pageTransitionsTheme,
       ),
       darkTheme: Theme.of(context).copyWith(
         appBarTheme: Theme.of(context).appBarTheme.copyWith(
@@ -335,6 +360,7 @@ class App extends HookConsumerWidget {
         progressIndicatorTheme: const ProgressIndicatorThemeData(
           color: ColorName.darkPrimary,
         ),
+        pageTransitionsTheme: _pageTransitionsTheme,
       ),
       themeMode: ThemeMode.system,
       onGenerateRoute: (settings) {
