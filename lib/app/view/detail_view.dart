@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:uuid/uuid.dart';
 
+import '/app/service/card_image_cache_manager.dart';
 import '/app/view_model/detail_view_model.dart';
 import '/app/widget/card_image.dart';
 import '/app/widget/common_widget.dart';
@@ -83,6 +84,8 @@ class DetailView extends CommonWidget {
                                             await precacheImage(
                                               CachedNetworkImageProvider(
                                                 viewModel.viewData.imageUrl,
+                                                cacheManager:
+                                                    CardImageCacheManager(),
                                               ),
                                               context,
                                             );

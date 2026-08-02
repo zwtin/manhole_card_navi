@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '/app/service/card_image_cache_manager.dart';
+
 /// マンホールカードの画像を表示するウィジェット。
 ///
 /// 原本画像（カラー）URL を [imageUrl] に渡す。未所持（[alreadyGet] が false）の
@@ -71,6 +73,9 @@ class CardImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final image = CachedNetworkImage(
       imageUrl: imageUrl,
+      // 主系（R2）で取れないときに Firebase Hosting へ回すため、既定の
+      // DefaultCacheManager ではなく専用のものを使う。
+      cacheManager: CardImageCacheManager(),
       fadeInDuration: const Duration(microseconds: 0),
       memCacheWidth: memCacheWidth,
       maxWidthDiskCache: maxWidthDiskCache,
