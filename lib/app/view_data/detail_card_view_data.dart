@@ -7,6 +7,10 @@ abstract class DetailCardViewData with _$DetailCardViewData {
   const factory DetailCardViewData({
     required String id,
     required String imageUrl,
+
+    /// カード画像の代替配信元のフル URL。[imageUrl] が取得できなかった
+    /// ときに使う。代替を持たない master では空文字。
+    required String imageSubUrl,
     required bool alreadyGet,
     required String name,
     required String prefecture,

@@ -26,6 +26,7 @@ class DetailCardViewDataMapper {
     return DetailCardViewData(
       id: cardDTO.id,
       imageUrl: cardDTO.imagePath,
+      imageSubUrl: cardDTO.imageSubPath,
       alreadyGet: alreadyGet,
       name: cardDTO.name,
       prefecture: cardDTO.prefectureName,

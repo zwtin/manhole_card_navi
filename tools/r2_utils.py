@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cloudflare R2（画像配信）への接続設定とキー計算。
 
-deploy_images_to_r2.py / delete_images_from_r2.py / build_master.py が共有する。
+deploy_images.py / delete_images_from_r2.py / build_master.py が共有する。
 
 背景:
   画像は Cloud Storage → Firebase Hosting → Cloudflare R2 と移してきた。
@@ -10,10 +10,13 @@ deploy_images_to_r2.py / delete_images_from_r2.py / build_master.py が共有す
   （旧アプリのようにベース URL をアプリ側で組み立てない）。
 
 オブジェクトキー（バケット内のパス）:
-  master/v{version}/images/{id}.jpg
+  master/v{version}/images/{id}.jpg   … 計算は image_layout.py が持つ（Hosting と共通）
   配信 URL       : {PUBLIC_BASE_URL}/master/v{version}/images/{id}.jpg
   master バージョンをパスに含めるので、バージョンを上げると URL が変わる。
   端末側の CachedNetworkImage のキャッシュが自然に切り替わる（Hosting 運用と同じ狙い）。
+
+  同じパスで Firebase Hosting にも同じ画像を置く（代替配信元 = cards.image_sub_url）。
+  接続設定は hosting_utils.py、パス計算は image_layout.py に分けてある。
 
 dev / prod:
   Firebase と同様にバケットを分ける。dev の操作ミスが prod に波及しない。
@@ -31,6 +34,22 @@ dev / prod:
 import os
 import sys
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+
+# 画像のパス計算と共通定数は配信先に依存しないので image_layout に置いてある。
+# 既存の呼び出し元（deploy/delete/build/migrate）が r2_utils.image_key 等をそのまま
+# 使えるよう、ここで再エクスポートする。
+from image_layout import (  # noqa: E402,F401
+    CONTENT_TYPE,
+    DEFAULT_CACHE_CONTROL,
+    id_from_key,
+    image_key,
+    image_prefix,
+    image_url,
+)
+
 # ---- dev / prod ごとのバケットと配信ベース URL ----
 # 機密ではない。ここを正にして、必要なら環境変数 / CLI 引数で上書きする。
 BUCKETS = {
@@ -46,14 +65,6 @@ PUBLIC_BASE_URLS = {
 
 PROJECTS = tuple(BUCKETS)
 
-# 画像は必ず JPEG に正規化して置く。R2 は拡張子から Content-Type を推測しないので
-# アップロード時に明示する（省略すると application/octet-stream になり、
-# ブラウザや CachedNetworkImage が画像として扱わない）。
-CONTENT_TYPE = "image/jpeg"
-
-# URL に master バージョンを含めるので、同じ URL の中身が変わることはない。
-# 長期キャッシュを許可して CDN / 端末のヒット率を上げる。
-DEFAULT_CACHE_CONTROL = "public, max-age=31536000, immutable"
 
 
 def bucket_of(project, override=None):
@@ -80,24 +91,8 @@ def base_url_of(project, override=None):
     return url.rstrip("/")
 
 
-def image_prefix(version):
-    """master バージョンの画像オブジェクトのキー接頭辞（末尾スラッシュ付き）。"""
-    return f"master/v{version}/images/"
 
 
-def image_key(version, image_id):
-    """画像オブジェクトのキー（バケット内のパス）。"""
-    return f"{image_prefix(version)}{image_id}.jpg"
-
-
-def image_url(base_url, version, image_id):
-    """アプリが使う配信 URL（master の cards.image_url に入る値）。"""
-    return f"{base_url.rstrip('/')}/{image_key(version, image_id)}"
-
-
-def id_from_key(key):
-    """オブジェクトキーから画像ID（= カード記載ID）を復元する。"""
-    return key.rsplit("/", 1)[-1][:-len(".jpg")] if key.endswith(".jpg") else None
 
 
 def endpoint_url():

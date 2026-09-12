@@ -4,17 +4,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
+import '/app/service/card_image_cache_manager.dart';
+import '/app/service/image_fallback.dart';
 import '/app/widget/card_image.dart';
 
 class ImageDetail extends StatefulWidget {
   const ImageDetail({
     super.key,
     required this.imageUrl,
+    required this.imageSubUrl,
     required this.alreadyGet,
     required this.imageTag,
   });
 
   final String imageUrl;
+  final String imageSubUrl;
   final bool alreadyGet;
   final String imageTag;
 
@@ -99,7 +103,11 @@ class ImageDetailViewState extends State<ImageDetail> {
   Widget _buildPhotoView() {
     final photoView = PhotoView(
       backgroundDecoration: const BoxDecoration(color: Colors.transparent),
-      imageProvider: CachedNetworkImageProvider(widget.imageUrl),
+      imageProvider: CachedNetworkImageProvider(
+        widget.imageUrl,
+        headers: ImageFallback.headers(widget.imageSubUrl),
+        cacheManager: CardImageCacheManager(),
+      ),
       heroAttributes: PhotoViewHeroAttributes(
         tag: widget.imageTag,
         transitionOnUserGestures: true,

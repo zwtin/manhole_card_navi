@@ -67,9 +67,27 @@ class CheckMasterUpdateUseCase {
     final inquiredVersion =
         (result.elementAt(1) as Success<InquiredMasterVersion>).value;
 
-    return Result.success(
-      NeedMasterUpdateDTO(value: currentVersion.value != inquiredVersion.value),
-    );
+    if (currentVersion.value != inquiredVersion.value) {
+      return const Result.success(NeedMasterUpdateDTO(value: true));
+    }
+
+    // バージョンが一致していても、ローカルにカードが無ければ取り直す。
+    //
+    // Realm のスキーマを変更するとローカル DB は丸ごと作り直されるが
+    // （RealmConfiguration の shouldDeleteIfMigrationNeeded）、取得済みバージョンは
+    // SharedPreferences 側に残る。バージョン比較だけだと「DB は空なのに更新不要」と
+    // 判定され、カードが 1 件も表示されないまま復旧しなくなる。
+    if (inquiredVersion.value.isEmpty) {
+      // 要求バージョンが取れていない状態で取りに行っても失敗するだけなので待つ。
+      return const Result.success(NeedMasterUpdateDTO(value: false));
+    }
+    final hasMasterResult = await _cardRepository.hasMaster();
+    if (hasMasterResult is Failure) {
+      return _convertFailure((hasMasterResult as Failure).exception);
+    }
+    final hasMaster = (hasMasterResult as Success<bool>).value;
+
+    return Result.success(NeedMasterUpdateDTO(value: !hasMaster));
   }
 
   Future<Result<void>> updateMaster() async {

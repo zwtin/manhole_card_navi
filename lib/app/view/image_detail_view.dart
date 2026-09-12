@@ -13,12 +13,14 @@ class ImageDetailView extends CommonWidget {
     super.key,
     required this.cardId,
     required this.imageUrl,
+    required this.imageSubUrl,
     required this.alreadyGet,
     required this.imageTag,
   });
 
   final String cardId;
   final String imageUrl;
+  final String imageSubUrl;
   final bool alreadyGet;
   final String imageTag;
 
@@ -46,6 +48,7 @@ class ImageDetailView extends CommonWidget {
         parent: this,
         child: ImageDetail(
           imageUrl: imageUrl,
+          imageSubUrl: imageSubUrl,
           alreadyGet: alreadyGet,
           imageTag: imageTag,
         ),

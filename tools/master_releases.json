@@ -1,0 +1,15 @@
+{
+  "_comment": [
+    "master バージョンの発行履歴。review_support_requests.py が「前回の発行日」を引くために使う。",
+    "released_at は prod の Remote Config を新バージョンへ切り替えた日（= 利用者に届いた日）。",
+    "master を発行したら必ず1行足すこと（update-master スキルの最終手順）。",
+    "tools/data/ 配下ではなく tools/ 直下に置いてある（data/ は .gitignore 済みで消えるため）。"
+  ],
+  "releases": [
+    {
+      "version": "0006",
+      "released_at": "2026-07-29",
+      "note": "第29弾までを反映。1311件。image_sub_url 導入前（主系 R2 のみ）"
+    }
+  ]
+}

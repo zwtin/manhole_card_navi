@@ -38,6 +38,7 @@ class ListCardsQueryServiceImpl implements ListCardsQueryService {
           id: dao.id,
           name: dao.name,
           imagePath: dao.image,
+          imageSubPath: dao.imageSub,
           prefectureId: dao.prefecture?.id ?? '',
           prefectureName: dao.prefecture?.name ?? '',
           volumeId: dao.volume?.id ?? '',

@@ -9,9 +9,12 @@ build_master.py が生成した master JSON を Firestore の master/{version} �
   master/{ver}/cards/{id}       : {
       id, name, prefecture_id, volume_id, publication_date,
       location            : GeoPoint      マンホール座標
-      image_url           : string        R2 の配信フルURL
+      image_url           : string        主系（Cloudflare R2）の配信フルURL
                                           {R2ベースURL}/master/v{ver}/images/{id}.jpg
                                           アプリはこの値をそのまま画像URLとして使う
+      image_sub_url       : string        代替（Firebase Hosting）の配信フルURL
+                                          {HostingベースURL}/master/v{ver}/images/{id}.jpg
+                                          image_url の取得に失敗した端末だけがこちらへ回る
       distribution_place_html : string    配布場所HTML（そのまま）
       distribution_points : [GeoPoint]    配布場所の座標（0〜複数）
       distribution_time_html  : string    配布時間HTML（そのまま）
@@ -31,7 +34,7 @@ build_master.py が生成した master JSON を Firestore の master/{version} �
       （--replace を付けないと、set は同一IDを上書きするだけで、消えたカードは残る）
   - --dry-run で書き込まず件数のみ表示
   - GeoPoint / 配列 に対応（to_value 参照）
-  - cards の image_url が投入先プロジェクトの R2 配信ドメインと一致するか検査する
+  - cards の image_url / image_sub_url が投入先プロジェクトの配信ドメインと一致するか検査する
     （dev 用の master JSON を prod に投入する事故を防ぐ。--skip-image-url-check で無効化）
 
 認証: gcloud アクセストークン
@@ -49,11 +52,12 @@ import urllib.parse
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import r2_utils  # noqa: E402  （image_url の配信ドメイン検査に使う）
+import hosting_utils  # noqa: E402  （image_sub_url の配信ドメイン検査に使う）
 from geo_utils import GEO_KEY  # noqa: E402  （GeoPoint センチネルは geo_utils と共有）
 DEFAULT_MASTER_PATH = os.path.join(HERE, "data", "firestore", "master_0003.json")
 DEFAULT_PROJECT = "manhole-card-navi"
 
-# Firebase プロジェクトID -> R2 の環境キー（画像配信ドメインの検査に使う）
+# Firebase プロジェクトID -> dev / prod の環境キー（画像配信ドメインの検査に使う）
 R2_PROJECT_BY_FIREBASE = {
     "manhole-card-navi": "prod",
     "manhole-card-navi-dev": "dev",
@@ -61,7 +65,7 @@ R2_PROJECT_BY_FIREBASE = {
 
 
 def expected_image_base_url(firebase_project):
-    """投入先 Firebase プロジェクトに対応する R2 配信ベース URL。不明なら None。"""
+    """投入先 Firebase プロジェクトに対応する R2（主系）配信ベース URL。不明なら None。"""
     key = R2_PROJECT_BY_FIREBASE.get(firebase_project)
     if not key:
         return None
@@ -69,28 +73,53 @@ def expected_image_base_url(firebase_project):
             or r2_utils.PUBLIC_BASE_URLS.get(key))
 
 
+def expected_image_sub_base_url(firebase_project):
+    """投入先 Firebase プロジェクトに対応する Hosting（代替）配信ベース URL。不明なら None。"""
+    key = R2_PROJECT_BY_FIREBASE.get(firebase_project)
+    if not key:
+        return None
+    return (os.environ.get(f"HOSTING_BASE_URL_{key.upper()}")
+            or hosting_utils.PUBLIC_BASE_URLS.get(key))
+
+
+def _check_one_url_field(cards, field, base, label, problems, required):
+    """cards[field] の欠落と配信ドメイン不一致を problems に積む。"""
+    missing = [c.get("id") for c in cards if not c.get(field)]
+    if missing:
+        msg = (f"{field}（{label}）が無いカードが {len(missing)} 件（例 {missing[:3]}）"
+               "… build_master.py を再実行してください")
+        if required:
+            problems.append(msg)
+        else:
+            print(f"  ⚠️ {msg}")
+    if base is None:
+        print(f"  ※ 対応する{label}の配信ベース URL が不明なため、"
+              f"{field} のドメイン検査はスキップします")
+        return
+    base = base.rstrip("/") + "/"
+    bad = [c.get(field) for c in cards if c.get(field) and not c[field].startswith(base)]
+    if bad:
+        problems.append(f"{field} が投入先の{label}配信ドメイン（{base}）と違うカードが "
+                        f"{len(bad)} 件（例 {bad[0]}）… master JSON の --project を確認してください")
+
+
 def check_image_urls(cards, firebase_project):
-    """cards の image_url が投入先の配信ドメインと一致するか検査する。
+    """cards の image_url / image_sub_url が投入先の配信ドメインと一致するか検査する。
 
     dev 用に生成した master JSON を prod へ投入する事故（アプリが dev の画像を
     参照し続ける）を防ぐ。問題があればメッセージのリストを返す。
+
+    image_sub_url は代替配信元（Hosting）。これが欠けていても投入自体は通す
+    （アプリは空文字なら従来どおり主系のみで取得する）が、遮断されている端末の
+    救済が働かなくなるので警告は出す。
     """
     problems = []
-    missing = [c.get("id") for c in cards if not c.get("image_url")]
-    if missing:
-        problems.append(f"image_url が無いカードが {len(missing)} 件（例 {missing[:3]}）"
-                        "… build_master.py を再実行してください")
-    base = expected_image_base_url(firebase_project)
-    if base is None:
-        print(f"  ※ {firebase_project} に対応する R2 配信ベース URL が不明なため、"
-              "image_url のドメイン検査はスキップします")
-        return problems
-    base = base.rstrip("/") + "/"
-    bad = [c.get("image_url") for c in cards
-           if c.get("image_url") and not c["image_url"].startswith(base)]
-    if bad:
-        problems.append(f"image_url が投入先の配信ドメイン（{base}）と違うカードが {len(bad)} 件"
-                        f"（例 {bad[0]}）… master JSON の --project を確認してください")
+    _check_one_url_field(cards, "image_url",
+                         expected_image_base_url(firebase_project),
+                         "主系(R2)", problems, required=True)
+    _check_one_url_field(cards, "image_sub_url",
+                         expected_image_sub_base_url(firebase_project),
+                         "代替(Hosting)", problems, required=False)
     return problems
 
 
@@ -247,7 +276,8 @@ def main():
                          "残存を防ぐ。")
     ap.add_argument("--batch", type=int, default=200, help="1commitあたりのwrite数(<=500)")
     ap.add_argument("--skip-image-url-check", action="store_true",
-                    help="cards の image_url が投入先の R2 配信ドメインと一致するかの検査を省く")
+                    help="cards の image_url / image_sub_url が投入先の配信ドメインと"
+                         "一致するかの検査を省く")
     args = ap.parse_args()
 
     project = args.project

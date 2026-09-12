@@ -27,6 +27,7 @@ gk-p.jp の全カードから master バージョンを「毎回まるごと」�
       publication_date        : "2022/08/06"
       location                : GeoPoint       マンホール座標（OCR確定）
       image_url               : "{R2配信ベースURL}/master/v{version}/images/{id}.jpg"
+      image_sub_url           : "{Hosting配信ベースURL}/master/v{version}/images/{id}.jpg"
       distribution_place_html : 配布場所HTML（サイトのまま）
       distribution_points     : [GeoPoint]     配布場所の座標（0〜複数）
       distribution_time_html  : 配布時間HTML（サイトのまま）
@@ -37,10 +38,20 @@ gk-p.jp の全カードから master バージョンを「毎回まるごと」�
 
   ※ 旧構造の contacts / images コレクションは廃止。配布場所と画像はカードに埋め込む。
 
-画像 URL（image_url）:
-  画像は Cloudflare R2 から配信する。cards には配信 URL を**フルで**持たせる。
-  アプリは image_url をそのまま画像 URL として使う（ベース URL をアプリ側で組み立てない）。
-  R2 のバケットは dev / prod で分かれており配信ドメインも異なるので、
+画像 URL（image_url / image_sub_url）:
+  画像は**同じパスで2か所に置く**。cards には配信 URL を**フルで**持たせる。
+  アプリはその値をそのまま画像 URL として使う（ベース URL をアプリ側で組み立てない）。
+
+    image_url     主系 : Cloudflare R2（egress 無料）
+    image_sub_url 代替 : Firebase Hosting（*.web.app）
+
+  アプリは image_url の取得に失敗したときだけ image_sub_url へ切り替える。
+  R2 の配信ドメインが経路上のフィルタリング装置に遮断される端末があるため
+  （詳細は hosting_utils.py の docstring）。
+  **両方を必ず出力する。** image_sub_url が空だとフォールバックが働かず、
+  遮断されている端末では画像が出ないままになる。
+
+  配信ドメインは R2 / Hosting とも dev / prod で異なるので、
   **--project ごとに master JSON を作る**（出力ファイル名に dev / prod が入る）。
   ※ 入力 cards_base.json にも image_url があるが、あちらは「gk-p.jp 上のソース画像 URL」。
     ここで出力する image_url は R2 の配信 URL であり、別物。
@@ -57,6 +68,9 @@ gk-p.jp の全カードから master バージョンを「毎回まるごと」�
   python3 tools/build_master.py --version 0005 --project dev
   python3 tools/build_master.py --version 0005 --project prod
   python3 tools/build_master.py --version 0005 --project prod --out path/to/master.json
+
+  バージョン番号をハードコードしないこと。現行の最新と次の番号は master_version.py で出す:
+    python3 tools/master_version.py --project prod
 """
 import argparse
 import json
@@ -66,7 +80,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import r2_utils  # noqa: E402  （R2 の配信ベース URL・キー計算）
+import r2_utils  # noqa: E402  （主系 = R2 の配信ベース URL・キー計算）
+import hosting_utils  # noqa: E402  （代替 = Firebase Hosting の配信ベース URL）
 from geo_utils import geopoint, parse_dms_string, validate_jp_latlon  # noqa: E402
 from parse_cards import PREF_BY_CODE  # noqa: E402  （都道府県コード -> 名前）
 
@@ -99,17 +114,20 @@ def main():
     ap.add_argument("--project", required=True, choices=list(r2_utils.PROJECTS),
                     help="投入先（dev / prod）。R2 の配信ベース URL が切り替わる")
     ap.add_argument("--base-url", default=None,
-                    help="R2 配信ベース URL を明示指定（既定は project から解決）")
+                    help="R2（主系）配信ベース URL を明示指定（既定は project から解決）")
+    ap.add_argument("--hosting-base-url", default=None,
+                    help="Firebase Hosting（代替）配信ベース URL を明示指定（既定は project から解決）")
     ap.add_argument("--out", default=None,
                     help="出力先JSONパス（省略時は data/firestore/master_{version}_{project}.json）")
     args = ap.parse_args()
     if args.out is None:
         args.out = os.path.join(FS, f"master_{args.version}_{args.project}.json")
 
-    # 画像は Cloudflare R2 から配信する。master には配信 URL をフルで持たせ、
-    # アプリは image_url をそのまま使う（ベース URL をアプリ側で組み立てない）。
+    # 画像は主系（R2）と代替（Hosting）の2か所から配信する。master には両方の配信 URL を
+    # フルで持たせ、アプリはその値をそのまま使う（ベース URL をアプリ側で組み立てない）。
     # 配信ドメインは dev / prod で異なるため、master JSON も project ごとに作る。
     base_url = r2_utils.base_url_of(args.project, args.base_url)
+    sub_base_url = hosting_utils.base_url_of(args.project, args.hosting_base_url)
 
     cards_base = load(os.path.join(DATA, "cards_base.json"))
     geocache = load(os.path.join(DATA, "geocode_cache.json"))
@@ -204,6 +222,7 @@ def main():
             "publication_date": c["issued_date"],
             "location": geopoint(lat, lon),
             "image_url": r2_utils.image_url(base_url, args.version, fs_id),
+            "image_sub_url": hosting_utils.image_url(sub_base_url, args.version, fs_id),
             "distribution_place_html": c.get("distribution_html", ""),
             "distribution_points": points,
             "distribution_time_html": c.get("distribution_time_html", ""),
@@ -226,7 +245,8 @@ def main():
 
     print(f"master JSON 生成完了 -> {args.out}")
     print(f"  投入先     : {args.project}")
-    print(f"  画像URL    : {r2_utils.image_url(base_url, args.version, '{id}')}")
+    print(f"  画像URL(主) : {r2_utils.image_url(base_url, args.version, '{id}')}")
+    print(f"  画像URL(代) : {hosting_utils.image_url(sub_base_url, args.version, '{id}')}")
     print(f"  cards      : {len(cards_out)}")
     print(f"  prefectures: {len(prefectures_out)}")
     print(f"  volumes    : {len(volumes_out)}  ({volumes_out[0]['name']} 〜 {volumes_out[-1]['name']})")

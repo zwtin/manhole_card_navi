@@ -16,9 +16,10 @@
         "read1": {"id": "00-101-A001", "lat_dms": "35°46'34.7\"N", "lon_dms": "139°42'59.1\"E"},
         "read2": {"id": "00-101-A001", "lat_dms": "35°46'34.7\"N", "lon_dms": "139°42'59.1\"E"}
       }, ... }
-  tools/data/ocr_resolved.json : 人間が不一致を解決した確定値（任意）
+  tools/ocr_resolved.json      : 人間が不一致を解決した確定値（任意）
     { "<card_id>": {"id": "...", "lat_dms": "...", "lon_dms": "..."}, ... }
     （ocr_raw より優先される。不一致カードを人が目視で埋める用）
+    data/ ではなく tools/ 直下に置いて commit する（人手の判断を次回に残すため）。
 
 出力:
   tools/data/cards_base.json   : 各カードに ocr_id / ocr_lat_dms / ocr_lon_dms を追記
@@ -50,7 +51,8 @@ DATA = os.path.join(HERE, "data")
 OUT = os.path.join(HERE, "out")
 CARDS_PATH = os.path.join(DATA, "cards_base.json")
 RAW_PATH = os.path.join(DATA, "ocr_raw.json")
-RESOLVED_PATH = os.path.join(DATA, "ocr_resolved.json")
+# data/ ではなく tools/ 直下に置く（data/ は .gitignore 済みで、人手の判断が消えるため）。
+RESOLVED_PATH = os.path.join(HERE, "ocr_resolved.json")
 CONFLICTS_PATH = os.path.join(OUT, "ocr_conflicts.json")
 
 

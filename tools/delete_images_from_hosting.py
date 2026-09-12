@@ -1,10 +1,19 @@
 #!/usr/bin/env python3
 """
-【旧世代用】旧 master バージョンの画像を Firebase Hosting から削除して再デプロイする。
+旧 master バージョンの画像を Firebase Hosting から削除して再デプロイする。
 
-現行の配信先は Cloudflare R2（削除は delete_images_from_r2.py）。このスクリプトは
-Hosting に残る旧 master（0004 以前）の画像を片付けるために残している。
-旧アプリ向けに旧 master を返している間は消さないこと（cleanup-old-images スキル参照）。
+Hosting は**現役の代替配信元**（master の image_sub_url が指す先）。主系は Cloudflare R2
+（削除は delete_images_from_r2.py）。同じバージョンの画像が R2 と Hosting の両方に
+あるので、**片付けも両方を同じバージョンで揃えて行う**。
+
+⚠️ Hosting 側だけを消すと、R2 の配信ドメインが遮断されている端末のフォールバック先が
+  404 になり、その端末では画像が出なくなる（遮断は該当世代の約 0.6%。数としては
+  少ないが、その人たちにとっては全画像が出ない）。「Hosting は旧世代用だから消してよい」
+  は 2026-08 以降は誤り。
+
+  加えて、旧アプリ（〜1.4.0+9。master の image パスに .web.app を前置する世代）向けに
+  Remote Config のアプリバージョン条件で旧 master（0004）を返している間は、
+  その世代の画像も現役。消さないこと（cleanup-old-images スキル参照）。
 
 用途:
   - バージョン更新後、全端末が新バージョンへ移行しきった後の後片付け。

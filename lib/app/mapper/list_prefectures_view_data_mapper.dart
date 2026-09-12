@@ -70,6 +70,7 @@ class ListPrefecturesViewDataMapper {
                     return ListCardViewData(
                       id: dto.id,
                       imageUrl: dto.imagePath,
+                      imageSubUrl: dto.imageSubPath,
                       alreadyGet: alreadyGet,
                       name: dto.name,
                       volume: dto.volumeName,

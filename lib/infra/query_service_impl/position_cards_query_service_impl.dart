@@ -39,6 +39,7 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
           MapMarkerDTO(
             cardId: dao.id,
             imagePath: dao.image,
+            imageSubPath: dao.imageSub,
             distributionState: dao.distributionState,
             volumeId: dao.volume?.id ?? '',
             latitude: dao.latitude,

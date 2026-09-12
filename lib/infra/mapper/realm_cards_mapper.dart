@@ -19,6 +19,7 @@ class RealmCardsMapper {
           element.publicationDate,
           element.distributionState.toStringValue(),
           element.image,
+          element.imageSub,
           element.distributionPlaceHtml,
           element.distributionTimeHtml,
           element.stockHtml,

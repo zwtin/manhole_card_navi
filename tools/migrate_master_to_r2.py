@@ -21,7 +21,7 @@
   2. cards の image（master/v{source}/images/{id}.jpg）を落とし、
      image_url（{R2ベースURL}/master/v{target}/images/{id}.jpg）に差し替える
   3. Firestore 投入用 JSON を出力（upload_master_to_firestore.py にそのまま渡せる形式）
-  4. 画像コピー用のカードJSON を出力（deploy_images_to_r2.py --cards に渡す形式）
+  4. 画像コピー用のカードJSON を出力（deploy_images.py --cards に渡す形式）
      ソース画像は Hosting の master/v{source}/images/{id}.jpg。
      gk-p.jp から取り直さないので、**現行ユーザーが見ている画像とバイト単位で同一**になる
      （JPEG変換や再取得による差異が入らない）。
@@ -36,8 +36,11 @@
   python3 tools/migrate_master_to_r2.py --source-version 0004 --target-version 0005 --project prod
 
   # 出力した画像コピー用JSONで R2 へアップロード
-  python3 tools/deploy_images_to_r2.py --version 0005 --project dev \\
+  python3 tools/deploy_images.py --version 0005 --project dev --targets r2 \\
     --cards tools/data/firestore/image_copy_0004.json --dry-run
+
+  ※ この一度きりの移行は R2 だけが対象だった（当時 Hosting は旧世代用）。
+    通常の master 発行では --targets を省略して R2 + Hosting の両方へ配る。
 """
 import argparse
 import json
@@ -215,8 +218,8 @@ def main():
             print(f"   ... 他 {len(warnings)-30} 件")
 
     print("\n次の手順:")
-    print(f"  1) 画像コピー: python3 tools/deploy_images_to_r2.py "
-          f"--version {args.target_version} --project {args.project} "
+    print(f"  1) 画像コピー: python3 tools/deploy_images.py "
+          f"--version {args.target_version} --project {args.project} --targets r2 "
           f"--cards {cards_out_path} --sleep 0 --dry-run")
     print("     （コピー元は自前の Hosting なので --sleep 0 でよい）")
     print(f"  2) Firestore : python3 tools/upload_master_to_firestore.py "

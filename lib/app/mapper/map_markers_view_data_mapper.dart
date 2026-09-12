@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 
+import '/app/service/image_load_monitor.dart';
 import '/app/service/marker_icon_builder.dart';
 import '/app/view_data/map_marker_view_data.dart';
 import '/app/view_data/map_markers_view_data.dart';
@@ -136,6 +140,7 @@ class MapMarkersViewDataMapper {
       cardId: dto.cardId,
       icon: icon,
       imageUrl: dto.imagePath,
+      imageSubUrl: dto.imageSubPath,
       latitude: dto.latitude,
       longitude: dto.longitude,
     );
@@ -191,7 +196,10 @@ class MapMarkersViewDataMapper {
       // 原本画像を DL。http.get はネットワーク待ちの間メイン Isolate を塞が
       // ないため、compute で別 Isolate を立てるより spawn コストがかからない。
       // 縮小デコードと合成（dart:ui）はメイン Isolate で行う必要がある。
-      final originalBytes = await _downloadImage(dto.imagePath);
+      final originalBytes = await _downloadImage(
+        dto.imagePath,
+        dto.imageSubPath,
+      );
       if (originalBytes == null || originalBytes.isEmpty) {
         return null;
       }
@@ -203,25 +211,85 @@ class MapMarkersViewDataMapper {
       cache[key] = icon;
       await _writeDisk(key, icon);
       return icon;
-    } on Exception {
+    } catch (_) {
+      // 合成やキャッシュ書き込みの失敗でマーカー全体を落とさない。DL の失敗は
+      // _downloadImage 側で ImageLoadMonitor に記録済み。
       return null;
     }
   }
 
   /// 原本画像 DL 用の HTTP クライアント。コネクションを再利用してハンドシェイク
   /// コストを抑える。
-  static final http.Client _httpClient = http.Client();
+  ///
+  /// 接続タイムアウトを明示しているのは、既定（null）だと OS のタイムアウト
+  /// （Darwin で約75秒）まで待ってしまい、フォールバックに移るのが遅すぎるため。
+  static final http.Client _httpClient = IOClient(
+    HttpClient()
+      ..connectionTimeout = const Duration(seconds: 8)
+      // 1ホストへの同時接続数の上限。既定は無制限で、近傍30件を一斉に取りに
+      // いくとモバイル回線では SYN が落ちて ETIMEDOUT の原因になる。
+      ..maxConnectionsPerHost = 6,
+  );
+
+  /// レスポンス全体を待つ時間の上限。
+  static const Duration _downloadTimeout = Duration(seconds: 12);
 
   /// 原本画像を DL してエンコード済みバイト列を返す。
-  static Future<Uint8List?> _downloadImage(String url) async {
-    try {
-      final response = await _httpClient.get(Uri.parse(url));
-      if (response.statusCode != 200) {
-        return null;
-      }
-      return response.bodyBytes;
-    } on Exception {
+  ///
+  /// [url] で取れなければ代替配信元 [subUrl]（master の `image_sub_url`）から
+  /// 取り直す。一覧・詳細の画像はキャッシュ層（card_image_cache_manager.dart）が
+  /// 同じことをしているが、マーカーはそこを通さず直接 DL するため、ここにも
+  /// 同じ手当てが要る。
+  static Future<Uint8List?> _downloadImage(String url, String subUrl) async {
+    final primaryResult = await _tryDownload(url);
+    if (primaryResult.bytes != null) {
+      return primaryResult.bytes;
+    }
+
+    if (subUrl.isEmpty) {
+      ImageLoadMonitor.recordFailure(
+        url: url,
+        error: primaryResult.error!,
+        recovered: false,
+      );
       return null;
+    }
+
+    final fallbackResult = await _tryDownload(subUrl);
+    ImageLoadMonitor.recordFailure(
+      url: url,
+      error: primaryResult.error!,
+      recovered: fallbackResult.bytes != null,
+    );
+    return fallbackResult.bytes;
+  }
+
+  /// 1 回分の DL 試行。成功なら bytes、失敗なら error が入る。
+  ///
+  /// `on Exception` ではなく `catch` で受けるのは、不正な URI を渡したときの
+  /// [ArgumentError] のように Error 型が飛んでくる経路があるため。
+  static Future<({Uint8List? bytes, Object? error})> _tryDownload(
+    String url,
+  ) async {
+    try {
+      final response =
+          await _httpClient.get(Uri.parse(url)).timeout(_downloadTimeout);
+      if (response.statusCode != 200) {
+        return (
+          bytes: null,
+          error: HttpExceptionWithStatus(
+            response.statusCode,
+            'Invalid statusCode: ${response.statusCode}',
+            uri: Uri.tryParse(url),
+          ),
+        );
+      }
+      if (response.bodyBytes.isEmpty) {
+        return (bytes: null, error: const HttpException('empty body'));
+      }
+      return (bytes: response.bodyBytes, error: null);
+    } catch (error) {
+      return (bytes: null, error: error);
     }
   }
 

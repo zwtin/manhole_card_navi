@@ -72,6 +72,10 @@ class CardRepositoryImpl implements CardRepository {
               doc['distribution_state'] as String,
             ),
             image: doc['image_url'] as String,
+            // image_sub_url（代替配信元）を持たない世代の master もあるため、
+            // data() 経由で読む。DocumentSnapshot の [] はフィールドが
+            // 存在しないと StateError を投げてしまう。
+            imageSub: doc.data()['image_sub_url'] as String? ?? '',
             distributionPlaceHtml: doc['distribution_place_html'] as String,
             distributionTimeHtml: doc['distribution_time_html'] as String,
             stockHtml: doc['stock_html'] as String,
@@ -104,6 +108,27 @@ class CardRepositoryImpl implements CardRepository {
         CustomException(
           title: 'エラー',
           text: 'マスターデータの取得に失敗しました。',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<bool>> hasMaster() async {
+    try {
+      var realm = RealmConfiguration.open();
+      final isEmpty = realm.all<RealmCardDAO>().isEmpty;
+      realm.close();
+      return Result.success(!isEmpty);
+    } on CustomException catch (customException) {
+      return Result.failure(
+        customException,
+      );
+    } on Exception catch (_) {
+      return const Result.failure(
+        CustomException(
+          title: 'エラー',
+          text: 'マスターデータの確認に失敗しました。',
         ),
       );
     }

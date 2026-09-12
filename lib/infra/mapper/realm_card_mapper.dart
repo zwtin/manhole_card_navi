@@ -21,6 +21,7 @@ class RealmCardMapper {
         dao.distributionState,
       ),
       image: dao.image,
+      imageSub: dao.imageSub,
       distributionPlaceHtml: dao.distributionPlaceHtml,
       distributionTimeHtml: dao.distributionTimeHtml,
       stockHtml: dao.stockHtml,

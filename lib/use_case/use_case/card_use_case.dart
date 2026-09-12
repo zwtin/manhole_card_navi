@@ -50,6 +50,7 @@ class CardUseCase {
         id: card.id,
         name: card.name,
         imagePath: card.image,
+        imageSubPath: card.imageSub,
         latitude: card.latitude,
         longitude: card.longitude,
         prefectureId: card.prefecture.id,
