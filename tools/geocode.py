@@ -30,6 +30,8 @@ from geo_utils import validate_jp_latlon  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE_PATH = os.path.join(HERE, "data", "geocode_cache.json")
+# data/ ではなく tools/ 直下に置く（data/ は .gitignore 済みで、人手の判断が消えるため）。
+RESOLVED_PATH = os.path.join(HERE, "geocode_resolved.json")
 API_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 
 
@@ -42,6 +44,30 @@ def load_cache():
 def save_cache(cache):
     with open(CACHE_PATH, "w", encoding="utf-8") as f:
         json.dump(cache, f, ensure_ascii=False, indent=2)
+
+
+def load_resolved():
+    """人手で確定した「問い合わせ文字列の差し替え」表。
+
+    gk-p.jp の住所表記のままだと Google が番地まで解決できず、市区町村や区の重心
+    （location_type=APPROXIMATE）を返してしまうことがある。地図ピンが数百m〜数km
+    ずれるので、そういう住所だけ**問い合わせに使う文字列**を人手で差し替える。
+
+    置き場所は `tools/geocode_resolved.json`（`tools/data/` ではない）。人手で確かめた判断
+    なので、中間成果物と違ってリポジトリに残す。
+
+    形式（キーはサイト表記の住所そのまま）:
+      { "愛知県名古屋市千種区月が丘1-1-44": {
+            "query": "愛知県名古屋市千種区月ケ丘1-1-44",
+            "_note": "サイトは『月が丘』だが実際は『月ケ丘』。..." } }
+
+    **座標は書かない。** 差し替えるのは問い合わせ文字列だけで、座標は必ず Google から
+    取る（人力の座標を混ぜない、というこのリポジトリの原則を保つため）。
+    結果はサイト表記の住所をキーにキャッシュされるので、build_master 側の参照は変わらない。
+    """
+    if os.path.exists(RESOLVED_PATH):
+        return json.load(open(RESOLVED_PATH, encoding="utf-8"))
+    return {}
 
 
 def geocode_one(address, api_key):
@@ -125,11 +151,26 @@ def main():
     dist = json.load(open(args.input, encoding="utf-8"))
     addresses = collect_addresses(dist)
     cache = load_cache()
+    resolved = load_resolved()
 
-    need = [a for a in addresses if a not in cache
-            or (args.retry_failed and cache[a].get("status") != "OK")]
+    def query_for(a):
+        return (resolved.get(a) or {}).get("query") or a
+
+    def needs_query(a):
+        if a not in cache:
+            return True
+        if args.retry_failed and cache[a].get("status") != "OK":
+            return True
+        # 差し替えを足した / 変えた住所は、キャッシュが古い問い合わせの結果なので取り直す
+        return cache[a].get("query_used", a) != query_for(a)
+
+    need = [a for a in addresses if needs_query(a)]
     cached_ok = sum(1 for a in addresses if a in cache and cache[a].get("status") == "OK")
+    n_rewritten = sum(1 for a in addresses if query_for(a) != a)
     print(f"住所ユニーク数: {len(addresses)} / キャッシュ済OK: {cached_ok} / 今回問い合わせ: {len(need)}")
+    if n_rewritten:
+        print(f"  問い合わせ文字列を差し替える住所: {n_rewritten} 件"
+              f"（geocode_resolved.json）")
 
     if args.dry_run:
         print("（--dry-run のためAPIは呼びません）")
@@ -142,13 +183,19 @@ def main():
 
     n_ok = n_fail = n_outside = 0
     for i, a in enumerate(need, start=1):
+        q = query_for(a)
         try:
-            res = geocode_one(a, api_key)
+            res = geocode_one(q, api_key)
         except Exception as e:  # noqa
             res = {"status": "EXCEPTION", "lat": None, "lon": None,
                    "formatted_address": "", "location_type": "",
                    "jp_ok": False, "jp_reason": f"{type(e).__name__}: {e}"}
+        # どの文字列で引いた結果かを残す（差し替えを変えたら取り直せるように）
+        res["query_used"] = q
         cache[a] = res
+        if q != a:
+            print(f"  [差し替え] {a}\n        -> 問い合わせ: {q}\n"
+                  f"        -> {res.get('formatted_address')} ({res.get('location_type')})")
         if res["status"] == "OK":
             if res["jp_ok"]:
                 n_ok += 1

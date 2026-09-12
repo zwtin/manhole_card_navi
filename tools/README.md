@@ -155,6 +155,16 @@ master を作る前に必ず突き合わせる。`review_support_requests.py` �
 真偽の判定はサイトの該当ページ（必要ならカード画像）を見て行う。サイトが直っていなければ
 master も直さない（情報源が二重になり、次回の再生成で戻ってしまうため）。
 
+### 配布場所のピンずれ（ジオコーディングの解決精度）
+
+「配布場所の表示位置がずれている」という申告の主因は、Google が住所の番地まで解決できず
+**市区町村の重心**を返していること（`location_type: APPROXIMATE` かつ `formatted_address` に
+郵便番号が付かない）。数百m〜数km ずれる。
+
+`tools/geocode_resolved.json` に**問い合わせ文字列の差し替え**を書くと、その住所だけ別の
+文字列で引き直す。キーはサイト表記の住所のままなので master 側の参照は変わらない。
+**座標は書かない**（人力の座標を混ぜない原則を保つ）。最も効くのは `{施設名} {住所}` の形。
+
 ## セットアップ
 
 ```bash
@@ -344,7 +354,7 @@ python3 tools/deploy_images.py --version 0005 --project dev --targets r2 \
 | `download_images.py` | カード画像DL（Referer付き・冪等） |
 | `ocr_cards.py` | 画像の二重OCR結果を確定 → cards_base に `ocr_id` / `ocr_lat_dms` / `ocr_lon_dms` |
 | `extract_distribution.py` | 配布場所のAI抽出結果を確定 → cards_base に `dist_addresses` / `dist_state`（キーワードルールで相互検算） |
-| `geocode.py` | 住所→座標（Google Geocoding API・キャッシュ） |
+| `geocode.py` | 住所→座標（Google Geocoding API・キャッシュ）。`geocode_resolved.json` で問い合わせ文字列を差し替えられる |
 | `geo_utils.py` | DMS→10進変換・日本範囲バリデーション・GeoPoint中間表現 |
 | `build_master.py` | 全カードを毎回まるごと再生成 → 投入用JSON（3コレクション・GeoPoint・`--project` ごと） |
 | `image_layout.py` | 画像のパス計算（`master/v{version}/images/{id}.jpg`）と共通定数。R2 / Hosting で共有 |
@@ -356,5 +366,7 @@ python3 tools/deploy_images.py --version 0005 --project dev --targets r2 \
 | `migrate_master_to_r2.py` | 【R2移行用・一度きり】既存 master を土台に image → image_url の新バージョンを生成＋画像コピー用JSON出力 |
 | `master_version.py` | Firestore / R2 / Hosting / Remote Config を見て現行最新と次のバージョン番号を出す |
 | `review_support_requests.py` | 利用者の申告CSV → 前回発行日以降の確認対象をカード単位に紐づけて洗い出す |
+| `geocode_resolved.json` | ジオコーディングで番地が引けない住所の問い合わせ文字列の差し替え（人手確定・要 commit） |
+| `master_releases.json` | master の発行履歴。申告の対象期間の起点になる（人手更新・要 commit） |
 | `upload_master_to_firestore.py` | master バージョンを Firestore へ投入（GeoPoint/配列対応・`--replace`） |
 | `build_csv.py` | 中間データ → 正規化CSV 2ファイル（分析用・パイプライン外） |

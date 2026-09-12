@@ -123,8 +123,13 @@ python3 tools/parse_cards.py    # → tools/data/cards_base.json（全カード�
 
 ```bash
 python3 tools/review_support_requests.py --csv tools/data/support_requests.csv \
+    --cards tools/data/cards_base_prev.json \
     --out tools/data/support_review.json
 ```
+
+**`--cards` に `cards_base_prev.json` を指定すること。** 手順1 で再パースした直後の
+`cards_base.json` にはまだ `ocr_*` / `dist_*` が入っていないので、そのままだと
+「現在の値」が空で表示される。前回 master 時点の値を見たいので退避した方を渡す。
 
 出力は3つに分かれる:
 
@@ -300,10 +305,55 @@ python3 tools/geocode.py              # 未キャッシュの住所だけ問い�
   2回目以降は新規住所だけ（0004 は25件）。
 - API キーは `~/.zshenv` の `GOOGLE_GEOCODING_API_KEY` に設定済み。
 - 日本範囲外に落ちた住所は `jp_ok: false` としてフラグ化される。
-- **「配布場所のピンがずれている」という申告があったカードは、キャッシュを疑う。**
-  住所が変わっていなければ再問い合わせは起きないので、該当住所のエントリを
-  `geocode_cache.json` から消してから再実行する（施設名だけで住所が曖昧な場合、
-  Google が別地点を返していることがある）。
+**解決精度を必ず監査する（ピンずれの主因）。**
+
+キャッシュの各エントリには Google が返した `location_type` が入っている。
+`ROOFTOP` は番地まで解決できた印。**`APPROXIMATE` で、かつ `formatted_address` に
+郵便番号（`〒`）が付かないものは、市区町村の重心に落ちている**＝ピンが数百m〜数km ずれる。
+
+```bash
+python3 - <<'EOF'
+import json
+cards = json.load(open("tools/data/cards_base.json"))
+cache = json.load(open("tools/data/geocode_cache.json"))
+used = {a for c in cards for a in c.get("dist_addresses", [])}
+coarse = [a for a in used
+          if cache.get(a, {}).get("location_type") == "APPROXIMATE"
+          and "〒" not in cache[a].get("formatted_address", "")]
+print(f"市区町村レベルどまり: {len(coarse)} 件")
+for a in sorted(coarse):
+    print(f"  {a}\n      -> {cache[a]['formatted_address']}")
+EOF
+```
+
+**直し方: `tools/geocode_resolved.json` に「問い合わせ文字列の差し替え」を書く。**
+座標は書かない（人力の座標を混ぜない、というこのリポジトリの原則を保つ）。
+
+```json
+{ "愛知県名古屋市千種区月が丘1-1-44": {
+    "query": "愛知県名古屋市千種区月ケ丘1-1-44",
+    "_note": "サイトは『月が丘』だが実在の町名は『月ケ丘』。約1.1kmずれていた。" } }
+```
+
+書いて `python3 tools/geocode.py` を再実行すると、その住所だけ差し替えた文字列で
+引き直してキャッシュを更新する（キーはサイト表記の住所のままなので master 側は変わらない）。
+差し替えを変えたら自動で引き直す（`query_used` を記録している）。
+
+よくある原因と効く差し替え:
+
+| 症状 | 差し替え方 |
+|---|---|
+| 施設名が無いと番地が引けない | `{施設名} {住所}` にする（**最も効く**） |
+| サイトの町名表記が実在と違う | `月が丘`→`月ケ丘`、`東大道原田`→`東大道町原田`、`羽村4122`→`羽4122` など |
+| 番地が漢数字表記 | `和歌山市1-3`→`和歌山市一番丁3` |
+
+**採用の判断は「返答の番地が入力と一致するか」で行う。** `ROOFTOP` でも別の建物を
+拾っていることがある（実例: `龍が崎`と書き換えたら『龍ヶ崎ビル』という無関係の建物に
+当たった）。`formatted_address` を必ず目で確かめること。`無番地` のように番地が無い住所は
+どう頑張っても町丁目の重心までなので、差し替えを足さずに放置してよい。
+
+- **「配布場所のピンがずれている」という申告があったカードは、まずここを疑う。**
+  住所が変わっていなければ再問い合わせは起きないので、キャッシュの `location_type` を見る。
 
 ### 8. 利用者からの申告を決着させる（master 生成前・必須）
 
@@ -542,6 +592,9 @@ Remote Config の `inquired_app_version` による強制アップデートがあ
   移送（手順3）と差分実行の土台になる。消すと全1311件の再OCRが必要になる。
 - `tools/data/support_requests.csv`（メールアドレスを含む）は **commit しない**。
   `tools/data/` は .gitignore 済みだが、別の場所へコピーしないこと。
+- 逆に、**人手で確かめた判断は `tools/` 直下に置いて commit する**
+  （`geocode_resolved.json` / `master_releases.json`）。`tools/data/` に置くと
+  .gitignore で消えて、次に同じ調べ直しをする羽目になる。
 
 ## トラブル時
 
