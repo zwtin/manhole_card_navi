@@ -141,6 +141,8 @@ class ManholeCardListView extends CommonWidget {
                                       SizedBox(
                                         child: CardImage(
                                           imageUrl: cardViewData.imageUrl,
+                                          imageSubUrl:
+                                              cardViewData.imageSubUrl,
                                           alreadyGet: cardViewData.alreadyGet,
                                           memCacheWidth: 260,
                                           maxWidthDiskCache: 520,

@@ -1,58 +1,52 @@
-import 'package:firebase_remote_config/firebase_remote_config.dart';
-
-/// カード画像の取得に失敗したときの代替配信元（フォールバック）を解決する。
+/// カード画像の代替配信元（フォールバック先）URL を、画像取得の実処理まで運ぶ。
 ///
-/// 主系は Cloudflare R2（`https://cdn.manholecardnavi.com/...`）だが、
-/// 新規取得ドメインのため一部のネットワーク（キャリアのフィルタリング、学校・企業の
-/// ネットワーク、DNS フィルタ）で遮断されることがある。遮断された端末では
-/// カード画像が一切表示されないため、代替として Firebase Hosting から取り直す。
+/// 主系は Cloudflare R2 だが、新規取得ドメインのため一部のネットワーク
+/// （キャリアのフィルタリング、学校・企業のネットワーク、DNS フィルタ）で
+/// 遮断されることがある。遮断された端末ではカード画像が一切表示されないため、
+/// master の `image_sub_url` に入っている別ドメインの URL から取り直す。
 ///
-/// R2 と Hosting はオブジェクトキーの設計が同じ（`master/v{version}/images/{id}.jpg`）
-/// なので、URL のホスト部分を差し替えるだけで代替 URL になる。
+/// 代替 URL は **カードごとのデータ**（Firestore の `image_sub_url`）なので、
+/// URL 文字列から機械的に導出することはできない。一方で画像の取得は
+/// [CachedNetworkImage] / [CachedNetworkImageProvider] / `precacheImage` の
+/// いずれも `FileService` に集約されており、そこへ URL 以外の情報を渡す経路は
+/// HTTP ヘッダしかない。そこで代替 URL を [headerKey] のヘッダに載せて運ぶ。
 ///
-/// ベース URL は Remote Config の [_remoteConfigKey] から読む。**空文字なら
-/// フォールバックしない**（既定で無効）。Hosting 側に当該バージョンの画像を
-/// 配置してから Remote Config に値を入れること。順序を逆にすると 404 を
-/// 取りに行くだけの無駄なリクエストが増える。
+/// **このヘッダはネットワークには出ない。** `FileService` 側で
+/// [withoutSubUrl] を使って実際のリクエストから取り除く。
 ///
-/// Remote Config に持たせているのは、配信先を変えたくなったときに
-/// アプリの更新なしで切り替えられるようにするため。
+/// キャッシュのキーは主系の URL のままなので、代替から取得しても以降は
+/// 透過的に扱われる（flutter_cache_manager はヘッダをキーに含めない）。
 class ImageFallback {
   ImageFallback._();
 
-  /// フォールバック先のベース URL を格納する Remote Config のキー。
-  /// 例: `https://manhole-card-navi.web.app`（末尾スラッシュは付けても付けなくてもよい）
-  static const String _remoteConfigKey = 'image_fallback_base_url';
+  /// 代替配信元 URL を載せるヘッダ名。実際のリクエストには含めない。
+  static const String headerKey = 'x-image-sub-url';
 
-  /// [primaryUrl] に対応するフォールバック URL。無効・解決不能なら null。
+  /// 画像ウィジェットに渡す `httpHeaders` を作る。代替が無ければ null。
+  static Map<String, String>? headers(String imageSubUrl) {
+    if (imageSubUrl.isEmpty) {
+      return null;
+    }
+    return <String, String>{headerKey: imageSubUrl};
+  }
+
+  /// ヘッダから代替配信元 URL を取り出す。無ければ null。
+  static String? subUrlFrom(Map<String, String>? headers) {
+    final subUrl = headers?[headerKey];
+    if (subUrl == null || subUrl.isEmpty) {
+      return null;
+    }
+    return subUrl;
+  }
+
+  /// 実際のリクエストに使うヘッダ（[headerKey] を除いたもの）。
   ///
-  /// Remote Config はウィジェットツリーの外（[FileService] や Isolate の外側）からも
-  /// 参照するため、リポジトリ経由ではなく [FirebaseRemoteConfig.instance] を直接読む。
-  /// 値の取得は同期的でコストがないため、呼び出しごとに読んで最新値を反映する。
-  static String? urlOf(String primaryUrl) {
-    final String baseUrl;
-    try {
-      baseUrl = FirebaseRemoteConfig.instance.getString(_remoteConfigKey).trim();
-    } on Exception {
-      return null;
+  /// 渡された Map は変更しない（呼び出し元が使い回している可能性があるため）。
+  static Map<String, String>? withoutSubUrl(Map<String, String>? headers) {
+    if (headers == null || !headers.containsKey(headerKey)) {
+      return headers;
     }
-    if (baseUrl.isEmpty) {
-      return null;
-    }
-
-    final uri = Uri.tryParse(primaryUrl);
-    if (uri == null || uri.path.isEmpty) {
-      return null;
-    }
-
-    final normalizedBase =
-        baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
-    final fallbackUrl = '$normalizedBase${uri.path}';
-
-    // 主系と同じ URL になるなら取り直す意味がない。
-    if (fallbackUrl == primaryUrl) {
-      return null;
-    }
-    return fallbackUrl;
+    final rest = Map<String, String>.of(headers)..remove(headerKey);
+    return rest.isEmpty ? null : rest;
   }
 }

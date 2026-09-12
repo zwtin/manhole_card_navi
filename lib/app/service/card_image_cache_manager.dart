@@ -38,6 +38,9 @@ class CardImageCacheManager extends CacheManager with ImageCacheManager {
 
 /// 主系で取れなければ代替配信元から取り直す [FileService]。
 ///
+/// 代替配信元の URL はカードごとのデータ（master の `image_sub_url`）で、URL から
+/// は導出できない。[ImageFallback] の仕組みで HTTP ヘッダに載せて運んでくる。
+///
 /// 失敗は [ImageLoadMonitor] に記録する。代替でも取れなかった場合は主系の
 /// エラー／レスポンスをそのまま返し、キャッシュ層の通常のエラー処理に委ねる。
 class _FallbackFileService extends FileService {
@@ -84,7 +87,7 @@ class _FallbackFileService extends FileService {
       primaryError = exception;
     }
 
-    final fallbackUrl = ImageFallback.urlOf(url);
+    final fallbackUrl = ImageFallback.subUrlFrom(headers);
     if (fallbackUrl == null) {
       ImageLoadMonitor.recordFailure(
         url: url,
@@ -128,8 +131,10 @@ class _FallbackFileService extends FileService {
     Map<String, String>? headers,
   ) async {
     final request = http.Request('GET', Uri.parse(url));
-    if (headers != null) {
-      request.headers.addAll(headers);
+    // 代替配信元 URL の受け渡しに使っているヘッダは内部用なので送信しない。
+    final sendHeaders = ImageFallback.withoutSubUrl(headers);
+    if (sendHeaders != null) {
+      request.headers.addAll(sendHeaders);
     }
     final response = await _httpClient.send(request).timeout(_responseTimeout);
     return HttpGetResponse(response);

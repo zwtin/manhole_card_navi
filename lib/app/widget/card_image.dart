@@ -2,16 +2,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '/app/service/card_image_cache_manager.dart';
+import '/app/service/image_fallback.dart';
 
 /// マンホールカードの画像を表示するウィジェット。
 ///
 /// 原本画像（カラー）URL を [imageUrl] に渡す。未所持（[alreadyGet] が false）の
 /// 場合は実行時に彩度 0 のカラーフィルターを掛けてグレースケール表示する。
 ///
+/// [imageSubUrl] は代替配信元の URL（master の `image_sub_url`）。[imageUrl] を
+/// 取得できなかったときに使われる。代替が無いカードでは空文字を渡す。
+///
 /// [memCacheWidth] / [maxWidthDiskCache] を指定すると原寸デコードを避けられる。
 class CardImage extends StatelessWidget {
   const CardImage({
     required this.imageUrl,
+    required this.imageSubUrl,
     required this.alreadyGet,
     this.memCacheWidth,
     this.maxWidthDiskCache,
@@ -20,6 +25,7 @@ class CardImage extends StatelessWidget {
   });
 
   final String imageUrl;
+  final String imageSubUrl;
   final bool alreadyGet;
   final int? memCacheWidth;
   final int? maxWidthDiskCache;
@@ -73,8 +79,10 @@ class CardImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final image = CachedNetworkImage(
       imageUrl: imageUrl,
-      // 主系（R2）で取れないときに Firebase Hosting へ回すため、既定の
-      // DefaultCacheManager ではなく専用のものを使う。
+      // 代替配信元の URL はヘッダに載せて FileService まで運ぶ（送信はされない）。
+      httpHeaders: ImageFallback.headers(imageSubUrl),
+      // 主系で取れないときに代替へ回すため、既定の DefaultCacheManager では
+      // なく専用のものを使う。
       cacheManager: CardImageCacheManager(),
       fadeInDuration: const Duration(microseconds: 0),
       memCacheWidth: memCacheWidth,

@@ -21,6 +21,15 @@ abstract class ManholeCard with _$ManholeCard {
     /// 例: `https://images.example.com/master/v0003/images/00-101-A001.jpg`
     required String image,
 
+    /// カード画像の代替配信元のフル URL（Firestore の `image_sub_url`）。
+    ///
+    /// [image] の配信元が取得できなかったときに使う。主系のドメインが
+    /// ネットワーク側のフィルタで遮断される端末があるため、別ドメインからも
+    /// 取得できるようにしている。
+    ///
+    /// 代替を持たない master（`image_sub_url` を含まない世代）では空文字になる。
+    required String imageSub,
+
     /// 配布場所の HTML。施設名・住所・電話が混在したまま保持する。
     required String distributionPlaceHtml,
 

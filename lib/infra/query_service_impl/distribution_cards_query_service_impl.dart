@@ -42,6 +42,7 @@ class DistributionCardsQueryServiceImpl
             MapMarkerDTO(
               cardId: dao.id,
               imagePath: dao.image,
+              imageSubPath: dao.imageSub,
               distributionState: dao.distributionState,
               volumeId: dao.volume?.id ?? '',
               latitude: point.latitude,

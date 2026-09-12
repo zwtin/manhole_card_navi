@@ -21,6 +21,10 @@ class $RealmCardDAO {
   /// カード画像の配信用フル URL。
   late String image;
 
+  /// カード画像の代替配信元のフル URL。[image] が取得できないときに使う。
+  /// 代替を持たない master では空文字。
+  late String imageSub;
+
   /// 配布場所の HTML。
   late String distributionPlaceHtml;
 

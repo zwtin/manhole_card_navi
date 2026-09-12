@@ -6,7 +6,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 
-import '/app/service/image_fallback.dart';
 import '/app/service/image_load_monitor.dart';
 import '/app/service/marker_icon_builder.dart';
 import '/app/view_data/map_marker_view_data.dart';
@@ -141,6 +140,7 @@ class MapMarkersViewDataMapper {
       cardId: dto.cardId,
       icon: icon,
       imageUrl: dto.imagePath,
+      imageSubUrl: dto.imageSubPath,
       latitude: dto.latitude,
       longitude: dto.longitude,
     );
@@ -196,7 +196,10 @@ class MapMarkersViewDataMapper {
       // 原本画像を DL。http.get はネットワーク待ちの間メイン Isolate を塞が
       // ないため、compute で別 Isolate を立てるより spawn コストがかからない。
       // 縮小デコードと合成（dart:ui）はメイン Isolate で行う必要がある。
-      final originalBytes = await _downloadImage(dto.imagePath);
+      final originalBytes = await _downloadImage(
+        dto.imagePath,
+        dto.imageSubPath,
+      );
       if (originalBytes == null || originalBytes.isEmpty) {
         return null;
       }
@@ -233,17 +236,17 @@ class MapMarkersViewDataMapper {
 
   /// 原本画像を DL してエンコード済みバイト列を返す。
   ///
-  /// 主系（R2）で取れなければ代替配信元（Firebase Hosting）から取り直す。
-  /// 一覧・詳細の画像はキャッシュ層（card_image_cache_manager.dart）が同じことを
-  /// しているが、マーカーはそこを通さず直接 DL するため、ここにも同じ手当てが要る。
-  static Future<Uint8List?> _downloadImage(String url) async {
+  /// [url] で取れなければ代替配信元 [subUrl]（master の `image_sub_url`）から
+  /// 取り直す。一覧・詳細の画像はキャッシュ層（card_image_cache_manager.dart）が
+  /// 同じことをしているが、マーカーはそこを通さず直接 DL するため、ここにも
+  /// 同じ手当てが要る。
+  static Future<Uint8List?> _downloadImage(String url, String subUrl) async {
     final primaryResult = await _tryDownload(url);
     if (primaryResult.bytes != null) {
       return primaryResult.bytes;
     }
 
-    final fallbackUrl = ImageFallback.urlOf(url);
-    if (fallbackUrl == null) {
+    if (subUrl.isEmpty) {
       ImageLoadMonitor.recordFailure(
         url: url,
         error: primaryResult.error!,
@@ -252,7 +255,7 @@ class MapMarkersViewDataMapper {
       return null;
     }
 
-    final fallbackResult = await _tryDownload(fallbackUrl);
+    final fallbackResult = await _tryDownload(subUrl);
     ImageLoadMonitor.recordFailure(
       url: url,
       error: primaryResult.error!,

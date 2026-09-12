@@ -181,6 +181,7 @@ class DetailViewModel extends ChangeNotifier {
     await _ref.read(routerProvider(_key).notifier).presentImage(
           cardId: _cardId,
           imageUrl: viewData.imageUrl,
+          imageSubUrl: viewData.imageSubUrl,
           alreadyGet: viewData.alreadyGet,
           imageTag: heroTag,
         );

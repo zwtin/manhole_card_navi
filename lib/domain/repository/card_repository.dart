@@ -8,6 +8,9 @@ abstract class CardRepository {
     required InquiredMasterVersion inquiredMasterVersion,
   });
   Future<Result<void>> deleteMaster();
+
+  /// ローカルに取り込み済みのカードが 1 件でもあるか。
+  Future<Result<bool>> hasMaster();
   Future<Result<void>> saveMaster({
     required ManholeCards manholeCards,
   });
