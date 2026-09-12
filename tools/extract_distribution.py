@@ -24,8 +24,9 @@ distribution_state の分類ルール（ユーザー定義）:
         "read1": {"addresses": ["東京都北区赤羽台1-4-50", ...], "state": "distributing"},
         "read2": {"addresses": [...], "state": "distributing"}
       }, ... }
-  tools/data/dist_resolved.json : 人間が不一致を解決した確定値（任意・最優先）
+  tools/dist_resolved.json      : 人間が不一致を解決した確定値（任意・最優先）
     { "<card_id>": {"addresses": [...], "state": "..."}, ... }
+    data/ ではなく tools/ 直下に置いて commit する（人手の判断を次回に残すため）。
 
 出力:
   tools/data/cards_base.json    : 各カードに dist_addresses / dist_state を追記
@@ -53,7 +54,8 @@ DATA = os.path.join(HERE, "data")
 OUT = os.path.join(HERE, "out")
 CARDS_PATH = os.path.join(DATA, "cards_base.json")
 RAW_PATH = os.path.join(DATA, "dist_raw.json")
-RESOLVED_PATH = os.path.join(DATA, "dist_resolved.json")
+# data/ ではなく tools/ 直下に置く（data/ は .gitignore 済みで、人手の判断が消えるため）。
+RESOLVED_PATH = os.path.join(HERE, "dist_resolved.json")
 CONFLICTS_PATH = os.path.join(OUT, "dist_conflicts.json")
 
 STATES = ("distributing", "stopped", "notClear")

@@ -3,6 +3,9 @@
 安定キーである image_url を介して、旧 card_id ベースの中間成果物（OCR結果・配布場所抽出・
 ダウンロード済み画像）を新 card_id へ移送する。
 
+人手確定の ocr_resolved.json / dist_resolved.json も card_id をキーに持つので一緒に移送する。
+こちらは tools/ 直下（commit 対象）なので、移送結果は git diff で確認できる。
+
   python3 tools/remap_card_ids.py --dry-run
   python3 tools/remap_card_ids.py
 """
@@ -15,13 +18,13 @@ ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "data"
 IMAGES = ROOT / "images"
 
-# 旧 card_id をキーに持つ中間ファイル
+# 旧 card_id をキーに持つファイル。data/ は中間成果物、tools/ 直下は人手確定（commit 済み）。
 KEYED_FILES = [
-    "ocr_raw.json",
-    "ocr_resolved.json",
-    "dist_raw.json",
-    "dist_resolved.json",
-    "download_status.json",
+    DATA / "ocr_raw.json",
+    ROOT / "ocr_resolved.json",
+    DATA / "dist_raw.json",
+    ROOT / "dist_resolved.json",
+    DATA / "download_status.json",
 ]
 
 
@@ -61,8 +64,8 @@ def main():
     print(f"  今回の新規    : {len(added)} 件（OCR・配布場所抽出が必要）")
 
     # --- 中間 JSON の移送 ---
-    for name in KEYED_FILES:
-        path = DATA / name
+    for path in KEYED_FILES:
+        name = path.name
         if not path.exists():
             print(f"  [skip] {name} が無い")
             continue
@@ -82,7 +85,7 @@ def main():
                     v["path"] = str(IMAGES / f"{cid}{Path(v['path']).suffix}")
         print(f"  {name}: {len(old)} -> {len(new)} 件" + (f" / 移送先なしで破棄 {len(lost)} 件 {lost[:5]}" if lost else ""))
         if not args.dry_run:
-            shutil.copy2(path, path.with_suffix(".json.bak"))
+            shutil.copy2(path, DATA / (name + ".bak"))
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(new, f, ensure_ascii=False, indent=1)
 

@@ -154,8 +154,9 @@ python3 tools/remap_card_ids.py --dry-run   # 移送件数・新規カード・�
 python3 tools/remap_card_ids.py             # 移送を実行
 ```
 
-移送されるもの: `ocr_raw.json` / `ocr_resolved.json` / `dist_raw.json` / `dist_resolved.json` /
-`download_status.json` / `tools/images/{card_id}.jpg`（拡張子は保つ）。
+移送されるもの: `data/ocr_raw.json` / `data/dist_raw.json` / `data/download_status.json` /
+`tools/images/{card_id}.jpg`（拡張子は保つ）、および人手確定の `tools/ocr_resolved.json` /
+`tools/dist_resolved.json`（tools/ 直下・commit 対象なので、移送結果は `git diff` で確認できる）。
 今回の新規カードは `tools/data/new_card_ids.json` に書き出される。
 
 **移送後は必ず検証する**（黙って壊れるのが一番怖い箇所）。0004 では次の3つで裏付けを取った:
@@ -212,11 +213,12 @@ python3 tools/ocr_cards.py             # cards_base.json に ocr_* を書き込�
 
 - `read1` と `read2` が完全一致し、座標が日本範囲内なら **確定** → `cards_base.json` に `ocr_id` / `ocr_lat_dms` / `ocr_lon_dms` を追記。
 - 不一致（二重読みズレ、座標範囲外）は `tools/out/ocr_conflicts.json` に出る。
-- **不一致カードは人間が画像を目視**し、正しい値を `tools/data/ocr_resolved.json` に書く:
+- **不一致カードは人間が画像を目視**し、正しい値を `tools/ocr_resolved.json`（`tools/data/` ではない）に書く:
   ```json
   { "<card_id>": {"id": "...", "lat_dms": "...", "lon_dms": "..."}, ... }
   ```
   その後 `python3 tools/ocr_cards.py` を再実行（`ocr_resolved.json` が最優先で採用される）。
+  **書いたら commit する。** 人手で確かめた判断なので次回に残す。
 - **全カードが確定するまで**（`ocr_cards.py` が「不一致なし」を出すまで）繰り返す。
 
 確定後、`ocr_id` の重複が無いことを確認する（別カードが同じIDだと画像が上書きされる）。`ocr_cards.py` が重複を警告する。
@@ -284,7 +286,7 @@ python3 tools/extract_distribution.py             # cards_base.json に dist_* �
 - 二重読みが一致し、かつ**キーワードルールによる state 判定とも一致**すれば確定。
   （ルールは全カードを分類できるので、AIとルールの相互検算になる）
 - 不一致は `tools/out/dist_conflicts.json` に出る。目視で確認し
-  `tools/data/dist_resolved.json` に確定値を書いて再実行する。
+  `tools/dist_resolved.json`（`tools/data/` ではない）に確定値を書いて再実行する。書いたら commit する。
 - **全カードが確定するまで**繰り返す。
 - 住所0件のカードが出たら、それが `stopped`（配布終了）かを確認する。配布中なのに住所が
   無いのは抽出漏れ（0004 では住所0件の7件すべてが `stopped` だった）。
@@ -587,14 +589,14 @@ Remote Config の `inquired_app_version` による強制アップデートがあ
   - **R2 と Hosting は同じバージョンを揃えて片付ける。** 片方だけ消すと、主系が遮断されている
     端末のフォールバック先が無くなる（あるいは代替だけ残って主系が消える）。
   - 旧アプリ向けに旧 master を返し続けている間は、その世代の画像も現役なので消さない。
-- **中間ファイルは消さないこと。** `ocr_raw.json` / `ocr_resolved.json` / `dist_raw.json` /
-  `dist_resolved.json` / `geocode_cache.json` / `tools/images/` / `cards_base.json` は次回の
-  移送（手順3）と差分実行の土台になる。消すと全1311件の再OCRが必要になる。
+- **中間ファイルは消さないこと。** `ocr_raw.json` / `dist_raw.json` / `geocode_cache.json` /
+  `tools/images/` / `cards_base.json` は次回の移送（手順3）と差分実行の土台になる。
+  消すと全1311件の再OCRが必要になる。
 - `tools/data/support_requests.csv`（メールアドレスを含む）は **commit しない**。
   `tools/data/` は .gitignore 済みだが、別の場所へコピーしないこと。
 - 逆に、**人手で確かめた判断は `tools/` 直下に置いて commit する**
-  （`geocode_resolved.json` / `master_releases.json`）。`tools/data/` に置くと
-  .gitignore で消えて、次に同じ調べ直しをする羽目になる。
+  （`ocr_resolved.json` / `dist_resolved.json` / `geocode_resolved.json` / `master_releases.json`）。
+  `tools/data/` に置くと .gitignore で消えて、次に同じ調べ直しをする羽目になる。
 
 ## トラブル時
 

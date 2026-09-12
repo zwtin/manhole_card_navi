@@ -19,6 +19,10 @@ Firestore に投入するための一連のスクリプト群。
 生成データ（`data/`）とカード画像（`images/`）は `.gitignore` で除外している
 （DBダンプ・他者著作物・API結果・容量のため）。いずれも下記の手順で再生成できる。
 
+**人手で確かめた判断は `tools/` 直下に置いて commit する**
+（`ocr_resolved.json` / `dist_resolved.json` / `geocode_resolved.json` / `master_releases.json`）。
+`data/` に置くと `.gitignore` で消えて、次回に同じ調べ直しをする羽目になる。
+
 **利用者からの申告CSV（`data/support_requests.csv`）にはメールアドレスが入る。**
 `data/` は除外済みだが、リポジトリの他の場所へコピーしないこと。
 
@@ -236,13 +240,13 @@ python3 tools/build_csv.py --coords manhole_coords_pilot.json --dist distributio
 #    （2エージェント独立読み → data/ocr_raw.json を作ってから実行）
 python3 tools/ocr_cards.py --dry-run   # 確定/不一致の件数
 python3 tools/ocr_cards.py             # 確定分を cards_base へ、不一致を out/ocr_conflicts.json へ
-#    不一致は data/ocr_resolved.json に人手で確定値を書いて再実行
+#    不一致は ocr_resolved.json（tools/ 直下・要 commit）に人手で確定値を書いて再実行
 
 # 2) 配布場所をAI抽出 → cards_base に dist_addresses / dist_state を確定
 #    （2エージェント独立読み → data/dist_raw.json を作ってから実行）
 python3 tools/extract_distribution.py --dry-run
 python3 tools/extract_distribution.py  # 不一致は out/dist_conflicts.json へ
-#    不一致は data/dist_resolved.json に人手で確定値を書いて再実行
+#    不一致は dist_resolved.json（tools/ 直下・要 commit）に人手で確定値を書いて再実行
 
 # 3) 配布場所の住所をジオコーディング（キャッシュ済みは再問い合わせしない）
 export GOOGLE_GEOCODING_API_KEY=xxxxx
@@ -340,7 +344,8 @@ python3 tools/deploy_images.py --version 0005 --project dev --targets r2 \
 新弾のカードは都道府県ごとの途中に挿入されるため、**新弾が出ると挿入位置より後ろの card_id が
 全部シフトする**（0004 発行時は24枚の追加で1265件中1231件がズレた）。
 
-前回の中間成果物（`ocr_raw.json` / `dist_raw.json` / `images/{card_id}.jpg` など）をそのまま
+前回の中間成果物（`ocr_raw.json` / `dist_raw.json` / `images/{card_id}.jpg` など）や
+人手確定（`ocr_resolved.json` / `dist_resolved.json`）をそのまま
 使い回すと、カードと画像・座標の対応が入れ替わる。しかも二重OCRでは検出できない。
 再パースしたら **`remap_card_ids.py` で安定キー `image_url` を介して移送する**。
 カードの恒久的な同一性は `image_url` で判断すること。
@@ -366,6 +371,8 @@ python3 tools/deploy_images.py --version 0005 --project dev --targets r2 \
 | `migrate_master_to_r2.py` | 【R2移行用・一度きり】既存 master を土台に image → image_url の新バージョンを生成＋画像コピー用JSON出力 |
 | `master_version.py` | Firestore / R2 / Hosting / Remote Config を見て現行最新と次のバージョン番号を出す |
 | `review_support_requests.py` | 利用者の申告CSV → 前回発行日以降の確認対象をカード単位に紐づけて洗い出す |
+| `ocr_resolved.json` | 二重OCRが一致しないカードの確定値（人手確定・要 commit） |
+| `dist_resolved.json` | 配布場所の抽出が一致しないカードの確定値（人手確定・要 commit） |
 | `geocode_resolved.json` | ジオコーディングで番地が引けない住所の問い合わせ文字列の差し替え（人手確定・要 commit） |
 | `master_releases.json` | master の発行履歴。申告の対象期間の起点になる（人手更新・要 commit） |
 | `upload_master_to_firestore.py` | master バージョンを Firestore へ投入（GeoPoint/配列対応・`--replace`） |

@@ -1,0 +1,430 @@
+{
+ "card_0480": {
+  "addresses": [
+   "東京都小金井市前原町3-41-15",
+   "東京都小金井市本町1-18-14"
+  ],
+  "state": "stopped"
+ },
+ "card_0514": {
+  "addresses": [
+   "東京都西多摩郡日の出町大久野17-2",
+   "東京都西多摩郡日の出町大久野4718番地",
+   "東京都西多摩郡日の出町平井2780番地"
+  ],
+  "state": "distributing"
+ },
+ "card_0530": {
+  "addresses": [
+   "神奈川県横須賀市汐入町1-1"
+  ],
+  "state": "distributing"
+ },
+ "card_0798": {
+  "addresses": [
+   "愛知県津島市本町1丁目52番地1",
+   "愛知県津島市立込町2丁目21番地"
+  ],
+  "state": "distributing"
+ },
+ "card_0799": {
+  "addresses": [
+   "愛知県碧南市松本町28番地",
+   "愛知県碧南市音羽町1丁目1番地"
+  ],
+  "state": "distributing"
+ },
+ "card_0806": {
+  "addresses": [
+   "愛知県西尾市丁田町五助18番地",
+   "愛知県西尾市寄住町下田22番地"
+  ],
+  "state": "distributing"
+ },
+ "card_0809": {
+  "addresses": [
+   "愛知県常滑市栄町6丁目145番地"
+  ],
+  "state": "distributing"
+ },
+ "card_0843": {
+  "addresses": [
+   "三重県伊勢市二見町茶屋111-1"
+  ],
+  "state": "distributing"
+ },
+ "card_0854": {
+  "addresses": [
+   "三重県亀山市御幸町318番地1",
+   "三重県亀山市関町木崎919番地1"
+  ],
+  "state": "stopped"
+ },
+ "card_0855": {
+  "addresses": [
+   "三重県志摩市阿児町安乗794-1",
+   "三重県志摩市阿児町鵜方1670-2"
+  ],
+  "state": "distributing"
+ },
+ "card_0861": {
+  "addresses": [
+   "滋賀県大津市春日町1-3"
+  ],
+  "state": "distributing"
+ },
+ "card_0863": {
+  "addresses": [
+   "滋賀県彦根市元町4番2号"
+  ],
+  "state": "distributing"
+ },
+ "card_0870": {
+  "addresses": [
+   "滋賀県栗東市手原3丁目1-30"
+  ],
+  "state": "distributing"
+ },
+ "card_0877": {
+  "addresses": [
+   "滋賀県東近江市八日市本町1番6号"
+  ],
+  "state": "distributing"
+ },
+ "card_0878": {
+  "addresses": [
+   "滋賀県東近江市市子川原町676番地"
+  ],
+  "state": "distributing"
+ },
+ "card_0880": {
+  "addresses": [
+   "京都府宮津市字浜町3007"
+  ],
+  "state": "distributing"
+ },
+ "card_0881": {
+  "addresses": [
+   "京都府長岡京市勝竜寺山崎作り20-5"
+  ],
+  "state": "distributing"
+ },
+ "card_0882": {
+  "addresses": [
+   "京都府京都市南区上鳥羽鉾立町11番地3"
+  ],
+  "state": "distributing"
+ },
+ "card_0883": {
+  "addresses": [
+   "京都府京都市右京区太秦安井一町目町14"
+  ],
+  "state": "distributing"
+ },
+ "card_0894": {
+  "addresses": [
+   "京都府長岡京市開田1-1-1"
+  ],
+  "state": "stopped"
+ },
+ "card_0895": {
+  "addresses": [
+   "京都府長岡京市天神一丁目1番2号",
+   "京都府長岡京市開田1-1-1"
+  ],
+  "state": "stopped"
+ },
+ "card_0901": {
+  "addresses": [
+   "京都府綴喜郡宇治田原町大字立川小字坂口18-1"
+  ],
+  "state": "distributing"
+ },
+ "card_0902": {
+  "addresses": [
+   "京都府綴喜郡宇治田原町大字岩山小字沼尻46番地1",
+   "京都府綴喜郡宇治田原町大字立川小字坂口18番地1"
+  ],
+  "state": "distributing"
+ },
+ "card_0904": {
+  "addresses": [
+   "大阪府東大阪市北鴻池町1-18",
+   "大阪府豊中市原田西町1-1"
+  ],
+  "state": "distributing"
+ },
+ "card_0905": {
+  "addresses": [
+   "大阪府大阪市住之江区南港北2-1-10"
+  ],
+  "state": "distributing"
+ },
+ "card_0906": {
+  "addresses": [
+   "大阪府大阪市中央区本町1-7-7",
+   "大阪府大阪市住之江区南港北2-1-10"
+  ],
+  "state": "distributing"
+ },
+ "card_0908": {
+  "addresses": [
+   "大阪府大阪市北区梅田3-1-1"
+  ],
+  "state": "distributing"
+ },
+ "card_0909": {
+  "addresses": [
+   "大阪府堺市堺区宿院町西2-1-1"
+  ],
+  "state": "distributing"
+ },
+ "card_0920": {
+  "addresses": [
+   "大阪府吹田市津雲台1丁目2番1号"
+  ],
+  "state": "distributing"
+ },
+ "card_0921": {
+  "addresses": [
+   "大阪府高槻市桃園町2番1号",
+   "大阪府高槻市白梅町1番1号"
+  ],
+  "state": "distributing"
+ },
+ "card_0923": {
+  "addresses": [
+   "大阪府高槻市野見町6番"
+  ],
+  "state": "distributing"
+ },
+ "card_0924": {
+  "addresses": [
+   "大阪府貝塚市半田138-1"
+  ],
+  "state": "distributing"
+ },
+ "card_0925": {
+  "addresses": [
+   "大阪府貝塚市海塚一丁目1番1号"
+  ],
+  "state": "distributing"
+ },
+ "card_0927": {
+  "addresses": [
+   "大阪府枚方市岡東町19-1"
+  ],
+  "state": "notClear"
+ },
+ "card_1086": {
+  "addresses": [
+   "広島県広島市中区西白島町24-36"
+  ],
+  "state": "distributing"
+ },
+ "card_1240": {
+  "addresses": [
+   "長崎県南島原市南有馬町乙1395番地"
+  ],
+  "state": "distributing"
+ },
+ "card_1254": {
+  "addresses": [
+   "熊本県熊本市中央区水前寺5丁目23-3"
+  ],
+  "state": "distributing"
+ },
+ "card_1272": {
+  "addresses": [
+   "大分県豊後高田市新町989-1"
+  ],
+  "state": "distributing"
+ },
+ "card_1280": {
+  "addresses": [
+   "鹿児島県鹿児島市上之園町1-1"
+  ],
+  "state": "distributing"
+ },
+ "card_1298": {
+  "addresses": [
+   "沖縄県那覇市首里金城町1-2"
+  ],
+  "state": "distributing"
+ },
+ "card_1305": {
+  "addresses": [
+   "沖縄県名護市港一丁目1番1号"
+  ],
+  "state": "distributing"
+ },
+ "card_1306": {
+  "addresses": [
+   "沖縄県沖縄市上地1丁目1番1号"
+  ],
+  "state": "distributing"
+ },
+ "card_0133": {
+  "addresses": [
+   "宮城県東松島市矢本字河戸7番地",
+   "宮城県東松島市野蒜北余景56-36"
+  ],
+  "state": "distributing"
+ },
+ "card_0134": {
+  "addresses": [
+   "宮城県東松島市小野字新宮前5番地",
+   "宮城県東松島市野蒜北余景56-36"
+  ],
+  "state": "distributing"
+ },
+ "card_0201": {
+  "addresses": [
+   "福島県西白河郡西郷村大字熊倉字折口原146番地"
+  ],
+  "state": "distributing"
+ },
+ "card_0281": {
+  "addresses": [
+   "栃木県那須郡那珂川町小川1065",
+   "栃木県那須郡那珂川町馬頭555"
+  ],
+  "state": "distributing"
+ },
+ "card_0703": {
+  "addresses": [
+   "長野県北佐久郡軽井沢町追分1155-8",
+   "長野県北佐久郡軽井沢町長倉3337-18"
+  ],
+  "state": "distributing"
+ },
+ "card_1177": {
+  "addresses": [
+   "愛媛県伊予郡砥部町大南335番地",
+   "愛媛県伊予郡砥部町宮内1392番地"
+  ],
+  "state": "distributing"
+ },
+ "card_0380": {
+  "addresses": [
+   "千葉県市川市大町213番11"
+  ],
+  "state": "stopped"
+ },
+ "card_0454": {
+  "addresses": [
+   "東京都北区赤羽西1-6-1"
+  ],
+  "state": "distributing"
+ },
+ "card_0468": {
+  "addresses": [
+   "東京都三鷹市下連雀3-24-3"
+  ],
+  "state": "distributing"
+ },
+ "card_0469": {
+  "addresses": [
+   "東京都三鷹市下連雀3-24-3"
+  ],
+  "state": "distributing"
+ },
+ "card_0542": {
+  "addresses": [
+   "神奈川県茅ヶ崎市柳島1546番地1"
+  ],
+  "state": "distributing"
+ },
+ "card_0767": {
+  "addresses": [
+   "静岡県下田市外ヶ岡1-1"
+  ],
+  "state": "distributing"
+ },
+ "card_0850": {
+  "addresses": [
+   "三重県桑名市大字東方55-1"
+  ],
+  "state": "distributing"
+ },
+ "card_1078": {
+  "addresses": [
+   "岡山県久米郡久米南町下二ケ1367-1"
+  ],
+  "state": "distributing"
+ },
+ "card_1297": {
+  "addresses": [
+   "沖縄県那覇市泉崎1-20-6"
+  ],
+  "state": "distributing"
+ },
+ "card_0539": {
+  "addresses": [
+   "神奈川県小田原市城内6番1号"
+  ],
+  "state": "stopped"
+ },
+ "card_0018": {
+  "addresses": [
+   "北海道留萌市幸町1丁目11番地",
+   "北海道留萌市開運町3丁目4番11号"
+  ],
+  "state": "distributing"
+ },
+ "card_0157": {
+  "addresses": [
+   "山形県山形市大手町1-53"
+  ],
+  "state": "distributing",
+  "_note": "山形市。南石関27（上下水道施設管理センター）は『令和8年10月5日より追加』で、2026-09-13 時点ではまだ配布場所ではないため除外。読み手Aを採用。"
+ },
+ "card_0554": {
+  "addresses": [],
+  "state": "stopped",
+  "_note": "綾瀬市（第29弾・新規）。配布場所は『通常配布開始時に掲載します』で住所の記載が無く、抽選申込の受付も終了済み。現時点で入手できないため stopped。在庫確認リンクがあるためルールは distributing と判定したが、二重読みはどちらも stopped。"
+ },
+ "card_0976": {
+  "addresses": [
+   "兵庫県尼崎市東七松町2-4-16",
+   "兵庫県尼崎市神田中通1－4"
+  ],
+  "state": "stopped",
+  "_note": "尼崎市。『中央公園内』は施設名なので住所から除外。読み手Bを採用。"
+ },
+ "card_1245": {
+  "addresses": [
+   "熊本県熊本市東区平山町2972番地"
+  ],
+  "state": "stopped",
+  "_note": "熊本市。『令和8年熊本地震の影響により、配布を一時休止します』で配布場所全体が休止。在庫確認リンクがあるためルールは distributing と判定したが、一時休止が優先。"
+ },
+ "card_1248": {
+  "addresses": [
+   "熊本県熊本市東区石原2丁目9-1"
+  ],
+  "state": "distributing",
+  "_note": "熊本市。休止しているのは②リブワーク藤崎台球場のみで、①熊本県民総合運動公園は配布継続中のため distributing。休止中の②（中央区宮内4番1号）は配布場所から除外し、地図ピンが休止先を指さないようにする。"
+ },
+ "card_1249": {
+  "addresses": [
+   "熊本県熊本市東区平山町2972番地"
+  ],
+  "state": "stopped",
+  "_note": "熊本市。card_1245 と同じく配布場所全体が一時休止。"
+ },
+ "card_1252": {
+  "addresses": [
+   "熊本県熊本市東区石原2丁目9-1"
+  ],
+  "state": "distributing",
+  "_note": "熊本市。card_1248 と同じく②のみ休止、①は継続。休止中の②を配布場所から除外。"
+ },
+ "card_1263": {
+  "addresses": [
+   "熊本県上益城郡益城町大字木山236"
+  ],
+  "state": "distributing",
+  "_note": "益城町（第29弾）。『令和8年9月19日から配布を開始します』で判断が割れたが、master が利用者に届く頃には開始済みのため distributing を採用（2026-09-13 にユーザー判断）。"
+ }
+}
