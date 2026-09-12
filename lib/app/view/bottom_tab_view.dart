@@ -78,10 +78,17 @@ class BottomTabView extends CommonWidget {
         child: RouterWidget(
           key: key,
           parent: this,
-          child: WillPopScope(
-            onWillPop: () async {
+          child: PopScope(
+            // Android 16 (targetSdk 36) で予測型「戻る」が既定で有効になり
+            // WillPopScope が機能しなくなるため PopScope へ移行。
+            // canPop: false でシステムの pop を止め、タブ内 router へ委譲する
+            // 従来の挙動をそのまま維持する。
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) {
+                return;
+              }
               ref.read(bottomTabViewModelProvider(key)).pop();
-              return false;
             },
             child: Scaffold(
               bottomNavigationBar: ConvexAppBar(

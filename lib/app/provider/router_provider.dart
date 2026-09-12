@@ -20,6 +20,20 @@ class RouterNotifier extends StateNotifier<RouterViewData> {
           ),
         );
 
+  /// この state は保持したい「値」ではなく、一度きり実行したい「遷移命令」を表す。
+  ///
+  /// StateNotifier の既定の判定は !identical(old, current) だが、pop / popToRoot は
+  /// nextWidget を持たない const で生成されるため 2 回目以降が同一インスタンスに
+  /// 正規化され、通知されずに握り潰される。たとえばカード詳細から戻った直後に
+  /// タブのルートで戻る操作をすると、2 回目の pop が無視されてタブ切り替えや
+  /// アプリ終了が起きなくなる。同じ命令でも必ず通知する。
+  @override
+  bool updateShouldNotify(
+    RouterViewData old,
+    RouterViewData current,
+  ) =>
+      true;
+
   Future<void> push({
     required CommonWidget nextWidget,
   }) async {

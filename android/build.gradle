@@ -9,6 +9,24 @@ rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+// AGP 9 は、依存 AAR が要求する compileSdk を満たさないプロジェクトをエラーに
+// する (AGP 8 までは警告)。flutter_app_badge_control 0.0.2 が compileSdkVersion 31
+// を固定している一方、同プラグインが依存する androidx は 33 以上を要求するため
+// ビルドが通らない。上流の更新が見込めないので、古いサブプロジェクトの compileSdk
+// だけをアプリ側と同じ 36 へ引き上げる。
+// evaluationDependsOn(':app') より前に登録すること。後ろに置くと :app が先に
+// 評価済みとなり afterEvaluate の登録に失敗する。
+subprojects {
+    afterEvaluate { project ->
+        def androidExtension = project.extensions.findByName('android')
+        if (androidExtension != null &&
+                androidExtension.compileSdk != null &&
+                androidExtension.compileSdk < 36) {
+            androidExtension.compileSdk = 36
+        }
+    }
+}
+
 subprojects {
     project.evaluationDependsOn(':app')
 }

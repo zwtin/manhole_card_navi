@@ -66,8 +66,14 @@ tasks.configureEach { task ->
 
 android {
     namespace "com.zwtin.manhole_card_navi"
-    compileSdk 35
+    compileSdk 36
     ndkVersion "28.2.13676358"
+
+    // AGP 9 から resValue は既定で無効。defaultConfig で app_name と
+    // android_apiKey を dart-define から注入しているため明示的に有効化する。
+    buildFeatures {
+        resValues true
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -112,7 +118,7 @@ android {
 
     defaultConfig {
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion 35
+        targetSdkVersion 36
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

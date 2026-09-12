@@ -1,10 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '/app/view/check_app_update_view.dart';
 import '/app_view_model.dart';
 import '/gen/colors.gen.dart';
+
+/// ページ遷移アニメーション。Android は Flutter 3.43 までの既定である
+/// [ZoomPageTransitionsBuilder] に固定する。
+///
+/// Flutter 3.44 から Android の既定が [PredictiveBackPageTransitionsBuilder] に
+/// 変わったが、本アプリの Navigator 構成とは噛み合わない。予測型バックは Route ごとに
+/// WidgetsBindingObserver を登録してジェスチャーを受け取る実装で、その有効条件が
+/// `route.isCurrent && route.popGestureEnabled` になっている。ここでの isCurrent は
+/// 「その Route が属する Navigator の中で最上位か」であり、アプリ全体で最前面かでは
+/// ない。
+///
+/// 本アプリはタブごとに Navigator を持ち、画像詳細 (ImageDetailView) だけを
+/// FadeInRoute で root Navigator へ push している。この状態でエッジスワイプすると、
+/// タブ内 Navigator の最上位であるカード詳細 (DetailView) が「自分が最前面」と判断して
+/// ジェスチャーを処理してしまい、最前面の画像詳細ではなく背面のカード詳細が閉じる。
+/// FadeInRoute は独自の transitionsBuilder を持つため予測型バックの observer を
+/// 登録せず、ジェスチャーに反応できないことも要因。
+final _pageTransitionsTheme = PageTransitionsTheme(
+  builders: <TargetPlatform, PageTransitionsBuilder>{
+    // iOS などは Flutter の既定のままにして、Android だけ差し替える。
+    ...const PageTransitionsTheme().builders,
+    TargetPlatform.android: const ZoomPageTransitionsBuilder(),
+  },
+);
 
 class App extends HookConsumerWidget {
   const App({
@@ -44,6 +69,32 @@ class App extends HookConsumerWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      // 戻る操作は常に Flutter 側で処理すると Android へ伝える。
+      //
+      // 既定の実装は、ツリーを流れてきた NavigationNotification の canHandlePop を
+      // そのまま SystemNavigator.setFrameworkHandlesBack へ渡す。本アプリはタブごとに
+      // Navigator を持つため、BottomTabView の Route (PopScope があるので true) の後に
+      // タブ内 Navigator のルート Route (pop 不可なので false) の通知が届き、false で
+      // 上書きされてしまう。targetSdk 35 まではこの値が無視されていたが、36 では
+      // enableOnBackInvokedCallback が既定で有効になり実際に効くようになったため、
+      // OS 側が戻るを処理してアプリがバックグラウンドへ送られる。
+      //
+      // 実際の戻る挙動は BottomTabView の PopScope が一手に引き受け、タブのルートでは
+      // タブ切り替えや SystemNavigator.pop() を自前で行うので、常に true でよい。
+      // 分岐は既定実装 (WidgetsApp._defaultOnNavigationNotification) に合わせている。
+      onNavigationNotification: (notification) {
+        switch (WidgetsBinding.instance.lifecycleState) {
+          case null:
+          case AppLifecycleState.detached:
+          case AppLifecycleState.inactive:
+            return false;
+          case AppLifecycleState.resumed:
+          case AppLifecycleState.hidden:
+          case AppLifecycleState.paused:
+            SystemNavigator.setFrameworkHandlesBack(true);
+            return true;
+        }
+      },
       theme: Theme.of(context).copyWith(
         appBarTheme: Theme.of(context).appBarTheme.copyWith(
               color: ColorName.lightContentsBackground,
@@ -189,6 +240,7 @@ class App extends HookConsumerWidget {
         progressIndicatorTheme: const ProgressIndicatorThemeData(
           color: ColorName.lightPrimary,
         ),
+        pageTransitionsTheme: _pageTransitionsTheme,
       ),
       darkTheme: Theme.of(context).copyWith(
         appBarTheme: Theme.of(context).appBarTheme.copyWith(
@@ -335,6 +387,7 @@ class App extends HookConsumerWidget {
         progressIndicatorTheme: const ProgressIndicatorThemeData(
           color: ColorName.darkPrimary,
         ),
+        pageTransitionsTheme: _pageTransitionsTheme,
       ),
       themeMode: ThemeMode.system,
       onGenerateRoute: (settings) {
