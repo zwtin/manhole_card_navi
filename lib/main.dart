@@ -11,6 +11,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import 'app.dart';
+import 'app/service/debug_proxy.dart';
 import 'firebase_options.dart';
 import 'temporary_provider.dart';
 
@@ -18,6 +19,9 @@ FutureOr<void> main() async {
   runZonedGuarded<Future<void>>(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      // プロキシ指定があれば、以降に作られる HttpClient すべてに効かせるため
+      // 通信が始まる前に差し込む。指定がなければ何もしない。
+      DebugProxy.install();
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );

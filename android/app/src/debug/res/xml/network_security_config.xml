@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  debug ビルド専用のネットワーク設定。src/debug にあるので release / profile の
+  APK には入らない。
+
+  Android 7 (API 24) 以降、アプリは端末にインストールされたユーザー CA を既定で
+  信頼しない。プロキシ（Charles / Proxyman / mitmproxy）で HTTPS を復号するには
+  その CA を信頼させる必要があるため、debug に限って trust-anchors に user を
+  加えている。これが効くのはネイティブ側（Firebase SDK / Google Maps）の通信。
+  Dart 側は OS の CA を見ないので lib/app/service/debug_proxy.dart で別に対処している。
+
+  cleartextTrafficPermitted は AndroidManifest.xml の
+  android:usesCleartextTraffic="true" に合わせている（この設定ファイルがある場合、
+  マニフェスト側の指定より base-config の値が優先されるため、明示しないと
+  debug ビルドだけ平文通信の可否が変わってしまう）。
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
