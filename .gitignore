@@ -75,6 +75,7 @@ app.*.map.json
 
 # Claude settings
 .claude/settings.local.json
+.claude/worktrees/
 
 # マンホールカード スクレイピングツール（tools/）
 # スクリプト本体（*.py）と README のみコミットし、以下は除外する:

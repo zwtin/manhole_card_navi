@@ -111,3 +111,60 @@ fvm flutter pub run build_runner build --delete-conflicting-outputs
 - `*.freezed.dart` - Freezedイミュータブルクラス
 - `*.g.dart` - JsonSerializable JSONパース
 - `*.realm.dart` - Realmデータベースモデル
+
+## ワークツリーでの動作確認
+
+Claude Code のワークツリーは `.claude/worktrees/` 配下に作られます。git 管理外のファイル（`.idea/`、`dart_defines/*.env`、`firebase.json`、Android の署名ファイルと `google-services.json`、iOS の `GoogleService-Info.plist`、`*.freezed.dart` / `*.g.dart` / `*.realm.dart`、`.dart_tool/`、`ios/Pods/`）はワークツリーに引き継がれないため、そのままではビルドできません。
+
+### セットアップ
+動作確認（ビルド・実機デプロイ）をする場合は、**Android Studio / Xcode で開く前に**ワークツリーのルートで以下を実行してください。順序を逆にすると、未解決 import だらけの状態で Gradle Sync やインデックスが走って無駄になります。
+
+```bash
+./scripts/setup_worktree.sh
+```
+
+スクリプトは冪等で、以下を行います：
+- **設定ファイル・署名ファイルを本体のチェックアウトから symlink**: 次のファイルは gitignore されているためワークツリーに存在しない。コピーではなく symlink なのは、本体側で更新されたときにワークツリー側が古いまま気づけない事故を防ぐため
+  - `dart_defines/development.env` / `production.env`: 実行構成が `--dart-define-from-file` で渡す
+  - `android/key.properties`、`android/app/signingConfigs/`: release 署名。`signingConfigs/` はディレクトリごと張る。ルートの `.gitignore` の該当行は末尾スラッシュなし（`**/android/app/signingConfigs`）で、これに末尾スラッシュを付けてはいけない。付けるとディレクトリにしか一致せず、git がファイル扱いする symlink が untracked に見えて、誤ってコミットする経路になる
+  - `android/app/src/{development,production}/google-services.json`: Gradle の `selectGoogleServicesJson` が flavor に応じて `android/app/` にコピーする元
+  - `ios/{development,production}/GoogleService-Info.plist`: Xcode のビルドフェーズが flavor に応じて `ios/Runner/` にコピーする元。`.gitignore` がファイル名まで指定しているため、ディレクトリではなくファイル単位で張る
+  - `firebase.json`: iOS の `flutterfire upload-crashlytics-symbols` ビルドフェーズが参照する。ないと iOS ビルドが落ちる
+- **`fvm install` で Flutter SDK を `.fvmrc` のバージョンに固定**: `.fvm/` は gitignore されているため、ワークツリーごとに SDK の紐付けが必要
+- **`fvm flutter pub get`**: `.dart_tool/` が存在しないため、依存関係の解決が必要
+- **`build_runner build --delete-conflicting-outputs`**: 生成ファイルは gitignore されているため、生成しないとコンパイルできない
+- **（macOS のみ）`fvm flutter build ios --config-only`**: `pod install` と、Xcode 用のビルド設定（`ios/Flutter/Generated.xcconfig`）の生成。flavor は development を入れる
+
+**ビルド時にコピー先として書き込まれるファイルは symlink してはいけません。** 書き込みが symlink を辿って本体側のファイルを上書きします。該当するのは `android/app/google-services.json`、`ios/Runner/GoogleService-Info.plist`、`ios/Flutter/Dart-Defines.xcconfig` の 3 つで、いずれもビルドのたびに上のファイルから生成されます。
+
+`ios/Podfile` の realm のチェックサムを補正する処理は消さないでください。realm の podspec はチェックアウトの絶対パスを埋め込むため、補正がないと `ios/Podfile.lock` の `realm:` の行がチェックアウトの場所ごとに変わり、ワークツリーで必ず差分が出ます。戻そうとして `git checkout` すると `ios/Pods/Manifest.lock` と食い違い、Xcode のビルドが `The sandbox is not in sync with the Podfile.lock` で落ちます。Realm を外すときは補正も一緒に消します。
+
+`.fvmrc` は末尾改行なしで管理しています。`fvm install` がこの形式で書き直すため、末尾改行を付けるとワークツリーごとに差分が出ます。
+
+ドキュメント修正のみの場合はセットアップ不要です。
+
+### Android Studio での実行
+実行構成（development / production）は `.run/` にコミット済みなので、ワークツリーでもそのまま使えます。`.idea/workspace.xml` に保存された構成は `.idea/` が gitignore されているため引き継がれません。
+
+Android Studio から iOS シミュレータ・実機を選んで実行する場合も同じ実行構成を使います。`flutter run` が実行のたびに `Generated.xcconfig` を実行構成の env で書き直し、必要なら `pod install` も行います。
+
+### Xcode での実行（iOS）
+実機への署名やネイティブ側のデバッグなど、Xcode から直接実行する場合は `ios/Runner.xcworkspace` を開きます。flavor は `Generated.xcconfig` の `DART_DEFINES` で決まり、セットアップ直後は development です。production で実行したいときは、Xcode でビルドする前に以下を実行してください。
+
+```bash
+fvm flutter build ios --config-only --debug --no-codesign --dart-define-from-file=dart_defines/production.env
+```
+
+Android Studio から実行した後は、最後に実行した構成の flavor が残っている点に注意してください。
+
+### マージ後の片付け
+ユーザーから「ワークツリーを片付けて」と依頼されたら、以下で削除します：
+
+```bash
+git worktree remove <path>
+git branch -d <branch>
+```
+
+- 未コミット変更・未プッシュコミットがある場合は削除せず、内容を提示して確認する
+- gitignore されたファイル（ビルド成果物や symlink）は `git worktree remove` を妨げない。symlink が消えるだけで、本体側のファイルは消えない
+- ビルド成果物を含むワークツリーは数 GB になるため放置しない
