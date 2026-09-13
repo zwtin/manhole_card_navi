@@ -92,16 +92,10 @@ if [ "$(uname)" = "Darwin" ]; then
   export LANG=en_US.UTF-8
   fvm flutter build ios --config-only --debug --no-codesign --dart-define-from-file=dart_defines/development.env
 
-  # realm の podspec は prepare_command にチェックアウトの絶対パスを埋め込むため、
-  # Podfile.lock の SPEC CHECKSUMS の realm の行はチェックアウトの場所ごとに変わる。
-  # 戻すと Pods/Manifest.lock と食い違って Xcode のビルドが落ちるので、そのまま残してコミットだけしない。
+  # Pod の構成を変えていなければ Podfile.lock は変わらないはず。
+  # realm のチェックサムがチェックアウトの場所に依存する問題は ios/Podfile で対処している。
   if ! git diff --quiet -- ios/Podfile.lock; then
-    others="$(git diff -U0 -- ios/Podfile.lock | grep -E '^[+-][^+-]' | grep -v -E '^[+-]  realm: [0-9a-f]+$' || true)"
-    if [ -z "$others" ]; then
-      echo "--> ios/Podfile.lock の realm のチェックサムが変わった（チェックアウトの場所に依存するため）。コミットしないこと"
-    else
-      echo "!!! ios/Podfile.lock に realm のチェックサム以外の差分があります。意図した変更か確認してください。" >&2
-    fi
+    echo "!!! ios/Podfile.lock に差分が出ました。Pod を変更していないなら想定外なので git diff で確認してください。" >&2
   fi
 else
   echo "--> macOS ではないので iOS はスキップ"

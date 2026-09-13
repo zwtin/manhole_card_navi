@@ -137,7 +137,7 @@ Claude Code のワークツリーは `.claude/worktrees/` 配下に作られま�
 
 **ビルド時にコピー先として書き込まれるファイルは symlink してはいけません。** 書き込みが symlink を辿って本体側のファイルを上書きします。該当するのは `android/app/google-services.json`、`ios/Runner/GoogleService-Info.plist`、`ios/Flutter/Dart-Defines.xcconfig` の 3 つで、いずれもビルドのたびに上のファイルから生成されます。
 
-**ワークツリーでは `ios/Podfile.lock` の差分が出ますが、コミットしないでください。** realm の podspec がチェックアウトの絶対パスを埋め込むため、`SPEC CHECKSUMS` の `realm:` の行がチェックアウトの場所ごとに変わります。`git checkout` で戻すと `ios/Pods/Manifest.lock` と食い違い、Xcode のビルドが `The sandbox is not in sync with the Podfile.lock` で落ちるので、戻さずに残してコミット対象から外します。Pod を追加・更新してコミットする場合も、`realm:` の行だけは `git add -p` などでコミットから外してください。
+`ios/Podfile` の realm のチェックサムを補正する処理は消さないでください。realm の podspec はチェックアウトの絶対パスを埋め込むため、補正がないと `ios/Podfile.lock` の `realm:` の行がチェックアウトの場所ごとに変わり、ワークツリーで必ず差分が出ます。戻そうとして `git checkout` すると `ios/Pods/Manifest.lock` と食い違い、Xcode のビルドが `The sandbox is not in sync with the Podfile.lock` で落ちます。Realm を外すときは補正も一緒に消します。
 
 `.fvmrc` は末尾改行なしで管理しています。`fvm install` がこの形式で書き直すため、末尾改行を付けるとワークツリーごとに差分が出ます。
 
@@ -166,6 +166,5 @@ git branch -d <branch>
 ```
 
 - 未コミット変更・未プッシュコミットがある場合は削除せず、内容を提示して確認する
-- ただし `ios/Podfile.lock` の `realm:` の行だけの差分は上記のとおりセットアップで必ず出るもので、未コミット変更には数えない。これが残っていると `git worktree remove` が拒否するため、`git status` と `git diff` で他に差分がないことを確認したうえで `--force` を付ける
 - gitignore されたファイル（ビルド成果物や symlink）は `git worktree remove` を妨げない。symlink が消えるだけで、本体側のファイルは消えない
 - ビルド成果物を含むワークツリーは数 GB になるため放置しない
