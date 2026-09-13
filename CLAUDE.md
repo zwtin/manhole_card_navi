@@ -30,14 +30,18 @@ fvm flutter build apk --dart-define-from-file=dart_defines/production.env
 # iOSのビルド（本番環境）
 fvm flutter build ios --dart-define-from-file=dart_defines/production.env
 
-# コード解析
+# コード解析（ルートで実行すると packages/ 配下もまとめて解析する）
 fvm flutter analyze
 
-# テストの実行
-fvm flutter test
+# テストの実行（パッケージごと）
+(cd packages/domain && fvm flutter test)
+(cd packages/data && fvm flutter test)
+(cd packages/app && fvm flutter test)
 
-# コード生成（Freezed、JsonSerializableなど）
-fvm flutter pub run build_runner build --delete-conflicting-outputs
+# コード生成（パッケージごと。依存される側から順に）
+for package in packages/domain packages/data packages/app; do
+  (cd "$package" && fvm dart run build_runner build --delete-conflicting-outputs)
+done
 
 # アプリアイコンの生成
 fvm flutter pub run flutter_launcher_icons -f flutter_launcher_icons-production.yaml
@@ -48,45 +52,63 @@ fvm flutter pub run flutter_native_splash:create
 
 ## アーキテクチャ
 
-### クリーンアーキテクチャレイヤー
+### パッケージ構成
+クリーンアーキテクチャの層ごとに `packages/` 配下のパッケージに分けています。依存の向きは `app → domain ← data` で、app と data は互いを知りません。
 
-1. **プレゼンテーション層** (`lib/app/`)
-   - `view/` - UI画面とページ
-   - `view_model/` - Riverpodによる状態管理
-   - `view_data/` - UI専用のデータモデル
-   - `widget/` - 再利用可能なUIコンポーネント
-   - `mapper/` - ドメインとビューデータ間の変換
-   - `provider/` - Riverpodプロバイダー
-
-2. **ドメイン層** (`lib/domain/`)
+1. **domain** (`packages/domain/`) - 他のパッケージに依存しない中心
    - `entity/` - ビジネスエンティティ
-   - `repository/` - リポジトリインターフェース
+   - `repository/` - リポジトリインターフェースと、その provider
+   - `query_service/` - 画面表示用の読み取りインターフェースと、その provider
+   - `usecase/` - ビジネスロジックの実装と、その provider
+   - `dto/` - UseCase / QueryService が返すデータ
+   - `service/` - 画面遷移の窓口 `NavigationService` のインターフェース
 
-3. **ユースケース層** (`lib/use_case/`)
-   - `use_case/` - ビジネスロジックの実装
-   - `dto/` - データ転送オブジェクト
-   - `query_service/` - クエリサービスインターフェース
+2. **data** (`packages/data/`) - domain のインターフェースの実装
+   - `repository/` / `query_service/` - Firestore・Realm・SharedPreferences・Remote Config などを使う実装
+   - `dao/` - Realm のモデル
+   - `mapper/` - DAO・JSON とエンティティの変換
+   - `provider/` - domain の provider を実装に差し替える `dataProviderOverrides`
 
-4. **インフラストラクチャ層** (`lib/infra/`)
-   - `dao/` - データアクセスオブジェクト（Firestore、Realm）
-   - `mapper/` - インフラストラクチャとドメイン間のデータマッピング
+3. **app** (`packages/app/`) - 画面
+   - `router/` - go_router のルート定義、`NavigationService` の実装、下タブの `ShellScaffold`
+   - `view/` - 画面（`*_page.dart`）
+   - `view_model/` - 画面ごとの ViewModel
+   - `view_data/` - 画面ごとの State（freezed）と表示用データ
+   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・DTO から表示用データへの変換・画像取得・テーマ
+   - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 
-### 状態管理
-- Riverpod + Flutter Hooksを使用した状態管理
-- ViewModelがビジネスロジックと状態を処理
-- プロバイダーは `lib/app/provider/` に集約
+4. **ルート** (`lib/`) - `main.dart` で Firebase を初期化し、3 パッケージを組み立てるだけ
+
+### 依存性注入
+- Repository / QueryService / NavigationService の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` / `appProviderOverrides` を渡して実装に差し替える
+- テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
+
+### 状態管理（app）
+- 1 画面 1 ViewModel 1 State。State は freezed、依存は `build()` で `ref.watch` して `late final` に保持する
+- 読み込むだけの画面は `AsyncNotifier`（`build()` で取得）、起動時チェックやマップのように読み込みに副作用を伴う画面は `Notifier` にして View の `useEffect` から `onLoad()` を呼ぶ
+- ViewModel は BuildContext を持たない。遷移・アラート・URL を開く操作は `NavigationService` 経由で行う
+
+### 画面遷移（app）
+- go_router の `StatefulShellRoute` で、マップ・リスト・設定のタブがそれぞれ独立した遷移スタックを持つ
+- 起動時チェックは `go` で置き換えながら進み、タブの外に出す画面（検索条件・画像拡大・起動時の規約）は root Navigator に積む
+- マップのカードモーダルもルート（`/map/card/:cardId`）で、マップはその有無で表示エリアを縮める
+- 戻る操作はタブ内の画面があればそれを閉じ、タブのルートでは `ShellScaffold` の `PopScope` がタブ切り替え／アプリ終了を決める
+- PV は各画面の `useScreenView` が、GoRouter 上で最前面になったとき（表示・戻り・タブ切り替え）に送る
 
 ### データ層
 - **リモート:** クラウドデータ用のFirebase Firestore
 - **ローカル:** オフラインストレージ用のRealmデータベース
-- **コード生成:** イミュータブルモデル用のFreezed、JSONパース用のJsonSerializable
+- **コード生成:** イミュータブルモデル用のFreezed、Realm のモデル
 
 ### 主要な依存関係
 - Firebaseスイート（Auth、Firestore、Storage、Analytics、Crashlyticsなど）
 - Google Maps統合
 - ローカルデータベース用のRealm
 - 状態管理用のRiverpod + Flutter Hooks
-- データモデル用のFreezed + JsonSerializable
+- 画面遷移用の go_router
+- データモデル用のFreezed
+
+realm はルートの `pubspec.yaml` にも書いています。iOS / Android のビルド時にアプリのルートで `dart run realm install` が走り、直接の依存でないと実行できないためです。
 
 ## 環境設定
 
@@ -102,15 +124,15 @@ fvm flutter pub run flutter_native_splash:create
 - Firebase Auth、Firestore、Storage、Analytics、Crashlytics、Performance、Messaging、Remote Config、Cloud Functionsを使用
 
 ## コード生成
-モデルはFreezedとJsonSerializableを使用。モデル変更後は以下を実行：
+モデルはFreezedとRealmを使用。モデル変更後は、変更したパッケージで以下を実行（app は domain の型を解析するため、domain を変えたら app も生成し直す）：
 ```bash
-fvm flutter pub run build_runner build --delete-conflicting-outputs
+(cd packages/<パッケージ> && fvm dart run build_runner build --delete-conflicting-outputs)
 ```
 
 生成されるファイル：
-- `*.freezed.dart` - Freezedイミュータブルクラス
-- `*.g.dart` - JsonSerializable JSONパース
-- `*.realm.dart` - Realmデータベースモデル
+- `*.freezed.dart` - Freezedイミュータブルクラス（gitignore 済み）
+- `*.realm.dart` - Realmデータベースモデル（gitignore 済み）
+- `packages/app/lib/src/gen/*.gen.dart` - flutter_gen のアセット・色の定義（git 管理）
 
 ## ワークツリーでの動作確認
 
@@ -132,7 +154,7 @@ Claude Code のワークツリーは `.claude/worktrees/` 配下に作られま�
   - `firebase.json`: iOS の `flutterfire upload-crashlytics-symbols` ビルドフェーズが参照する。ないと iOS ビルドが落ちる
 - **`fvm install` で Flutter SDK を `.fvmrc` のバージョンに固定**: `.fvm/` は gitignore されているため、ワークツリーごとに SDK の紐付けが必要
 - **`fvm flutter pub get`**: `.dart_tool/` が存在しないため、依存関係の解決が必要
-- **`build_runner build --delete-conflicting-outputs`**: 生成ファイルは gitignore されているため、生成しないとコンパイルできない
+- **各パッケージで `pub get` と `build_runner build --delete-conflicting-outputs`**: 生成ファイルは gitignore されているため、生成しないとコンパイルできない。コード生成はパッケージ単位なので domain → data → app の順に行う
 - **（macOS のみ）`fvm flutter build ios --config-only`**: `pod install` と、Xcode 用のビルド設定（`ios/Flutter/Generated.xcconfig`）の生成。flavor は development を入れる
 
 **ビルド時にコピー先として書き込まれるファイルは symlink してはいけません。** 書き込みが symlink を辿って本体側のファイルを上書きします。該当するのは `android/app/google-services.json`、`ios/Runner/GoogleService-Info.plist`、`ios/Flutter/Dart-Defines.xcconfig` の 3 つで、いずれもビルドのたびに上のファイルから生成されます。

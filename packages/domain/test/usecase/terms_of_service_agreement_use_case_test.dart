@@ -1,0 +1,142 @@
+import 'package:domain/domain.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:test/test.dart';
+
+class MockTermsOfServiceRepository extends Mock
+    implements TermsOfServiceRepository {}
+
+void main() {
+  late MockTermsOfServiceRepository repository;
+  late ProviderContainer container;
+
+  setUpAll(() {
+    registerFallbackValue(const AgreedTermsOfServiceVersion(value: ''));
+  });
+
+  setUp(() {
+    repository = MockTermsOfServiceRepository();
+    container = ProviderContainer(
+      overrides: [
+        termsOfServiceRepositoryProvider.overrideWithValue(repository),
+      ],
+    );
+  });
+
+  tearDown(() {
+    container.dispose();
+  });
+
+  void stubAgreed(String value) {
+    when(() => repository.getAgreedVersion()).thenAnswer(
+      (_) async => Result.success(AgreedTermsOfServiceVersion(value: value)),
+    );
+  }
+
+  void stubInquired(String value) {
+    when(() => repository.getInquiredVersion()).thenAnswer(
+      (_) async => Result.success(InquiredTermsOfServiceVersion(value: value)),
+    );
+  }
+
+  group('CheckTermsOfServiceAgreeUseCase', () {
+    test('一度も同意していなければ同意が必要', () async {
+      stubAgreed('');
+
+      final result = await container
+          .read(checkTermsOfServiceAgreeUseCaseProvider)
+          .getNeedAgree();
+
+      expect(
+        (result as Success<NeedTermsOfServiceAgreeDTO>).value.value,
+        isTrue,
+      );
+    });
+
+    test('同意済みのバージョンがあれば同意は不要', () async {
+      stubAgreed('2');
+
+      final result = await container
+          .read(checkTermsOfServiceAgreeUseCaseProvider)
+          .getNeedAgree();
+
+      expect(
+        (result as Success<NeedTermsOfServiceAgreeDTO>).value.value,
+        isFalse,
+      );
+    });
+  });
+
+  group('CheckTermsOfServiceUpdateUseCase', () {
+    test('同意済みと要求のバージョンが違えば再同意が必要', () async {
+      stubAgreed('1');
+      stubInquired('2');
+
+      final result = await container
+          .read(checkTermsOfServiceUpdateUseCaseProvider)
+          .getNeedUpdate();
+
+      expect(
+        (result as Success<NeedTermsOfServiceUpdateDTO>).value.value,
+        isTrue,
+      );
+    });
+
+    test('同意済みと要求のバージョンが同じなら再同意は不要', () async {
+      stubAgreed('2');
+      stubInquired('2');
+
+      final result = await container
+          .read(checkTermsOfServiceUpdateUseCaseProvider)
+          .getNeedUpdate();
+
+      expect(
+        (result as Success<NeedTermsOfServiceUpdateDTO>).value.value,
+        isFalse,
+      );
+    });
+  });
+
+  group('SaveTermsOfServiceAgreeVersionUseCase', () {
+    test('要求バージョンを同意済みバージョンとして保存する', () async {
+      stubInquired('3');
+      when(
+        () => repository.setAgreedVersion(
+          agreedTermsOfServiceVersion: any(named: 'agreedTermsOfServiceVersion'),
+        ),
+      ).thenAnswer((_) async => const Result.success(null));
+
+      final result = await container
+          .read(saveTermsOfServiceAgreeVersionUseCaseProvider)
+          .save();
+
+      expect(result, isA<Success<void>>());
+      verify(
+        () => repository.setAgreedVersion(
+          agreedTermsOfServiceVersion: const AgreedTermsOfServiceVersion(
+            value: '3',
+          ),
+        ),
+      ).called(1);
+    });
+
+    test('要求バージョンが取れなければ保存しない', () async {
+      when(() => repository.getInquiredVersion()).thenAnswer(
+        (_) async => const Result.failure(
+          CustomException(title: 'エラー', text: '取得に失敗'),
+        ),
+      );
+
+      final result = await container
+          .read(saveTermsOfServiceAgreeVersionUseCaseProvider)
+          .save();
+
+      expect(result, isA<Failure<void>>());
+      verifyNever(
+        () => repository.setAgreedVersion(
+          agreedTermsOfServiceVersion: any(named: 'agreedTermsOfServiceVersion'),
+        ),
+      );
+    });
+  });
+}

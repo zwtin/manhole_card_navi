@@ -1,0 +1,31 @@
+name: data
+publish_to: 'none'
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  domain:
+    path: ../domain
+  cloud_firestore: ^5.6.7
+  firebase_analytics: ^11.4.5
+  firebase_messaging: ^15.2.5
+  firebase_remote_config: ^5.4.3
+  flutter_app_badge_control: ^0.0.2
+  geolocator: ^14.0.0
+  hooks_riverpod: ^2.6.1
+  intl: ^0.20.2
+  logger: ^2.5.0
+  package_info_plus: ^8.3.0
+  realm: ^20.2.0
+  streaming_shared_preferences: ^2.0.0
+
+dev_dependencies:
+  build_runner: ^2.4.15
+  flutter_lints: ^5.0.0
+  # realm が要求する analyzer と test パッケージが衝突するため、Flutter SDK 同梱の
+  # flutter_test でテストを書く。
+  flutter_test:
+    sdk: flutter

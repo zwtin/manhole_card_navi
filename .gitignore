@@ -32,6 +32,8 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+# packages/ 配下の各パッケージでテストを実行すると、そのパッケージ直下にも build/ ができる。
+/packages/*/build/
 
 # fvm が生成する SDK へのシンボリックリンク。使用バージョンは .fvmrc で管理する。
 .fvm/

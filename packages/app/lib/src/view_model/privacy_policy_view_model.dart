@@ -1,0 +1,45 @@
+import 'dart:async';
+
+import 'package:domain/domain.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+/// 状態はプライバシーポリシーの HTML。
+final privacyPolicyViewModelProvider =
+    AsyncNotifierProvider.autoDispose<PrivacyPolicyViewModel, String>(
+  PrivacyPolicyViewModel.new,
+);
+
+/// プライバシーポリシー画面の ViewModel。
+class PrivacyPolicyViewModel extends AutoDisposeAsyncNotifier<String> {
+  late final AnalyticsUseCase _analyticsUseCase;
+  late final PrivacyPolicyUseCase _privacyPolicyUseCase;
+  late final NavigationService _navigationService;
+
+  @override
+  Future<String> build() async {
+    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
+    _privacyPolicyUseCase = ref.watch(privacyPolicyUseCaseProvider);
+    _navigationService = ref.watch(navigationServiceProvider);
+
+    final result = await _privacyPolicyUseCase.get();
+    if (result is Failure) {
+      unawaited(
+        _navigationService.showAlert(
+          title: 'エラー',
+          message: 'プライバシーポリシーの取得に失敗しました',
+        ),
+      );
+      return '';
+    }
+    return (result as Success<PrivacyPolicyDTO>).value.value;
+  }
+
+  Future<void> sendScreenView() async {
+    await _analyticsUseCase.send(
+      name: 'screen_pv',
+      parameters: {
+        'screen_name': 'privacy_policy_view',
+      },
+    );
+  }
+}
