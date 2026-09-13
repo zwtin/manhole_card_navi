@@ -1,0 +1,60 @@
+name: app
+publish_to: 'none'
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  domain:
+    path: ../domain
+  cached_network_image: ^3.4.1
+  convex_bottom_bar: ^3.2.0
+  # カード画像の取得失敗を計測する ImageLoadMonitor が直接送る。
+  firebase_analytics: ^11.4.5
+  flutter_cache_manager: ^3.4.1
+  flutter_hooks: ^0.21.2
+  flutter_html: ^3.0.0
+  freezed_annotation: ^3.0.0
+  go_router: ^16.1.0
+  google_maps_flutter: ^2.13.1
+  hooks_riverpod: ^2.6.1
+  http: ^1.4.0
+  intl: ^0.20.2
+  introduction_screen: ^3.1.17
+  loading_overlay: ^0.4.2
+  logger: ^2.5.0
+  lottie: ^3.3.1
+  photo_view: ^0.15.0
+  rflutter_alert: ^2.0.7
+  url_launcher: ^6.3.1
+  uuid: ^4.5.1
+
+dev_dependencies:
+  build_runner: ^2.4.15
+  flutter_gen_runner: ^5.10.0
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+  freezed: ^3.0.6
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/license/
+    - assets/images/markers/
+    - assets/images/terms/
+    - assets/images/tutorials/
+    - assets/lotties/
+
+flutter_gen:
+  output: lib/src/gen/
+  assets:
+    outputs:
+      # アセットはこのパッケージに入っているため、読み込み時に package: 'app' を付ける。
+      package_parameter_enabled: true
+  colors:
+    inputs:
+      - assets/colors/colors.xml

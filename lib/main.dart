@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:app/app.dart';
+import 'package:data/data.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,10 +12,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import 'app.dart';
-import 'app/service/debug_proxy.dart';
+import 'debug_proxy.dart';
 import 'firebase_options.dart';
-import 'temporary_provider.dart';
 
 FutureOr<void> main() async {
   runZonedGuarded<Future<void>>(
@@ -58,10 +58,12 @@ FutureOr<void> main() async {
             packageInfoProvider.overrideWithValue(
               packageInfo,
             ),
+            // domain が宣言した Repository / QueryService / NavigationService を
+            // data と app の実装に差し替える。
+            ...dataProviderOverrides,
+            ...appProviderOverrides,
           ],
-          child: App(
-            key: UniqueKey(),
-          ),
+          child: const App(),
         ),
       );
     },

@@ -1,0 +1,27 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'detail_card_view_data.freezed.dart';
+
+@freezed
+abstract class DetailCardViewData with _$DetailCardViewData {
+  const factory DetailCardViewData({
+    required String id,
+    required String imageUrl,
+
+    /// カード画像の代替配信元のフル URL。[imageUrl] が取得できなかった
+    /// ときに使う。代替を持たない master では空文字。
+    required String imageSubUrl,
+    required bool alreadyGet,
+    required String name,
+    required String prefecture,
+    required String volume,
+    required String publicationDate,
+    required String distributionPlaceHtml,
+    required String distributionTimeHtml,
+    required String stockHtml,
+  }) = _DetailCardViewData;
+  const DetailCardViewData._();
+
+  String get alreadyGetActionButtonTitle =>
+      alreadyGet ? '未取得に戻す' : '取得済みにする';
+}

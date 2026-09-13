@@ -77,7 +77,7 @@ fvm flutter run --dart-define-from-file=dart_defines/development.env
 | Firestore | ネイティブ（gRPC） | HTTP プロキシでは覗きにくい |
 
 カード画像は Dart 側で完結するので、**CA 証明書のインストールは不要**。
-`lib/app/service/debug_proxy.dart` が証明書の検証を無視するため、プロキシを
+`lib/debug_proxy.dart` が証明書の検証を無視するため、プロキシを
 立てて 1 行足すだけで HTTPS の中身まで見える。
 
 主系（`image_url` / R2）の GET が失敗すると、続けて代替（`image_sub_url` /

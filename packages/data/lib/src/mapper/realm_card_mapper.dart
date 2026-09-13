@@ -1,0 +1,47 @@
+import 'package:domain/domain.dart';
+
+import '../dao/realm_card_dao.dart';
+import '../dao/realm_prefecture_dao.dart';
+import '../dao/realm_volume_dao.dart';
+import 'realm_distribution_points_mapper.dart';
+import 'realm_prefecture_mapper.dart';
+import 'realm_volume_mapper.dart';
+
+class RealmCardMapper {
+  static ManholeCard convertToEntity({
+    required RealmCardDAO dao,
+  }) {
+    return ManholeCard(
+      id: dao.id,
+      latitude: dao.latitude,
+      longitude: dao.longitude,
+      name: dao.name,
+      publicationDate: dao.publicationDate,
+      distributionState: ManholeCardDistributionState.fromString(
+        dao.distributionState,
+      ),
+      image: dao.image,
+      imageSub: dao.imageSub,
+      distributionPlaceHtml: dao.distributionPlaceHtml,
+      distributionTimeHtml: dao.distributionTimeHtml,
+      stockHtml: dao.stockHtml,
+      distributionPoints: RealmDistributionPointsMapper.convertToEntity(
+        daoList: dao.distributionPoints.toList(),
+      ),
+      prefecture: RealmPrefectureMapper.convertToEntity(
+        dao: dao.prefecture ??
+            RealmPrefectureDAO(
+              '',
+              '',
+            ),
+      ),
+      volume: RealmVolumeMapper.convertToEntity(
+        dao: dao.volume ??
+            RealmVolumeDAO(
+              '',
+              '',
+            ),
+      ),
+    );
+  }
+}
