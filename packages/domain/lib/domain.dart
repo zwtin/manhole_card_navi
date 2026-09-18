@@ -1,3 +1,4 @@
+export 'src/core/domain_exception.dart';
 export 'src/core/result.dart';
 export 'src/entity/analytics_event.dart';
 export 'src/entity/app_info.dart';
@@ -14,7 +15,6 @@ export 'src/entity/privacy_policy.dart';
 export 'src/entity/search_condition.dart';
 export 'src/entity/terms_of_service.dart';
 export 'src/entity/terms_of_service_version.dart';
-export 'src/exception/domain_exception.dart';
 export 'src/repository/already_get_card_repository.dart';
 export 'src/repository/analytics_repository.dart';
 export 'src/repository/app_badge_repository.dart';

@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../exception/domain_exception.dart';
+import 'domain_exception.dart';
 
 part 'result.freezed.dart';
 

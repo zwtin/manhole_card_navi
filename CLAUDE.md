@@ -56,9 +56,8 @@ fvm flutter pub run flutter_native_splash:create
 クリーンアーキテクチャの層ごとに `packages/` 配下のパッケージに分けています。依存の向きは `app → domain ← data` で、app と data は互いを知りません。
 
 1. **domain** (`packages/domain/`) - 他のパッケージにも Flutter にも依存しない中心。provider の宣言には Flutter を含まない `riverpod` 本体を使う（`hooks_riverpod` は使わない）
-   - `core/` - エンティティではない汎用の型（`Result`）
-   - `entity/` - ビジネスエンティティ
-   - `exception/` - 失敗の種類（`DomainException`）
+   - `core/` - エンティティではない、操作の結果を表す共通の型。成功か失敗かを包む `Result` と、失敗の種類 `DomainException`。Flutter の Clean Architecture でよく見る `core/error/` と同じ位置づけ
+   - `entity/` - アプリが扱うもの（カードのように ID で区別するものと、座標やバージョンのように値そのものに意味があるもの）
    - `repository/` - リポジトリインターフェースと、その provider
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
 
