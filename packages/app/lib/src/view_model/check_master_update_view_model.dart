@@ -1,6 +1,7 @@
 import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../mapper/error_message_mapper.dart';
 import '../view_data/check_master_update_view_data.dart';
 
 final checkMasterUpdateViewModelProvider = NotifierProvider.autoDispose<
@@ -52,31 +53,34 @@ class CheckMasterUpdateViewModel
       state = state.copyWith(isLoading: true);
       final needUpdateResult = await _checkMasterUpdateUseCase.getNeedUpdate();
       state = state.copyWith(isLoading: false);
-      if (needUpdateResult is Failure) {
-        await _navigationService.showAlert(
-          title: 'エラー',
-          message: 'マスターデータのバージョンの取得に失敗しました',
-        );
-        continue;
+      final bool needUpdate;
+      switch (needUpdateResult) {
+        case Failure(:final exception):
+          await _showUpdateFailure(exception);
+          continue;
+        case Success(:final value):
+          needUpdate = value;
       }
-      final needMasterUpdateDTO =
-          (needUpdateResult as Success<NeedMasterUpdateDTO>).value;
-      if (!needMasterUpdateDTO.value) {
+      if (!needUpdate) {
         return;
       }
 
       state = state.copyWith(isLoading: true);
       final updateResult = await _checkMasterUpdateUseCase.updateMaster();
       state = state.copyWith(isLoading: false);
-      if (updateResult is Failure) {
-        await _navigationService.showAlert(
-          title: 'エラー',
-          message: 'マスターデータの更新に失敗しました',
-        );
+      if (updateResult case Failure(:final exception)) {
+        await _showUpdateFailure(exception);
         continue;
       }
       return;
     }
+  }
+
+  Future<void> _showUpdateFailure(Exception exception) async {
+    await _navigationService.showAlert(
+      title: 'マスターデータを更新できませんでした',
+      message: ErrorMessageMapper.messageOf(exception),
+    );
   }
 
   /// 利用規約への同意が必要か。確認に失敗したら成功するまでやり直す。

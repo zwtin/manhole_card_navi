@@ -9,6 +9,19 @@ sealed class ManholeCardDistributionState with _$ManholeCardDistributionState {
   const factory ManholeCardDistributionState.notClear() = NotClear;
 
   factory ManholeCardDistributionState.fromString(String value) {
+    final state = tryFromString(value);
+    if (state == null) {
+      throw ArgumentError(
+        'Unknown ManholeCardDistributionState value: $value',
+      );
+    }
+    return state;
+  }
+
+  /// [value] を配布状態に変換する。知らない値なら null を返す。
+  ///
+  /// サーバーのデータのように、知らない値が来うるものの検証に使う。
+  static ManholeCardDistributionState? tryFromString(String value) {
     switch (value) {
       case 'distributing':
         return const ManholeCardDistributionState.distributing();
@@ -17,9 +30,7 @@ sealed class ManholeCardDistributionState with _$ManholeCardDistributionState {
       case 'notClear':
         return const ManholeCardDistributionState.notClear();
       default:
-        throw ArgumentError(
-          'Unknown ManholeCardDistributionState value: $value',
-        );
+        return null;
     }
   }
 }

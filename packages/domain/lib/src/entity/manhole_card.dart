@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'manhole_card_distribution_points.dart';
+import 'manhole_card_distribution_point.dart';
 import 'manhole_card_distribution_state.dart';
 import 'manhole_card_prefecture.dart';
 import 'manhole_card_volume.dart';
@@ -40,7 +40,7 @@ abstract class ManholeCard with _$ManholeCard {
     required String stockHtml,
 
     /// 配布場所の座標。0 件のカードもある。
-    required ManholeCardDistributionPoints distributionPoints,
+    required List<ManholeCardDistributionPoint> distributionPoints,
     required ManholeCardPrefecture prefecture,
     required ManholeCardVolume volume,
   }) = _ManholeCard;

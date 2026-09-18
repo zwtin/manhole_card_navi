@@ -12,13 +12,12 @@ import '../repository/app_badge_repository_impl.dart';
 import '../repository/app_info_repository_impl.dart';
 import '../repository/card_repository_impl.dart';
 import '../repository/location_repository_impl.dart';
+import '../repository/master_data_repository_impl.dart';
 import '../repository/master_version_repository_impl.dart';
-import '../repository/prefecture_repository_impl.dart';
 import '../repository/privacy_policy_repository_impl.dart';
 import '../repository/push_notification_repository_impl.dart';
 import '../repository/search_condition_repository_impl.dart';
 import '../repository/terms_of_service_repository_impl.dart';
-import '../repository/volume_repository_impl.dart';
 import 'platform_provider.dart';
 
 /// domain パッケージが宣言した Repository / QueryService の provider を、この
@@ -59,15 +58,15 @@ final List<Override> dataProviderOverrides = [
     ref.onDispose(repository.dispose);
     return repository;
   }),
+  masterDataRepositoryProvider.overrideWith((ref) {
+    final repository = MasterDataRepositoryImpl();
+    ref.onDispose(repository.dispose);
+    return repository;
+  }),
   masterVersionRepositoryProvider.overrideWith((ref) {
     final repository = MasterVersionRepositoryImpl(
       ref.watch(sharedPreferencesProvider),
     );
-    ref.onDispose(repository.dispose);
-    return repository;
-  }),
-  prefectureRepositoryProvider.overrideWith((ref) {
-    final repository = PrefectureRepositoryImpl();
     ref.onDispose(repository.dispose);
     return repository;
   }),
@@ -92,11 +91,6 @@ final List<Override> dataProviderOverrides = [
     final repository = TermsOfServiceRepositoryImpl(
       ref.watch(sharedPreferencesProvider),
     );
-    ref.onDispose(repository.dispose);
-    return repository;
-  }),
-  volumeRepositoryProvider.overrideWith((ref) {
-    final repository = VolumeRepositoryImpl();
     ref.onDispose(repository.dispose);
     return repository;
   }),

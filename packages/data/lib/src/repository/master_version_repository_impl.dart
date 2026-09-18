@@ -3,94 +3,82 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
+import '../exception/domain_exception_converter.dart';
+
 class MasterVersionRepositoryImpl implements MasterVersionRepository {
   MasterVersionRepositoryImpl(
     this._instance,
   );
+
+  /// 使うべきバージョンを配信する Remote Config のキー。
+  static const _inquiredVersionKey = 'inquired_master_version';
+
+  /// 取り込み済みのバージョンを保存する SharedPreferences のキー。
+  static const _currentVersionKey = 'current_master_version';
 
   final _logger = Logger();
   final _remoteConfig = FirebaseRemoteConfig.instance;
   final StreamingSharedPreferences _instance;
 
   @override
-  Future<Result<InquiredMasterVersion>> getInquiredVersion() async {
+  Future<Result<MasterVersion>> getInquiredVersion() async {
     try {
-      final inquiredMasterVersion =
-          _remoteConfig.getString('inquired_master_version');
-      return Result.success(
-        InquiredMasterVersion(
-          value: inquiredMasterVersion,
-        ),
-      );
-    } on CustomException catch (customException) {
+      var value = _remoteConfig.getString(_inquiredVersionKey);
+      if (value.isEmpty) {
+        // 起動時の取得（main.dart）に失敗していると値が空のままなので、ここで
+        // 取り直す。呼ぶ側がやり直したときに、通信が戻っていれば取得できる。
+        await _remoteConfig.fetchAndActivate();
+        value = _remoteConfig.getString(_inquiredVersionKey);
+      }
+      if (value.isEmpty) {
+        return const Result.failure(
+          CorruptedDataException(
+            detail: 'Remote Config の inquired_master_version が空です',
+          ),
+        );
+      }
+      return Result.success(MasterVersion(value: value));
+    } on Exception catch (error, stackTrace) {
       return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '要求マスターデータバージョンの取得に失敗しました。',
-        ),
+        DomainExceptionConverter.fromRemoteConfig(error, stackTrace),
       );
     }
   }
 
   @override
-  Future<Result<CurrentMasterVersion>> getCurrentVersion() async {
+  Future<Result<MasterVersion?>> getCurrentVersion() async {
     try {
-      final currentMasterVersion = _instance
-          .getString(
-            'current_master_version',
-            defaultValue: '',
-          )
+      final value = _instance
+          .getString(_currentVersionKey, defaultValue: '')
           .getValue();
-      return Result.success(
-        CurrentMasterVersion(
-          value: currentMasterVersion,
-        ),
-      );
-    } on CustomException catch (customException) {
+      return Result.success(value.isEmpty ? null : MasterVersion(value: value));
+    } on Exception catch (error, stackTrace) {
       return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '取得済みマスターデータバージョンの取得に失敗しました。',
-        ),
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
       );
     }
   }
 
   @override
   Future<Result<void>> setCurrentVersion({
-    required CurrentMasterVersion currentMasterVersion,
+    required MasterVersion version,
   }) async {
     try {
-      final result = await _instance.setString(
-        'current_master_version',
-        currentMasterVersion.value,
+      final saved = await _instance.setString(
+        _currentVersionKey,
+        version.value,
       );
-      if (result) {
-        return const Result.success(null);
-      } else {
-        throw const CustomException(
-          title: 'エラー',
-          text: 'データの更新に失敗しました。',
+      if (!saved) {
+        return const Result.failure(
+          PersistenceException(
+            detail: '取り込み済みのマスターデータのバージョンを保存できませんでした',
+          ),
         );
       }
-    } on CustomException catch (customException) {
+      return const Result.success(null);
+    } on Exception catch (error, stackTrace) {
       return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '取得済みマスターデータバージョンの保存に失敗しました。',
-        ),
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
       );
     }
   }
