@@ -11,15 +11,16 @@ import 'image_load_monitor.dart';
 ///
 /// 既定の [DefaultCacheManager] の代わりにこれを使う。主系（Cloudflare R2）で
 /// 取得できなかった画像を Firebase Hosting から取り直す [_FallbackFileService] を
-/// 差し込むためで、[CachedNetworkImage] / [CachedNetworkImageProvider] /
-/// `precacheImage` のすべてがこの 1 か所を通る。
+/// 差し込むためで、カード画像の取得（`CardImageRepositoryImpl`）はすべてこの 1 か所を
+/// 通る。
 ///
 /// キャッシュキーは [DefaultCacheManager] と同じ `libCachedImageData` にしてある。
 /// 変えると既存端末のキャッシュが丸ごと無効になり、全員が画像を取り直すことに
 /// なるため。**この定数は変更しないこと。**
 ///
-/// なお [ImageCacheManager] を mixin しないと `maxWidthDiskCache` が無視される
-/// （cached_network_image が `cacheManager is ImageCacheManager` で分岐している）。
+/// 縮小した画像の保存（`getImageFile` の `maxWidth`）に [ImageCacheManager] を
+/// mixin している。縮小画像のキー（`resized_w{幅}_{URL}`）もこのライブラリが作るので、
+/// 以前の cached_network_image が保存したものをそのまま使える。
 class CardImageCacheManager extends CacheManager with ImageCacheManager {
   factory CardImageCacheManager() => _instance;
 

@@ -68,6 +68,7 @@ fvm flutter pub run flutter_native_splash:create
    - `dao/` - Realm のモデル
    - `mapper/` - DAO・JSON とエンティティの変換
    - `service/` - `ErrorReporter` の Crashlytics による実装
+   - `image/` - カード画像の取得。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
    - `provider/` - domain の provider を実装に差し替える `dataProviderOverrides`
 
 3. **app** (`packages/app/`) - 画面
@@ -75,7 +76,7 @@ fvm flutter pub run flutter_native_splash:create
    - `view/` - 画面（`*_page.dart`）
    - `view_model/` - 画面ごとの ViewModel
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
-   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティから表示用データへの変換・画像取得と provider のバグの記録・テーマ
+   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティから表示用データへの変換・マーカー画像の合成と provider のバグの記録・テーマ
    - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 
 4. **ルート** (`lib/`) - `main.dart` で Firebase を初期化し、3 パッケージを組み立てるだけ
@@ -95,13 +96,14 @@ fvm flutter pub run flutter_native_splash:create
 ### 失敗とバグの記録（Crashlytics）
 - 利用者に知らせた失敗は、`showFailure` が `ErrorReporter.recordFailure` で非重大として記録する。通信できない・タイムアウト（`UnavailableException`）は、時間をおけば直り調べても直せないので記録しない。呼ぶ側で記録し直さない
 - 扱われなかったバグはクラッシュ（fatal）として記録する。`main.dart` の Zone と `FlutterError.onError`、provider の生成中に起きたものは `UncaughtErrorObserver` が拾う。provider の中の失敗は Riverpod が受け止めるため Zone には届かない
-- 画像の読み込み失敗（`library` が `image resource service`）はバグではないので、`FlutterError.onError` でも非重大のまま記録する。画像が出ない問い合わせの調査はこの非重大の記録で行う
+- 画像の読み込み失敗（`library` が `image resource service`）はバグではないので、`FlutterError.onError` でも非重大のまま記録する。画像が出ない問い合わせの調査はこの非重大の記録で行う。`CardImageProvider` は、ここに残るよう変換前の例外（`HandshakeException` など）を投げる
 
 ### 状態管理（app）
 - 1 画面 1 ViewModel 1 State。State は freezed、依存は `build()` で `ref.watch` して `late final` に保持する
 - 読み込むだけの画面は `AsyncNotifier`（`build()` で取得）、起動時チェックやマップのように読み込みに副作用を伴う画面は `Notifier` にして View の `useEffect` から `onLoad()` を呼ぶ
 - ViewModel は BuildContext を持たない。遷移・アラート・URL を開く操作は `NavigationService` 経由で行う
 - ViewModel が読み書きするのは UseCase だけで、Repository を直接呼ばない。処理のない読み取りも、Repository を素通しする UseCase のメソッドを通す
+- カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）が `CardImageUseCase` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない
 
 ### 画面遷移（app）
 - go_router の `StatefulShellRoute` で、マップ・リスト・設定のタブがそれぞれ独立した遷移スタックを持つ

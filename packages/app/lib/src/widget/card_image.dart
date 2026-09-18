@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../service/card_image_cache_manager.dart';
-import '../service/image_fallback.dart';
+import 'card_image_provider.dart';
 
 /// マンホールカードの画像を表示するウィジェット。
 ///
@@ -12,8 +12,9 @@ import '../service/image_fallback.dart';
 /// [imageSubUrl] は代替配信元の URL（master の `image_sub_url`）。[imageUrl] を
 /// 取得できなかったときに使われる。代替が無いカードでは空文字を渡す。
 ///
-/// [memCacheWidth] / [maxWidthDiskCache] を指定すると原寸デコードを避けられる。
-class CardImage extends StatelessWidget {
+/// [memCacheWidth] は表示するときの幅、[maxWidthDiskCache] は端末に縮小して保存する
+/// 幅。指定すると原寸デコードを避けられる。
+class CardImage extends ConsumerWidget {
   const CardImage({
     required this.imageUrl,
     required this.imageSubUrl,
@@ -76,17 +77,18 @@ class CardImage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final image = CachedNetworkImage(
-      imageUrl: imageUrl,
-      // 代替配信元の URL はヘッダに載せて FileService まで運ぶ（送信はされない）。
-      httpHeaders: ImageFallback.headers(imageSubUrl),
-      // 主系で取れないときに代替へ回すため、既定の DefaultCacheManager では
-      // なく専用のものを使う。
-      cacheManager: CardImageCacheManager(),
-      fadeInDuration: const Duration(microseconds: 0),
-      memCacheWidth: memCacheWidth,
-      maxWidthDiskCache: maxWidthDiskCache,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final image = Image(
+      image: ResizeImage.resizeIfNeeded(
+        memCacheWidth,
+        null,
+        CardImageProvider(
+          useCase: ref.watch(cardImageUseCaseProvider),
+          url: imageUrl,
+          subUrl: imageSubUrl,
+          maxWidth: maxWidthDiskCache,
+        ),
+      ),
       fit: fit,
     );
     if (alreadyGet) {

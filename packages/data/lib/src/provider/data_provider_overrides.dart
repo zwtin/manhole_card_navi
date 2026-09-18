@@ -6,6 +6,7 @@ import '../repository/already_get_card_repository_impl.dart';
 import '../repository/analytics_repository_impl.dart';
 import '../repository/app_badge_repository_impl.dart';
 import '../repository/app_info_repository_impl.dart';
+import '../repository/card_image_repository_impl.dart';
 import '../repository/card_repository_impl.dart';
 import '../repository/location_repository_impl.dart';
 import '../repository/master_data_repository_impl.dart';
@@ -42,6 +43,11 @@ final List<Override> dataProviderOverrides = [
   }),
   appInfoRepositoryProvider.overrideWith((ref) {
     final repository = AppInfoRepositoryImpl(ref.watch(packageInfoProvider));
+    ref.onDispose(repository.dispose);
+    return repository;
+  }),
+  cardImageRepositoryProvider.overrideWith((ref) {
+    final repository = CardImageRepositoryImpl();
     ref.onDispose(repository.dispose);
     return repository;
   }),

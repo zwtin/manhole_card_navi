@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:domain/domain.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:http/http.dart' as http;
 
 /// 外部の仕組みの失敗を、domain の失敗の種類（[DomainException]）に変換する。
 ///
@@ -26,6 +29,27 @@ abstract final class DomainExceptionConverter {
     }
     if (error is TimeoutException) {
       return TimedOutException(cause: error, stackTrace: stackTrace);
+    }
+    return UnknownException(cause: error, stackTrace: stackTrace);
+  }
+
+  /// 画像など、HTTP で配信元から取るときの失敗。
+  static DomainException fromHttp(Object error, StackTrace stackTrace) {
+    if (error is DomainException) {
+      return error;
+    }
+    if (error is TimeoutException) {
+      return TimedOutException(cause: error, stackTrace: stackTrace);
+    }
+    if (error is HttpExceptionWithStatus) {
+      return error.statusCode == HttpStatus.notFound
+          ? NotFoundException(cause: error, stackTrace: stackTrace)
+          : UnknownException(cause: error, stackTrace: stackTrace);
+    }
+    // 接続できない・名前が引けない・TLS の途中で割り込まれる（経路上のフィルタ）
+    // など。どれも利用者から見れば通信できない失敗。
+    if (error is IOException || error is http.ClientException) {
+      return OfflineException(cause: error, stackTrace: stackTrace);
     }
     return UnknownException(cause: error, stackTrace: stackTrace);
   }

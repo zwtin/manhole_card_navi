@@ -7,9 +7,9 @@
 ///
 /// 代替 URL は **カードごとのデータ**（Firestore の `image_sub_url`）なので、
 /// URL 文字列から機械的に導出することはできない。一方で画像の取得は
-/// [CachedNetworkImage] / [CachedNetworkImageProvider] / `precacheImage` の
-/// いずれも `FileService` に集約されており、そこへ URL 以外の情報を渡す経路は
-/// HTTP ヘッダしかない。そこで代替 URL を [headerKey] のヘッダに載せて運ぶ。
+/// flutter_cache_manager の `FileService` で行っていて、そこへ URL 以外の情報を
+/// 渡す経路は HTTP ヘッダしかない。そこで代替 URL を [headerKey] のヘッダに載せて
+/// 運ぶ。
 ///
 /// **このヘッダはネットワークには出ない。** `FileService` 側で
 /// [withoutSubUrl] を使って実際のリクエストから取り除く。
@@ -22,7 +22,7 @@ class ImageFallback {
   /// 代替配信元 URL を載せるヘッダ名。実際のリクエストには含めない。
   static const String headerKey = 'x-image-sub-url';
 
-  /// 画像ウィジェットに渡す `httpHeaders` を作る。代替が無ければ null。
+  /// キャッシュ層に渡すヘッダを作る。代替が無ければ null。
   static Map<String, String>? headers(String imageSubUrl) {
     if (imageSubUrl.isEmpty) {
       return null;

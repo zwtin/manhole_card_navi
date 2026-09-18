@@ -15,8 +15,10 @@ dependencies:
   firebase_messaging: ^15.2.5
   firebase_remote_config: ^5.4.3
   flutter_app_badge_control: ^0.0.2
+  flutter_cache_manager: ^3.4.1
   geolocator: ^14.0.0
   hooks_riverpod: ^2.6.1
+  http: ^1.4.0
   intl: ^0.20.2
   logger: ^2.5.0
   package_info_plus: ^8.3.0

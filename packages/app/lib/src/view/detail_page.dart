@@ -1,14 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:uuid/uuid.dart';
 
 import '../router/use_screen_view.dart';
-import '../service/card_image_cache_manager.dart';
-import '../service/image_fallback.dart';
 import '../view_model/detail_view_model.dart';
 import '../widget/card_image.dart';
+import '../widget/card_image_provider.dart';
 import '../widget/custom_text.dart';
 import '../widget/html_content.dart';
 
@@ -66,13 +65,12 @@ class DetailPage extends HookConsumerWidget {
                                       // 先読みに失敗しても遷移は続行する。
                                       try {
                                         await precacheImage(
-                                          CachedNetworkImageProvider(
-                                            card.imageUrl,
-                                            headers: ImageFallback.headers(
-                                              card.imageSubUrl,
+                                          CardImageProvider(
+                                            useCase: ref.read(
+                                              cardImageUseCaseProvider,
                                             ),
-                                            cacheManager:
-                                                CardImageCacheManager(),
+                                            url: card.imageUrl,
+                                            subUrl: card.imageSubUrl,
                                           ),
                                           context,
                                         );

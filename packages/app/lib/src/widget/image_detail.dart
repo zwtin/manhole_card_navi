@@ -1,14 +1,14 @@
 import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 
-import '../service/card_image_cache_manager.dart';
-import '../service/image_fallback.dart';
 import 'card_image.dart';
+import 'card_image_provider.dart';
 
-class ImageDetail extends StatefulWidget {
+class ImageDetail extends ConsumerStatefulWidget {
   const ImageDetail({
     super.key,
     required this.imageUrl,
@@ -26,7 +26,7 @@ class ImageDetail extends StatefulWidget {
   ImageDetailViewState createState() => ImageDetailViewState();
 }
 
-class ImageDetailViewState extends State<ImageDetail> {
+class ImageDetailViewState extends ConsumerState<ImageDetail> {
   Offset beginningDragPosition = Offset.zero;
   Offset currentDragPosition = Offset.zero;
   PhotoViewScaleState scaleState = PhotoViewScaleState.initial;
@@ -103,10 +103,11 @@ class ImageDetailViewState extends State<ImageDetail> {
   Widget _buildPhotoView() {
     final photoView = PhotoView(
       backgroundDecoration: const BoxDecoration(color: Colors.transparent),
-      imageProvider: CachedNetworkImageProvider(
-        widget.imageUrl,
-        headers: ImageFallback.headers(widget.imageSubUrl),
-        cacheManager: CardImageCacheManager(),
+      // 詳細のサムネイル・先読みと同じ原寸の画像にし、デコード済みの画像を共有する。
+      imageProvider: CardImageProvider(
+        useCase: ref.watch(cardImageUseCaseProvider),
+        url: widget.imageUrl,
+        subUrl: widget.imageSubUrl,
       ),
       heroAttributes: PhotoViewHeroAttributes(
         tag: widget.imageTag,
