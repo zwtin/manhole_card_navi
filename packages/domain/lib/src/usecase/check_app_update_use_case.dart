@@ -3,7 +3,6 @@ import 'package:riverpod/riverpod.dart';
 
 import '../core/result.dart';
 import '../entity/app_info.dart';
-import '../entity/inquired_app_version.dart';
 import '../repository/app_info_repository.dart';
 
 final checkAppUpdateUseCaseProvider =
@@ -26,7 +25,7 @@ class CheckAppUpdateUseCase {
 
   final _logger = Logger();
 
-  /// アプリのアップデートが必要か（要求バージョンより古いか）。
+  /// アプリのアップデートが必要か（動かすのに必要なバージョンより古いか）。
   Future<Result<bool>> getNeedUpdate() async {
     final AppInfo appInfo;
     switch (await _appInfoRepository.getAppInfo()) {
@@ -36,42 +35,12 @@ class CheckAppUpdateUseCase {
         appInfo = value;
     }
 
-    final InquiredAppVersion inquiredVersion;
-    switch (await _appInfoRepository.getInquiredAppVersion()) {
+    switch (await _appInfoRepository.getInquiredVersion()) {
       case Failure(:final exception):
         return Result.failure(exception);
-      case Success(:final value):
-        inquiredVersion = value;
+      case Success(value: final inquiredVersion):
+        return Result.success(appInfo.version < inquiredVersion);
     }
-
-    return Result.success(
-      _checkNeedUpdate(
-        appInfo: appInfo,
-        inquiredVersion: inquiredVersion,
-      ),
-    );
-  }
-
-  bool _checkNeedUpdate({
-    required AppInfo appInfo,
-    required InquiredAppVersion inquiredVersion,
-  }) {
-    final currentAppVersionList =
-        appInfo.version.split('.').map(int.parse).toList();
-    final inquiredAppVersionList =
-        inquiredVersion.value.split('.').map(int.parse).toList();
-
-    final forceVersionMap = inquiredAppVersionList.asMap();
-    for (final index in forceVersionMap.keys) {
-      final forceVersionElement = inquiredAppVersionList.elementAt(index);
-      final appVersionElement = currentAppVersionList.elementAt(index);
-      if (forceVersionElement > appVersionElement) {
-        return true;
-      } else {
-        continue;
-      }
-    }
-    return false;
   }
 
   void dispose() {

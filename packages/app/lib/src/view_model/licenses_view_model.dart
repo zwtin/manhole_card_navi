@@ -35,7 +35,7 @@ class LicensesViewModel extends AutoDisposeAsyncNotifier<LicensesViewData> {
     final appInfo = (result as Success<AppInfo>).value;
     return LicensesViewData(
       appName: appInfo.name,
-      appVersion: appInfo.version,
+      appVersion: appInfo.version.value,
     );
   }
 

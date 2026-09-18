@@ -1,8 +1,8 @@
 export 'src/core/result.dart';
 export 'src/entity/analytics_event.dart';
 export 'src/entity/app_info.dart';
+export 'src/entity/app_version.dart';
 export 'src/entity/display_filter.dart';
-export 'src/entity/inquired_app_version.dart';
 export 'src/entity/manhole_card.dart';
 export 'src/entity/manhole_card_distribution_point.dart';
 export 'src/entity/manhole_card_distribution_state.dart';

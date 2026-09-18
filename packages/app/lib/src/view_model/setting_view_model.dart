@@ -35,7 +35,7 @@ class SettingViewModel extends AutoDisposeAsyncNotifier<SettingViewData> {
     final appInfo = (result as Success<AppInfo>).value;
     return SettingViewData(
       appName: appInfo.name,
-      appVersion: appInfo.version,
+      appVersion: appInfo.version.value,
     );
   }
 

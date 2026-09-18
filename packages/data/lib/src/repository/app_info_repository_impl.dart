@@ -18,25 +18,41 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
   final _remoteConfigReader = RemoteConfigReader();
 
   @override
-  Future<Result<InquiredAppVersion>> getInquiredAppVersion() async {
+  Future<Result<AppInfo>> getAppInfo() async {
+    final version = AppVersion.tryParse(_packageInfo.version);
+    if (version == null) {
+      return Result.failure(
+        CorruptedDataException(
+          detail: 'アプリのバージョン "${_packageInfo.version}" が読めません',
+        ),
+      );
+    }
+    return Result.success(
+      AppInfo(
+        name: const String.fromEnvironment('appName'),
+        version: version,
+      ),
+    );
+  }
+
+  @override
+  Future<Result<AppVersion>> getInquiredVersion() async {
     try {
       final value = await _remoteConfigReader.readString(_inquiredVersionKey);
-      return Result.success(InquiredAppVersion(value: value));
+      // コンソールで入力したときに紛れ込む前後の空白・改行は許す。
+      final version = AppVersion.tryParse(value.trim());
+      if (version == null) {
+        throw CorruptedDataException(
+          detail: 'Remote Config の $_inquiredVersionKey "$value" が'
+              'バージョンの形ではありません',
+        );
+      }
+      return Result.success(version);
     } on Exception catch (error, stackTrace) {
       return Result.failure(
         DomainExceptionConverter.fromRemoteConfig(error, stackTrace),
       );
     }
-  }
-
-  @override
-  Future<Result<AppInfo>> getAppInfo() async {
-    return Result.success(
-      AppInfo(
-        name: const String.fromEnvironment('appName'),
-        version: _packageInfo.version,
-      ),
-    );
   }
 
   void dispose() {
