@@ -37,12 +37,12 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
 
   @override
   Future<Result<void>> save({
-    required ManholeCard manholeCard,
+    required String cardId,
   }) async {
     try {
       final list = _instance.getStringList(_key, defaultValue: []).getValue();
-      if (!list.contains(manholeCard.id)) {
-        list.add(manholeCard.id);
+      if (!list.contains(cardId)) {
+        list.add(cardId);
       }
       await _write(list);
       return const Result.success(null);
@@ -55,11 +55,11 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
 
   @override
   Future<Result<void>> delete({
-    required ManholeCard manholeCard,
+    required String cardId,
   }) async {
     try {
       final list = _instance.getStringList(_key, defaultValue: []).getValue();
-      list.remove(manholeCard.id);
+      list.remove(cardId);
       await _write(list);
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {

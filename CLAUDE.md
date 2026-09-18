@@ -85,6 +85,11 @@ fvm flutter pub run flutter_native_splash:create
 - Repository / ErrorReporter の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` を渡して実装に差し替える。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
 
+### UseCase・Repository の引数
+- 既にあるものを探す・指す・消すときは ID で渡す（`CardUseCase.get(id:)`、`AlreadyGetCardRepository.save(cardId:)`）。UseCase が Repository から正しいエンティティを読み直す
+- 保存する中身や新しく作るものは、値やエンティティで渡す（`SearchConditionRepository.save(searchCondition:)`、`MasterDataRepository.replace(cards:)`）
+- ID は値オブジェクトにせず String のまま扱う
+
 ### 失敗の扱い
 - Repository は想定内の失敗（通信・サーバーのデータ・端末の保存領域）を投げずに `Result` に包んで返す。呼ぶ側は try / catch せずに `switch` で成功と失敗を分ける
 - 失敗の種類は domain の `DomainException`（sealed）で表す。表示の文言は持たない。種類は app が表示や対応を変えたいものの分だけ作り、区別が必要になったら足す
