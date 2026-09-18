@@ -40,4 +40,3 @@ export 'src/usecase/push_notification_use_case.dart';
 export 'src/usecase/search_condition_use_case.dart';
 export 'src/usecase/terms_of_service_use_case.dart';
 export 'src/service/error_reporter.dart';
-export 'src/service/navigation_service.dart';

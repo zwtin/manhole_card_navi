@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../mapper/modal_card_view_data_mapper.dart';
+import '../router/navigation_service.dart';
 import '../view_data/card_modal_view_data.dart';
 import 'manhole_card_map_view_model.dart';
 

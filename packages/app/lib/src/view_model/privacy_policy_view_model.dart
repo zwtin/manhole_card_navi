@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../router/navigation_service.dart';
+
 /// 状態はプライバシーポリシーの HTML。
 final privacyPolicyViewModelProvider =
     AsyncNotifierProvider.autoDispose<PrivacyPolicyViewModel, String>(

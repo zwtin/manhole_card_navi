@@ -4,6 +4,7 @@ import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../mapper/detail_card_view_data_mapper.dart';
+import '../router/navigation_service.dart';
 import '../view_data/detail_card_view_data.dart';
 
 /// 引数はカード ID。

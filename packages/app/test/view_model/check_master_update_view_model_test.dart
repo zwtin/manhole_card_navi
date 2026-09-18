@@ -1,3 +1,4 @@
+import 'package:app/src/router/navigation_service.dart';
 import 'package:app/src/view_model/check_master_update_view_model.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';

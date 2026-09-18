@@ -1,6 +1,7 @@
 import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../router/navigation_service.dart';
 import '../view_data/search_condition_view_data.dart';
 
 final searchConditionViewModelProvider = AsyncNotifierProvider.autoDispose<

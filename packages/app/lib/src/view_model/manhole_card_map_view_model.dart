@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../mapper/map_markers_view_data_mapper.dart';
 import '../router/app_router.dart';
 import '../router/current_route.dart';
+import '../router/navigation_service.dart';
 import '../service/marker_icon_builder.dart';
 import '../view_data/manhole_card_map_view_data.dart';
 import 'shell_view_model.dart';

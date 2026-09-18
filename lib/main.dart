@@ -68,10 +68,8 @@ FutureOr<void> main() async {
             packageInfoProvider.overrideWithValue(
               packageInfo,
             ),
-            // domain が宣言した Repository / ErrorReporter / NavigationService を
-            // data と app の実装に差し替える。
+            // domain が宣言した Repository / ErrorReporter を data の実装に差し替える。
             ...dataProviderOverrides,
-            ...appProviderOverrides,
           ],
           child: const App(),
         ),

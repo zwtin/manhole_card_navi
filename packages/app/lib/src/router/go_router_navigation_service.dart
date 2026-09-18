@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../mapper/error_message_mapper.dart';
 import '../widget/app_alert.dart';
 import 'app_router.dart';
+import 'navigation_service.dart';
 
 /// [NavigationService] の go_router による実装。
 ///

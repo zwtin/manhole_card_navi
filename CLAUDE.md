@@ -61,7 +61,7 @@ fvm flutter pub run flutter_native_splash:create
    - `exception/` - 失敗の種類（`DomainException`）
    - `repository/` - リポジトリインターフェースと、その provider
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
-   - `service/` - 画面遷移の窓口 `NavigationService` と、失敗やバグを記録する窓口 `ErrorReporter` のインターフェース
+   - `service/` - 失敗やバグを記録する窓口 `ErrorReporter` のインターフェース
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装
    - `repository/` - Firestore・Realm・SharedPreferences・Remote Config などを使う実装
@@ -71,7 +71,7 @@ fvm flutter pub run flutter_native_splash:create
    - `provider/` - domain の provider を実装に差し替える `dataProviderOverrides`
 
 3. **app** (`packages/app/`) - 画面
-   - `router/` - go_router のルート定義、`NavigationService` の実装、下タブの `ShellScaffold`
+   - `router/` - go_router のルート定義、画面遷移の窓口 `NavigationService` とその go_router による実装、下タブの `ShellScaffold`
    - `view/` - 画面（`*_page.dart`）
    - `view_model/` - 画面ごとの ViewModel
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
@@ -81,7 +81,7 @@ fvm flutter pub run flutter_native_splash:create
 4. **ルート** (`lib/`) - `main.dart` で Firebase を初期化し、3 パッケージを組み立てるだけ
 
 ### 依存性注入
-- Repository / NavigationService / ErrorReporter の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` / `appProviderOverrides` を渡して実装に差し替える
+- Repository / ErrorReporter の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` を渡して実装に差し替える。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
 
 ### 失敗の扱い

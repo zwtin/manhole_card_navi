@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../router/navigation_service.dart';
+
 /// 状態は利用規約の HTML。
 final termsOfServiceViewModelProvider =
     AsyncNotifierProvider.autoDispose<TermsOfServiceViewModel, String>(

@@ -1,19 +1,20 @@
-import 'package:riverpod/riverpod.dart';
+import 'package:domain/domain.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../exception/domain_exception.dart';
-import 'error_reporter.dart';
+import 'app_router.dart';
+import 'go_router_navigation_service.dart';
 
-/// main.dart の ProviderScope で app パッケージの実装に差し替える。
 final navigationServiceProvider = Provider<NavigationService>(
-  (ref) =>
-      throw UnimplementedError('navigationServiceProvider must be overridden'),
+  (ref) => GoRouterNavigationService(
+    ref.watch(routerProvider),
+    ref.watch(errorReporterProvider),
+  ),
 );
 
 /// 画面遷移とダイアログ表示の窓口。
 ///
-/// ViewModel が BuildContext に触れずに遷移を指示できるようにするため、Domain 層に
-/// interface を置き、app パッケージ（go_router）で実装する。テストではモックに
-/// 差し替えて、どの遷移が指示されたかを検証できる。
+/// ViewModel が BuildContext や go_router に触れずに遷移を指示できるようにする。
+/// テストではモックに差し替えて、どの遷移が指示されたかを検証できる。
 abstract class NavigationService {
   /// 起動時チェック: マスターデータの更新確認へ進む。
   void goToCheckMasterUpdate();
