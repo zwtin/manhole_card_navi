@@ -3,6 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import '../exception/domain_exception_converter.dart';
+import '../service/failure_recorder.dart';
 
 class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   AlreadyGetCardRepositoryImpl(
@@ -13,6 +14,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   static const _key = 'already_get_cards';
 
   final _logger = Logger();
+  final _failureRecorder = FailureRecorder();
   final StreamingSharedPreferences _instance;
 
   @override
@@ -22,8 +24,9 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
         _instance.getStringList(_key, defaultValue: []).getValue().toSet(),
       );
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }
@@ -47,8 +50,9 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
       await _write(list);
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }
@@ -63,8 +67,9 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
       await _write(list);
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }

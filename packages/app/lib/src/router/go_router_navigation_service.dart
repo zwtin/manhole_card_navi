@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:domain/domain.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,10 +13,9 @@ import 'navigation_service.dart';
 /// 積む。マップのモーダルは、どのカードを表示中かをマップが現在地から読めるよう
 /// go で表す。
 class GoRouterNavigationService implements NavigationService {
-  GoRouterNavigationService(this._router, this._errorReporter);
+  GoRouterNavigationService(this._router);
 
   final GoRouter _router;
-  final ErrorReporter _errorReporter;
 
   /// 最前面の画面のパス。
   String get _currentLocation => _router.state.matchedLocation;
@@ -155,19 +152,6 @@ class GoRouterNavigationService implements NavigationService {
     required String title,
     required DomainException exception,
   }) async {
-    // 時間をおけば直る失敗は、記録しても直せることがなく、件数に埋もれて調べる
-    // べき失敗が見えにくくなるので記録しない。
-    final needsInvestigation = switch (exception) {
-      UnavailableException() => false,
-      CorruptedDataException() ||
-      NotFoundException() ||
-      PersistenceException() ||
-      UnknownException() =>
-        true,
-    };
-    if (needsInvestigation) {
-      unawaited(_errorReporter.recordFailure(exception, reason: title));
-    }
     await showAlert(
       title: title,
       message: ErrorMessageMapper.messageOf(exception),

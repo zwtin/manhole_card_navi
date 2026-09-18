@@ -4,6 +4,7 @@ import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import '../exception/domain_exception_converter.dart';
 import '../remote_config/remote_config_reader.dart';
+import '../service/failure_recorder.dart';
 
 class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
   TermsOfServiceRepositoryImpl(
@@ -20,6 +21,7 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
   static const _agreedVersionKey = 'agreed_terms_of_service_version';
 
   final _logger = Logger();
+  final _failureRecorder = FailureRecorder();
   final _remoteConfigReader = RemoteConfigReader();
   final StreamingSharedPreferences _instance;
 
@@ -29,8 +31,9 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
       final value = await _remoteConfigReader.readString(_termsOfServiceKey);
       return Result.success(TermsOfService(value: value));
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromRemoteConfig(error, stackTrace),
+        stackTrace,
       );
     }
   }
@@ -41,8 +44,9 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
       final value = await _remoteConfigReader.readString(_inquiredVersionKey);
       return Result.success(TermsOfServiceVersion(value: value));
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromRemoteConfig(error, stackTrace),
+        stackTrace,
       );
     }
   }
@@ -58,8 +62,9 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
         value.isEmpty ? null : TermsOfServiceVersion(value: value),
       );
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }
@@ -75,8 +80,9 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
       }
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }

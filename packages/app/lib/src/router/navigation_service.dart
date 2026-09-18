@@ -5,10 +5,7 @@ import 'app_router.dart';
 import 'go_router_navigation_service.dart';
 
 final navigationServiceProvider = Provider<NavigationService>(
-  (ref) => GoRouterNavigationService(
-    ref.watch(routerProvider),
-    ref.watch(errorReporterProvider),
-  ),
+  (ref) => GoRouterNavigationService(ref.watch(routerProvider)),
 );
 
 /// 画面遷移とダイアログ表示の窓口。
@@ -84,8 +81,8 @@ abstract class NavigationService {
   /// 失敗をアラートで知らせ、閉じられるまで待つ。
   ///
   /// [title] には何に失敗したか（例: 「マスターデータを更新できませんでした」）を
-  /// 渡す。本文は [exception] の種類から決まる。調べる必要のある種類の失敗は、
-  /// あわせて [ErrorReporter] で記録する（呼ぶ側で記録し直さない）。
+  /// 渡す。本文は [exception] の種類から決まる。記録は data が失敗を返すときに
+  /// 済ませているので、ここでは記録しない。
   Future<void> showFailure({
     required String title,
     required DomainException exception,

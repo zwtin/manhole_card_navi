@@ -3,9 +3,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:logger/logger.dart';
 
 import '../exception/domain_exception_converter.dart';
+import '../service/failure_recorder.dart';
 
 class PushNotificationRepositoryImpl implements PushNotificationRepository {
   final _logger = Logger();
+  final _failureRecorder = FailureRecorder();
   final _messaging = FirebaseMessaging.instance;
 
   @override
@@ -22,8 +24,9 @@ class PushNotificationRepositoryImpl implements PushNotificationRepository {
       );
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromPlatform(error, stackTrace),
+        stackTrace,
       );
     }
   }

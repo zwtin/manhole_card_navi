@@ -5,9 +5,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
 import '../exception/domain_exception_converter.dart';
+import '../service/failure_recorder.dart';
 
 class LocationRepositoryImpl implements LocationRepository {
   final _logger = Logger();
+  final _failureRecorder = FailureRecorder();
 
   @override
   Future<Result<bool>> requestPermission() async {
@@ -21,8 +23,9 @@ class LocationRepositoryImpl implements LocationRepository {
       }
       return Result.success(_isGranted(permission));
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromPlatform(error, stackTrace),
+        stackTrace,
       );
     }
   }
@@ -32,8 +35,9 @@ class LocationRepositoryImpl implements LocationRepository {
     try {
       return Result.success(_isGranted(await Geolocator.checkPermission()));
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromPlatform(error, stackTrace),
+        stackTrace,
       );
     }
   }
@@ -46,12 +50,13 @@ class LocationRepositoryImpl implements LocationRepository {
         Coordinate(latitude: position.latitude, longitude: position.longitude),
       );
     } on TimeoutException catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         TimedOutException(cause: error, stackTrace: stackTrace),
       );
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromPlatform(error, stackTrace),
+        stackTrace,
       );
     }
   }

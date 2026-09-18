@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../exception/domain_exception_converter.dart';
 import '../remote_config/remote_config_reader.dart';
+import '../service/failure_recorder.dart';
 
 class AppInfoRepositoryImpl implements AppInfoRepository {
   AppInfoRepositoryImpl(
@@ -14,6 +15,7 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
   static const _inquiredVersionKey = 'inquired_app_version';
 
   final _logger = Logger();
+  final _failureRecorder = FailureRecorder();
   final PackageInfo _packageInfo;
   final _remoteConfigReader = RemoteConfigReader();
 
@@ -21,7 +23,7 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
   Future<Result<AppInfo>> getAppInfo() async {
     final version = AppVersion.tryParse(_packageInfo.version);
     if (version == null) {
-      return Result.failure(
+      return _failureRecorder.failure(
         CorruptedDataException(
           detail: 'アプリのバージョン "${_packageInfo.version}" が読めません',
         ),
@@ -49,8 +51,9 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
       }
       return Result.success(version);
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromRemoteConfig(error, stackTrace),
+        stackTrace,
       );
     }
   }

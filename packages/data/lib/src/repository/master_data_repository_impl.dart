@@ -9,9 +9,11 @@ import '../dao/realm_volume_dao.dart';
 import '../exception/domain_exception_converter.dart';
 import '../mapper/firestore_master_mapper.dart';
 import '../mapper/realm_card_mapper.dart';
+import '../service/failure_recorder.dart';
 
 class MasterDataRepositoryImpl implements MasterDataRepository {
   final _logger = Logger();
+  final _failureRecorder = FailureRecorder();
   final _firestore = FirebaseFirestore.instance;
 
   @override
@@ -29,8 +31,9 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
         master.collection('volumes').get(),
       ]);
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromFirestore(error, stackTrace),
+        stackTrace,
       );
     }
 
@@ -64,15 +67,15 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
           .toList();
       if (cards.isEmpty) {
         // 取り込むと一覧もマップも空になるので、壊れたデータとして扱う。
-        return Result.failure(
+        return _failureRecorder.failure(
           CorruptedDataException(
             detail: '${master.path}/cards にカードがありません',
           ),
         );
       }
       return Result.success(cards);
-    } on CorruptedDataException catch (exception) {
-      return Result.failure(exception);
+    } on CorruptedDataException catch (exception, stackTrace) {
+      return _failureRecorder.failure(exception, stackTrace);
     }
   }
 
@@ -99,8 +102,9 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
       }
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }
@@ -115,8 +119,9 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
         realm.close();
       }
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }

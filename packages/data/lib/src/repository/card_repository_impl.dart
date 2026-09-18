@@ -6,9 +6,11 @@ import '../dao/realm_card_dao.dart';
 import '../dao/realm_configuration.dart';
 import '../exception/domain_exception_converter.dart';
 import '../mapper/realm_card_mapper.dart';
+import '../service/failure_recorder.dart';
 
 class CardRepositoryImpl implements CardRepository {
   final _logger = Logger();
+  final _failureRecorder = FailureRecorder();
 
   @override
   Future<Result<ManholeCard>> get({
@@ -19,7 +21,7 @@ class CardRepositoryImpl implements CardRepository {
       try {
         final dao = realm.all<RealmCardDAO>().query(r'id == $0', [id]).firstOrNull;
         if (dao == null) {
-          return Result.failure(
+          return _failureRecorder.failure(
             NotFoundException(detail: 'ID が $id のカードが端末にありません'),
           );
         }
@@ -28,8 +30,9 @@ class CardRepositoryImpl implements CardRepository {
         realm.close();
       }
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }
@@ -41,8 +44,8 @@ class CardRepositoryImpl implements CardRepository {
       try {
         final daoList = realm.all<RealmCardDAO>();
         if (daoList.isEmpty) {
-          return const Result.failure(
-            NotFoundException(detail: '端末にマスターデータがありません'),
+          return _failureRecorder.failure(
+            const NotFoundException(detail: '端末にマスターデータがありません'),
           );
         }
         return Result.success(
@@ -54,8 +57,9 @@ class CardRepositoryImpl implements CardRepository {
         realm.close();
       }
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }

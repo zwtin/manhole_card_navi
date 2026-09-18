@@ -61,13 +61,12 @@ fvm flutter pub run flutter_native_splash:create
    - `exception/` - 失敗の種類（`DomainException`）
    - `repository/` - リポジトリインターフェースと、その provider
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
-   - `service/` - 失敗やバグを記録する窓口 `ErrorReporter` のインターフェース
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装
    - `repository/` - Firestore・Realm・SharedPreferences・Remote Config などを使う実装
    - `dao/` - Realm のモデル
    - `mapper/` - DAO・JSON とエンティティの変換
-   - `service/` - `ErrorReporter` の Crashlytics による実装
+   - `service/` - Crashlytics への記録。失敗を記録する `FailureRecorder` と、provider の中のバグを記録する `UncaughtErrorObserver`
    - `image/` - カード画像の取得。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
    - `provider/` - domain の provider を実装に差し替える `dataProviderOverrides`
 
@@ -76,13 +75,13 @@ fvm flutter pub run flutter_native_splash:create
    - `view/` - 画面（`*_page.dart`）
    - `view_model/` - 画面ごとの ViewModel
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
-   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティから表示用データへの変換・マーカー画像の合成と provider のバグの記録・テーマ
+   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティから表示用データへの変換・マーカー画像の合成・テーマ
    - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 
 4. **ルート** (`lib/`) - `main.dart` で Firebase を初期化し、3 パッケージを組み立てるだけ
 
 ### 依存性注入
-- Repository / ErrorReporter の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` を渡して実装に差し替える。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
+- Repository の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` を渡して実装に差し替える。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
 
 ### UseCase・Repository の引数
@@ -99,8 +98,10 @@ fvm flutter pub run flutter_native_splash:create
 - 失敗ではない結果（位置情報を許可されなかった、アップデートが必要 など）は例外にせず戻り値で返す
 
 ### 失敗とバグの記録（Crashlytics）
-- 利用者に知らせた失敗は、`showFailure` が `ErrorReporter.recordFailure` で非重大として記録する。通信できない・タイムアウト（`UnavailableException`）は、時間をおけば直り調べても直せないので記録しない。呼ぶ側で記録し直さない
-- 扱われなかったバグはクラッシュ（fatal）として記録する。`main.dart` の Zone と `FlutterError.onError`、provider の生成中に起きたものは `UncaughtErrorObserver` が拾う。provider の中の失敗は Riverpod が受け止めるため Zone には届かない
+- Crashlytics を知っているのは data と `main.dart` だけ。app と domain は記録に関わらない
+- data の Repository は、失敗をすべて `FailureRecorder.failure` を通して返し、そこで非重大として記録する。通信できない・タイムアウト（`UnavailableException`）は、時間をおけば直り調べても直せないので記録しない
+- 例外はカード画像の `CardImageRepositoryImpl` で、`FailureRecorder` を通さない。画像の失敗は `ImageLoadMonitor`（Analytics）と、下の `FlutterError` 経由の非重大で記録している
+- 扱われなかったバグはクラッシュ（fatal）として記録する。`main.dart` の Zone と `FlutterError.onError`、provider の生成中に起きたものは data の `UncaughtErrorObserver` が拾う。provider の中の失敗は Riverpod が受け止めるため Zone には届かない
 - 画像の読み込み失敗（`library` が `image resource service`）はバグではないので、`FlutterError.onError` でも非重大のまま記録する。画像が出ない問い合わせの調査はこの非重大の記録で行う。`CardImageProvider` は、ここに残るよう変換前の例外（`HandshakeException` など）を投げる
 
 ### 状態管理（app）

@@ -1,10 +1,10 @@
-import 'package:app/src/service/uncaught_error_observer.dart';
+import 'package:data/data.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockErrorReporter extends Mock implements ErrorReporter {}
+import 'crashlytics_mock.dart';
 
 final _bugProvider = FutureProvider.autoDispose<int>(
   (ref) async => throw StateError('バグ'),
@@ -15,29 +15,18 @@ final _syncBugProvider = Provider.autoDispose<int>(
 );
 
 final _failureProvider = FutureProvider.autoDispose<int>(
-  (ref) async => throw const OfflineException(),
+  (ref) async => throw const UnknownException(),
 );
 
 void main() {
-  late MockErrorReporter errorReporter;
+  late MockFirebaseCrashlytics crashlytics;
   late ProviderContainer container;
 
-  setUpAll(() {
-    registerFallbackValue(StackTrace.empty);
-  });
-
   setUp(() {
-    errorReporter = MockErrorReporter();
-    when(
-      () => errorReporter.recordUncaught(
-        any(),
-        any(),
-        reason: any(named: 'reason'),
-      ),
-    ).thenAnswer((_) async {});
+    crashlytics = MockFirebaseCrashlytics();
+    stubRecordError(crashlytics);
     container = ProviderContainer(
-      overrides: [errorReporterProvider.overrideWithValue(errorReporter)],
-      observers: [UncaughtErrorObserver()],
+      observers: [UncaughtErrorObserver(crashlytics: crashlytics)],
     );
   });
 
@@ -45,45 +34,38 @@ void main() {
     container.dispose();
   });
 
-  test('provider の中で扱われなかったバグを記録する', () async {
+  test('provider の中で扱われなかったバグを、クラッシュとして記録する', () async {
     final subscription = container.listen(_bugProvider, (_, __) {});
     await expectLater(container.read(_bugProvider.future), throwsStateError);
     subscription.close();
 
-    verify(
-      () => errorReporter.recordUncaught(
-        any(that: isA<StateError>()),
-        any(),
-        reason: any(named: 'reason'),
-      ),
-    ).called(1);
+    final recorded = recordedErrors(crashlytics);
+    expect(recorded.single.error, isA<StateError>());
+    expect(recorded.single.fatal, isTrue);
   });
 
   test('同期の provider で起きたバグも記録する', () {
     expect(() => container.read(_syncBugProvider), throwsStateError);
 
-    verify(
-      () => errorReporter.recordUncaught(
-        any(that: isA<StateError>()),
-        any(),
-        reason: any(named: 'reason'),
-      ),
-    ).called(1);
+    expect(recordedErrors(crashlytics).single.error, isA<StateError>());
   });
 
-  test('知らせてから投げた失敗（DomainException）は記録し直さない', () async {
+  test('data が返した失敗（DomainException）は記録し直さない', () async {
     final subscription = container.listen(_failureProvider, (_, __) {});
     await expectLater(
       container.read(_failureProvider.future),
-      throwsA(isA<OfflineException>()),
+      throwsA(isA<UnknownException>()),
     );
     subscription.close();
 
     verifyNever(
-      () => errorReporter.recordUncaught(
+      () => crashlytics.recordError(
         any(),
         any(),
         reason: any(named: 'reason'),
+        information: any(named: 'information'),
+        printDetails: any(named: 'printDetails'),
+        fatal: any(named: 'fatal'),
       ),
     );
   });

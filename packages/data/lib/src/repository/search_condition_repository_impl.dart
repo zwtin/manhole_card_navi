@@ -4,6 +4,7 @@ import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import '../exception/domain_exception_converter.dart';
 import '../mapper/search_condition_json_mapper.dart';
+import '../service/failure_recorder.dart';
 
 /// 検索条件を端末保存するキー。
 const _searchConditionKey = 'search_condition';
@@ -14,6 +15,7 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
   );
 
   final _logger = Logger();
+  final _failureRecorder = FailureRecorder();
   final StreamingSharedPreferences _instance;
 
   @override
@@ -24,8 +26,9 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
           .getValue();
       return Result.success(SearchConditionJsonMapper.fromJsonString(source));
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }
@@ -51,8 +54,9 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
       }
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
+      return _failureRecorder.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }

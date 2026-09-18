@@ -27,6 +27,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.4.15
+  mocktail: ^1.0.4
   flutter_lints: ^5.0.0
   # realm が要求する analyzer と test パッケージが衝突するため、Flutter SDK 同梱の
   # flutter_test でテストを書く。

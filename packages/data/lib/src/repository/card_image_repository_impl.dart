@@ -9,6 +9,10 @@ import '../exception/domain_exception_converter.dart';
 import '../image/card_image_cache_manager.dart';
 import '../image/image_fallback.dart';
 
+/// ほかの Repository と違い、失敗を FailureRecorder で記録しない。画像の失敗は
+/// ImageLoadMonitor（Analytics）と、表示側の FlutterError（Crashlytics の非重大）で
+/// 記録している。遮断されている端末では画像の失敗が大量に出るので、ここでも記録すると
+/// 二重になるうえ、ほかの失敗の記録が埋もれる。
 class CardImageRepositoryImpl implements CardImageRepository {
   /// 保存せずに取るときの、本文を受け取り終えるまでの上限。応答が返り始めてから
   /// 止まった接続で、いつまでも待たないようにする。
