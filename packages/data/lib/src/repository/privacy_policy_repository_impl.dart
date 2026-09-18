@@ -1,30 +1,24 @@
 import 'package:domain/domain.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:logger/logger.dart';
 
+import '../exception/domain_exception_converter.dart';
+import '../remote_config/remote_config_reader.dart';
+
 class PrivacyPolicyRepositoryImpl implements PrivacyPolicyRepository {
+  /// プライバシーポリシーの HTML を配信する Remote Config のキー。
+  static const _key = 'privacy_policy';
+
   final _logger = Logger();
-  final _remoteConfig = FirebaseRemoteConfig.instance;
+  final _remoteConfigReader = RemoteConfigReader();
 
   @override
   Future<Result<PrivacyPolicy>> get() async {
     try {
-      final privacyPolicy = _remoteConfig.getString('privacy_policy');
-      return Result.success(
-        PrivacyPolicy(
-          value: privacyPolicy,
-        ),
-      );
-    } on CustomException catch (customException) {
+      final value = await _remoteConfigReader.readString(_key);
+      return Result.success(PrivacyPolicy(value: value));
+    } on Exception catch (error, stackTrace) {
       return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'プライバシーポリシーの取得に失敗しました。',
-        ),
+        DomainExceptionConverter.fromRemoteConfig(error, stackTrace),
       );
     }
   }

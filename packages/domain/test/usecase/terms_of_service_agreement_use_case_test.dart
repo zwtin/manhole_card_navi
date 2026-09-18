@@ -122,9 +122,7 @@ void main() {
 
     test('要求バージョンが取れなければ保存しない', () async {
       when(() => repository.getInquiredVersion()).thenAnswer(
-        (_) async => const Result.failure(
-          CustomException(title: 'エラー', text: '取得に失敗'),
-        ),
+        (_) async => const Result.failure(OfflineException()),
       );
 
       final result = await container

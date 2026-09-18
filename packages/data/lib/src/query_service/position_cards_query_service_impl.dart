@@ -3,6 +3,7 @@ import 'package:logger/logger.dart';
 
 import '../dao/realm_card_dao.dart';
 import '../dao/realm_configuration.dart';
+import '../exception/domain_exception_converter.dart';
 
 class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
   final _logger = Logger();
@@ -10,42 +11,33 @@ class PositionCardsQueryServiceImpl implements PositionCardsQueryService {
   @override
   Future<Result<List<MapMarkerDTO>>> fetch() async {
     try {
-      var realm = RealmConfiguration.open();
-
-      final daoList = realm.all<RealmCardDAO>();
-      if (daoList.isEmpty) {
-        throw const CustomException(
-          title: 'エラー',
-          text: 'データが見つかりませんでした。',
+      final realm = RealmConfiguration.open();
+      try {
+        final daoList = realm.all<RealmCardDAO>();
+        if (daoList.isEmpty) {
+          throw const NotFoundException(detail: '端末にマスターデータがありません');
+        }
+        return Result.success(
+          daoList
+              .map(
+                (dao) => MapMarkerDTO(
+                  cardId: dao.id,
+                  imagePath: dao.image,
+                  imageSubPath: dao.imageSub,
+                  distributionState: dao.distributionState,
+                  volumeId: dao.volume?.id ?? '',
+                  latitude: dao.latitude,
+                  longitude: dao.longitude,
+                ),
+              )
+              .toList(),
         );
+      } finally {
+        realm.close();
       }
-
-      final dtoList = <MapMarkerDTO>[];
-      for (final dao in daoList) {
-        dtoList.add(
-          MapMarkerDTO(
-            cardId: dao.id,
-            imagePath: dao.image,
-            imageSubPath: dao.imageSub,
-            distributionState: dao.distributionState,
-            volumeId: dao.volume?.id ?? '',
-            latitude: dao.latitude,
-            longitude: dao.longitude,
-          ),
-        );
-      }
-
-      return Result.success(dtoList);
-    } on CustomException catch (customException) {
+    } on Exception catch (error, stackTrace) {
       return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '蓋データの取得に失敗しました。',
-        ),
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
       );
     }
   }

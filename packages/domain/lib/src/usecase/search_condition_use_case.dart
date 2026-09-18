@@ -1,6 +1,6 @@
 import 'package:riverpod/riverpod.dart';
 
-import '../entity/result.dart';
+import '../core/result.dart';
 import '../entity/search_condition.dart';
 import '../repository/search_condition_repository.dart';
 

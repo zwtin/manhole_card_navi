@@ -1,11 +1,10 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
+import '../core/result.dart';
 import '../dto/need_app_update_dto.dart';
 import '../entity/app_info.dart';
-import '../entity/custom_exception.dart';
 import '../entity/inquired_app_version.dart';
-import '../entity/result.dart';
 import '../repository/app_info_repository.dart';
 
 final checkAppUpdateUseCaseProvider =
@@ -29,30 +28,21 @@ class CheckAppUpdateUseCase {
   final _logger = Logger();
 
   Future<Result<NeedAppUpdateDTO>> getNeedUpdate() async {
-    final result = await Future.wait([
-      _appInfoRepository.getAppInfo(),
-      _appInfoRepository.getInquiredAppVersion(),
-    ]);
-
-    if (result.whereType<Failure>().isNotEmpty) {
-      final exception =
-          (result.firstWhere((element) => element is Failure) as Failure)
-              .exception;
-      if (exception is CustomException) {
+    final AppInfo appInfo;
+    switch (await _appInfoRepository.getAppInfo()) {
+      case Failure(:final exception):
         return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
-          ),
-        );
-      }
+      case Success(:final value):
+        appInfo = value;
     }
 
-    final appInfo = (result.elementAt(0) as Success<AppInfo>).value;
-    final inquiredVersion =
-        (result.elementAt(1) as Success<InquiredAppVersion>).value;
+    final InquiredAppVersion inquiredVersion;
+    switch (await _appInfoRepository.getInquiredAppVersion()) {
+      case Failure(:final exception):
+        return Result.failure(exception);
+      case Success(:final value):
+        inquiredVersion = value;
+    }
 
     return Result.success(
       NeedAppUpdateDTO(

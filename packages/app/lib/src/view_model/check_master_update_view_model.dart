@@ -1,7 +1,6 @@
 import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../mapper/error_message_mapper.dart';
 import '../view_data/check_master_update_view_data.dart';
 
 final checkMasterUpdateViewModelProvider = NotifierProvider.autoDispose<
@@ -76,10 +75,10 @@ class CheckMasterUpdateViewModel
     }
   }
 
-  Future<void> _showUpdateFailure(Exception exception) async {
-    await _navigationService.showAlert(
+  Future<void> _showUpdateFailure(DomainException exception) async {
+    await _navigationService.showFailure(
       title: 'マスターデータを更新できませんでした',
-      message: ErrorMessageMapper.messageOf(exception),
+      exception: exception,
     );
   }
 
@@ -89,10 +88,10 @@ class CheckMasterUpdateViewModel
       state = state.copyWith(isLoading: true);
       final result = await _checkTermsOfServiceAgreeUseCase.getNeedAgree();
       state = state.copyWith(isLoading: false);
-      if (result is Failure) {
-        await _navigationService.showAlert(
-          title: 'エラー',
-          message: '利用規約の同意が確認できませんでした',
+      if (result case Failure(:final exception)) {
+        await _navigationService.showFailure(
+          title: '利用規約の同意状況を確認できませんでした',
+          exception: exception,
         );
         continue;
       }

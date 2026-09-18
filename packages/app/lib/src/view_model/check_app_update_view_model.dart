@@ -37,10 +37,10 @@ class CheckAppUpdateViewModel
       state = state.copyWith(isLoading: true);
       final result = await _checkAppUpdateUseCase.getNeedUpdate();
       state = state.copyWith(isLoading: false);
-      if (result is Failure) {
-        await _navigationService.showAlert(
-          title: 'エラー',
-          message: 'アプリバージョンの取得に失敗しました',
+      if (result case Failure(:final exception)) {
+        await _navigationService.showFailure(
+          title: 'アプリのバージョンを確認できませんでした',
+          exception: exception,
         );
         continue;
       }

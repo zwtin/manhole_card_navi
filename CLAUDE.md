@@ -56,7 +56,9 @@ fvm flutter pub run flutter_native_splash:create
 クリーンアーキテクチャの層ごとに `packages/` 配下のパッケージに分けています。依存の向きは `app → domain ← data` で、app と data は互いを知りません。
 
 1. **domain** (`packages/domain/`) - 他のパッケージにも Flutter にも依存しない中心。provider の宣言には Flutter を含まない `riverpod` 本体を使う（`hooks_riverpod` は使わない）
+   - `core/` - エンティティではない汎用の型（`Result`）
    - `entity/` - ビジネスエンティティ
+   - `exception/` - 失敗の種類（`DomainException`）
    - `repository/` - リポジトリインターフェースと、その provider
    - `query_service/` - 画面表示用の読み取りインターフェースと、その provider
    - `usecase/` - ビジネスロジックの実装と、その provider
@@ -82,6 +84,14 @@ fvm flutter pub run flutter_native_splash:create
 ### 依存性注入
 - Repository / QueryService / NavigationService の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` / `appProviderOverrides` を渡して実装に差し替える
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
+
+### 失敗の扱い
+- Repository / QueryService は想定内の失敗（通信・サーバーのデータ・端末の保存領域）を投げずに `Result` に包んで返す。呼ぶ側は try / catch せずに `switch` で成功と失敗を分ける
+- 失敗の種類は domain の `DomainException`（sealed）で表す。表示の文言は持たない。種類は app が表示や対応を変えたいものの分だけ作り、区別が必要になったら足す
+- data は外部の例外を `DomainExceptionConverter` で種類に変換する。サーバーのデータはキャストに頼らず型を確かめ、合わなければ `CorruptedDataException` にする
+- app は `NavigationService.showFailure(title:, exception:)` で知らせる。タイトルは何に失敗したか（画面が決める）、本文は `ErrorMessageMapper` が種類から決める
+- バグ（Error）は `Result` に包まずにそのまま流す
+- 失敗ではない結果（位置情報を許可されなかった、アップデートが必要 など）は例外にせず戻り値で返す
 
 ### 状態管理（app）
 - 1 画面 1 ViewModel 1 State。State は freezed、依存は `build()` で `ref.watch` して `late final` に保持する

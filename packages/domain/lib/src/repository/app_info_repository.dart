@@ -1,8 +1,8 @@
 import 'package:riverpod/riverpod.dart';
 
+import '../core/result.dart';
 import '../entity/app_info.dart';
 import '../entity/inquired_app_version.dart';
-import '../entity/result.dart';
 
 /// main.dart の ProviderScope で data パッケージの実装に差し替える。
 final appInfoRepositoryProvider = Provider.autoDispose<AppInfoRepository>(

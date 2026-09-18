@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../entity/result.dart';
+import '../core/result.dart';
 import '../repository/app_badge_repository.dart';
 
 final appBadgeUseCaseProvider = Provider.autoDispose<AppBadgeUseCase>(

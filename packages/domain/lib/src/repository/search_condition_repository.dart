@@ -1,6 +1,6 @@
 import 'package:riverpod/riverpod.dart';
 
-import '../entity/result.dart';
+import '../core/result.dart';
 import '../entity/search_condition.dart';
 
 /// main.dart の ProviderScope で data パッケージの実装に差し替える。

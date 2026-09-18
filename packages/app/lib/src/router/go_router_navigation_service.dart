@@ -2,6 +2,7 @@ import 'package:domain/domain.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../mapper/error_message_mapper.dart';
 import '../widget/app_alert.dart';
 import 'app_router.dart';
 
@@ -142,6 +143,17 @@ class GoRouterNavigationService implements NavigationService {
       title: title,
       message: message,
       okButtonTitle: buttonTitle,
+    );
+  }
+
+  @override
+  Future<void> showFailure({
+    required String title,
+    required DomainException exception,
+  }) async {
+    await showAlert(
+      title: title,
+      message: ErrorMessageMapper.messageOf(exception),
     );
   }
 

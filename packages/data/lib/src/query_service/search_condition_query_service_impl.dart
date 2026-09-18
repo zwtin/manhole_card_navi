@@ -2,6 +2,7 @@ import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
+import '../exception/domain_exception_converter.dart';
 import '../mapper/search_condition_json_mapper.dart';
 
 /// 検索条件を端末保存するキー。
@@ -19,24 +20,12 @@ class SearchConditionQueryServiceImpl implements SearchConditionQueryService {
   Future<Result<SearchCondition>> get() async {
     try {
       final source = _instance
-          .getString(
-            _searchConditionKey,
-            defaultValue: '',
-          )
+          .getString(_searchConditionKey, defaultValue: '')
           .getValue();
-      return Result.success(
-        SearchConditionJsonMapper.fromJsonString(source),
-      );
-    } on CustomException catch (customException) {
+      return Result.success(SearchConditionJsonMapper.fromJsonString(source));
+    } on Exception catch (error, stackTrace) {
       return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '検索条件の取得に失敗しました。',
-        ),
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
       );
     }
   }
@@ -44,10 +33,7 @@ class SearchConditionQueryServiceImpl implements SearchConditionQueryService {
   @override
   Stream<SearchCondition> getStream() {
     return _instance
-        .getString(
-          _searchConditionKey,
-          defaultValue: '',
-        )
+        .getString(_searchConditionKey, defaultValue: '')
         .map(SearchConditionJsonMapper.fromJsonString);
   }
 

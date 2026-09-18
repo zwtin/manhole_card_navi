@@ -2,6 +2,8 @@ import 'package:domain/domain.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:logger/logger.dart';
 
+import '../exception/domain_exception_converter.dart';
+
 class AnalyticsRepositoryImpl implements AnalyticsRepository {
   final _logger = Logger();
   final _analytics = FirebaseAnalytics.instance;
@@ -17,16 +19,9 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       );
       _logger.d('${analyticsEvent.name} ${analyticsEvent.parameters}');
       return const Result.success(null);
-    } on CustomException catch (customException) {
+    } on Exception catch (error, stackTrace) {
       return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'イベントの送信に失敗しました。',
-        ),
+        DomainExceptionConverter.fromPlatform(error, stackTrace),
       );
     }
   }
@@ -34,18 +29,11 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
   @override
   Future<Result<void>> sendAppOpen() async {
     try {
-      _analytics.logAppOpen();
+      await _analytics.logAppOpen();
       return const Result.success(null);
-    } on CustomException catch (customException) {
+    } on Exception catch (error, stackTrace) {
       return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'アプリ起動イベントの送信に失敗しました。',
-        ),
+        DomainExceptionConverter.fromPlatform(error, stackTrace),
       );
     }
   }

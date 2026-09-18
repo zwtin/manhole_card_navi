@@ -22,11 +22,11 @@ class PrivacyPolicyViewModel extends AutoDisposeAsyncNotifier<String> {
     _navigationService = ref.watch(navigationServiceProvider);
 
     final result = await _privacyPolicyUseCase.get();
-    if (result is Failure) {
+    if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showAlert(
-          title: 'エラー',
-          message: 'プライバシーポリシーの取得に失敗しました',
+        _navigationService.showFailure(
+          title: 'プライバシーポリシーを表示できませんでした',
+          exception: exception,
         ),
       );
       return '';

@@ -65,10 +65,10 @@ class CheckTermsOfServiceAgreeViewModel
       state = state.copyWith(isLoading: true);
       final result = await _saveTermsOfServiceAgreeVersionUseCase.save();
       state = state.copyWith(isLoading: false);
-      if (result is Failure) {
-        await _navigationService.showAlert(
-          title: 'エラー',
-          message: '同意バージョンの保存に失敗しました',
+      if (result case Failure(:final exception)) {
+        await _navigationService.showFailure(
+          title: '同意を保存できませんでした',
+          exception: exception,
         );
         continue;
       }

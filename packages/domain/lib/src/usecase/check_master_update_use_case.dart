@@ -1,9 +1,9 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
+import '../core/result.dart';
 import '../entity/manhole_card.dart';
 import '../entity/master_version.dart';
-import '../entity/result.dart';
 import '../repository/master_data_repository.dart';
 import '../repository/master_version_repository.dart';
 

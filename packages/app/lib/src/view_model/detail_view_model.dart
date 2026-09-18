@@ -45,14 +45,14 @@ class DetailViewModel
     ref.onDispose(subscription.cancel);
 
     final result = await _cardUseCase.get(id: cardId);
-    if (result is Failure) {
+    if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showAlert(
-          title: 'エラー',
-          message: 'カード情報の取得に失敗しました',
+        _navigationService.showFailure(
+          title: 'カード情報を取得できませんでした',
+          exception: exception,
         ),
       );
-      throw (result as Failure).exception;
+      throw exception;
     }
     final cardDTO = (result as Success<CardDTO>).value;
 
@@ -73,16 +73,24 @@ class DetailViewModel
     if (current == null) {
       return;
     }
+    final Result<void> result;
     if (!current.alreadyGet) {
-      await _alreadyGetCardUseCase.save(id: arg);
-      return;
+      result = await _alreadyGetCardUseCase.save(id: arg);
+    } else {
+      final confirmed = await _navigationService.showConfirm(
+        title: '確認',
+        message: 'カードを未取得に戻してよろしいですか？',
+      );
+      if (!confirmed) {
+        return;
+      }
+      result = await _alreadyGetCardUseCase.delete(id: arg);
     }
-    final confirmed = await _navigationService.showConfirm(
-      title: '確認',
-      message: 'カードを未取得に戻してよろしいですか？',
-    );
-    if (confirmed) {
-      await _alreadyGetCardUseCase.delete(id: arg);
+    if (result case Failure(:final exception)) {
+      await _navigationService.showFailure(
+        title: '取得状態を保存できませんでした',
+        exception: exception,
+      );
     }
   }
 

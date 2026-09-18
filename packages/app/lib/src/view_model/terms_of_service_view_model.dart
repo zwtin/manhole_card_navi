@@ -22,11 +22,11 @@ class TermsOfServiceViewModel extends AutoDisposeAsyncNotifier<String> {
     _navigationService = ref.watch(navigationServiceProvider);
 
     final result = await _termsOfServiceUseCase.get();
-    if (result is Failure) {
+    if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showAlert(
-          title: 'エラー',
-          message: '利用規約の取得に失敗しました',
+        _navigationService.showFailure(
+          title: '利用規約を表示できませんでした',
+          exception: exception,
         ),
       );
       return '';

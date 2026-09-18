@@ -23,11 +23,11 @@ class SettingViewModel extends AutoDisposeAsyncNotifier<SettingViewData> {
     _navigationService = ref.watch(navigationServiceProvider);
 
     final result = await _appInfoUseCase.get();
-    if (result is Failure) {
+    if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showAlert(
-          title: 'エラー',
-          message: 'アプリ情報の取得に失敗しました',
+        _navigationService.showFailure(
+          title: 'アプリの情報を取得できませんでした',
+          exception: exception,
         ),
       );
       return const SettingViewData();

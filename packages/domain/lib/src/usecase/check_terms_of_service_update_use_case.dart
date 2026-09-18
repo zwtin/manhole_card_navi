@@ -1,11 +1,9 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
+import '../core/result.dart';
 import '../dto/need_terms_of_service_update_dto.dart';
 import '../entity/agreed_terms_of_service_version.dart';
-import '../entity/custom_exception.dart';
-import '../entity/inquired_terms_of_service_version.dart';
-import '../entity/result.dart';
 import '../repository/terms_of_service_repository.dart';
 
 final checkTermsOfServiceUpdateUseCaseProvider =
@@ -29,37 +27,24 @@ class CheckTermsOfServiceUpdateUseCase {
   final _logger = Logger();
 
   Future<Result<NeedTermsOfServiceUpdateDTO>> getNeedUpdate() async {
-    final result = await Future.wait([
-      _termsOfServiceRepository.getAgreedVersion(),
-      _termsOfServiceRepository.getInquiredVersion(),
-    ]);
-
-    if (result.whereType<Failure>().isNotEmpty) {
-      final exception =
-          (result.firstWhere((element) => element is Failure) as Failure)
-              .exception;
-      if (exception is CustomException) {
+    final AgreedTermsOfServiceVersion agreedVersion;
+    switch (await _termsOfServiceRepository.getAgreedVersion()) {
+      case Failure(:final exception):
         return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
-          ),
-        );
-      }
+      case Success(:final value):
+        agreedVersion = value;
     }
 
-    final agreedVersion =
-        (result.elementAt(0) as Success<AgreedTermsOfServiceVersion>).value;
-    final inquiredVersion =
-        (result.elementAt(1) as Success<InquiredTermsOfServiceVersion>).value;
-
-    return Result.success(
-      NeedTermsOfServiceUpdateDTO(
-        value: agreedVersion.value != inquiredVersion.value,
-      ),
-    );
+    switch (await _termsOfServiceRepository.getInquiredVersion()) {
+      case Failure(:final exception):
+        return Result.failure(exception);
+      case Success(value: final inquiredVersion):
+        return Result.success(
+          NeedTermsOfServiceUpdateDTO(
+            value: agreedVersion.value != inquiredVersion.value,
+          ),
+        );
+    }
   }
 
   void dispose() {

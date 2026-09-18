@@ -140,7 +140,16 @@ class SearchConditionViewModel
       return;
     }
     final normalized = current.draft.normalized(allVolumeIds: _allVolumeIds);
-    await _searchConditionUseCase.save(searchCondition: normalized);
+    final result = await _searchConditionUseCase.save(
+      searchCondition: normalized,
+    );
+    if (result case Failure(:final exception)) {
+      await _navigationService.showFailure(
+        title: '検索条件を保存できませんでした',
+        exception: exception,
+      );
+      return;
+    }
     _navigationService.pop();
   }
 

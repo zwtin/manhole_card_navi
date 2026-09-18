@@ -2,6 +2,7 @@ import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
+import '../exception/domain_exception_converter.dart';
 import '../mapper/search_condition_json_mapper.dart';
 
 /// 検索条件を端末保存するキー。
@@ -20,28 +21,17 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
     required SearchCondition searchCondition,
   }) async {
     try {
-      final result = await _instance.setString(
+      final saved = await _instance.setString(
         _searchConditionKey,
         SearchConditionJsonMapper.toJsonString(searchCondition),
       );
-      if (result) {
-        return const Result.success(null);
-      } else {
-        throw const CustomException(
-          title: 'エラー',
-          text: 'データの更新に失敗しました。',
-        );
+      if (!saved) {
+        throw const PersistenceException(detail: '検索条件を保存できませんでした');
       }
-    } on CustomException catch (customException) {
+      return const Result.success(null);
+    } on Exception catch (error, stackTrace) {
       return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '検索条件の保存に失敗しました。',
-        ),
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
       );
     }
   }

@@ -1,9 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../entity/custom_exception.dart';
-import '../entity/manhole_card.dart';
-import '../entity/result.dart';
+import '../core/result.dart';
 import '../repository/already_get_card_repository.dart';
 import '../repository/card_repository.dart';
 
@@ -33,43 +31,23 @@ class AlreadyGetCardUseCase {
   Future<Result<void>> save({
     required String id,
   }) async {
-    final result = await _cardRepository.get(id: id);
-    if (result is Failure) {
-      final exception = (result as Failure).exception;
-      if (exception is CustomException) {
+    switch (await _cardRepository.get(id: id)) {
+      case Failure(:final exception):
         return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
-          ),
-        );
-      }
+      case Success(:final value):
+        return _alreadyGetCardRepository.save(manholeCard: value);
     }
-    final card = (result as Success<ManholeCard>).value;
-    return _alreadyGetCardRepository.save(manholeCard: card);
   }
 
   Future<Result<void>> delete({
     required String id,
   }) async {
-    final result = await _cardRepository.get(id: id);
-    if (result is Failure) {
-      final exception = (result as Failure).exception;
-      if (exception is CustomException) {
+    switch (await _cardRepository.get(id: id)) {
+      case Failure(:final exception):
         return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
-          ),
-        );
-      }
+      case Success(:final value):
+        return _alreadyGetCardRepository.delete(manholeCard: value);
     }
-    final card = (result as Success<ManholeCard>).value;
-    return _alreadyGetCardRepository.delete(manholeCard: card);
   }
 
   void dispose() {

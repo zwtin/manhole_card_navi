@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../entity/result.dart';
+import '../core/result.dart';
 import '../repository/push_notification_repository.dart';
 
 final pushNotificationUseCaseProvider =

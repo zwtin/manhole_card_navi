@@ -1,10 +1,8 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
+import '../core/result.dart';
 import '../entity/agreed_terms_of_service_version.dart';
-import '../entity/custom_exception.dart';
-import '../entity/inquired_terms_of_service_version.dart';
-import '../entity/result.dart';
 import '../repository/terms_of_service_repository.dart';
 
 final saveTermsOfServiceAgreeVersionUseCaseProvider =
@@ -28,48 +26,18 @@ class SaveTermsOfServiceAgreeVersionUseCase {
 
   final _logger = Logger();
 
+  /// 今の要求バージョンに同意したことを記録する。
   Future<Result<void>> save() async {
-    final getInquiredVersionResult =
-        await _termsOfServiceRepository.getInquiredVersion();
-    if (getInquiredVersionResult is Failure) {
-      final exception = (getInquiredVersionResult as Failure).exception;
-      if (exception is CustomException) {
+    switch (await _termsOfServiceRepository.getInquiredVersion()) {
+      case Failure(:final exception):
         return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
+      case Success(value: final inquiredVersion):
+        return _termsOfServiceRepository.setAgreedVersion(
+          agreedTermsOfServiceVersion: AgreedTermsOfServiceVersion(
+            value: inquiredVersion.value,
           ),
         );
-      }
     }
-
-    final inquiredVersion =
-        (getInquiredVersionResult as Success<InquiredTermsOfServiceVersion>)
-            .value;
-    final agreedVersion =
-        AgreedTermsOfServiceVersion(value: inquiredVersion.value);
-
-    final setAgreedVersionResult =
-        await _termsOfServiceRepository.setAgreedVersion(
-      agreedTermsOfServiceVersion: agreedVersion,
-    );
-    if (setAgreedVersionResult is Failure) {
-      final exception = setAgreedVersionResult.exception;
-      if (exception is CustomException) {
-        return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
-          ),
-        );
-      }
-    }
-
-    return const Result.success(null);
   }
 
   void dispose() {

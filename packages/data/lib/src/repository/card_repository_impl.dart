@@ -4,6 +4,7 @@ import 'package:realm/realm.dart';
 
 import '../dao/realm_card_dao.dart';
 import '../dao/realm_configuration.dart';
+import '../exception/domain_exception_converter.dart';
 import '../mapper/realm_card_mapper.dart';
 
 class CardRepositoryImpl implements CardRepository {
@@ -14,33 +15,21 @@ class CardRepositoryImpl implements CardRepository {
     required String id,
   }) async {
     try {
-      var realm = RealmConfiguration.open();
-
-      final daoOrNull = realm
-          .all<RealmCardDAO>()
-          .query(
-            "id == '$id'",
-          )
-          .firstOrNull;
-      if (daoOrNull == null) {
-        throw const CustomException(
-          title: 'エラー',
-          text: 'データが見つかりませんでした。',
-        );
+      final realm = RealmConfiguration.open();
+      try {
+        final dao = realm.all<RealmCardDAO>().query(r'id == $0', [id]).firstOrNull;
+        if (dao == null) {
+          return Result.failure(
+            NotFoundException(detail: 'ID が $id のカードが端末にありません'),
+          );
+        }
+        return Result.success(RealmCardMapper.convertToEntity(dao: dao));
+      } finally {
+        realm.close();
       }
-      final card = RealmCardMapper.convertToEntity(dao: daoOrNull);
-      realm.close();
-      return Result.success(card);
-    } on CustomException catch (customException) {
+    } on Exception catch (error, stackTrace) {
       return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'カードデータの取得に失敗しました。',
-        ),
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
       );
     }
   }

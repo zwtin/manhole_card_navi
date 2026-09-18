@@ -1,10 +1,8 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
+import '../core/result.dart';
 import '../dto/card_dto.dart';
-import '../entity/custom_exception.dart';
-import '../entity/manhole_card.dart';
-import '../entity/result.dart';
 import '../repository/card_repository.dart';
 
 final cardUseCaseProvider = Provider.autoDispose<CardUseCase>(
@@ -28,40 +26,29 @@ class CardUseCase {
   Future<Result<CardDTO>> get({
     required String id,
   }) async {
-    final result = await _cardRepository.get(id: id);
-    if (result is Failure) {
-      final exception = (result as Failure).exception;
-      if (exception is CustomException) {
+    switch (await _cardRepository.get(id: id)) {
+      case Failure(:final exception):
         return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
+      case Success(value: final card):
+        return Result.success(
+          CardDTO(
+            id: card.id,
+            name: card.name,
+            imagePath: card.image,
+            imageSubPath: card.imageSub,
+            latitude: card.latitude,
+            longitude: card.longitude,
+            prefectureId: card.prefecture.id,
+            prefectureName: card.prefecture.name,
+            volumeId: card.volume.id,
+            volumeName: card.volume.name,
+            publicationDate: card.publicationDate,
+            distributionPlaceHtml: card.distributionPlaceHtml,
+            distributionTimeHtml: card.distributionTimeHtml,
+            stockHtml: card.stockHtml,
           ),
         );
-      }
     }
-    final card = (result as Success<ManholeCard>).value;
-
-    return Result.success(
-      CardDTO(
-        id: card.id,
-        name: card.name,
-        imagePath: card.image,
-        imageSubPath: card.imageSub,
-        latitude: card.latitude,
-        longitude: card.longitude,
-        prefectureId: card.prefecture.id,
-        prefectureName: card.prefecture.name,
-        volumeId: card.volume.id,
-        volumeName: card.volume.name,
-        publicationDate: card.publicationDate,
-        distributionPlaceHtml: card.distributionPlaceHtml,
-        distributionTimeHtml: card.distributionTimeHtml,
-        stockHtml: card.stockHtml,
-      ),
-    );
   }
 
   void dispose() {

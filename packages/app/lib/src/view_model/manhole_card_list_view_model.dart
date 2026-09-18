@@ -38,16 +38,16 @@ class ManholeCardListViewModel
     );
     _navigationService = ref.watch(navigationServiceProvider);
 
-    final cardsResult = await _listCardsQueryService.fetch();
-    if (cardsResult is Success<List<ListCardDTO>>) {
-      _listCardDTOList = cardsResult.value;
-    } else {
-      unawaited(
-        _navigationService.showAlert(
-          title: 'エラー',
-          message: 'カード情報の取得に失敗しました',
-        ),
-      );
+    switch (await _listCardsQueryService.fetch()) {
+      case Success(:final value):
+        _listCardDTOList = value;
+      case Failure(:final exception):
+        unawaited(
+          _navigationService.showFailure(
+            title: 'カード一覧を取得できませんでした',
+            exception: exception,
+          ),
+        );
     }
     final conditionResult = await _searchConditionQueryService.get();
     if (conditionResult is Success<SearchCondition>) {

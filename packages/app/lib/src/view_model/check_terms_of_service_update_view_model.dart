@@ -35,10 +35,10 @@ class CheckTermsOfServiceUpdateViewModel
       state = state.copyWith(isLoading: true);
       final result = await _checkTermsOfServiceUpdateUseCase.getNeedUpdate();
       state = state.copyWith(isLoading: false);
-      if (result is Failure) {
-        await _navigationService.showAlert(
-          title: 'エラー',
-          message: 'アプリバージョンの取得に失敗しました',
+      if (result case Failure(:final exception)) {
+        await _navigationService.showFailure(
+          title: '利用規約の更新を確認できませんでした',
+          exception: exception,
         );
         continue;
       }
@@ -92,10 +92,10 @@ class CheckTermsOfServiceUpdateViewModel
       state = state.copyWith(isLoading: true);
       final result = await _saveTermsOfServiceAgreeVersionUseCase.save();
       state = state.copyWith(isLoading: false);
-      if (result is Failure) {
-        await _navigationService.showAlert(
-          title: 'エラー',
-          message: '同意バージョンの保存に失敗しました',
+      if (result case Failure(:final exception)) {
+        await _navigationService.showFailure(
+          title: '同意を保存できませんでした',
+          exception: exception,
         );
         continue;
       }

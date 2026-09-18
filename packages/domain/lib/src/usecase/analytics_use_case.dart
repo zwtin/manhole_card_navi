@@ -1,8 +1,8 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
+import '../core/result.dart';
 import '../entity/analytics_event.dart';
-import '../entity/result.dart';
 import '../repository/analytics_repository.dart';
 
 final analyticsUseCaseProvider = Provider.autoDispose<AnalyticsUseCase>(

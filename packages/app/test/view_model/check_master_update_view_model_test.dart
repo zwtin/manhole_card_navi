@@ -20,6 +20,10 @@ void main() {
   late MockNavigationService navigationService;
   late ProviderContainer container;
 
+  setUpAll(() {
+    registerFallbackValue(const UnknownException());
+  });
+
   setUp(() {
     checkMasterUpdateUseCase = MockCheckMasterUpdateUseCase();
     checkTermsOfServiceAgreeUseCase = MockCheckTermsOfServiceAgreeUseCase();
@@ -39,10 +43,9 @@ void main() {
     // autoDispose の ViewModel がテスト中に破棄されないよう購読しておく。
     container.listen(checkMasterUpdateViewModelProvider, (_, __) {});
     when(
-      () => navigationService.showAlert(
+      () => navigationService.showFailure(
         title: any(named: 'title'),
-        message: any(named: 'message'),
-        buttonTitle: any(named: 'buttonTitle'),
+        exception: any(named: 'exception'),
       ),
     ).thenAnswer((_) async {});
     when(() => checkTermsOfServiceAgreeUseCase.getNeedAgree()).thenAnswer(
@@ -89,7 +92,7 @@ void main() {
     verify(() => navigationService.goToCheckTermsOfServiceUpdate()).called(1);
   });
 
-  test('通信できずに失敗したら、失敗の種類に応じた本文を出してやり直す', () async {
+  test('失敗したら、何に失敗したかと失敗の種類を知らせてやり直す', () async {
     stubNeedUpdate([
       const Result.failure(OfflineException()),
       const Result.success(false),
@@ -98,9 +101,9 @@ void main() {
     await onLoad();
 
     verify(
-      () => navigationService.showAlert(
+      () => navigationService.showFailure(
         title: 'マスターデータを更新できませんでした',
-        message: '通信できませんでした。電波のよい場所で、もう一度お試しください。',
+        exception: any(named: 'exception', that: isA<OfflineException>()),
       ),
     ).called(1);
     verify(() => checkMasterUpdateUseCase.getNeedUpdate()).called(2);
@@ -116,9 +119,9 @@ void main() {
     await onLoad();
 
     verify(
-      () => navigationService.showAlert(
+      () => navigationService.showFailure(
         title: 'マスターデータを更新できませんでした',
-        message: any(named: 'message', that: startsWith('データを正しく読み込めませんでした')),
+        exception: any(named: 'exception', that: isA<CorruptedDataException>()),
       ),
     ).called(1);
     verify(() => checkMasterUpdateUseCase.getNeedUpdate()).called(2);

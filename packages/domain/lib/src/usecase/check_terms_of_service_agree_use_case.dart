@@ -1,10 +1,8 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
+import '../core/result.dart';
 import '../dto/need_terms_of_service_agree_dto.dart';
-import '../entity/agreed_terms_of_service_version.dart';
-import '../entity/custom_exception.dart';
-import '../entity/result.dart';
 import '../repository/terms_of_service_repository.dart';
 
 final checkTermsOfServiceAgreeUseCaseProvider =
@@ -28,29 +26,16 @@ class CheckTermsOfServiceAgreeUseCase {
   final _logger = Logger();
 
   Future<Result<NeedTermsOfServiceAgreeDTO>> getNeedAgree() async {
-    final result = await _termsOfServiceRepository.getAgreedVersion();
-    if (result is Failure) {
-      final exception = (result as Failure).exception;
-      if (exception is CustomException) {
+    switch (await _termsOfServiceRepository.getAgreedVersion()) {
+      case Failure(:final exception):
         return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
+      case Success(value: final agreedVersion):
+        return Result.success(
+          NeedTermsOfServiceAgreeDTO(
+            value: agreedVersion.value.isEmpty,
           ),
         );
-      }
     }
-
-    final agreedVersion =
-        (result as Success<AgreedTermsOfServiceVersion>).value;
-
-    return Result.success(
-      NeedTermsOfServiceAgreeDTO(
-        value: agreedVersion.value.isEmpty,
-      ),
-    );
   }
 
   void dispose() {

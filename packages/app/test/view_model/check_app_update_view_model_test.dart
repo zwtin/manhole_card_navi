@@ -15,6 +15,10 @@ void main() {
   late MockNavigationService navigationService;
   late ProviderContainer container;
 
+  setUpAll(() {
+    registerFallbackValue(const UnknownException());
+  });
+
   setUp(() {
     checkAppUpdateUseCase = MockCheckAppUpdateUseCase();
     navigationService = MockNavigationService();
@@ -32,6 +36,12 @@ void main() {
         title: any(named: 'title'),
         message: any(named: 'message'),
         buttonTitle: any(named: 'buttonTitle'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => navigationService.showFailure(
+        title: any(named: 'title'),
+        exception: any(named: 'exception'),
       ),
     ).thenAnswer((_) async {});
     when(
@@ -71,16 +81,16 @@ void main() {
 
   test('バージョンの取得に失敗したら、アラートを閉じた後にやり直す', () async {
     stubNeedUpdate([
-      const Result.failure(CustomException(title: 'エラー', text: '取得に失敗')),
+      const Result.failure(OfflineException()),
       const Result.success(NeedAppUpdateDTO(value: false)),
     ]);
 
     await container.read(checkAppUpdateViewModelProvider.notifier).onLoad();
 
     verify(
-      () => navigationService.showAlert(
-        title: 'エラー',
-        message: 'アプリバージョンの取得に失敗しました',
+      () => navigationService.showFailure(
+        title: 'アプリのバージョンを確認できませんでした',
+        exception: any(named: 'exception', that: isA<OfflineException>()),
       ),
     ).called(1);
     verify(() => checkAppUpdateUseCase.getNeedUpdate()).called(2);

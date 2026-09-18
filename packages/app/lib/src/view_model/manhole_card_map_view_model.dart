@@ -267,10 +267,10 @@ class ManholeCardMapViewModel
       return;
     }
     final result = await _positionCardsQueryService.fetch();
-    if (result is Failure) {
-      await _navigationService.showAlert(
-        title: 'エラー',
-        message: 'カード情報の取得に失敗しました',
+    if (result case Failure(:final exception)) {
+      await _navigationService.showFailure(
+        title: 'カード情報を取得できませんでした',
+        exception: exception,
       );
       return;
     }
@@ -285,10 +285,10 @@ class ManholeCardMapViewModel
       return;
     }
     final result = await _distributionCardsQueryService.fetch();
-    if (result is Failure) {
-      await _navigationService.showAlert(
-        title: 'エラー',
-        message: 'カード情報の取得に失敗しました',
+    if (result case Failure(:final exception)) {
+      await _navigationService.showFailure(
+        title: 'カード情報を取得できませんでした',
+        exception: exception,
       );
       return;
     }

@@ -1,7 +1,7 @@
+export 'src/core/result.dart';
 export 'src/entity/agreed_terms_of_service_version.dart';
 export 'src/entity/analytics_event.dart';
 export 'src/entity/app_info.dart';
-export 'src/entity/custom_exception.dart';
 export 'src/entity/display_filter.dart';
 export 'src/entity/inquired_app_version.dart';
 export 'src/entity/inquired_terms_of_service_version.dart';
@@ -13,7 +13,6 @@ export 'src/entity/manhole_card_volume.dart';
 export 'src/entity/map_coordinate_type.dart';
 export 'src/entity/master_version.dart';
 export 'src/entity/privacy_policy.dart';
-export 'src/entity/result.dart';
 export 'src/entity/search_condition.dart';
 export 'src/entity/terms_of_service.dart';
 export 'src/exception/domain_exception.dart';
