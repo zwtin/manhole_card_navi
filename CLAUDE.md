@@ -34,7 +34,7 @@ fvm flutter build ios --dart-define-from-file=dart_defines/production.env
 fvm flutter analyze
 
 # テストの実行（パッケージごと）
-(cd packages/domain && fvm flutter test)
+(cd packages/domain && fvm dart test)  # domain は Flutter に依存しないので dart で回せる
 (cd packages/data && fvm flutter test)
 (cd packages/app && fvm flutter test)
 
@@ -55,7 +55,7 @@ fvm flutter pub run flutter_native_splash:create
 ### パッケージ構成
 クリーンアーキテクチャの層ごとに `packages/` 配下のパッケージに分けています。依存の向きは `app → domain ← data` で、app と data は互いを知りません。
 
-1. **domain** (`packages/domain/`) - 他のパッケージに依存しない中心
+1. **domain** (`packages/domain/`) - 他のパッケージにも Flutter にも依存しない中心。provider の宣言には Flutter を含まない `riverpod` 本体を使う（`hooks_riverpod` は使わない）
    - `entity/` - ビジネスエンティティ
    - `repository/` - リポジトリインターフェースと、その provider
    - `query_service/` - 画面表示用の読み取りインターフェースと、その provider

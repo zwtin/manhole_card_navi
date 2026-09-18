@@ -1,4 +1,4 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import '../entity/agreed_terms_of_service_version.dart';
 import '../entity/inquired_terms_of_service_version.dart';

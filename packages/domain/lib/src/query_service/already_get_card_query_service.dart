@@ -1,4 +1,4 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import '../dto/already_get_card_dto.dart';
 import '../entity/result.dart';

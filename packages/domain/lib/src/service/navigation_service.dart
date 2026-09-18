@@ -1,4 +1,4 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 /// main.dart の ProviderScope で app パッケージの実装に差し替える。
 final navigationServiceProvider = Provider<NavigationService>(

@@ -1,5 +1,5 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:riverpod/riverpod.dart';
 
 import '../dto/privacy_policy_dto.dart';
 import '../entity/custom_exception.dart';

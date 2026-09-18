@@ -1,4 +1,4 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import '../dto/map_marker_dto.dart';
 import '../entity/result.dart';

@@ -1,4 +1,4 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import '../entity/inquired_master_version.dart';
 import '../entity/manhole_card_prefecture.dart';
