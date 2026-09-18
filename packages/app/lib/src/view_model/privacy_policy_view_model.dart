@@ -31,7 +31,7 @@ class PrivacyPolicyViewModel extends AutoDisposeAsyncNotifier<String> {
       );
       return '';
     }
-    return (result as Success<PrivacyPolicyDTO>).value.value;
+    return (result as Success<PrivacyPolicy>).value.value;
   }
 
   Future<void> sendScreenView() async {

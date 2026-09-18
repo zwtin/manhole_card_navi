@@ -44,8 +44,8 @@ class CheckAppUpdateViewModel
         );
         continue;
       }
-      final needAppUpdateDTO = (result as Success<NeedAppUpdateDTO>).value;
-      if (needAppUpdateDTO.value) {
+      final needAppUpdate = (result as Success<bool>).value;
+      if (needAppUpdate) {
         await _navigationService.showAlert(
           title: 'バージョンエラー',
           message: '最新のバージョンがリリースされています。アプリをアップデートしてください。',

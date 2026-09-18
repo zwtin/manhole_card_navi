@@ -32,10 +32,10 @@ class SettingViewModel extends AutoDisposeAsyncNotifier<SettingViewData> {
       );
       return const SettingViewData();
     }
-    final appInfoDTO = (result as Success<AppInfoDTO>).value;
+    final appInfo = (result as Success<AppInfo>).value;
     return SettingViewData(
-      appName: appInfoDTO.name,
-      appVersion: appInfoDTO.version,
+      appName: appInfo.name,
+      appVersion: appInfo.version,
     );
   }
 

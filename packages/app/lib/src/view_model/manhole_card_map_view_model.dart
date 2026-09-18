@@ -49,7 +49,7 @@ class ManholeCardMapViewModel
 
   final List<MapMarkerDTO> _positionMarkerDTOList = [];
   final List<MapMarkerDTO> _distributionMarkerDTOList = [];
-  final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
+  Set<String> _alreadyGetCardIds = {};
   double _zoom = initialCameraPosition.zoom;
   LatLng _position = initialCameraPosition.target;
 
@@ -300,12 +300,12 @@ class ManholeCardMapViewModel
 
   void _listenAlreadyGetCard() {
     final subscription = _alreadyGetCardQueryService.getStream().listen((
-      dtoList,
+      cardIds,
     ) async {
       final generation = ++_markerGeneration;
       final newViewData = await MapMarkersViewDataMapper.convertToViewData(
         mapMarkerDTOList: _currentMarkerDTOList,
-        alreadyGetCardDTOList: dtoList,
+        alreadyGetCardIds: cardIds,
         centerCoordinate: _position,
         searchCondition: _searchCondition.common,
         onPartial: (partial) {
@@ -322,9 +322,7 @@ class ManholeCardMapViewModel
         state = state.copyWith(markers: newViewData);
       }
 
-      _alreadyGetCardDTOList
-        ..clear()
-        ..addAll(dtoList);
+      _alreadyGetCardIds = cardIds;
     });
     ref.onDispose(subscription.cancel);
   }
@@ -354,7 +352,7 @@ class ManholeCardMapViewModel
     final generation = ++_markerGeneration;
     final newViewData = await MapMarkersViewDataMapper.convertToViewData(
       mapMarkerDTOList: _currentMarkerDTOList,
-      alreadyGetCardDTOList: _alreadyGetCardDTOList,
+      alreadyGetCardIds: _alreadyGetCardIds,
       centerCoordinate: _position,
       searchCondition: _searchCondition.common,
       onPartial: (partial) {

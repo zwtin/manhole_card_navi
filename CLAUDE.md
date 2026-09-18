@@ -62,7 +62,7 @@ fvm flutter pub run flutter_native_splash:create
    - `repository/` - リポジトリインターフェースと、その provider
    - `query_service/` - 画面表示用の読み取りインターフェースと、その provider
    - `usecase/` - ビジネスロジックの実装と、その provider
-   - `dto/` - UseCase / QueryService が返すデータ
+   - `dto/` - QueryService が返す画面表示用のデータ。UseCase はエンティティや bool をそのまま返し、DTO に詰め替えない
    - `service/` - 画面遷移の窓口 `NavigationService` のインターフェース
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装
@@ -76,7 +76,7 @@ fvm flutter pub run flutter_native_splash:create
    - `view/` - 画面（`*_page.dart`）
    - `view_model/` - 画面ごとの ViewModel
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
-   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・DTO から表示用データへの変換・画像取得・テーマ
+   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティや DTO から表示用データへの変換・画像取得・テーマ
    - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 
 4. **ルート** (`lib/`) - `main.dart` で Firebase を初期化し、3 パッケージを組み立てるだけ

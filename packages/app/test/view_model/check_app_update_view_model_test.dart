@@ -57,14 +57,14 @@ void main() {
   });
 
   /// getNeedUpdate が呼ばれるたびに [results] を先頭から順に返す。
-  void stubNeedUpdate(List<Result<NeedAppUpdateDTO>> results) {
+  void stubNeedUpdate(List<Result<bool>> results) {
     var index = 0;
     when(() => checkAppUpdateUseCase.getNeedUpdate())
         .thenAnswer((_) async => results[index++]);
   }
 
   test('アップデートが不要なら、マスターデータの確認へ進む', () async {
-    stubNeedUpdate([const Result.success(NeedAppUpdateDTO(value: false))]);
+    stubNeedUpdate([const Result.success(false)]);
 
     await container.read(checkAppUpdateViewModelProvider.notifier).onLoad();
 
@@ -82,7 +82,7 @@ void main() {
   test('バージョンの取得に失敗したら、アラートを閉じた後にやり直す', () async {
     stubNeedUpdate([
       const Result.failure(OfflineException()),
-      const Result.success(NeedAppUpdateDTO(value: false)),
+      const Result.success(false),
     ]);
 
     await container.read(checkAppUpdateViewModelProvider.notifier).onLoad();
@@ -99,9 +99,9 @@ void main() {
 
   test('アップデートが必要なら、ストアへ誘導して先へは進まない', () async {
     stubNeedUpdate([
-      const Result.success(NeedAppUpdateDTO(value: true)),
+      const Result.success(true),
       // ストアから戻ってきたときにはアップデート済みになっている想定。
-      const Result.success(NeedAppUpdateDTO(value: false)),
+      const Result.success(false),
     ]);
 
     await container.read(checkAppUpdateViewModelProvider.notifier).onLoad();

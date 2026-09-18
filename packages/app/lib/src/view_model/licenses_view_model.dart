@@ -32,10 +32,10 @@ class LicensesViewModel extends AutoDisposeAsyncNotifier<LicensesViewData> {
       );
       return const LicensesViewData();
     }
-    final appInfoDTO = (result as Success<AppInfoDTO>).value;
+    final appInfo = (result as Success<AppInfo>).value;
     return LicensesViewData(
-      appName: appInfoDTO.name,
-      appVersion: appInfoDTO.version,
+      appName: appInfo.name,
+      appVersion: appInfo.version,
     );
   }
 

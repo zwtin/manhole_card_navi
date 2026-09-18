@@ -58,20 +58,18 @@ class MapMarkersViewDataMapper {
   /// 戻り値は全件の生成が完了した最終的な一覧。
   static Future<MapMarkersViewData> convertToViewData({
     required List<MapMarkerDTO> mapMarkerDTOList,
-    required List<AlreadyGetCardDTO> alreadyGetCardDTOList,
+    required Set<String> alreadyGetCardIds,
     required LatLng centerCoordinate,
     required CommonSearchCondition searchCondition,
     void Function(MapMarkersViewData partial)? onPartial,
   }) async {
-    final alreadyGetIds = alreadyGetCardDTOList.map((e) => e.cardId).toSet();
-
     // 近傍 30 件に絞る前に、横断フィルタ（弾数・配布状態・取得状態）を適用する。
     // 先に絞ることで、フィルタ対象外のカードが近傍枠を消費しないようにする。
     final filtered = mapMarkerDTOList.where((dto) {
       return searchCondition.matchesVolume(dto.volumeId) &&
           searchCondition.matchesDistributionState(dto.distributionState) &&
           searchCondition.matchesDisplay(
-            alreadyGet: alreadyGetIds.contains(dto.cardId),
+            alreadyGet: alreadyGetCardIds.contains(dto.cardId),
           );
     }).toList();
 
@@ -85,7 +83,7 @@ class MapMarkersViewDataMapper {
     // メモリキャッシュ済みは合成不要なため先にまとめて反映する。
     final pending = <MapMarkerDTO>[];
     for (final dto in takedList) {
-      final alreadyGet = alreadyGetIds.contains(dto.cardId);
+      final alreadyGet = alreadyGetCardIds.contains(dto.cardId);
       final key = _cacheKey(dto: dto, alreadyGet: alreadyGet);
       final cached = cache[key];
       if (cached != null) {
@@ -102,7 +100,7 @@ class MapMarkersViewDataMapper {
     // 直列 await だと DL・合成が積み重なりラグの原因になる。
     await Future.wait(
       pending.map((dto) async {
-        final alreadyGet = alreadyGetIds.contains(dto.cardId);
+        final alreadyGet = alreadyGetCardIds.contains(dto.cardId);
         final icon = await _buildIcon(dto: dto, alreadyGet: alreadyGet);
         if (icon == null) {
           return;

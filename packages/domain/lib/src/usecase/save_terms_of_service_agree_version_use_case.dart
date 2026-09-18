@@ -2,7 +2,6 @@ import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../core/result.dart';
-import '../entity/agreed_terms_of_service_version.dart';
 import '../repository/terms_of_service_repository.dart';
 
 final saveTermsOfServiceAgreeVersionUseCaseProvider =
@@ -33,9 +32,7 @@ class SaveTermsOfServiceAgreeVersionUseCase {
         return Result.failure(exception);
       case Success(value: final inquiredVersion):
         return _termsOfServiceRepository.setAgreedVersion(
-          agreedTermsOfServiceVersion: AgreedTermsOfServiceVersion(
-            value: inquiredVersion.value,
-          ),
+          version: inquiredVersion,
         );
     }
   }

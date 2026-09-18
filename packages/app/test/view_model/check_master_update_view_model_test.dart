@@ -49,7 +49,7 @@ void main() {
       ),
     ).thenAnswer((_) async {});
     when(() => checkTermsOfServiceAgreeUseCase.getNeedAgree()).thenAnswer(
-      (_) async => const Result.success(NeedTermsOfServiceAgreeDTO(value: true)),
+      (_) async => const Result.success(true),
     );
   });
 
@@ -82,8 +82,7 @@ void main() {
     when(() => checkMasterUpdateUseCase.updateMaster())
         .thenAnswer((_) async => const Result.success(null));
     when(() => checkTermsOfServiceAgreeUseCase.getNeedAgree()).thenAnswer(
-      (_) async =>
-          const Result.success(NeedTermsOfServiceAgreeDTO(value: false)),
+      (_) async => const Result.success(false),
     );
 
     await onLoad();

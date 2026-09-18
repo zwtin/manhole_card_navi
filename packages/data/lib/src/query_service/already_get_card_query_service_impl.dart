@@ -16,10 +16,10 @@ class AlreadyGetCardQueryServiceImpl implements AlreadyGetCardQueryService {
   final StreamingSharedPreferences _instance;
 
   @override
-  Future<Result<List<AlreadyGetCardDTO>>> get() async {
+  Future<Result<Set<String>>> get() async {
     try {
       return Result.success(
-        _toDTOList(_instance.getStringList(_key, defaultValue: []).getValue()),
+        _instance.getStringList(_key, defaultValue: []).getValue().toSet(),
       );
     } on Exception catch (error, stackTrace) {
       return Result.failure(
@@ -29,12 +29,10 @@ class AlreadyGetCardQueryServiceImpl implements AlreadyGetCardQueryService {
   }
 
   @override
-  Stream<List<AlreadyGetCardDTO>> getStream() {
-    return _instance.getStringList(_key, defaultValue: []).map(_toDTOList);
-  }
-
-  static List<AlreadyGetCardDTO> _toDTOList(List<String> cardIds) {
-    return cardIds.map((cardId) => AlreadyGetCardDTO(cardId: cardId)).toList();
+  Stream<Set<String>> getStream() {
+    return _instance
+        .getStringList(_key, defaultValue: [])
+        .map((cardIds) => cardIds.toSet());
   }
 
   void dispose() {

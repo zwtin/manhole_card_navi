@@ -42,9 +42,8 @@ class CheckTermsOfServiceUpdateViewModel
         );
         continue;
       }
-      final needUpdateDTO =
-          (result as Success<NeedTermsOfServiceUpdateDTO>).value;
-      if (needUpdateDTO.value) {
+      final needUpdate = (result as Success<bool>).value;
+      if (needUpdate) {
         state = state.copyWith(inquireUpdate: true);
       } else {
         _navigationService.goToHome();

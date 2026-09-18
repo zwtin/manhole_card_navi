@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:domain/domain.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../mapper/list_prefectures_view_data_mapper.dart';
@@ -22,7 +23,7 @@ class ManholeCardListViewModel
   late final NavigationService _navigationService;
 
   List<ListCardDTO> _listCardDTOList = [];
-  List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
+  Set<String> _alreadyGetCardIds = {};
   SearchCondition _searchCondition = SearchCondition.initial();
 
   /// 展開中の都道府県。取得状態や検索条件が変わって一覧を作り直しても開いたままにする。
@@ -54,18 +55,18 @@ class ManholeCardListViewModel
       _searchCondition = conditionResult.value;
     }
     final alreadyGetResult = await _alreadyGetCardQueryService.get();
-    if (alreadyGetResult is Success<List<AlreadyGetCardDTO>>) {
-      _alreadyGetCardDTOList = alreadyGetResult.value;
+    if (alreadyGetResult is Success<Set<String>>) {
+      _alreadyGetCardIds = alreadyGetResult.value;
     }
 
     final alreadyGetSubscription = _alreadyGetCardQueryService
         .getStream()
-        .listen((dtoList) async {
+        .listen((cardIds) async {
       // 購読開始時にも現在値が流れてくるため、変わっていなければ作り直さない。
-      if (_sameCardIds(dtoList, _alreadyGetCardDTOList)) {
+      if (setEquals(cardIds, _alreadyGetCardIds)) {
         return;
       }
-      _alreadyGetCardDTOList = dtoList;
+      _alreadyGetCardIds = cardIds;
       state = AsyncData(await _buildViewData());
     });
     ref.onDispose(alreadyGetSubscription.cancel);
@@ -126,7 +127,7 @@ class ManholeCardListViewModel
   Future<ManholeCardListViewData> _buildViewData() async {
     final prefectures = await ListPrefecturesViewDataMapper.convertToViewData(
       listCardDTOList: _listCardDTOList,
-      alreadyGetCardDTOList: _alreadyGetCardDTOList,
+      alreadyGetCardIds: _alreadyGetCardIds,
       searchCondition: _searchCondition.common,
     );
     return ManholeCardListViewData(
@@ -142,23 +143,8 @@ class ManholeCardListViewModel
             .toList(),
       ),
       totalCount: _listCardDTOList.length,
-      alreadyGetCount: _alreadyGetCardDTOList.length,
+      alreadyGetCount: _alreadyGetCardIds.length,
       activeFilterCount: _searchCondition.activeFilterCount,
     );
-  }
-
-  static bool _sameCardIds(
-    List<AlreadyGetCardDTO> a,
-    List<AlreadyGetCardDTO> b,
-  ) {
-    if (a.length != b.length) {
-      return false;
-    }
-    for (var i = 0; i < a.length; i++) {
-      if (a[i].cardId != b[i].cardId) {
-        return false;
-      }
-    }
-    return true;
   }
 }

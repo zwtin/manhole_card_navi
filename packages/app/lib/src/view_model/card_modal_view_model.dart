@@ -36,7 +36,7 @@ class CardModalViewModel
     final mapViewModel = ref.read(manholeCardMapViewModelProvider.notifier);
 
     final subscription = _alreadyGetCardQueryService.getStream().listen((
-      dtoList,
+      cardIds,
     ) {
       final current = state.valueOrNull;
       if (current == null) {
@@ -44,7 +44,7 @@ class CardModalViewModel
       }
       state = AsyncData(
         current.copyWith(
-          alreadyGet: dtoList.any((dto) => dto.cardId == arg.cardId),
+          alreadyGet: cardIds.contains(arg.cardId),
         ),
       );
     });
@@ -60,23 +60,23 @@ class CardModalViewModel
       );
       throw exception;
     }
-    final cardDTO = (result as Success<CardDTO>).value;
+    final card = (result as Success<ManholeCard>).value;
 
     final latitude = arg.latitude;
     final longitude = arg.longitude;
     final position = latitude != null && longitude != null
         ? LatLng(latitude, longitude)
         : await mapViewModel.findCardPosition(arg.cardId) ??
-            LatLng(cardDTO.latitude, cardDTO.longitude);
+            LatLng(card.latitude, card.longitude);
 
     final alreadyGetResult = await _alreadyGetCardQueryService.get();
     return CardModalViewData(
       card: await ModalCardViewDataMapper.convertToViewData(
-        cardDTO: cardDTO,
+        card: card,
         position: position,
       ),
-      alreadyGet: alreadyGetResult is Success<List<AlreadyGetCardDTO>> &&
-          alreadyGetResult.value.any((dto) => dto.cardId == arg.cardId),
+      alreadyGet: alreadyGetResult is Success<Set<String>> &&
+          alreadyGetResult.value.contains(arg.cardId),
     );
   }
 

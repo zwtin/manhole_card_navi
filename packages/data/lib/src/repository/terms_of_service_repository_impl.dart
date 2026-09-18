@@ -36,10 +36,10 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
   }
 
   @override
-  Future<Result<InquiredTermsOfServiceVersion>> getInquiredVersion() async {
+  Future<Result<TermsOfServiceVersion>> getInquiredVersion() async {
     try {
       final value = await _remoteConfigReader.readString(_inquiredVersionKey);
-      return Result.success(InquiredTermsOfServiceVersion(value: value));
+      return Result.success(TermsOfServiceVersion(value: value));
     } on Exception catch (error, stackTrace) {
       return Result.failure(
         DomainExceptionConverter.fromRemoteConfig(error, stackTrace),
@@ -48,12 +48,15 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
   }
 
   @override
-  Future<Result<AgreedTermsOfServiceVersion>> getAgreedVersion() async {
+  Future<Result<TermsOfServiceVersion?>> getAgreedVersion() async {
     try {
       final value = _instance
           .getString(_agreedVersionKey, defaultValue: '')
           .getValue();
-      return Result.success(AgreedTermsOfServiceVersion(value: value));
+      // まだ一度も同意していなければ、保存されていない（空文字が返る）。
+      return Result.success(
+        value.isEmpty ? null : TermsOfServiceVersion(value: value),
+      );
     } on Exception catch (error, stackTrace) {
       return Result.failure(
         DomainExceptionConverter.fromLocalStorage(error, stackTrace),
@@ -63,13 +66,10 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
 
   @override
   Future<Result<void>> setAgreedVersion({
-    required AgreedTermsOfServiceVersion agreedTermsOfServiceVersion,
+    required TermsOfServiceVersion version,
   }) async {
     try {
-      final saved = await _instance.setString(
-        _agreedVersionKey,
-        agreedTermsOfServiceVersion.value,
-      );
+      final saved = await _instance.setString(_agreedVersionKey, version.value);
       if (!saved) {
         throw const PersistenceException(detail: '同意した利用規約のバージョンを保存できませんでした');
       }

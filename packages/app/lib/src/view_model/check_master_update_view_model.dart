@@ -95,7 +95,7 @@ class CheckMasterUpdateViewModel
         );
         continue;
       }
-      return (result as Success<NeedTermsOfServiceAgreeDTO>).value.value;
+      return (result as Success<bool>).value;
     }
   }
 }

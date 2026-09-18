@@ -31,7 +31,7 @@ class TermsOfServiceViewModel extends AutoDisposeAsyncNotifier<String> {
       );
       return '';
     }
-    return (result as Success<TermsOfServiceDTO>).value.value;
+    return (result as Success<TermsOfService>).value.value;
   }
 
   Future<void> sendScreenView() async {

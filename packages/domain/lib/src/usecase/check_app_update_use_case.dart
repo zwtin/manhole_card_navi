@@ -2,7 +2,6 @@ import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../core/result.dart';
-import '../dto/need_app_update_dto.dart';
 import '../entity/app_info.dart';
 import '../entity/inquired_app_version.dart';
 import '../repository/app_info_repository.dart';
@@ -27,7 +26,8 @@ class CheckAppUpdateUseCase {
 
   final _logger = Logger();
 
-  Future<Result<NeedAppUpdateDTO>> getNeedUpdate() async {
+  /// アプリのアップデートが必要か（要求バージョンより古いか）。
+  Future<Result<bool>> getNeedUpdate() async {
     final AppInfo appInfo;
     switch (await _appInfoRepository.getAppInfo()) {
       case Failure(:final exception):
@@ -45,11 +45,9 @@ class CheckAppUpdateUseCase {
     }
 
     return Result.success(
-      NeedAppUpdateDTO(
-        value: _checkNeedUpdate(
-          appInfo: appInfo,
-          inquiredVersion: inquiredVersion,
-        ),
+      _checkNeedUpdate(
+        appInfo: appInfo,
+        inquiredVersion: inquiredVersion,
       ),
     );
   }

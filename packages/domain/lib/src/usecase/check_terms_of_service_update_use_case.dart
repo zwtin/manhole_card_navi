@@ -2,8 +2,7 @@ import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../core/result.dart';
-import '../dto/need_terms_of_service_update_dto.dart';
-import '../entity/agreed_terms_of_service_version.dart';
+import '../entity/terms_of_service_version.dart';
 import '../repository/terms_of_service_repository.dart';
 
 final checkTermsOfServiceUpdateUseCaseProvider =
@@ -26,8 +25,9 @@ class CheckTermsOfServiceUpdateUseCase {
 
   final _logger = Logger();
 
-  Future<Result<NeedTermsOfServiceUpdateDTO>> getNeedUpdate() async {
-    final AgreedTermsOfServiceVersion agreedVersion;
+  /// 利用規約が更新されていて、再同意が必要か。
+  Future<Result<bool>> getNeedUpdate() async {
+    final TermsOfServiceVersion? agreedVersion;
     switch (await _termsOfServiceRepository.getAgreedVersion()) {
       case Failure(:final exception):
         return Result.failure(exception);
@@ -39,11 +39,7 @@ class CheckTermsOfServiceUpdateUseCase {
       case Failure(:final exception):
         return Result.failure(exception);
       case Success(value: final inquiredVersion):
-        return Result.success(
-          NeedTermsOfServiceUpdateDTO(
-            value: agreedVersion.value != inquiredVersion.value,
-          ),
-        );
+        return Result.success(agreedVersion != inquiredVersion);
     }
   }
 

@@ -11,7 +11,7 @@ void main() {
   late ProviderContainer container;
 
   setUpAll(() {
-    registerFallbackValue(const AgreedTermsOfServiceVersion(value: ''));
+    registerFallbackValue(const TermsOfServiceVersion(value: ''));
   });
 
   setUp(() {
@@ -27,30 +27,30 @@ void main() {
     container.dispose();
   });
 
-  void stubAgreed(String value) {
+  /// [value] が null なら、まだ一度も同意していない。
+  void stubAgreed(String? value) {
     when(() => repository.getAgreedVersion()).thenAnswer(
-      (_) async => Result.success(AgreedTermsOfServiceVersion(value: value)),
+      (_) async => Result.success(
+        value == null ? null : TermsOfServiceVersion(value: value),
+      ),
     );
   }
 
   void stubInquired(String value) {
     when(() => repository.getInquiredVersion()).thenAnswer(
-      (_) async => Result.success(InquiredTermsOfServiceVersion(value: value)),
+      (_) async => Result.success(TermsOfServiceVersion(value: value)),
     );
   }
 
   group('CheckTermsOfServiceAgreeUseCase', () {
     test('一度も同意していなければ同意が必要', () async {
-      stubAgreed('');
+      stubAgreed(null);
 
       final result = await container
           .read(checkTermsOfServiceAgreeUseCaseProvider)
           .getNeedAgree();
 
-      expect(
-        (result as Success<NeedTermsOfServiceAgreeDTO>).value.value,
-        isTrue,
-      );
+      expect((result as Success<bool>).value, isTrue);
     });
 
     test('同意済みのバージョンがあれば同意は不要', () async {
@@ -60,10 +60,7 @@ void main() {
           .read(checkTermsOfServiceAgreeUseCaseProvider)
           .getNeedAgree();
 
-      expect(
-        (result as Success<NeedTermsOfServiceAgreeDTO>).value.value,
-        isFalse,
-      );
+      expect((result as Success<bool>).value, isFalse);
     });
   });
 
@@ -76,10 +73,7 @@ void main() {
           .read(checkTermsOfServiceUpdateUseCaseProvider)
           .getNeedUpdate();
 
-      expect(
-        (result as Success<NeedTermsOfServiceUpdateDTO>).value.value,
-        isTrue,
-      );
+      expect((result as Success<bool>).value, isTrue);
     });
 
     test('同意済みと要求のバージョンが同じなら再同意は不要', () async {
@@ -90,10 +84,7 @@ void main() {
           .read(checkTermsOfServiceUpdateUseCaseProvider)
           .getNeedUpdate();
 
-      expect(
-        (result as Success<NeedTermsOfServiceUpdateDTO>).value.value,
-        isFalse,
-      );
+      expect((result as Success<bool>).value, isFalse);
     });
   });
 
@@ -101,9 +92,7 @@ void main() {
     test('要求バージョンを同意済みバージョンとして保存する', () async {
       stubInquired('3');
       when(
-        () => repository.setAgreedVersion(
-          agreedTermsOfServiceVersion: any(named: 'agreedTermsOfServiceVersion'),
-        ),
+        () => repository.setAgreedVersion(version: any(named: 'version')),
       ).thenAnswer((_) async => const Result.success(null));
 
       final result = await container
@@ -113,9 +102,7 @@ void main() {
       expect(result, isA<Success<void>>());
       verify(
         () => repository.setAgreedVersion(
-          agreedTermsOfServiceVersion: const AgreedTermsOfServiceVersion(
-            value: '3',
-          ),
+          version: const TermsOfServiceVersion(value: '3'),
         ),
       ).called(1);
     });
@@ -131,9 +118,7 @@ void main() {
 
       expect(result, isA<Failure<void>>());
       verifyNever(
-        () => repository.setAgreedVersion(
-          agreedTermsOfServiceVersion: any(named: 'agreedTermsOfServiceVersion'),
-        ),
+        () => repository.setAgreedVersion(version: any(named: 'version')),
       );
     });
   });

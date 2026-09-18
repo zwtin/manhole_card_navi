@@ -2,7 +2,7 @@ import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../core/result.dart';
-import '../dto/terms_of_service_dto.dart';
+import '../entity/terms_of_service.dart';
 import '../repository/terms_of_service_repository.dart';
 
 final termsOfServiceUseCaseProvider =
@@ -25,13 +25,8 @@ class TermsOfServiceUseCase {
 
   final _logger = Logger();
 
-  Future<Result<TermsOfServiceDTO>> get() async {
-    switch (await _termsOfServiceRepository.get()) {
-      case Failure(:final exception):
-        return Result.failure(exception);
-      case Success(:final value):
-        return Result.success(TermsOfServiceDTO(value: value.value));
-    }
+  Future<Result<TermsOfService>> get() {
+    return _termsOfServiceRepository.get();
   }
 
   void dispose() {

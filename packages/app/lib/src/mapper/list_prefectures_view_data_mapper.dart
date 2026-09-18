@@ -10,12 +10,12 @@ import '../view_data/list_prefectures_view_data.dart';
 class ListPrefecturesViewDataMapper {
   static Future<ListPrefecturesViewData> convertToViewData({
     required List<ListCardDTO> listCardDTOList,
-    required List<AlreadyGetCardDTO> alreadyGetCardDTOList,
+    required Set<String> alreadyGetCardIds,
     required CommonSearchCondition searchCondition,
   }) async {
     final map = <String, dynamic>{};
     map['listCardDTOList'] = listCardDTOList;
-    map['alreadyGetCardDTOList'] = alreadyGetCardDTOList;
+    map['alreadyGetCardIds'] = alreadyGetCardIds;
     map['searchCondition'] = searchCondition;
     return compute(_convert, map);
   }
@@ -24,12 +24,8 @@ class ListPrefecturesViewDataMapper {
     Map<dynamic, dynamic> parameter,
   ) async {
     final listCardDTOList = parameter['listCardDTOList'] as List<ListCardDTO>;
-    final alreadyGetCardDTOList =
-        parameter['alreadyGetCardDTOList'] as List<AlreadyGetCardDTO>;
+    final alreadyGetIds = parameter['alreadyGetCardIds'] as Set<String>;
     final searchCondition = parameter['searchCondition'] as CommonSearchCondition;
-
-    final alreadyGetIds =
-        alreadyGetCardDTOList.map((dto) => dto.cardId).toSet();
 
     // 弾数・配布状態で絞り込んだ「母集団」。取得状態フィルタ（表示）はこの後で適用
     // する。都道府県ヘッダの分数はこの母集団を基準にする。

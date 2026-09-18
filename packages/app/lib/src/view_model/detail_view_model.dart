@@ -30,7 +30,7 @@ class DetailViewModel
     _navigationService = ref.watch(navigationServiceProvider);
 
     final subscription = _alreadyGetCardQueryService.getStream().listen((
-      dtoList,
+      cardIds,
     ) {
       final current = state.valueOrNull;
       if (current == null) {
@@ -38,7 +38,7 @@ class DetailViewModel
       }
       state = AsyncData(
         current.copyWith(
-          alreadyGet: dtoList.any((dto) => dto.cardId == cardId),
+          alreadyGet: cardIds.contains(cardId),
         ),
       );
     });
@@ -54,13 +54,13 @@ class DetailViewModel
       );
       throw exception;
     }
-    final cardDTO = (result as Success<CardDTO>).value;
+    final card = (result as Success<ManholeCard>).value;
 
     final alreadyGetResult = await _alreadyGetCardQueryService.get();
     return DetailCardViewDataMapper.convertToViewData(
-      cardDTO: cardDTO,
-      alreadyGet: alreadyGetResult is Success<List<AlreadyGetCardDTO>> &&
-          alreadyGetResult.value.any((dto) => dto.cardId == cardId),
+      card: card,
+      alreadyGet: alreadyGetResult is Success<Set<String>> &&
+          alreadyGetResult.value.contains(cardId),
     );
   }
 

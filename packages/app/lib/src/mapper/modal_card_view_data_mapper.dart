@@ -6,11 +6,11 @@ import '../view_data/modal_card_view_data.dart';
 
 class ModalCardViewDataMapper {
   static Future<ModalCardViewData> convertToViewData({
-    required CardDTO cardDTO,
+    required ManholeCard card,
     required LatLng position,
   }) async {
     final map = <String, dynamic>{};
-    map['cardDTO'] = cardDTO;
+    map['card'] = card;
     map['position'] = position;
     return compute(_convert, map);
   }
@@ -18,13 +18,13 @@ class ModalCardViewDataMapper {
   static Future<ModalCardViewData> _convert(
     Map<String, dynamic> parameter,
   ) async {
-    final cardDTO = parameter['cardDTO'] as CardDTO;
+    final card = parameter['card'] as ManholeCard;
     final position = parameter['position'] as LatLng;
     return ModalCardViewData(
-      id: cardDTO.id,
-      name: cardDTO.name,
-      distributionPlaceHtml: cardDTO.distributionPlaceHtml,
-      stockHtml: cardDTO.stockHtml,
+      id: card.id,
+      name: card.name,
+      distributionPlaceHtml: card.distributionPlaceHtml,
+      stockHtml: card.stockHtml,
       latitude: position.latitude,
       longitude: position.longitude,
     );
