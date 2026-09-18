@@ -1,6 +1,10 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'display_filter.dart';
 import 'manhole_card_distribution_state.dart';
 import 'map_coordinate_type.dart';
+
+part 'search_condition.freezed.dart';
 
 /// アプリ全体で共有される検索条件。
 ///
@@ -12,30 +16,19 @@ import 'map_coordinate_type.dart';
 ///
 /// 将来リスト専用の条件が必要になったら `ListSearchCondition list` を追加できる
 /// よう、画面ごとにサブ条件へ分けて保持している。
-class SearchCondition {
-  const SearchCondition({
-    this.common = const CommonSearchCondition(),
-    this.map = const MapSearchCondition(),
-  });
+@freezed
+abstract class SearchCondition with _$SearchCondition {
+  const factory SearchCondition({
+    @Default(CommonSearchCondition()) CommonSearchCondition common,
+    @Default(MapSearchCondition()) MapSearchCondition map,
+  }) = _SearchCondition;
+  const SearchCondition._();
 
   /// 一切絞り込まない初期状態。
   factory SearchCondition.initial() => const SearchCondition();
 
-  final CommonSearchCondition common;
-  final MapSearchCondition map;
-
   /// 有効な絞り込みの数。マップ座標種別は絞り込みではないため含めない。
   int get activeFilterCount => common.activeFilterCount;
-
-  SearchCondition copyWith({
-    CommonSearchCondition? common,
-    MapSearchCondition? map,
-  }) {
-    return SearchCondition(
-      common: common ?? this.common,
-      map: map ?? this.map,
-    );
-  }
 
   /// 「すべて選択」を「空（＝すべて通過）」へ畳んで正規化する。
   ///
@@ -59,40 +52,26 @@ class SearchCondition {
       ),
     );
   }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    return other is SearchCondition &&
-        other.common == common &&
-        other.map == map;
-  }
-
-  @override
-  int get hashCode => Object.hash(common, map);
 }
 
 /// 一覧・マップに横断して効く絞り込み条件。
 ///
 /// いずれの集合系フィールドも「空 = その軸では絞り込まない（すべて通過）」という
 /// 規約で扱う。これにより「フィルターなし」を空集合で素直に表現できる。
-class CommonSearchCondition {
-  const CommonSearchCondition({
-    this.displayFilter = DisplayFilter.all,
-    this.volumeIds = const {},
-    this.distributionStates = const {},
-  });
+@freezed
+abstract class CommonSearchCondition with _$CommonSearchCondition {
+  const factory CommonSearchCondition({
+    /// 取得状態による絞り込み。
+    @Default(DisplayFilter.all) DisplayFilter displayFilter,
 
-  /// 取得状態による絞り込み。
-  final DisplayFilter displayFilter;
+    /// 対象とする弾（volume）の ID 集合。空なら弾で絞り込まない。
+    @Default(<String>{}) Set<String> volumeIds,
 
-  /// 対象とする弾（volume）の ID 集合。空なら弾で絞り込まない。
-  final Set<String> volumeIds;
-
-  /// 対象とする配布状態の集合。空なら配布状態で絞り込まない。
-  final Set<ManholeCardDistributionState> distributionStates;
+    /// 対象とする配布状態の集合。空なら配布状態で絞り込まない。
+    @Default(<ManholeCardDistributionState>{})
+    Set<ManholeCardDistributionState> distributionStates,
+  }) = _CommonSearchCondition;
+  const CommonSearchCondition._();
 
   /// 有効な絞り込みの数。
   int get activeFilterCount {
@@ -130,73 +109,13 @@ class CommonSearchCondition {
         return !alreadyGet;
     }
   }
-
-  CommonSearchCondition copyWith({
-    DisplayFilter? displayFilter,
-    Set<String>? volumeIds,
-    Set<ManholeCardDistributionState>? distributionStates,
-  }) {
-    return CommonSearchCondition(
-      displayFilter: displayFilter ?? this.displayFilter,
-      volumeIds: volumeIds ?? this.volumeIds,
-      distributionStates: distributionStates ?? this.distributionStates,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    return other is CommonSearchCondition &&
-        other.displayFilter == displayFilter &&
-        _setEquals(other.volumeIds, volumeIds) &&
-        _setEquals(other.distributionStates, distributionStates);
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        displayFilter,
-        Object.hashAllUnordered(volumeIds),
-        Object.hashAllUnordered(distributionStates),
-      );
 }
 
 /// マップ画面にのみ効く表示オプション。
-class MapSearchCondition {
-  const MapSearchCondition({
-    this.coordinateType = MapCoordinateType.distribution,
-  });
-
-  /// 表示する座標の種別。
-  final MapCoordinateType coordinateType;
-
-  MapSearchCondition copyWith({
-    MapCoordinateType? coordinateType,
-  }) {
-    return MapSearchCondition(
-      coordinateType: coordinateType ?? this.coordinateType,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    return other is MapSearchCondition && other.coordinateType == coordinateType;
-  }
-
-  @override
-  int get hashCode => coordinateType.hashCode;
-}
-
-bool _setEquals<T>(Set<T> a, Set<T> b) {
-  if (identical(a, b)) {
-    return true;
-  }
-  if (a.length != b.length) {
-    return false;
-  }
-  return a.containsAll(b);
+@freezed
+abstract class MapSearchCondition with _$MapSearchCondition {
+  const factory MapSearchCondition({
+    /// 表示する座標の種別。
+    @Default(MapCoordinateType.distribution) MapCoordinateType coordinateType,
+  }) = _MapSearchCondition;
 }
