@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'manhole_card_distribution_point.dart';
+import 'coordinate.dart';
 import 'manhole_card_distribution_state.dart';
 import 'manhole_card_prefecture.dart';
 import 'manhole_card_volume.dart';
@@ -11,8 +11,9 @@ part 'manhole_card.freezed.dart';
 abstract class ManholeCard with _$ManholeCard {
   const factory ManholeCard({
     required String id,
-    required double latitude,
-    required double longitude,
+
+    /// 蓋（マンホール）の位置。
+    required Coordinate position,
     required String name,
     required DateTime publicationDate,
     required ManholeCardDistributionState distributionState,
@@ -39,8 +40,8 @@ abstract class ManholeCard with _$ManholeCard {
     /// 在庫状況の HTML。
     required String stockHtml,
 
-    /// 配布場所の座標。0 件のカードもある。
-    required List<ManholeCardDistributionPoint> distributionPoints,
+    /// 配布場所の位置。0 件のカードもある。
+    required List<Coordinate> distributionPoints,
     required ManholeCardPrefecture prefecture,
     required ManholeCardVolume volume,
   }) = _ManholeCard;

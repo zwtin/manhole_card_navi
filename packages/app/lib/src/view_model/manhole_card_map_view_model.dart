@@ -163,7 +163,7 @@ class ManholeCardMapViewModel
     if (pin == null) {
       return null;
     }
-    return LatLng(pin.latitude, pin.longitude);
+    return LatLng(pin.coordinate.latitude, pin.coordinate.longitude);
   }
 
   Future<void> sendScreenView() async {
@@ -339,7 +339,7 @@ class ManholeCardMapViewModel
       return;
     }
     final result = await _locationUseCase.getCurrentLocation();
-    if (result is! Success<({double latitude, double longitude})>) {
+    if (result is! Success<Coordinate>) {
       return;
     }
     await _moveToLocation(

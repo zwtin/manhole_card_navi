@@ -2,6 +2,7 @@ import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../core/result.dart';
+import '../entity/coordinate.dart';
 import '../repository/location_repository.dart';
 
 final locationUseCaseProvider = Provider.autoDispose<LocationUseCase>(
@@ -31,8 +32,7 @@ class LocationUseCase {
     return _locationRepository.isPermissionGranted();
   }
 
-  Future<Result<({double latitude, double longitude})>>
-      getCurrentLocation() async {
+  Future<Result<Coordinate>> getCurrentLocation() async {
     return _locationRepository.getCurrentLocation();
   }
 

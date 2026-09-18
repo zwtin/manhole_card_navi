@@ -13,7 +13,7 @@ import '../view_data/map_marker_view_data.dart';
 import '../view_data/map_markers_view_data.dart';
 
 /// マップに立てるピン 1 本分。どのカードのピンを、どの座標に立てるか。
-typedef CardPin = ({ManholeCard card, double latitude, double longitude});
+typedef CardPin = ({ManholeCard card, Coordinate coordinate});
 
 class MapMarkersViewDataMapper {
   /// 合成済みマーカーアイコンのメモリキャッシュ。
@@ -38,18 +38,13 @@ class MapMarkersViewDataMapper {
     switch (coordinateType) {
       case MapCoordinateType.position:
         return [
-          for (final card in cards)
-            (card: card, latitude: card.latitude, longitude: card.longitude),
+          for (final card in cards) (card: card, coordinate: card.position),
         ];
       case MapCoordinateType.distribution:
         return [
           for (final card in cards)
             for (final point in card.distributionPoints)
-              (
-                card: card,
-                latitude: point.latitude,
-                longitude: point.longitude,
-              ),
+              (card: card, coordinate: point),
         ];
     }
   }
@@ -61,16 +56,18 @@ class MapMarkersViewDataMapper {
     required LatLng centerCoordinate,
   }) {
     final nearPins = pins.where((pin) {
-      final latitude = pin.latitude - centerCoordinate.latitude;
-      final longitude = pin.longitude - centerCoordinate.longitude;
+      final latitude = pin.coordinate.latitude - centerCoordinate.latitude;
+      final longitude = pin.coordinate.longitude - centerCoordinate.longitude;
       final distance = latitude * latitude + longitude * longitude;
       return distance < 0.1;
     }).toList()
       ..sort((pin1, pin2) {
-        final latitude1 = pin1.latitude - centerCoordinate.latitude;
-        final longitude1 = pin1.longitude - centerCoordinate.longitude;
-        final latitude2 = pin2.latitude - centerCoordinate.latitude;
-        final longitude2 = pin2.longitude - centerCoordinate.longitude;
+        final latitude1 = pin1.coordinate.latitude - centerCoordinate.latitude;
+        final longitude1 =
+            pin1.coordinate.longitude - centerCoordinate.longitude;
+        final latitude2 = pin2.coordinate.latitude - centerCoordinate.latitude;
+        final longitude2 =
+            pin2.coordinate.longitude - centerCoordinate.longitude;
         final distance1 = latitude1 * latitude1 + longitude1 * longitude1;
         final distance2 = latitude2 * latitude2 + longitude2 * longitude2;
         return distance1.compareTo(distance2);
@@ -164,13 +161,14 @@ class MapMarkersViewDataMapper {
       // マーカーの識別子は再生成をまたいで安定させる。ランダムだと GoogleMap が
       // 同一カードを「削除 + 追加」と誤認してちらつく。配布モードでは同一カードが
       // 複数地点に出るため座標も含めて一意にする。
-      id: '${pin.card.id}_${pin.latitude}_${pin.longitude}',
+      id: '${pin.card.id}_${pin.coordinate.latitude}_'
+          '${pin.coordinate.longitude}',
       cardId: pin.card.id,
       icon: icon,
       imageUrl: pin.card.image,
       imageSubUrl: pin.card.imageSub,
-      latitude: pin.latitude,
-      longitude: pin.longitude,
+      latitude: pin.coordinate.latitude,
+      longitude: pin.coordinate.longitude,
     );
   }
 

@@ -16,8 +16,7 @@ class MockSearchConditionUseCase extends Mock
 ManholeCard _card({required String volumeId, required String volumeName}) {
   return ManholeCard(
     id: 'card-$volumeId',
-    latitude: 34.69,
-    longitude: 135.50,
+    position: const Coordinate(latitude: 34.69, longitude: 135.50),
     name: 'カード',
     publicationDate: DateTime(2026, 1, 1),
     distributionState: ManholeCardDistributionState.distributing,

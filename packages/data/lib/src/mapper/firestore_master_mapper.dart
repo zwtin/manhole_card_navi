@@ -41,8 +41,10 @@ abstract final class FirestoreMasterMapper {
     final volumeId = _read<String>(data, 'volume_id', path);
     return ManholeCard(
       id: _read<String>(data, 'id', path),
-      latitude: location.latitude,
-      longitude: location.longitude,
+      position: Coordinate(
+        latitude: location.latitude,
+        longitude: location.longitude,
+      ),
       name: _read<String>(data, 'name', path),
       publicationDate: _readDate(data, 'publication_date', path),
       distributionState: _readDistributionState(
@@ -63,7 +65,7 @@ abstract final class FirestoreMasterMapper {
       distributionPoints: _read<List<dynamic>>(data, 'distribution_points', path)
           .whereType<GeoPoint>()
           .map(
-            (geoPoint) => ManholeCardDistributionPoint(
+            (geoPoint) => Coordinate(
               latitude: geoPoint.latitude,
               longitude: geoPoint.longitude,
             ),

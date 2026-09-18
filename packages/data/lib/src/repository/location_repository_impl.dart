@@ -39,12 +39,11 @@ class LocationRepositoryImpl implements LocationRepository {
   }
 
   @override
-  Future<Result<({double latitude, double longitude})>>
-      getCurrentLocation() async {
+  Future<Result<Coordinate>> getCurrentLocation() async {
     try {
       final position = await Geolocator.getCurrentPosition();
       return Result.success(
-        (latitude: position.latitude, longitude: position.longitude),
+        Coordinate(latitude: position.latitude, longitude: position.longitude),
       );
     } on TimeoutException catch (error, stackTrace) {
       return Result.failure(

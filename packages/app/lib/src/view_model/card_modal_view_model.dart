@@ -65,7 +65,7 @@ class CardModalViewModel
     final position = latitude != null && longitude != null
         ? LatLng(latitude, longitude)
         : await mapViewModel.findCardPosition(arg.cardId) ??
-            LatLng(card.latitude, card.longitude);
+            LatLng(card.position.latitude, card.position.longitude);
 
     final alreadyGetResult = await _alreadyGetCardUseCase.get();
     return CardModalViewData(

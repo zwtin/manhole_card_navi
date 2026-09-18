@@ -13,8 +13,7 @@ class RealmCardMapper {
   }) {
     return ManholeCard(
       id: dao.id,
-      latitude: dao.latitude,
-      longitude: dao.longitude,
+      position: Coordinate(latitude: dao.latitude, longitude: dao.longitude),
       name: dao.name,
       publicationDate: dao.publicationDate,
       distributionState: ManholeCardDistributionState.values.byName(
@@ -52,8 +51,8 @@ class RealmCardMapper {
   }) {
     final dao = RealmCardDAO(
       entity.id,
-      entity.latitude,
-      entity.longitude,
+      entity.position.latitude,
+      entity.position.longitude,
       entity.name,
       entity.publicationDate,
       entity.distributionState.name,

@@ -4,12 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 ManholeCard _card({
   required String id,
-  required List<ManholeCardDistributionPoint> distributionPoints,
+  required List<Coordinate> distributionPoints,
 }) {
   return ManholeCard(
     id: id,
-    latitude: 35.68,
-    longitude: 139.76,
+    position: const Coordinate(latitude: 35.68, longitude: 139.76),
     name: 'カード',
     publicationDate: DateTime(2026, 1, 1),
     distributionState: ManholeCardDistributionState.distributing,
@@ -29,8 +28,8 @@ void main() {
     _card(
       id: 'A',
       distributionPoints: const [
-        ManholeCardDistributionPoint(latitude: 35.69, longitude: 139.77),
-        ManholeCardDistributionPoint(latitude: 35.70, longitude: 139.78),
+        Coordinate(latitude: 35.69, longitude: 139.77),
+        Coordinate(latitude: 35.70, longitude: 139.78),
       ],
     ),
     _card(id: 'B', distributionPoints: const []),
@@ -43,8 +42,11 @@ void main() {
     );
 
     expect(
-      pins.map((pin) => (pin.card.id, pin.latitude, pin.longitude)),
-      [('A', 35.68, 139.76), ('B', 35.68, 139.76)],
+      pins.map((pin) => (pin.card.id, pin.coordinate)),
+      [
+        ('A', const Coordinate(latitude: 35.68, longitude: 139.76)),
+        ('B', const Coordinate(latitude: 35.68, longitude: 139.76)),
+      ],
     );
   });
 
@@ -55,8 +57,11 @@ void main() {
     );
 
     expect(
-      pins.map((pin) => (pin.card.id, pin.latitude, pin.longitude)),
-      [('A', 35.69, 139.77), ('A', 35.70, 139.78)],
+      pins.map((pin) => (pin.card.id, pin.coordinate)),
+      [
+        ('A', const Coordinate(latitude: 35.69, longitude: 139.77)),
+        ('A', const Coordinate(latitude: 35.70, longitude: 139.78)),
+      ],
     );
   });
 }

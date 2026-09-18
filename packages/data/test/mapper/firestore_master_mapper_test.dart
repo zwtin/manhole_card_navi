@@ -40,7 +40,7 @@ void main() {
       final card = _toCard(_cardData());
 
       expect(card.id, '27-226-B001');
-      expect(card.latitude, 34.5);
+      expect(card.position.latitude, 34.5);
       expect(card.publicationDate, DateTime(2026, 1, 1));
       expect(
         card.distributionState,
@@ -55,7 +55,7 @@ void main() {
 
       expect(
         card.distributionPoints,
-        [const ManholeCardDistributionPoint(latitude: 34.1, longitude: 135.1)],
+        [const Coordinate(latitude: 34.1, longitude: 135.1)],
       );
     });
 

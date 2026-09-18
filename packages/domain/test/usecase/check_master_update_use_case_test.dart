@@ -17,8 +17,7 @@ void main() {
 
   final card = ManholeCard(
     id: '27-226-B001',
-    latitude: 34.5,
-    longitude: 135.6,
+    position: const Coordinate(latitude: 34.5, longitude: 135.6),
     name: '藤井寺市',
     publicationDate: DateTime(2026, 1, 1),
     distributionState: ManholeCardDistributionState.distributing,

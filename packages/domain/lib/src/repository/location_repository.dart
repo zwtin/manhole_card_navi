@@ -1,6 +1,7 @@
 import 'package:riverpod/riverpod.dart';
 
 import '../core/result.dart';
+import '../entity/coordinate.dart';
 
 /// main.dart の ProviderScope で data パッケージの実装に差し替える。
 final locationRepositoryProvider = Provider.autoDispose<LocationRepository>(
@@ -17,5 +18,5 @@ abstract class LocationRepository {
   Future<Result<bool>> isPermissionGranted();
 
   /// 現在地を取得する。許可されていない場合は失敗を返す。
-  Future<Result<({double latitude, double longitude})>> getCurrentLocation();
+  Future<Result<Coordinate>> getCurrentLocation();
 }
