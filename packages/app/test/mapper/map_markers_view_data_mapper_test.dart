@@ -12,7 +12,7 @@ ManholeCard _card({
     longitude: 139.76,
     name: 'カード',
     publicationDate: DateTime(2026, 1, 1),
-    distributionState: const ManholeCardDistributionState.distributing(),
+    distributionState: ManholeCardDistributionState.distributing,
     image: '',
     imageSub: '',
     distributionPlaceHtml: '',

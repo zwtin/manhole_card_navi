@@ -20,7 +20,7 @@ ManholeCard _card({required String volumeId, required String volumeName}) {
     longitude: 135.50,
     name: 'カード',
     publicationDate: DateTime(2026, 1, 1),
-    distributionState: const ManholeCardDistributionState.distributing(),
+    distributionState: ManholeCardDistributionState.distributing,
     image: '',
     imageSub: '',
     distributionPlaceHtml: '',
@@ -138,7 +138,7 @@ void main() {
   test('リセットは絞り込みだけを消し、マップ表示は残す', () {
     viewModel()
       ..setCoordinateType(MapCoordinateType.position)
-      ..toggleDistributionState(const ManholeCardDistributionState.stopped())
+      ..toggleDistributionState(ManholeCardDistributionState.stopped)
       ..clearAllFilters();
 
     final state = container.read(searchConditionViewModelProvider).requireValue;

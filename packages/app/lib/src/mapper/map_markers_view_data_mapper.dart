@@ -152,7 +152,7 @@ class MapMarkersViewDataMapper {
     // アイコンサイズを含める。サイズ変更時に旧サイズのキャッシュを引かないため。
     // ディスクキャッシュのキーにもなるので、形を変えると端末に保存済みの
     // アイコンをすべて作り直すことになる。
-    return '${card.id}_${card.distributionState.toStringValue()}_${alreadyGet}_'
+    return '${card.id}_${card.distributionState.name}_${alreadyGet}_'
         '${MarkerIconBuilder.sizeKey}';
   }
 
@@ -230,7 +230,7 @@ class MapMarkersViewDataMapper {
       }
       final icon = await MarkerIconBuilder.build(
         originalBytes: originalBytes,
-        distributionState: card.distributionState.toStringValue(),
+        distributionState: card.distributionState,
         alreadyGet: alreadyGet,
       );
       cache[key] = icon;

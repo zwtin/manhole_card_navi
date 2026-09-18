@@ -21,7 +21,7 @@ void main() {
     longitude: 135.6,
     name: '藤井寺市',
     publicationDate: DateTime(2026, 1, 1),
-    distributionState: const ManholeCardDistributionState.distributing(),
+    distributionState: ManholeCardDistributionState.distributing,
     image: 'https://example.com/27-226-B001.jpg',
     imageSub: '',
     distributionPlaceHtml: '',

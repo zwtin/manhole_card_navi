@@ -16,9 +16,9 @@ class SearchConditionViewModel
     extends AutoDisposeAsyncNotifier<SearchConditionViewData> {
   /// 配布状態の選択肢。表示順は固定。
   static const List<DistributionStateOption> distributionStateOptions = [
-    (state: ManholeCardDistributionState.distributing(), name: '配布中'),
-    (state: ManholeCardDistributionState.stopped(), name: '配布停止'),
-    (state: ManholeCardDistributionState.notClear(), name: '不明'),
+    (state: ManholeCardDistributionState.distributing, name: '配布中'),
+    (state: ManholeCardDistributionState.stopped, name: '配布停止'),
+    (state: ManholeCardDistributionState.notClear, name: '不明'),
   ];
 
   late final SearchConditionUseCase _searchConditionUseCase;

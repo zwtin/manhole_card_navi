@@ -26,7 +26,7 @@ void main() {
     test('すべての配布状態を選んだ状態は、未選択に畳む', () {
       final condition = SearchCondition(
         common: CommonSearchCondition(
-          distributionStates: allDistributionStates,
+          distributionStates: ManholeCardDistributionState.values.toSet(),
         ),
       );
 
@@ -47,7 +47,7 @@ void main() {
           displayFilter: DisplayFilter.acquired,
           volumeIds: {'0000', '0001'},
           distributionStates: {
-            const ManholeCardDistributionState.stopped(),
+            ManholeCardDistributionState.stopped,
           },
         ),
         map: const MapSearchCondition(
@@ -66,7 +66,7 @@ void main() {
       expect(condition.matchesVolume('0005'), isTrue);
       expect(
         condition.matchesDistributionState(
-          const ManholeCardDistributionState.notClear(),
+          ManholeCardDistributionState.notClear,
         ),
         isTrue,
       );
@@ -76,19 +76,19 @@ void main() {
     test('配布状態は、選んだ状態だけを通す', () {
       final condition = CommonSearchCondition(
         distributionStates: {
-          const ManholeCardDistributionState.distributing(),
+          ManholeCardDistributionState.distributing,
         },
       );
 
       expect(
         condition.matchesDistributionState(
-          const ManholeCardDistributionState.distributing(),
+          ManholeCardDistributionState.distributing,
         ),
         isTrue,
       );
       expect(
         condition.matchesDistributionState(
-          const ManholeCardDistributionState.stopped(),
+          ManholeCardDistributionState.stopped,
         ),
         isFalse,
       );

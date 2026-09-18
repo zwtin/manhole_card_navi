@@ -44,7 +44,7 @@ void main() {
       expect(card.publicationDate, DateTime(2026, 1, 1));
       expect(
         card.distributionState,
-        const ManholeCardDistributionState.distributing(),
+        ManholeCardDistributionState.distributing,
       );
       expect(card.prefecture.name, '大阪府');
       expect(card.volume.name, '第1弾');

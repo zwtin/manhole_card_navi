@@ -16,7 +16,7 @@ class SearchConditionJsonMapper {
         'displayFilter': condition.common.displayFilter.name,
         'volumeIds': condition.common.volumeIds.toList(),
         'distributionStates': condition.common.distributionStates
-            .map((state) => state.toStringValue())
+            .map((state) => state.name)
             .toList(),
       },
       'map': <String, dynamic>{
@@ -89,28 +89,7 @@ class SearchConditionJsonMapper {
     if (value is! List) {
       return const {};
     }
-    final result = <ManholeCardDistributionState>{};
-    for (final element in value) {
-      final state = _distributionStateFromValue(element);
-      if (state != null) {
-        result.add(state);
-      }
-    }
-    return result;
-  }
-
-  static ManholeCardDistributionState? _distributionStateFromValue(
-    Object? value,
-  ) {
-    switch (value) {
-      case 'distributing':
-        return const ManholeCardDistributionState.distributing();
-      case 'stopped':
-        return const ManholeCardDistributionState.stopped();
-      case 'notClear':
-        return const ManholeCardDistributionState.notClear();
-      default:
-        return null;
-    }
+    final byName = ManholeCardDistributionState.values.asNameMap();
+    return value.map((element) => byName[element]).nonNulls.toSet();
   }
 }

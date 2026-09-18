@@ -17,7 +17,7 @@ class RealmCardMapper {
       longitude: dao.longitude,
       name: dao.name,
       publicationDate: dao.publicationDate,
-      distributionState: ManholeCardDistributionState.fromString(
+      distributionState: ManholeCardDistributionState.values.byName(
         dao.distributionState,
       ),
       image: dao.image,
@@ -56,7 +56,7 @@ class RealmCardMapper {
       entity.longitude,
       entity.name,
       entity.publicationDate,
-      entity.distributionState.toStringValue(),
+      entity.distributionState.name,
       entity.image,
       entity.imageSub,
       entity.distributionPlaceHtml,

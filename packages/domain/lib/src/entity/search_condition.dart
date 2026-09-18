@@ -2,17 +2,6 @@ import 'display_filter.dart';
 import 'manhole_card_distribution_state.dart';
 import 'map_coordinate_type.dart';
 
-/// 配布状態のすべての選択肢。「すべて選択」を「空（＝すべて通過）」へ正規化する
-/// 際の基準として使う。
-///
-/// freezed の union 型は `==` をオーバーライドするため const Set の要素にできない
-/// （primitive equality 制約）。そのため const ではなく final で保持する。
-final allDistributionStates = <ManholeCardDistributionState>{
-  const ManholeCardDistributionState.distributing(),
-  const ManholeCardDistributionState.stopped(),
-  const ManholeCardDistributionState.notClear(),
-};
-
 /// アプリ全体で共有される検索条件。
 ///
 /// 一覧・マップの両画面で一貫して使う。永続化（端末保存）は data が JSON 化して
@@ -60,8 +49,7 @@ class SearchCondition {
       volumeIds = const {};
     }
     var distributionStates = common.distributionStates;
-    if (distributionStates.length == allDistributionStates.length &&
-        distributionStates.containsAll(allDistributionStates)) {
+    if (distributionStates.containsAll(ManholeCardDistributionState.values)) {
       distributionStates = const {};
     }
     return copyWith(

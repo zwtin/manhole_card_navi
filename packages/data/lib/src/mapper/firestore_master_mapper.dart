@@ -121,7 +121,7 @@ abstract final class FirestoreMasterMapper {
     String path,
   ) {
     final text = _read<String>(data, key, path);
-    final state = ManholeCardDistributionState.tryFromString(text);
+    final state = ManholeCardDistributionState.values.asNameMap()[text];
     if (state == null) {
       throw CorruptedDataException(detail: '$path の $key が知らない値です（$text）');
     }
