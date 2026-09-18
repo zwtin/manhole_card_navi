@@ -20,6 +20,9 @@ dependencies:
   go_router: ^16.1.0
   google_maps_flutter: ^2.13.1
   hooks_riverpod: ^2.6.1
+  # flutter_html 3.0.0 は html 0.15.7 で消えた内部の関数（query_selector の
+  # matches）を使っていてコンパイルできなくなるため、flutter_html が追随するまで止める。
+  html: ">=0.15.0 <0.15.7"
   http: ^1.4.0
   intl: ^0.20.2
   introduction_screen: ^3.1.17
