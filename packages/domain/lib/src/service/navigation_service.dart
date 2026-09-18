@@ -1,6 +1,7 @@
 import 'package:riverpod/riverpod.dart';
 
 import '../exception/domain_exception.dart';
+import 'error_reporter.dart';
 
 /// main.dart の ProviderScope で app パッケージの実装に差し替える。
 final navigationServiceProvider = Provider<NavigationService>(
@@ -82,7 +83,8 @@ abstract class NavigationService {
   /// 失敗をアラートで知らせ、閉じられるまで待つ。
   ///
   /// [title] には何に失敗したか（例: 「マスターデータを更新できませんでした」）を
-  /// 渡す。本文は [exception] の種類から決まる。
+  /// 渡す。本文は [exception] の種類から決まる。調べる必要のある種類の失敗は、
+  /// あわせて [ErrorReporter] で記録する（呼ぶ側で記録し直さない）。
   Future<void> showFailure({
     required String title,
     required DomainException exception,

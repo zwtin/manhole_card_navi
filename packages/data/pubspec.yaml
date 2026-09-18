@@ -11,6 +11,7 @@ dependencies:
     path: ../domain
   cloud_firestore: ^5.6.7
   firebase_analytics: ^11.4.5
+  firebase_crashlytics: ^4.3.5
   firebase_messaging: ^15.2.5
   firebase_remote_config: ^5.4.3
   flutter_app_badge_control: ^0.0.2

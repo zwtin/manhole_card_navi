@@ -8,6 +8,9 @@ import 'go_router_navigation_service.dart';
 /// main.dart の ProviderScope に渡す。
 final List<Override> appProviderOverrides = [
   navigationServiceProvider.overrideWith(
-    (ref) => GoRouterNavigationService(ref.watch(routerProvider)),
+    (ref) => GoRouterNavigationService(
+      ref.watch(routerProvider),
+      ref.watch(errorReporterProvider),
+    ),
   ),
 ];

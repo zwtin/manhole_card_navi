@@ -63,12 +63,13 @@ fvm flutter pub run flutter_native_splash:create
    - `query_service/` - 画面表示用の読み取りインターフェースと、その provider
    - `usecase/` - ビジネスロジックの実装と、その provider
    - `dto/` - QueryService が返す画面表示用のデータ。UseCase はエンティティや bool をそのまま返し、DTO に詰め替えない
-   - `service/` - 画面遷移の窓口 `NavigationService` のインターフェース
+   - `service/` - 画面遷移の窓口 `NavigationService` と、失敗やバグを記録する窓口 `ErrorReporter` のインターフェース
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装
    - `repository/` / `query_service/` - Firestore・Realm・SharedPreferences・Remote Config などを使う実装
    - `dao/` - Realm のモデル
    - `mapper/` - DAO・JSON とエンティティの変換
+   - `service/` - `ErrorReporter` の Crashlytics による実装
    - `provider/` - domain の provider を実装に差し替える `dataProviderOverrides`
 
 3. **app** (`packages/app/`) - 画面
@@ -76,13 +77,13 @@ fvm flutter pub run flutter_native_splash:create
    - `view/` - 画面（`*_page.dart`）
    - `view_model/` - 画面ごとの ViewModel
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
-   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティや DTO から表示用データへの変換・画像取得・テーマ
+   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティや DTO から表示用データへの変換・画像取得と provider のバグの記録・テーマ
    - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 
 4. **ルート** (`lib/`) - `main.dart` で Firebase を初期化し、3 パッケージを組み立てるだけ
 
 ### 依存性注入
-- Repository / QueryService / NavigationService の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` / `appProviderOverrides` を渡して実装に差し替える
+- Repository / QueryService / NavigationService / ErrorReporter の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` / `appProviderOverrides` を渡して実装に差し替える
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
 
 ### 失敗の扱い
@@ -92,6 +93,11 @@ fvm flutter pub run flutter_native_splash:create
 - app は `NavigationService.showFailure(title:, exception:)` で知らせる。タイトルは何に失敗したか（画面が決める）、本文は `ErrorMessageMapper` が種類から決める
 - バグ（Error）は `Result` に包まずにそのまま流す
 - 失敗ではない結果（位置情報を許可されなかった、アップデートが必要 など）は例外にせず戻り値で返す
+
+### 失敗とバグの記録（Crashlytics）
+- 利用者に知らせた失敗は、`showFailure` が `ErrorReporter.recordFailure` で非重大として記録する。通信できない・タイムアウト（`UnavailableException`）は、時間をおけば直り調べても直せないので記録しない。呼ぶ側で記録し直さない
+- 扱われなかったバグはクラッシュ（fatal）として記録する。`main.dart` の Zone と `FlutterError.onError`、provider の生成中に起きたものは `UncaughtErrorObserver` が拾う。provider の中の失敗は Riverpod が受け止めるため Zone には届かない
+- 画像の読み込み失敗（`library` が `image resource service`）はバグではないので、`FlutterError.onError` でも非重大のまま記録する。画像が出ない問い合わせの調査はこの非重大の記録で行う
 
 ### 状態管理（app）
 - 1 画面 1 ViewModel 1 State。State は freezed、依存は `build()` で `ref.watch` して `late final` に保持する

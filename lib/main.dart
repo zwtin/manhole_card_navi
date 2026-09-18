@@ -26,8 +26,17 @@ FutureOr<void> main() async {
         options: DefaultFirebaseOptions.currentPlatform,
       );
 
-      // The following lines are the same as previously explained in "Handling uncaught errors"
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+      // 扱われなかった Error や例外はバグなので、Crashlytics でクラッシュとして集計
+      // する。ただし画像の読み込み失敗（通信できない・経路上のフィルタに遮断される
+      // など）はバグではないので、これまでどおり非重大として記録する。画像が出ない
+      // 問い合わせは、非重大に残るこの記録で原因を調べる。
+      FlutterError.onError = (details) {
+        if (details.library == 'image resource service') {
+          FirebaseCrashlytics.instance.recordFlutterError(details);
+        } else {
+          FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+        }
+      };
 
       final streamSharedPreference = await StreamingSharedPreferences.instance;
       final packageInfo = await PackageInfo.fromPlatform();
@@ -51,6 +60,7 @@ FutureOr<void> main() async {
 
       runApp(
         ProviderScope(
+          observers: [UncaughtErrorObserver()],
           overrides: [
             sharedPreferencesProvider.overrideWithValue(
               streamSharedPreference,
@@ -77,6 +87,7 @@ FutureOr<void> main() async {
         FirebaseCrashlytics.instance.recordError(
           error,
           stack,
+          fatal: true,
         );
       } catch (e) {
         debugPrint('Crashlytics へ記録できませんでした: $e');

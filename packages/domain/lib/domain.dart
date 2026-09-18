@@ -49,4 +49,5 @@ export 'src/query_service/distribution_cards_query_service.dart';
 export 'src/query_service/list_cards_query_service.dart';
 export 'src/query_service/position_cards_query_service.dart';
 export 'src/query_service/search_condition_query_service.dart';
+export 'src/service/error_reporter.dart';
 export 'src/service/navigation_service.dart';
