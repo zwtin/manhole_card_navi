@@ -15,7 +15,6 @@ final detailViewModelProvider = AsyncNotifierProvider.autoDispose
 /// カード詳細画面の ViewModel。
 class DetailViewModel
     extends AutoDisposeFamilyAsyncNotifier<DetailCardViewData, String> {
-  late final AlreadyGetCardQueryService _alreadyGetCardQueryService;
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
   late final CardUseCase _cardUseCase;
@@ -23,13 +22,12 @@ class DetailViewModel
 
   @override
   Future<DetailCardViewData> build(String cardId) async {
-    _alreadyGetCardQueryService = ref.watch(alreadyGetCardQueryServiceProvider);
     _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
     _cardUseCase = ref.watch(cardUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
 
-    final subscription = _alreadyGetCardQueryService.getStream().listen((
+    final subscription = _alreadyGetCardUseCase.getStream().listen((
       cardIds,
     ) {
       final current = state.valueOrNull;
@@ -56,7 +54,7 @@ class DetailViewModel
     }
     final card = (result as Success<ManholeCard>).value;
 
-    final alreadyGetResult = await _alreadyGetCardQueryService.get();
+    final alreadyGetResult = await _alreadyGetCardUseCase.get();
     return DetailCardViewDataMapper.convertToViewData(
       card: card,
       alreadyGet: alreadyGetResult is Success<Set<String>> &&

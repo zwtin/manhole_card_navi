@@ -20,6 +20,15 @@ class SearchConditionUseCase {
 
   final SearchConditionRepository _searchConditionRepository;
 
+  Future<Result<SearchCondition>> get() {
+    return _searchConditionRepository.get();
+  }
+
+  /// 検索条件が変わるたびに流れる。購読を始めたときにも今の値が流れる。
+  Stream<SearchCondition> getStream() {
+    return _searchConditionRepository.getStream();
+  }
+
   Future<Result<void>> save({
     required SearchCondition searchCondition,
   }) {

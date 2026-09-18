@@ -28,6 +28,16 @@ class AlreadyGetCardUseCase {
 
   final _logger = Logger();
 
+  /// 取得済みカードの ID。
+  Future<Result<Set<String>>> get() {
+    return _alreadyGetCardRepository.get();
+  }
+
+  /// 取得済みカードが変わるたびに流れる。購読を始めたときにも今の値が流れる。
+  Stream<Set<String>> getStream() {
+    return _alreadyGetCardRepository.getStream();
+  }
+
   Future<Result<void>> save({
     required String id,
   }) async {

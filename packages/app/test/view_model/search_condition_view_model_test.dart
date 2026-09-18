@@ -6,28 +6,29 @@ import 'package:mocktail/mocktail.dart';
 
 class MockAnalyticsUseCase extends Mock implements AnalyticsUseCase {}
 
-class MockListCardsQueryService extends Mock implements ListCardsQueryService {}
+class MockCardUseCase extends Mock implements CardUseCase {}
 
 class MockNavigationService extends Mock implements NavigationService {}
-
-class MockSearchConditionQueryService extends Mock
-    implements SearchConditionQueryService {}
 
 class MockSearchConditionUseCase extends Mock
     implements SearchConditionUseCase {}
 
-ListCardDTO _card({required String volumeId, required String volumeName}) {
-  return ListCardDTO(
+ManholeCard _card({required String volumeId, required String volumeName}) {
+  return ManholeCard(
     id: 'card-$volumeId',
+    latitude: 34.69,
+    longitude: 135.50,
     name: 'カード',
-    imagePath: '',
-    imageSubPath: '',
-    prefectureId: '27',
-    prefectureName: '大阪府',
-    volumeId: volumeId,
-    volumeName: volumeName,
-    distributionState: 'distributing',
     publicationDate: DateTime(2026, 1, 1),
+    distributionState: const ManholeCardDistributionState.distributing(),
+    image: '',
+    imageSub: '',
+    distributionPlaceHtml: '',
+    distributionTimeHtml: '',
+    stockHtml: '',
+    distributionPoints: const [],
+    prefecture: const ManholeCardPrefecture(id: '27', name: '大阪府'),
+    volume: ManholeCardVolume(id: volumeId, name: volumeName),
   );
 }
 
@@ -41,15 +42,14 @@ void main() {
   });
 
   setUp(() async {
-    final searchConditionQueryService = MockSearchConditionQueryService();
-    final listCardsQueryService = MockListCardsQueryService();
+    final cardUseCase = MockCardUseCase();
     searchConditionUseCase = MockSearchConditionUseCase();
     navigationService = MockNavigationService();
 
-    when(() => searchConditionQueryService.get()).thenAnswer(
+    when(() => searchConditionUseCase.get()).thenAnswer(
       (_) async => Result.success(SearchCondition.initial()),
     );
-    when(() => listCardsQueryService.fetch()).thenAnswer(
+    when(() => cardUseCase.fetchAll()).thenAnswer(
       (_) async => Result.success([
         _card(volumeId: '0000', volumeName: '第1弾'),
         _card(volumeId: '0017', volumeName: '第18弾'),
@@ -65,11 +65,8 @@ void main() {
     container = ProviderContainer(
       overrides: [
         analyticsUseCaseProvider.overrideWithValue(MockAnalyticsUseCase()),
-        listCardsQueryServiceProvider.overrideWithValue(listCardsQueryService),
+        cardUseCaseProvider.overrideWithValue(cardUseCase),
         navigationServiceProvider.overrideWithValue(navigationService),
-        searchConditionQueryServiceProvider.overrideWithValue(
-          searchConditionQueryService,
-        ),
         searchConditionUseCaseProvider.overrideWithValue(
           searchConditionUseCase,
         ),

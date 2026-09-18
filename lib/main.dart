@@ -68,7 +68,7 @@ FutureOr<void> main() async {
             packageInfoProvider.overrideWithValue(
               packageInfo,
             ),
-            // domain が宣言した Repository / QueryService / NavigationService を
+            // domain が宣言した Repository / ErrorReporter / NavigationService を
             // data と app の実装に差し替える。
             ...dataProviderOverrides,
             ...appProviderOverrides,

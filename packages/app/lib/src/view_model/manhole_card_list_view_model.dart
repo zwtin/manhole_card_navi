@@ -16,13 +16,13 @@ final manholeCardListViewModelProvider = AsyncNotifierProvider.autoDispose<
 /// リストタブの ViewModel。
 class ManholeCardListViewModel
     extends AutoDisposeAsyncNotifier<ManholeCardListViewData> {
-  late final AlreadyGetCardQueryService _alreadyGetCardQueryService;
+  late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
-  late final ListCardsQueryService _listCardsQueryService;
-  late final SearchConditionQueryService _searchConditionQueryService;
+  late final CardUseCase _cardUseCase;
+  late final SearchConditionUseCase _searchConditionUseCase;
   late final NavigationService _navigationService;
 
-  List<ListCardDTO> _listCardDTOList = [];
+  List<ManholeCard> _cards = [];
   Set<String> _alreadyGetCardIds = {};
   SearchCondition _searchCondition = SearchCondition.initial();
 
@@ -31,17 +31,15 @@ class ManholeCardListViewModel
 
   @override
   Future<ManholeCardListViewData> build() async {
-    _alreadyGetCardQueryService = ref.watch(alreadyGetCardQueryServiceProvider);
+    _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _listCardsQueryService = ref.watch(listCardsQueryServiceProvider);
-    _searchConditionQueryService = ref.watch(
-      searchConditionQueryServiceProvider,
-    );
+    _cardUseCase = ref.watch(cardUseCaseProvider);
+    _searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
 
-    switch (await _listCardsQueryService.fetch()) {
+    switch (await _cardUseCase.fetchAll()) {
       case Success(:final value):
-        _listCardDTOList = value;
+        _cards = value;
       case Failure(:final exception):
         unawaited(
           _navigationService.showFailure(
@@ -50,16 +48,16 @@ class ManholeCardListViewModel
           ),
         );
     }
-    final conditionResult = await _searchConditionQueryService.get();
+    final conditionResult = await _searchConditionUseCase.get();
     if (conditionResult is Success<SearchCondition>) {
       _searchCondition = conditionResult.value;
     }
-    final alreadyGetResult = await _alreadyGetCardQueryService.get();
+    final alreadyGetResult = await _alreadyGetCardUseCase.get();
     if (alreadyGetResult is Success<Set<String>>) {
       _alreadyGetCardIds = alreadyGetResult.value;
     }
 
-    final alreadyGetSubscription = _alreadyGetCardQueryService
+    final alreadyGetSubscription = _alreadyGetCardUseCase
         .getStream()
         .listen((cardIds) async {
       // 購読開始時にも現在値が流れてくるため、変わっていなければ作り直さない。
@@ -71,7 +69,7 @@ class ManholeCardListViewModel
     });
     ref.onDispose(alreadyGetSubscription.cancel);
 
-    final searchConditionSubscription = _searchConditionQueryService
+    final searchConditionSubscription = _searchConditionUseCase
         .getStream()
         .listen((condition) async {
       if (condition == _searchCondition) {
@@ -126,7 +124,7 @@ class ManholeCardListViewModel
 
   Future<ManholeCardListViewData> _buildViewData() async {
     final prefectures = await ListPrefecturesViewDataMapper.convertToViewData(
-      listCardDTOList: _listCardDTOList,
+      cards: _cards,
       alreadyGetCardIds: _alreadyGetCardIds,
       searchCondition: _searchCondition.common,
     );
@@ -142,7 +140,7 @@ class ManholeCardListViewModel
             )
             .toList(),
       ),
-      totalCount: _listCardDTOList.length,
+      totalCount: _cards.length,
       alreadyGetCount: _alreadyGetCardIds.length,
       activeFilterCount: _searchCondition.activeFilterCount,
     );

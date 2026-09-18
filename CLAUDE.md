@@ -60,13 +60,11 @@ fvm flutter pub run flutter_native_splash:create
    - `entity/` - ビジネスエンティティ
    - `exception/` - 失敗の種類（`DomainException`）
    - `repository/` - リポジトリインターフェースと、その provider
-   - `query_service/` - 画面表示用の読み取りインターフェースと、その provider
-   - `usecase/` - ビジネスロジックの実装と、その provider
-   - `dto/` - QueryService が返す画面表示用のデータ。UseCase はエンティティや bool をそのまま返し、DTO に詰め替えない
+   - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
    - `service/` - 画面遷移の窓口 `NavigationService` と、失敗やバグを記録する窓口 `ErrorReporter` のインターフェース
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装
-   - `repository/` / `query_service/` - Firestore・Realm・SharedPreferences・Remote Config などを使う実装
+   - `repository/` - Firestore・Realm・SharedPreferences・Remote Config などを使う実装
    - `dao/` - Realm のモデル
    - `mapper/` - DAO・JSON とエンティティの変換
    - `service/` - `ErrorReporter` の Crashlytics による実装
@@ -77,17 +75,17 @@ fvm flutter pub run flutter_native_splash:create
    - `view/` - 画面（`*_page.dart`）
    - `view_model/` - 画面ごとの ViewModel
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
-   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティや DTO から表示用データへの変換・画像取得と provider のバグの記録・テーマ
+   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティから表示用データへの変換・画像取得と provider のバグの記録・テーマ
    - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 
 4. **ルート** (`lib/`) - `main.dart` で Firebase を初期化し、3 パッケージを組み立てるだけ
 
 ### 依存性注入
-- Repository / QueryService / NavigationService / ErrorReporter の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` / `appProviderOverrides` を渡して実装に差し替える
+- Repository / NavigationService / ErrorReporter の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` / `appProviderOverrides` を渡して実装に差し替える
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
 
 ### 失敗の扱い
-- Repository / QueryService は想定内の失敗（通信・サーバーのデータ・端末の保存領域）を投げずに `Result` に包んで返す。呼ぶ側は try / catch せずに `switch` で成功と失敗を分ける
+- Repository は想定内の失敗（通信・サーバーのデータ・端末の保存領域）を投げずに `Result` に包んで返す。呼ぶ側は try / catch せずに `switch` で成功と失敗を分ける
 - 失敗の種類は domain の `DomainException`（sealed）で表す。表示の文言は持たない。種類は app が表示や対応を変えたいものの分だけ作り、区別が必要になったら足す
 - data は外部の例外を `DomainExceptionConverter` で種類に変換する。サーバーのデータはキャストに頼らず型を確かめ、合わなければ `CorruptedDataException` にする
 - app は `NavigationService.showFailure(title:, exception:)` で知らせる。タイトルは何に失敗したか（画面が決める）、本文は `ErrorMessageMapper` が種類から決める
@@ -103,6 +101,7 @@ fvm flutter pub run flutter_native_splash:create
 - 1 画面 1 ViewModel 1 State。State は freezed、依存は `build()` で `ref.watch` して `late final` に保持する
 - 読み込むだけの画面は `AsyncNotifier`（`build()` で取得）、起動時チェックやマップのように読み込みに副作用を伴う画面は `Notifier` にして View の `useEffect` から `onLoad()` を呼ぶ
 - ViewModel は BuildContext を持たない。遷移・アラート・URL を開く操作は `NavigationService` 経由で行う
+- ViewModel が読み書きするのは UseCase だけで、Repository を直接呼ばない。処理のない読み取りも、Repository を素通しする UseCase のメソッドを通す
 
 ### 画面遷移（app）
 - go_router の `StatefulShellRoute` で、マップ・リスト・設定のタブがそれぞれ独立した遷移スタックを持つ

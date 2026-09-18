@@ -20,7 +20,6 @@ final cardModalViewModelProvider = AsyncNotifierProvider.autoDispose
 /// マップタブでピンをタップしたときに出るカードのモーダルの ViewModel。
 class CardModalViewModel
     extends AutoDisposeFamilyAsyncNotifier<CardModalViewData, CardModalArgs> {
-  late final AlreadyGetCardQueryService _alreadyGetCardQueryService;
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
   late final CardUseCase _cardUseCase;
@@ -28,14 +27,13 @@ class CardModalViewModel
 
   @override
   Future<CardModalViewData> build(CardModalArgs arg) async {
-    _alreadyGetCardQueryService = ref.watch(alreadyGetCardQueryServiceProvider);
     _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
     _cardUseCase = ref.watch(cardUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
     final mapViewModel = ref.read(manholeCardMapViewModelProvider.notifier);
 
-    final subscription = _alreadyGetCardQueryService.getStream().listen((
+    final subscription = _alreadyGetCardUseCase.getStream().listen((
       cardIds,
     ) {
       final current = state.valueOrNull;
@@ -69,7 +67,7 @@ class CardModalViewModel
         : await mapViewModel.findCardPosition(arg.cardId) ??
             LatLng(card.latitude, card.longitude);
 
-    final alreadyGetResult = await _alreadyGetCardQueryService.get();
+    final alreadyGetResult = await _alreadyGetCardUseCase.get();
     return CardModalViewData(
       card: await ModalCardViewDataMapper.convertToViewData(
         card: card,

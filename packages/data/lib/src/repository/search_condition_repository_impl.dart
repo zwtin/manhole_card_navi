@@ -17,6 +17,27 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
   final StreamingSharedPreferences _instance;
 
   @override
+  Future<Result<SearchCondition>> get() async {
+    try {
+      final source = _instance
+          .getString(_searchConditionKey, defaultValue: '')
+          .getValue();
+      return Result.success(SearchConditionJsonMapper.fromJsonString(source));
+    } on Exception catch (error, stackTrace) {
+      return Result.failure(
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+      );
+    }
+  }
+
+  @override
+  Stream<SearchCondition> getStream() {
+    return _instance
+        .getString(_searchConditionKey, defaultValue: '')
+        .map(SearchConditionJsonMapper.fromJsonString);
+  }
+
+  @override
   Future<Result<void>> save({
     required SearchCondition searchCondition,
   }) async {

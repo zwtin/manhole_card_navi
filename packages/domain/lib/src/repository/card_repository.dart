@@ -11,4 +11,7 @@ final cardRepositoryProvider = Provider.autoDispose<CardRepository>(
 
 abstract class CardRepository {
   Future<Result<ManholeCard>> get({required String id});
+
+  /// 端末に取り込んだすべてのカード。
+  Future<Result<List<ManholeCard>>> fetchAll();
 }

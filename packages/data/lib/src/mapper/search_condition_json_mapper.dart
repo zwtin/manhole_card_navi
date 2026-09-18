@@ -4,8 +4,7 @@ import 'package:domain/domain.dart';
 
 /// [SearchCondition] と端末保存用 JSON 文字列の相互変換。
 ///
-/// Repository（保存）と QueryService（取得・購読）の両方から使う。復号は堅牢に
-/// 行い、空文字・壊れた JSON・未知の enum 値などは黙って無視して
+/// 復号は堅牢に行い、空文字・壊れた JSON・未知の enum 値などは黙って無視して
 /// [SearchCondition.initial] へフォールバックする（アプリのバージョン間で JSON が
 /// 変わっても落ちないように）。
 class SearchConditionJsonMapper {

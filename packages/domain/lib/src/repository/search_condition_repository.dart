@@ -13,5 +13,10 @@ final searchConditionRepositoryProvider =
     );
 
 abstract class SearchConditionRepository {
+  Future<Result<SearchCondition>> get();
+
+  /// 検索条件が変わるたびに流れる。購読を始めたときにも今の値が流れる。
+  Stream<SearchCondition> getStream();
+
   Future<Result<void>> save({required SearchCondition searchCondition});
 }

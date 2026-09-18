@@ -27,6 +27,11 @@ class CardUseCase {
     return _cardRepository.get(id: id);
   }
 
+  /// 端末に取り込んだすべてのカード。
+  Future<Result<List<ManholeCard>>> fetchAll() {
+    return _cardRepository.fetchAll();
+  }
+
   void dispose() {
     _logger.d('CardUseCase dispose');
   }

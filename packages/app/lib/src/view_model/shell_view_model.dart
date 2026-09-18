@@ -15,7 +15,7 @@ final shellViewModelProvider =
 
 /// 下タブ（マップ・リスト・設定）を持つ画面の ViewModel。
 class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
-  late final AlreadyGetCardQueryService _alreadyGetCardQueryService;
+  late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
   late final AppBadgeUseCase _appBadgeUseCase;
   late final LocationUseCase _locationUseCase;
@@ -25,7 +25,7 @@ class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
 
   @override
   ShellViewData build() {
-    _alreadyGetCardQueryService = ref.watch(alreadyGetCardQueryServiceProvider);
+    _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
     _appBadgeUseCase = ref.watch(appBadgeUseCaseProvider);
     _locationUseCase = ref.watch(locationUseCaseProvider);
@@ -52,11 +52,11 @@ class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
   }
 
   Future<void> _listenAlreadyGetCard() async {
-    final result = await _alreadyGetCardQueryService.get();
+    final result = await _alreadyGetCardUseCase.get();
     if (result is Success<Set<String>>) {
       _alreadyGetCardCount = result.value.length;
     }
-    final subscription = _alreadyGetCardQueryService.getStream().listen((
+    final subscription = _alreadyGetCardUseCase.getStream().listen((
       cardIds,
     ) {
       if (cardIds.length > _alreadyGetCardCount) {

@@ -15,8 +15,8 @@ final allDistributionStates = <ManholeCardDistributionState>{
 
 /// アプリ全体で共有される検索条件。
 ///
-/// 一覧・マップの両画面で一貫して使う。永続化（端末保存）は infra 層が JSON 化して
-/// 担当し、変更は QueryService の Stream を通じて両画面へ伝播する。
+/// 一覧・マップの両画面で一貫して使う。永続化（端末保存）は data が JSON 化して
+/// 担当し、変更は SearchConditionUseCase の Stream を通じて両画面へ伝わる。
 ///
 /// - [common] : 一覧・マップに横断して効く絞り込み条件。
 /// - [map]    : マップ画面にのみ効く表示オプション（座標種別）。
@@ -126,15 +126,9 @@ class CommonSearchCondition {
     return volumeIds.isEmpty || volumeIds.contains(volumeId);
   }
 
-  /// 配布状態の条件に合致するか（空なら常に true）。[stateValue] は DTO が保持する
-  /// 文字列値（'distributing' / 'stopped' / 'notClear'）。
-  bool matchesDistributionState(String stateValue) {
-    if (distributionStates.isEmpty) {
-      return true;
-    }
-    return distributionStates
-        .map((state) => state.toStringValue())
-        .contains(stateValue);
+  /// 配布状態の条件に合致するか（空なら常に true）。
+  bool matchesDistributionState(ManholeCardDistributionState state) {
+    return distributionStates.isEmpty || distributionStates.contains(state);
   }
 
   /// 取得状態の条件に合致するか。

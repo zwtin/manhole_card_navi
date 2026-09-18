@@ -9,12 +9,12 @@ import '../view_data/list_prefectures_view_data.dart';
 
 class ListPrefecturesViewDataMapper {
   static Future<ListPrefecturesViewData> convertToViewData({
-    required List<ListCardDTO> listCardDTOList,
+    required List<ManholeCard> cards,
     required Set<String> alreadyGetCardIds,
     required CommonSearchCondition searchCondition,
   }) async {
     final map = <String, dynamic>{};
-    map['listCardDTOList'] = listCardDTOList;
+    map['cards'] = cards;
     map['alreadyGetCardIds'] = alreadyGetCardIds;
     map['searchCondition'] = searchCondition;
     return compute(_convert, map);
@@ -23,53 +23,47 @@ class ListPrefecturesViewDataMapper {
   static Future<ListPrefecturesViewData> _convert(
     Map<dynamic, dynamic> parameter,
   ) async {
-    final listCardDTOList = parameter['listCardDTOList'] as List<ListCardDTO>;
+    final cards = parameter['cards'] as List<ManholeCard>;
     final alreadyGetIds = parameter['alreadyGetCardIds'] as Set<String>;
     final searchCondition = parameter['searchCondition'] as CommonSearchCondition;
 
     // 弾数・配布状態で絞り込んだ「母集団」。取得状態フィルタ（表示）はこの後で適用
     // する。都道府県ヘッダの分数はこの母集団を基準にする。
-    final universe = listCardDTOList
+    final universe = cards
         .where(
-          (dto) =>
-              searchCondition.matchesVolume(dto.volumeId) &&
-              searchCondition.matchesDistributionState(dto.distributionState),
+          (card) =>
+              searchCondition.matchesVolume(card.volume.id) &&
+              searchCondition.matchesDistributionState(card.distributionState),
         )
         .toList();
 
-    final prefectureIdList = universe
-        .map(
-          (listCardDTO) {
-            return listCardDTO.prefectureId;
-          },
-        )
-        .toSet()
-        .toList();
+    final prefectureIdList =
+        universe.map((card) => card.prefecture.id).toSet().toList();
     final dateFormatter = DateFormat('yyyy/MM/dd');
 
     final prefectureList = prefectureIdList
         .map(
           (id) {
             final universeInPrefecture =
-                universe.where((dto) => dto.prefectureId == id).toList();
+                universe.where((card) => card.prefecture.id == id).toList();
             final cardList = universeInPrefecture
                 .map(
-                  (dto) {
-                    final alreadyGet = alreadyGetIds.contains(dto.id);
+                  (card) {
+                    final alreadyGet = alreadyGetIds.contains(card.id);
                     if (!searchCondition.matchesDisplay(
                       alreadyGet: alreadyGet,
                     )) {
                       return null;
                     }
                     return ListCardViewData(
-                      id: dto.id,
-                      imageUrl: dto.imagePath,
-                      imageSubUrl: dto.imageSubPath,
+                      id: card.id,
+                      imageUrl: card.image,
+                      imageSubUrl: card.imageSub,
                       alreadyGet: alreadyGet,
-                      name: dto.name,
-                      volume: dto.volumeName,
+                      name: card.name,
+                      volume: card.volume.name,
                       publicationDate:
-                          dateFormatter.format(dto.publicationDate.toLocal()),
+                          dateFormatter.format(card.publicationDate.toLocal()),
                     );
                   },
                 )
@@ -79,12 +73,12 @@ class ListPrefecturesViewDataMapper {
               return null;
             }
 
-            final prefectureName = universeInPrefecture.first.prefectureName;
+            final prefectureName = universeInPrefecture.first.prefecture.name;
 
             // 分数の計算（母集団基準）。
             final totalCardsInPrefecture = universeInPrefecture.length;
             final alreadyGetCardsInPrefecture = universeInPrefecture
-                .where((dto) => alreadyGetIds.contains(dto.id))
+                .where((card) => alreadyGetIds.contains(card.id))
                 .length;
 
             return ListPrefectureViewData(

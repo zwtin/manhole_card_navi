@@ -2,11 +2,6 @@ import 'package:domain/domain.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../query_service/already_get_card_query_service_impl.dart';
-import '../query_service/distribution_cards_query_service_impl.dart';
-import '../query_service/list_cards_query_service_impl.dart';
-import '../query_service/position_cards_query_service_impl.dart';
-import '../query_service/search_condition_query_service_impl.dart';
 import '../repository/already_get_card_repository_impl.dart';
 import '../repository/analytics_repository_impl.dart';
 import '../repository/app_badge_repository_impl.dart';
@@ -22,8 +17,8 @@ import '../repository/terms_of_service_repository_impl.dart';
 import '../service/crashlytics_error_reporter.dart';
 import 'platform_provider.dart';
 
-/// domain パッケージが宣言した Repository / QueryService / ErrorReporter の
-/// provider を、このパッケージの実装に差し替える。main.dart の ProviderScope に渡す。
+/// domain パッケージが宣言した Repository / ErrorReporter の provider を、この
+/// パッケージの実装に差し替える。main.dart の ProviderScope に渡す。
 ///
 /// 実装が [sharedPreferencesProvider] / [packageInfoProvider] を読むため、
 /// その 2 つも合わせて override すること。
@@ -95,35 +90,6 @@ final List<Override> dataProviderOverrides = [
     );
     ref.onDispose(repository.dispose);
     return repository;
-  }),
-  alreadyGetCardQueryServiceProvider.overrideWith((ref) {
-    final queryService = AlreadyGetCardQueryServiceImpl(
-      ref.watch(sharedPreferencesProvider),
-    );
-    ref.onDispose(queryService.dispose);
-    return queryService;
-  }),
-  distributionCardsQueryServiceProvider.overrideWith((ref) {
-    final queryService = DistributionCardsQueryServiceImpl();
-    ref.onDispose(queryService.dispose);
-    return queryService;
-  }),
-  listCardsQueryServiceProvider.overrideWith((ref) {
-    final queryService = ListCardsQueryServiceImpl();
-    ref.onDispose(queryService.dispose);
-    return queryService;
-  }),
-  positionCardsQueryServiceProvider.overrideWith((ref) {
-    final queryService = PositionCardsQueryServiceImpl();
-    ref.onDispose(queryService.dispose);
-    return queryService;
-  }),
-  searchConditionQueryServiceProvider.overrideWith((ref) {
-    final queryService = SearchConditionQueryServiceImpl(
-      ref.watch(sharedPreferencesProvider),
-    );
-    ref.onDispose(queryService.dispose);
-    return queryService;
   }),
   errorReporterProvider.overrideWith(
     (ref) => CrashlyticsErrorReporter(FirebaseCrashlytics.instance),

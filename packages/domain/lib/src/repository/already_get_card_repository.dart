@@ -13,6 +13,12 @@ final alreadyGetCardRepositoryProvider =
     );
 
 abstract class AlreadyGetCardRepository {
+  /// 取得済みカードの ID。
+  Future<Result<Set<String>>> get();
+
+  /// 取得済みカードが変わるたびに流れる。購読を始めたときにも今の値が流れる。
+  Stream<Set<String>> getStream();
+
   Future<Result<void>> save({required ManholeCard manholeCard});
   Future<Result<void>> delete({required ManholeCard manholeCard});
 }

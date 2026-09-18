@@ -16,6 +16,26 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   final StreamingSharedPreferences _instance;
 
   @override
+  Future<Result<Set<String>>> get() async {
+    try {
+      return Result.success(
+        _instance.getStringList(_key, defaultValue: []).getValue().toSet(),
+      );
+    } on Exception catch (error, stackTrace) {
+      return Result.failure(
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+      );
+    }
+  }
+
+  @override
+  Stream<Set<String>> getStream() {
+    return _instance
+        .getStringList(_key, defaultValue: [])
+        .map((cardIds) => cardIds.toSet());
+  }
+
+  @override
   Future<Result<void>> save({
     required ManholeCard manholeCard,
   }) async {

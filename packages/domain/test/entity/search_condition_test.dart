@@ -64,19 +64,34 @@ void main() {
       const condition = CommonSearchCondition();
 
       expect(condition.matchesVolume('0005'), isTrue);
-      expect(condition.matchesDistributionState('notClear'), isTrue);
+      expect(
+        condition.matchesDistributionState(
+          const ManholeCardDistributionState.notClear(),
+        ),
+        isTrue,
+      );
       expect(condition.matchesDisplay(alreadyGet: false), isTrue);
     });
 
-    test('配布状態は文字列値で照合する', () {
+    test('配布状態は、選んだ状態だけを通す', () {
       final condition = CommonSearchCondition(
         distributionStates: {
           const ManholeCardDistributionState.distributing(),
         },
       );
 
-      expect(condition.matchesDistributionState('distributing'), isTrue);
-      expect(condition.matchesDistributionState('stopped'), isFalse);
+      expect(
+        condition.matchesDistributionState(
+          const ManholeCardDistributionState.distributing(),
+        ),
+        isTrue,
+      );
+      expect(
+        condition.matchesDistributionState(
+          const ManholeCardDistributionState.stopped(),
+        ),
+        isFalse,
+      );
     });
 
     test('取得状態の絞り込み', () {

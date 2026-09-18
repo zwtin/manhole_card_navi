@@ -34,6 +34,32 @@ class CardRepositoryImpl implements CardRepository {
     }
   }
 
+  @override
+  Future<Result<List<ManholeCard>>> fetchAll() async {
+    try {
+      final realm = RealmConfiguration.open();
+      try {
+        final daoList = realm.all<RealmCardDAO>();
+        if (daoList.isEmpty) {
+          return const Result.failure(
+            NotFoundException(detail: '端末にマスターデータがありません'),
+          );
+        }
+        return Result.success(
+          daoList
+              .map((dao) => RealmCardMapper.convertToEntity(dao: dao))
+              .toList(),
+        );
+      } finally {
+        realm.close();
+      }
+    } on Exception catch (error, stackTrace) {
+      return Result.failure(
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+      );
+    }
+  }
+
   void dispose() {
     _logger.d('CardRepositoryImpl dispose');
   }
