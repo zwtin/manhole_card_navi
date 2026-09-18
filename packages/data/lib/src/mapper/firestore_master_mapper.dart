@@ -71,8 +71,8 @@ abstract final class FirestoreMasterMapper {
             ),
           )
           .toList(),
-      // prefectures に無い都道府県 ID のカード（全国向けのカードなど）は名前を空に
-      // しておく。一覧では名前が空の都道府県を「全国」として表示する。
+      // prefectures に無い都道府県 ID のカードは名前を空にし、国の機関・全国組織の
+      // カードと同じ扱いにする（ManholeCardPrefecture.isNationwide）。
       prefecture: prefectures[prefectureId] ??
           ManholeCardPrefecture(id: prefectureId, name: ''),
       volume: volumes[volumeId] ?? ManholeCardVolume(id: volumeId, name: ''),

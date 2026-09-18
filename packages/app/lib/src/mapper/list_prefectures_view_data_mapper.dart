@@ -6,6 +6,7 @@ import '../view_data/list_card_view_data.dart';
 import '../view_data/list_cards_view_data.dart';
 import '../view_data/list_prefecture_view_data.dart';
 import '../view_data/list_prefectures_view_data.dart';
+import 'prefecture_name_mapper.dart';
 
 class ListPrefecturesViewDataMapper {
   static Future<ListPrefecturesViewData> convertToViewData({
@@ -73,8 +74,6 @@ class ListPrefecturesViewDataMapper {
               return null;
             }
 
-            final prefectureName = universeInPrefecture.first.prefecture.name;
-
             // 分数の計算（母集団基準）。
             final totalCardsInPrefecture = universeInPrefecture.length;
             final alreadyGetCardsInPrefecture = universeInPrefecture
@@ -83,7 +82,9 @@ class ListPrefecturesViewDataMapper {
 
             return ListPrefectureViewData(
               id: id,
-              name: prefectureName.isEmpty ? '全国' : prefectureName,
+              name: PrefectureNameMapper.nameOf(
+                universeInPrefecture.first.prefecture,
+              ),
               cards: ListCardsViewData(
                 list: cardList,
               ),

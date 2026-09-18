@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 import '../view_data/detail_card_view_data.dart';
+import 'prefecture_name_mapper.dart';
 
 class DetailCardViewDataMapper {
   static Future<DetailCardViewData> convertToViewData({
@@ -29,7 +30,7 @@ class DetailCardViewDataMapper {
       imageSubUrl: card.imageSub,
       alreadyGet: alreadyGet,
       name: card.name,
-      prefecture: card.prefecture.name,
+      prefecture: PrefectureNameMapper.nameOf(card.prefecture),
       volume: card.volume.name,
       publicationDate: dateFormatter.format(card.publicationDate.toLocal()),
       distributionPlaceHtml: card.distributionPlaceHtml,
