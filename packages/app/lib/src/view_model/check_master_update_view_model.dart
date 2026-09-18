@@ -13,17 +13,15 @@ class CheckMasterUpdateViewModel
     extends AutoDisposeNotifier<CheckMasterUpdateViewData> {
   late final AnalyticsUseCase _analyticsUseCase;
   late final CheckMasterUpdateUseCase _checkMasterUpdateUseCase;
-  late final CheckTermsOfServiceAgreeUseCase _checkTermsOfServiceAgreeUseCase;
   late final NavigationService _navigationService;
+  late final TermsOfServiceUseCase _termsOfServiceUseCase;
 
   @override
   CheckMasterUpdateViewData build() {
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
     _checkMasterUpdateUseCase = ref.watch(checkMasterUpdateUseCaseProvider);
-    _checkTermsOfServiceAgreeUseCase = ref.watch(
-      checkTermsOfServiceAgreeUseCaseProvider,
-    );
     _navigationService = ref.watch(navigationServiceProvider);
+    _termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
     return const CheckMasterUpdateViewData();
   }
 
@@ -86,7 +84,7 @@ class CheckMasterUpdateViewModel
   Future<bool> _checkNeedAgree() async {
     while (true) {
       state = state.copyWith(isLoading: true);
-      final result = await _checkTermsOfServiceAgreeUseCase.getNeedAgree();
+      final result = await _termsOfServiceUseCase.getNeedAgree();
       state = state.copyWith(isLoading: false);
       if (result case Failure(:final exception)) {
         await _navigationService.showFailure(

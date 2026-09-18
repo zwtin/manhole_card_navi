@@ -12,17 +12,14 @@ final checkTermsOfServiceAgreeViewModelProvider = NotifierProvider.autoDispose<
 class CheckTermsOfServiceAgreeViewModel
     extends AutoDisposeNotifier<CheckTermsOfServiceAgreeViewData> {
   late final AnalyticsUseCase _analyticsUseCase;
-  late final SaveTermsOfServiceAgreeVersionUseCase
-      _saveTermsOfServiceAgreeVersionUseCase;
   late final NavigationService _navigationService;
+  late final TermsOfServiceUseCase _termsOfServiceUseCase;
 
   @override
   CheckTermsOfServiceAgreeViewData build() {
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _saveTermsOfServiceAgreeVersionUseCase = ref.watch(
-      saveTermsOfServiceAgreeVersionUseCaseProvider,
-    );
     _navigationService = ref.watch(navigationServiceProvider);
+    _termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
     return const CheckTermsOfServiceAgreeViewData();
   }
 
@@ -63,7 +60,7 @@ class CheckTermsOfServiceAgreeViewModel
   Future<void> _saveAgreedVersion() async {
     while (true) {
       state = state.copyWith(isLoading: true);
-      final result = await _saveTermsOfServiceAgreeVersionUseCase.save();
+      final result = await _termsOfServiceUseCase.agree();
       state = state.copyWith(isLoading: false);
       if (result case Failure(:final exception)) {
         await _navigationService.showFailure(

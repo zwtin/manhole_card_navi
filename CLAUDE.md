@@ -144,7 +144,7 @@ realm はルートの `pubspec.yaml` にも書いています。iOS / Android �
 (cd packages/<パッケージ> && fvm dart run build_runner build --delete-conflicting-outputs)
 ```
 
-domain の生成ファイルがなくなる変更（freezed をやめた・ファイルを消した）の後は、app の build_runner が `InvalidOutputException: domain|lib/src/...freezed.dart` で落ちる。app の生成キャッシュが消えたファイルを指したままになるためで、app で `fvm dart run build_runner clean` してから build し直す。
+domain のファイルを消した後（freezed をやめて生成ファイルがなくなった場合も含む）は、app の build_runner が `InvalidOutputException: domain|lib/src/...` で落ちる。app の生成キャッシュが消えたファイルを指したままになるためで、app で `fvm dart run build_runner clean` してから build し直す。
 
 生成されるファイル：
 - `*.freezed.dart` - Freezedイミュータブルクラス（gitignore 済み）

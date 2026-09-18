@@ -42,12 +42,12 @@ void main() {
     );
   }
 
-  group('CheckTermsOfServiceAgreeUseCase', () {
+  group('TermsOfServiceUseCase.getNeedAgree', () {
     test('一度も同意していなければ同意が必要', () async {
       stubAgreed(null);
 
       final result = await container
-          .read(checkTermsOfServiceAgreeUseCaseProvider)
+          .read(termsOfServiceUseCaseProvider)
           .getNeedAgree();
 
       expect((result as Success<bool>).value, isTrue);
@@ -57,20 +57,20 @@ void main() {
       stubAgreed('2');
 
       final result = await container
-          .read(checkTermsOfServiceAgreeUseCaseProvider)
+          .read(termsOfServiceUseCaseProvider)
           .getNeedAgree();
 
       expect((result as Success<bool>).value, isFalse);
     });
   });
 
-  group('CheckTermsOfServiceUpdateUseCase', () {
+  group('TermsOfServiceUseCase.getNeedUpdate', () {
     test('同意済みと要求のバージョンが違えば再同意が必要', () async {
       stubAgreed('1');
       stubInquired('2');
 
       final result = await container
-          .read(checkTermsOfServiceUpdateUseCaseProvider)
+          .read(termsOfServiceUseCaseProvider)
           .getNeedUpdate();
 
       expect((result as Success<bool>).value, isTrue);
@@ -81,14 +81,14 @@ void main() {
       stubInquired('2');
 
       final result = await container
-          .read(checkTermsOfServiceUpdateUseCaseProvider)
+          .read(termsOfServiceUseCaseProvider)
           .getNeedUpdate();
 
       expect((result as Success<bool>).value, isFalse);
     });
   });
 
-  group('SaveTermsOfServiceAgreeVersionUseCase', () {
+  group('TermsOfServiceUseCase.agree', () {
     test('要求バージョンを同意済みバージョンとして保存する', () async {
       stubInquired('3');
       when(
@@ -96,8 +96,8 @@ void main() {
       ).thenAnswer((_) async => const Result.success(null));
 
       final result = await container
-          .read(saveTermsOfServiceAgreeVersionUseCaseProvider)
-          .save();
+          .read(termsOfServiceUseCaseProvider)
+          .agree();
 
       expect(result, isA<Success<void>>());
       verify(
@@ -113,8 +113,8 @@ void main() {
       );
 
       final result = await container
-          .read(saveTermsOfServiceAgreeVersionUseCaseProvider)
-          .save();
+          .read(termsOfServiceUseCaseProvider)
+          .agree();
 
       expect(result, isA<Failure<void>>());
       verifyNever(

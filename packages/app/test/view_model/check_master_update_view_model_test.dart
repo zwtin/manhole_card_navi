@@ -9,14 +9,13 @@ class MockAnalyticsUseCase extends Mock implements AnalyticsUseCase {}
 class MockCheckMasterUpdateUseCase extends Mock
     implements CheckMasterUpdateUseCase {}
 
-class MockCheckTermsOfServiceAgreeUseCase extends Mock
-    implements CheckTermsOfServiceAgreeUseCase {}
+class MockTermsOfServiceUseCase extends Mock implements TermsOfServiceUseCase {}
 
 class MockNavigationService extends Mock implements NavigationService {}
 
 void main() {
   late MockCheckMasterUpdateUseCase checkMasterUpdateUseCase;
-  late MockCheckTermsOfServiceAgreeUseCase checkTermsOfServiceAgreeUseCase;
+  late MockTermsOfServiceUseCase termsOfServiceUseCase;
   late MockNavigationService navigationService;
   late ProviderContainer container;
 
@@ -26,7 +25,7 @@ void main() {
 
   setUp(() {
     checkMasterUpdateUseCase = MockCheckMasterUpdateUseCase();
-    checkTermsOfServiceAgreeUseCase = MockCheckTermsOfServiceAgreeUseCase();
+    termsOfServiceUseCase = MockTermsOfServiceUseCase();
     navigationService = MockNavigationService();
     container = ProviderContainer(
       overrides: [
@@ -34,9 +33,7 @@ void main() {
         checkMasterUpdateUseCaseProvider.overrideWithValue(
           checkMasterUpdateUseCase,
         ),
-        checkTermsOfServiceAgreeUseCaseProvider.overrideWithValue(
-          checkTermsOfServiceAgreeUseCase,
-        ),
+        termsOfServiceUseCaseProvider.overrideWithValue(termsOfServiceUseCase),
         navigationServiceProvider.overrideWithValue(navigationService),
       ],
     );
@@ -48,7 +45,7 @@ void main() {
         exception: any(named: 'exception'),
       ),
     ).thenAnswer((_) async {});
-    when(() => checkTermsOfServiceAgreeUseCase.getNeedAgree()).thenAnswer(
+    when(() => termsOfServiceUseCase.getNeedAgree()).thenAnswer(
       (_) async => const Result.success(true),
     );
   });
@@ -81,7 +78,7 @@ void main() {
     stubNeedUpdate([const Result.success(true)]);
     when(() => checkMasterUpdateUseCase.updateMaster())
         .thenAnswer((_) async => const Result.success(null));
-    when(() => checkTermsOfServiceAgreeUseCase.getNeedAgree()).thenAnswer(
+    when(() => termsOfServiceUseCase.getNeedAgree()).thenAnswer(
       (_) async => const Result.success(false),
     );
 

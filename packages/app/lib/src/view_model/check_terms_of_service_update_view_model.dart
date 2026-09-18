@@ -12,28 +12,21 @@ final checkTermsOfServiceUpdateViewModelProvider = NotifierProvider.autoDispose<
 class CheckTermsOfServiceUpdateViewModel
     extends AutoDisposeNotifier<CheckTermsOfServiceUpdateViewData> {
   late final AnalyticsUseCase _analyticsUseCase;
-  late final CheckTermsOfServiceUpdateUseCase _checkTermsOfServiceUpdateUseCase;
-  late final SaveTermsOfServiceAgreeVersionUseCase
-      _saveTermsOfServiceAgreeVersionUseCase;
   late final NavigationService _navigationService;
+  late final TermsOfServiceUseCase _termsOfServiceUseCase;
 
   @override
   CheckTermsOfServiceUpdateViewData build() {
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _checkTermsOfServiceUpdateUseCase = ref.watch(
-      checkTermsOfServiceUpdateUseCaseProvider,
-    );
-    _saveTermsOfServiceAgreeVersionUseCase = ref.watch(
-      saveTermsOfServiceAgreeVersionUseCaseProvider,
-    );
     _navigationService = ref.watch(navigationServiceProvider);
+    _termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
     return const CheckTermsOfServiceUpdateViewData();
   }
 
   Future<void> onLoad() async {
     while (true) {
       state = state.copyWith(isLoading: true);
-      final result = await _checkTermsOfServiceUpdateUseCase.getNeedUpdate();
+      final result = await _termsOfServiceUseCase.getNeedUpdate();
       state = state.copyWith(isLoading: false);
       if (result case Failure(:final exception)) {
         await _navigationService.showFailure(
@@ -89,7 +82,7 @@ class CheckTermsOfServiceUpdateViewModel
   Future<void> _saveAgreedVersion() async {
     while (true) {
       state = state.copyWith(isLoading: true);
-      final result = await _saveTermsOfServiceAgreeVersionUseCase.save();
+      final result = await _termsOfServiceUseCase.agree();
       state = state.copyWith(isLoading: false);
       if (result case Failure(:final exception)) {
         await _navigationService.showFailure(
