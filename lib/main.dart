@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'debug_proxy.dart';
+import 'di/infrastructure.dart';
+import 'di/repository_overrides.dart';
 import 'firebase_options.dart';
 
 FutureOr<void> main() async {
@@ -33,11 +35,11 @@ FutureOr<void> main() async {
         }
       };
 
+      final infrastructure = await Infrastructure.initialize();
       runApp(
         ProviderScope(
           observers: [UncaughtErrorObserver()],
-          // domain が宣言した Repository を、data の実装に差し替える。
-          overrides: await initializeData(),
+          overrides: repositoryOverrides(infrastructure),
           child: const App(),
         ),
       );

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:data/src/storage/master_data_store.dart';
+import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,7 +17,7 @@ void main() {
     await directory.delete(recursive: true);
   });
 
-  MasterDataStore store() => MasterDataStore(directory: () async => directory);
+  MasterDataLocalDataSource store() => MasterDataLocalDataSource(directory: () async => directory);
 
   List<String> fileNames() {
     return directory
@@ -73,7 +73,7 @@ void main() {
 
   test('起動して最初に使うときに、後片付けを 1 回だけ行う', () async {
     var cleanUpCount = 0;
-    final target = MasterDataStore(
+    final target = MasterDataLocalDataSource(
       directory: () async => directory,
       cleanUp: () async => cleanUpCount++,
     );

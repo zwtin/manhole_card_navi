@@ -5,9 +5,9 @@ import 'package:domain/domain.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:logger/logger.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../image/card_image_cache_manager.dart';
-import '../image/image_fallback.dart';
+import '../datasource/card_image_cache_manager.dart';
+import '../datasource/image_fallback.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 /// ほかの Repository と違い、失敗を FailureRecorder で記録しない。画像の失敗は
 /// ImageLoadMonitor（Analytics）と、表示側の FlutterError（Crashlytics の非重大）で
@@ -50,7 +50,7 @@ class CardImageRepositoryImpl implements CardImageRepository {
       return Result.success(await file.readAsBytes());
     } on Exception catch (error, stackTrace) {
       return Result.failure(
-        DomainExceptionConverter.fromHttp(error, stackTrace),
+        DomainExceptionMapper.fromHttp(error, stackTrace),
       );
     }
   }
@@ -93,7 +93,7 @@ class CardImageRepositoryImpl implements CardImageRepository {
       return Result.success(bytes.takeBytes());
     } on Exception catch (error, stackTrace) {
       return Result.failure(
-        DomainExceptionConverter.fromHttp(error, stackTrace),
+        DomainExceptionMapper.fromHttp(error, stackTrace),
       );
     }
   }

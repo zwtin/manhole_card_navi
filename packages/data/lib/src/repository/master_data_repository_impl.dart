@@ -2,21 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 
-import '../exception/domain_exception_converter.dart';
+import '../datasource/failure_recorder.dart';
+import '../datasource/master_data_local_data_source.dart';
+import '../mapper/domain_exception_mapper.dart';
 import '../mapper/firestore_master_mapper.dart';
-import '../service/failure_recorder.dart';
-import '../storage/master_data_store.dart';
 
 class MasterDataRepositoryImpl implements MasterDataRepository {
   MasterDataRepositoryImpl(
     this._firestore,
-    this._store,
+    this._masterData,
     this._failureRecorder,
   );
 
   final _logger = Logger();
   final FirebaseFirestore _firestore;
-  final MasterDataStore _store;
+  final MasterDataLocalDataSource _masterData;
   final FailureRecorder _failureRecorder;
 
   @override
@@ -68,23 +68,23 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
         }
         return cards;
       },
-      convert: DomainExceptionConverter.fromFirestore,
+      convert: DomainExceptionMapper.fromFirestore,
     );
   }
 
   @override
   Future<Result<void>> replace({required List<ManholeCard> cards}) {
     return _failureRecorder.guard(
-      () => _store.writeAll(cards),
-      convert: DomainExceptionConverter.fromLocalStorage,
+      () => _masterData.writeAll(cards),
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 
   @override
   Future<Result<bool>> exists() {
     return _failureRecorder.guard(
-      _store.exists,
-      convert: DomainExceptionConverter.fromLocalStorage,
+      _masterData.exists,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 

@@ -2,11 +2,6 @@ import 'dart:async';
 
 import 'package:domain/domain.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-final failureRecorderProvider = Provider<FailureRecorder>(
-  (ref) => FailureRecorder(),
-);
 
 /// data が返す失敗のうち、調べる必要のあるものを Crashlytics の非重大に記録する。
 ///

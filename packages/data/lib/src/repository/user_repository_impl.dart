@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:logger/logger.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(
@@ -33,7 +33,7 @@ class UserRepositoryImpl implements UserRepository {
         }
         await _setUserId(user.uid);
       },
-      convert: DomainExceptionConverter.fromAuth,
+      convert: DomainExceptionMapper.fromAuth,
     );
   }
 
@@ -45,7 +45,7 @@ class UserRepositoryImpl implements UserRepository {
       await _crashlytics.setUserIdentifier(uid);
     } on Exception catch (error, stackTrace) {
       _failureRecorder.failure<void>(
-        DomainExceptionConverter.fromPlatform(error, stackTrace),
+        DomainExceptionMapper.fromPlatform(error, stackTrace),
         stackTrace,
       );
     }

@@ -1,18 +1,18 @@
 import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../service/failure_recorder.dart';
-import '../storage/master_data_store.dart';
+import '../datasource/failure_recorder.dart';
+import '../datasource/master_data_local_data_source.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class CardRepositoryImpl implements CardRepository {
   CardRepositoryImpl(
-    this._store,
+    this._masterData,
     this._failureRecorder,
   );
 
   final _logger = Logger();
-  final MasterDataStore _store;
+  final MasterDataLocalDataSource _masterData;
   final FailureRecorder _failureRecorder;
 
   @override
@@ -27,7 +27,7 @@ class CardRepositoryImpl implements CardRepository {
         }
         return card.first;
       },
-      convert: DomainExceptionConverter.fromLocalStorage,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 
@@ -35,12 +35,12 @@ class CardRepositoryImpl implements CardRepository {
   Future<Result<List<ManholeCard>>> fetchAll() {
     return _failureRecorder.guard(
       _readAll,
-      convert: DomainExceptionConverter.fromLocalStorage,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 
   Future<List<ManholeCard>> _readAll() async {
-    final cards = await _store.readAll();
+    final cards = await _masterData.readAll();
     if (cards == null || cards.isEmpty) {
       throw const NotFoundException(detail: '端末にマスターデータがありません');
     }

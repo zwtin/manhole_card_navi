@@ -1,18 +1,18 @@
-import 'package:data/src/remote_config/remote_config_reader.dart';
+import 'package:data/src/datasource/remote_config_data_source.dart';
 import 'package:data/src/repository/already_get_card_repository_impl.dart';
 import 'package:data/src/repository/master_version_repository_impl.dart';
 import 'package:data/src/repository/search_condition_repository_impl.dart';
 import 'package:data/src/repository/terms_of_service_repository_impl.dart';
-import 'package:data/src/service/failure_recorder.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import '../service/crashlytics_mock.dart';
+import '../datasource/crashlytics_mock.dart';
 
-class MockRemoteConfigReader extends Mock implements RemoteConfigReader {}
+class MockRemoteConfigReader extends Mock implements RemoteConfigDataSource {}
 
 void main() {
   late StreamingSharedPreferences preferences;

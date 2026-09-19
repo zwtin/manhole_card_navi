@@ -1,4 +1,4 @@
-import 'package:data/src/service/failure_recorder.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

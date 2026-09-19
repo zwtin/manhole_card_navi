@@ -1,15 +1,16 @@
 import 'dart:async';
 
 import 'package:data/src/repository/location_repository_impl.dart';
-import 'package:data/src/service/failure_recorder.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/location_data_source.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../service/crashlytics_mock.dart';
+import '../datasource/crashlytics_mock.dart';
 
-class MockLocationPlatform extends Mock implements LocationPlatform {}
+class MockLocationDataSource extends Mock implements LocationDataSource {}
 
 Position _position() {
   return Position(
@@ -27,12 +28,12 @@ Position _position() {
 }
 
 void main() {
-  late MockLocationPlatform platform;
+  late MockLocationDataSource platform;
   late MockFirebaseCrashlytics crashlytics;
   late LocationRepositoryImpl repository;
 
   setUp(() {
-    platform = MockLocationPlatform();
+    platform = MockLocationDataSource();
     crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     repository = LocationRepositoryImpl(

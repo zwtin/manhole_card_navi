@@ -4,41 +4,42 @@ import 'package:domain/domain.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../datasource/location_data_source.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class LocationRepositoryImpl implements LocationRepository {
   LocationRepositoryImpl(
-    this._platform,
+    this._location,
     this._failureRecorder,
   );
 
   final _logger = Logger();
-  final LocationPlatform _platform;
+  final LocationDataSource _location;
   final FailureRecorder _failureRecorder;
 
   @override
   Future<Result<bool>> requestPermission() {
     return _failureRecorder.guard(
       () async {
-        if (!await _platform.isLocationServiceEnabled()) {
+        if (!await _location.isLocationServiceEnabled()) {
           return false;
         }
-        var permission = await _platform.checkPermission();
+        var permission = await _location.checkPermission();
         if (permission == LocationPermission.denied) {
-          permission = await _platform.requestPermission();
+          permission = await _location.requestPermission();
         }
         return _isGranted(permission);
       },
-      convert: DomainExceptionConverter.fromPlatform,
+      convert: DomainExceptionMapper.fromPlatform,
     );
   }
 
   @override
   Future<Result<bool>> isPermissionGranted() {
     return _failureRecorder.guard(
-      () async => _isGranted(await _platform.checkPermission()),
-      convert: DomainExceptionConverter.fromPlatform,
+      () async => _isGranted(await _location.checkPermission()),
+      convert: DomainExceptionMapper.fromPlatform,
     );
   }
 
@@ -47,7 +48,7 @@ class LocationRepositoryImpl implements LocationRepository {
     return _failureRecorder.guard(
       () async {
         try {
-          final position = await _platform.getCurrentPosition();
+          final position = await _location.getCurrentPosition();
           return Coordinate(
             latitude: position.latitude,
             longitude: position.longitude,
@@ -61,7 +62,7 @@ class LocationRepositoryImpl implements LocationRepository {
       },
       convert: (error, stackTrace) => error is TimeoutException
           ? TimedOutException(cause: error, stackTrace: stackTrace)
-          : DomainExceptionConverter.fromPlatform(error, stackTrace),
+          : DomainExceptionMapper.fromPlatform(error, stackTrace),
     );
   }
 
@@ -74,21 +75,4 @@ class LocationRepositoryImpl implements LocationRepository {
   void dispose() {
     _logger.d('LocationRepositoryImpl dispose');
   }
-}
-
-/// 端末の位置情報（geolocator）。static な API を、テストで差し替えられるように包む。
-class LocationPlatform {
-  const LocationPlatform();
-
-  Future<bool> isLocationServiceEnabled() {
-    return Geolocator.isLocationServiceEnabled();
-  }
-
-  Future<LocationPermission> checkPermission() => Geolocator.checkPermission();
-
-  Future<LocationPermission> requestPermission() {
-    return Geolocator.requestPermission();
-  }
-
-  Future<Position> getCurrentPosition() => Geolocator.getCurrentPosition();
 }

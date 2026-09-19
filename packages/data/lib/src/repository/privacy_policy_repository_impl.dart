@@ -1,13 +1,13 @@
 import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../remote_config/remote_config_reader.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../datasource/remote_config_data_source.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class PrivacyPolicyRepositoryImpl implements PrivacyPolicyRepository {
   PrivacyPolicyRepositoryImpl(
-    this._remoteConfigReader,
+    this._remoteConfig,
     this._failureRecorder,
   );
 
@@ -15,16 +15,16 @@ class PrivacyPolicyRepositoryImpl implements PrivacyPolicyRepository {
   static const _key = 'privacy_policy';
 
   final _logger = Logger();
-  final RemoteConfigReader _remoteConfigReader;
+  final RemoteConfigDataSource _remoteConfig;
   final FailureRecorder _failureRecorder;
 
   @override
   Future<Result<PrivacyPolicy>> get() {
     return _failureRecorder.guard(
       () async => PrivacyPolicy(
-        value: await _remoteConfigReader.readString(_key),
+        value: await _remoteConfig.readString(_key),
       ),
-      convert: DomainExceptionConverter.fromRemoteConfig,
+      convert: DomainExceptionMapper.fromRemoteConfig,
     );
   }
 

@@ -2,17 +2,9 @@ import 'dart:io';
 
 import 'package:domain/domain.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../mapper/manhole_card_json_mapper.dart';
-
-final masterDataStoreProvider = Provider<MasterDataStore>(
-  (ref) => MasterDataStore(
-    directory: getApplicationSupportDirectory,
-    cleanUp: _deleteRealmFiles,
-  ),
-);
 
 /// 端末に取り込んだマスターデータ（カード一式）を、1 つの JSON ファイルで持つ。
 ///
@@ -23,12 +15,23 @@ final masterDataStoreProvider = Provider<MasterDataStore>(
 /// ファイルの形を変えたら [_formatVersion] を上げる。ファイル名にバージョンが入るので、
 /// 古い形のファイルは読まれず「まだ取り込んでいない」扱いになり、マスターデータを
 /// 取り直す。古い形のファイルは消す。
-class MasterDataStore {
-  MasterDataStore({
+///
+/// 読み込んだカードをメモリに持つので、アプリ全体で 1 つだけ作る。
+class MasterDataLocalDataSource {
+  MasterDataLocalDataSource({
     required Future<Directory> Function() directory,
     Future<void> Function()? cleanUp,
   })  : _directory = directory,
         _cleanUp = cleanUp;
+
+  /// Application Support にファイルを置く。最初に使うときに、以前マスターデータを
+  /// 入れていた Realm のファイルを消す。
+  factory MasterDataLocalDataSource.inApplicationSupport() {
+    return MasterDataLocalDataSource(
+      directory: getApplicationSupportDirectory,
+      cleanUp: _deleteRealmFiles,
+    );
+  }
 
   static const _formatVersion = 1;
   static const _fileName = 'master_data_v$_formatVersion.json';

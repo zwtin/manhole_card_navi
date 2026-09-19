@@ -2,14 +2,14 @@ import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../remote_config/remote_config_reader.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../datasource/remote_config_data_source.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
   TermsOfServiceRepositoryImpl(
     this._preferences,
-    this._remoteConfigReader,
+    this._remoteConfig,
     this._failureRecorder,
   );
 
@@ -24,16 +24,16 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
 
   final _logger = Logger();
   final StreamingSharedPreferences _preferences;
-  final RemoteConfigReader _remoteConfigReader;
+  final RemoteConfigDataSource _remoteConfig;
   final FailureRecorder _failureRecorder;
 
   @override
   Future<Result<TermsOfService>> get() {
     return _failureRecorder.guard(
       () async => TermsOfService(
-        value: await _remoteConfigReader.readString(_termsOfServiceKey),
+        value: await _remoteConfig.readString(_termsOfServiceKey),
       ),
-      convert: DomainExceptionConverter.fromRemoteConfig,
+      convert: DomainExceptionMapper.fromRemoteConfig,
     );
   }
 
@@ -41,9 +41,9 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
   Future<Result<TermsOfServiceVersion>> getInquiredVersion() {
     return _failureRecorder.guard(
       () async => TermsOfServiceVersion(
-        value: await _remoteConfigReader.readString(_inquiredVersionKey),
+        value: await _remoteConfig.readString(_inquiredVersionKey),
       ),
-      convert: DomainExceptionConverter.fromRemoteConfig,
+      convert: DomainExceptionMapper.fromRemoteConfig,
     );
   }
 
@@ -57,7 +57,7 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
         // まだ一度も同意していなければ、保存されていない（空文字が返る）。
         return value.isEmpty ? null : TermsOfServiceVersion(value: value);
       },
-      convert: DomainExceptionConverter.fromLocalStorage,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 
@@ -73,7 +73,7 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
           );
         }
       },
-      convert: DomainExceptionConverter.fromLocalStorage,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 

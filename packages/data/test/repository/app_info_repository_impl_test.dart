@@ -1,21 +1,21 @@
-import 'package:data/src/remote_config/remote_config_reader.dart';
+import 'package:data/src/datasource/remote_config_data_source.dart';
 import 'package:data/src/repository/app_info_repository_impl.dart';
-import 'package:data/src/service/failure_recorder.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../service/crashlytics_mock.dart';
+import '../datasource/crashlytics_mock.dart';
 
-class MockRemoteConfigReader extends Mock implements RemoteConfigReader {}
+class MockRemoteConfigReader extends Mock implements RemoteConfigDataSource {}
 
 void main() {
-  late MockRemoteConfigReader remoteConfigReader;
+  late MockRemoteConfigReader remoteConfig;
   late AppInfoRepositoryImpl Function(String version) repository;
 
   setUp(() {
-    remoteConfigReader = MockRemoteConfigReader();
+    remoteConfig = MockRemoteConfigReader();
     final crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     repository = (version) => AppInfoRepositoryImpl(
@@ -25,7 +25,7 @@ void main() {
             version: version,
             buildNumber: '1',
           ),
-          remoteConfigReader,
+          remoteConfig,
           FailureRecorder(crashlytics: crashlytics),
         );
   });
@@ -42,7 +42,7 @@ void main() {
   });
 
   test('要求バージョンの前後の空白・改行は許す', () async {
-    when(() => remoteConfigReader.readString('inquired_app_version'))
+    when(() => remoteConfig.readString('inquired_app_version'))
         .thenAnswer((_) async => ' 1.4.0\n');
 
     final result = await repository('1.5.0').getInquiredVersion();
@@ -51,7 +51,7 @@ void main() {
   });
 
   test('要求バージョンがバージョンの形でなければ、壊れたデータの失敗', () async {
-    when(() => remoteConfigReader.readString('inquired_app_version'))
+    when(() => remoteConfig.readString('inquired_app_version'))
         .thenAnswer((_) async => 'latest');
 
     final result = await repository('1.5.0').getInquiredVersion();

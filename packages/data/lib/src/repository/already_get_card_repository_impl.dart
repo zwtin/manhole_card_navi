@@ -2,8 +2,8 @@ import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   AlreadyGetCardRepositoryImpl(
@@ -25,7 +25,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   Future<Result<Set<String>>> get() {
     return _failureRecorder.guard(
       () async => _cardIds.getValue().toSet(),
-      convert: DomainExceptionConverter.fromLocalStorage,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 
@@ -40,7 +40,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   }) {
     return _failureRecorder.guard(
       () => _write({..._cardIds.getValue(), cardId}),
-      convert: DomainExceptionConverter.fromLocalStorage,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 
@@ -50,7 +50,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   }) {
     return _failureRecorder.guard(
       () => _write(_cardIds.getValue().toSet()..remove(cardId)),
-      convert: DomainExceptionConverter.fromLocalStorage,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 

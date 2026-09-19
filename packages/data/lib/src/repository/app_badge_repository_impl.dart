@@ -2,8 +2,8 @@ import 'package:domain/domain.dart';
 import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
 import 'package:logger/logger.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class AppBadgeRepositoryImpl implements AppBadgeRepository {
   AppBadgeRepositoryImpl(
@@ -19,7 +19,7 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
   }) {
     return _failureRecorder.guard(
       () => FlutterAppBadgeControl.updateBadgeCount(count),
-      convert: DomainExceptionConverter.fromPlatform,
+      convert: DomainExceptionMapper.fromPlatform,
     );
   }
 
@@ -27,7 +27,7 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
   Future<Result<void>> remove() {
     return _failureRecorder.guard(
       FlutterAppBadgeControl.removeBadge,
-      convert: DomainExceptionConverter.fromPlatform,
+      convert: DomainExceptionMapper.fromPlatform,
     );
   }
 

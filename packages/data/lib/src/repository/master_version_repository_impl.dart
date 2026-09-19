@@ -2,14 +2,14 @@ import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../remote_config/remote_config_reader.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../datasource/remote_config_data_source.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class MasterVersionRepositoryImpl implements MasterVersionRepository {
   MasterVersionRepositoryImpl(
     this._preferences,
-    this._remoteConfigReader,
+    this._remoteConfig,
     this._failureRecorder,
   );
 
@@ -21,16 +21,16 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
 
   final _logger = Logger();
   final StreamingSharedPreferences _preferences;
-  final RemoteConfigReader _remoteConfigReader;
+  final RemoteConfigDataSource _remoteConfig;
   final FailureRecorder _failureRecorder;
 
   @override
   Future<Result<MasterVersion>> getInquiredVersion() {
     return _failureRecorder.guard(
       () async => MasterVersion(
-        value: await _remoteConfigReader.readString(_inquiredVersionKey),
+        value: await _remoteConfig.readString(_inquiredVersionKey),
       ),
-      convert: DomainExceptionConverter.fromRemoteConfig,
+      convert: DomainExceptionMapper.fromRemoteConfig,
     );
   }
 
@@ -43,7 +43,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
             .getValue();
         return value.isEmpty ? null : MasterVersion(value: value);
       },
-      convert: DomainExceptionConverter.fromLocalStorage,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 
@@ -59,7 +59,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
           );
         }
       },
-      convert: DomainExceptionConverter.fromLocalStorage,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 

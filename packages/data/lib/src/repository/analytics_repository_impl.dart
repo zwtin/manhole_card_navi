@@ -2,8 +2,8 @@ import 'package:domain/domain.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:logger/logger.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class AnalyticsRepositoryImpl implements AnalyticsRepository {
   AnalyticsRepositoryImpl(
@@ -27,7 +27,7 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
         );
         _logger.d('${analyticsEvent.name} ${analyticsEvent.parameters}');
       },
-      convert: DomainExceptionConverter.fromPlatform,
+      convert: DomainExceptionMapper.fromPlatform,
     );
   }
 
@@ -35,7 +35,7 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
   Future<Result<void>> sendAppOpen() {
     return _failureRecorder.guard(
       _analytics.logAppOpen,
-      convert: DomainExceptionConverter.fromPlatform,
+      convert: DomainExceptionMapper.fromPlatform,
     );
   }
 

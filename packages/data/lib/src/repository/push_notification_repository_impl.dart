@@ -2,8 +2,8 @@ import 'package:domain/domain.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:logger/logger.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class PushNotificationRepositoryImpl implements PushNotificationRepository {
   PushNotificationRepositoryImpl(
@@ -29,7 +29,7 @@ class PushNotificationRepositoryImpl implements PushNotificationRepository {
           sound: true,
         );
       },
-      convert: DomainExceptionConverter.fromPlatform,
+      convert: DomainExceptionMapper.fromPlatform,
     );
   }
 

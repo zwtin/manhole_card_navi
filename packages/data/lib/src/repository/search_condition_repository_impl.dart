@@ -2,9 +2,9 @@ import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import '../exception/domain_exception_converter.dart';
+import '../datasource/failure_recorder.dart';
+import '../mapper/domain_exception_mapper.dart';
 import '../mapper/search_condition_json_mapper.dart';
-import '../service/failure_recorder.dart';
 
 class SearchConditionRepositoryImpl implements SearchConditionRepository {
   SearchConditionRepositoryImpl(
@@ -26,7 +26,7 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
   Future<Result<SearchCondition>> get() {
     return _failureRecorder.guard(
       () async => SearchConditionJsonMapper.fromJsonString(_source.getValue()),
-      convert: DomainExceptionConverter.fromLocalStorage,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 
@@ -49,7 +49,7 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
           throw const PersistenceException(detail: '検索条件を保存できませんでした');
         }
       },
-      convert: DomainExceptionConverter.fromLocalStorage,
+      convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 

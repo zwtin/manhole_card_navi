@@ -1,23 +1,23 @@
 import 'dart:io';
 
 import 'package:data/src/repository/card_repository_impl.dart';
-import 'package:data/src/service/failure_recorder.dart';
-import 'package:data/src/storage/master_data_store.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../datasource/crashlytics_mock.dart';
 import '../fixtures.dart';
-import '../service/crashlytics_mock.dart';
 
 void main() {
   late Directory directory;
-  late MasterDataStore store;
+  late MasterDataLocalDataSource store;
   late MockFirebaseCrashlytics crashlytics;
   late CardRepositoryImpl repository;
 
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('card_repository');
-    store = MasterDataStore(directory: () async => directory);
+    store = MasterDataLocalDataSource(directory: () async => directory);
     crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     repository = CardRepositoryImpl(
