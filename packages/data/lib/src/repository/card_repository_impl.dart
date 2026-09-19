@@ -59,11 +59,6 @@ class CardRepositoryImpl implements CardRepository {
       case Success(:final value):
         card = value;
     }
-    if (card.image.isEmpty) {
-      return Result.failure(
-        NotFoundException(detail: 'ID が $cardId のカードに画像の URL がありません'),
-      );
-    }
     try {
       // 保存済みなら期限切れでも先に流れてくる（取り直しはその後ろで行われる）ので、
       // 最初の 1 件だけ使う。取り直せなくても保存済みの画像は出せる。
