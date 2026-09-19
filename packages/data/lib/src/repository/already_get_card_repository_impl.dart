@@ -22,15 +22,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
       _preferences.getStringList(_key, defaultValue: []);
 
   @override
-  Future<Result<Set<String>>> get() {
-    return _failureRecorder.guard(
-      () async => _cardIds.getValue().toSet(),
-      convert: DomainExceptionMapper.fromLocalStorage,
-    );
-  }
-
-  @override
-  Stream<Set<String>> getStream() {
+  Stream<Set<String>> watch() {
     return _cardIds.map((cardIds) => cardIds.toSet());
   }
 

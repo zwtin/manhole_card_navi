@@ -13,11 +13,9 @@ final alreadyGetCardRepositoryProvider =
 
 /// どのカードを取得したかの記録。記録しているのはカードの ID そのもの。
 abstract class AlreadyGetCardRepository {
-  /// 取得済みカードの ID。
-  Future<Result<Set<String>>> get();
-
-  /// 取得済みカードが変わるたびに流れる。購読を始めたときにも今の値が流れる。
-  Stream<Set<String>> getStream();
+  /// 取得済みカードの ID。購読を始めたときに今の値が流れ、変わるたびに流れる。
+  /// 今の値だけが欲しいときは `first` で取る。
+  Stream<Set<String>> watch();
 
   /// [cardId] のカードを取得済みにする。
   Future<Result<void>> save({required String cardId});

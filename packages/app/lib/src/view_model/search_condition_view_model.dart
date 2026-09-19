@@ -34,11 +34,8 @@ class SearchConditionViewModel
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
 
-    final result = await _searchConditionUseCase.get();
     return SearchConditionViewData(
-      draft: result is Success<SearchCondition>
-          ? result.value
-          : SearchCondition.initial(),
+      draft: await _searchConditionUseCase.watch().first,
       volumeOptions: await _loadVolumeOptions(),
     );
   }

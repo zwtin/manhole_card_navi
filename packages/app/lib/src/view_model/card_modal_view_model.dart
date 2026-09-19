@@ -34,7 +34,7 @@ class CardModalViewModel
     _navigationService = ref.watch(navigationServiceProvider);
     final mapViewModel = ref.read(manholeCardMapViewModelProvider.notifier);
 
-    final subscription = _alreadyGetCardUseCase.getStream().listen((
+    final subscription = _alreadyGetCardUseCase.watch().listen((
       cardIds,
     ) {
       final current = state.valueOrNull;
@@ -68,14 +68,13 @@ class CardModalViewModel
         : await mapViewModel.findCardPosition(arg.cardId) ??
             LatLng(card.position.latitude, card.position.longitude);
 
-    final alreadyGetResult = await _alreadyGetCardUseCase.get();
+    final alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
     return CardModalViewData(
       card: await ModalCardViewDataMapper.convertToViewData(
         card: card,
         position: position,
       ),
-      alreadyGet: alreadyGetResult is Success<Set<String>> &&
-          alreadyGetResult.value.contains(arg.cardId),
+      alreadyGet: alreadyGetCardIds.contains(arg.cardId),
     );
   }
 

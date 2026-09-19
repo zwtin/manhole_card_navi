@@ -43,7 +43,7 @@ void main() {
       await repository.save(cardId: 'B');
       await repository.save(cardId: 'A');
 
-      expect((await repository.get() as Success<Set<String>>).value, {'A', 'B'});
+      expect(await repository.watch().first, {'A', 'B'});
     });
 
     test('未取得に戻すと、その ID だけ消える', () async {
@@ -52,12 +52,12 @@ void main() {
 
       await repository.delete(cardId: 'A');
 
-      expect((await repository.get() as Success<Set<String>>).value, {'B'});
+      expect(await repository.watch().first, {'B'});
     });
 
     test('変わるたびに、取得済みの ID が流れる', () async {
       final values = <Set<String>>[];
-      final subscription = repository.getStream().listen(values.add);
+      final subscription = repository.watch().listen(values.add);
 
       await repository.save(cardId: 'A');
       await pumpEventQueue();
@@ -73,21 +73,17 @@ void main() {
         preferences,
         failureRecorder,
       );
-      expect(
-        (await repository.get() as Success<SearchCondition>).value,
-        SearchCondition.initial(),
-      );
+      expect(await repository.watch().first, SearchCondition.initial());
 
       const condition = SearchCondition(
-        common: CommonSearchCondition(alreadyGetFilter: AlreadyGetFilter.alreadyGet),
+        common: CommonSearchCondition(
+          alreadyGetFilter: AlreadyGetFilter.alreadyGet,
+        ),
         map: MapSearchCondition(coordinateType: MapCoordinateType.position),
       );
       await repository.save(searchCondition: condition);
 
-      expect(
-        (await repository.get() as Success<SearchCondition>).value,
-        condition,
-      );
+      expect(await repository.watch().first, condition);
     });
   });
 

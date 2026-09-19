@@ -28,7 +28,7 @@ class DetailViewModel
     _cardUseCase = ref.watch(cardUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
 
-    final subscription = _alreadyGetCardUseCase.getStream().listen((
+    final subscription = _alreadyGetCardUseCase.watch().listen((
       cardIds,
     ) {
       final current = state.valueOrNull;
@@ -55,11 +55,10 @@ class DetailViewModel
     }
     final card = (result as Success<ManholeCard>).value;
 
-    final alreadyGetResult = await _alreadyGetCardUseCase.get();
+    final alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
     return DetailCardViewDataMapper.convertToViewData(
       card: card,
-      alreadyGet: alreadyGetResult is Success<Set<String>> &&
-          alreadyGetResult.value.contains(cardId),
+      alreadyGet: alreadyGetCardIds.contains(cardId),
     );
   }
 

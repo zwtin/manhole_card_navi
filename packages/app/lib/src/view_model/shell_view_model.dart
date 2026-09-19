@@ -52,11 +52,8 @@ class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
   }
 
   Future<void> _listenAlreadyGetCard() async {
-    final result = await _alreadyGetCardUseCase.get();
-    if (result is Success<Set<String>>) {
-      _alreadyGetCardCount = result.value.length;
-    }
-    final subscription = _alreadyGetCardUseCase.getStream().listen((
+    _alreadyGetCardCount = (await _alreadyGetCardUseCase.watch().first).length;
+    final subscription = _alreadyGetCardUseCase.watch().listen((
       cardIds,
     ) {
       if (cardIds.length > _alreadyGetCardCount) {

@@ -24,15 +24,7 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
       _preferences.getString(_key, defaultValue: '');
 
   @override
-  Future<Result<SearchCondition>> get() {
-    return _failureRecorder.guard(
-      () async => _toSearchCondition(_source.getValue()),
-      convert: DomainExceptionMapper.fromLocalStorage,
-    );
-  }
-
-  @override
-  Stream<SearchCondition> getStream() {
+  Stream<SearchCondition> watch() {
     return _source.map(_toSearchCondition);
   }
 

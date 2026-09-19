@@ -24,14 +24,9 @@ class AlreadyGetCardUseCase {
 
   final _logger = Logger();
 
-  /// 取得済みカードの ID。
-  Future<Result<Set<String>>> get() {
-    return _alreadyGetCardRepository.get();
-  }
-
-  /// 取得済みカードが変わるたびに流れる。購読を始めたときにも今の値が流れる。
-  Stream<Set<String>> getStream() {
-    return _alreadyGetCardRepository.getStream();
+  /// 取得済みカードの ID。購読を始めたときに今の値が流れ、変わるたびに流れる。
+  Stream<Set<String>> watch() {
+    return _alreadyGetCardRepository.watch();
   }
 
   /// [id] のカードを取得済みにする。

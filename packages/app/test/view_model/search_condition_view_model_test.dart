@@ -46,8 +46,8 @@ void main() {
     searchConditionUseCase = MockSearchConditionUseCase();
     navigationService = MockNavigationService();
 
-    when(() => searchConditionUseCase.get()).thenAnswer(
-      (_) async => Result.success(SearchCondition.initial()),
+    when(() => searchConditionUseCase.watch()).thenAnswer(
+      (_) => Stream.value(SearchCondition.initial()),
     );
     when(() => cardUseCase.fetchAll()).thenAnswer(
       (_) async => Result.success([
