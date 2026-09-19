@@ -10,27 +10,17 @@ class ImageFallback {
 
   static const String headerKey = 'x-image-sub-url';
 
-  static Map<String, String>? headers(String imageSubUrl) {
-    if (imageSubUrl.isEmpty) {
-      return null;
-    }
-    return <String, String>{headerKey: imageSubUrl};
+  static Map<String, String> headers(String subUrl) {
+    return <String, String>{headerKey: subUrl};
   }
 
-  static String? subUrlFrom(Map<String, String>? headers) {
-    final subUrl = headers?[headerKey];
-    if (subUrl == null || subUrl.isEmpty) {
-      return null;
-    }
-    return subUrl;
+  static String subUrlFrom(Map<String, String>? headers) {
+    return headers![headerKey]!;
   }
 
   /// 渡された Map は、呼び出し元が使い回しているかもしれないので変えない。
   static Map<String, String>? withoutSubUrl(Map<String, String>? headers) {
-    if (headers == null || !headers.containsKey(headerKey)) {
-      return headers;
-    }
-    final rest = Map<String, String>.of(headers)..remove(headerKey);
+    final rest = Map<String, String>.of(headers!)..remove(headerKey);
     return rest.isEmpty ? null : rest;
   }
 }

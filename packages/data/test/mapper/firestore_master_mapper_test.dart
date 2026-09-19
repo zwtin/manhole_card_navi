@@ -33,14 +33,4 @@ void main() {
     expect((card.prefecture.id, card.prefecture.name), ('27', '大阪府'));
     expect((card.volume.id, card.volume.name), ('0000', '第1弾'));
   });
-
-  test('代替配信元の URL が無い世代の master では空文字にする', () {
-    expect(_toLocalCard(cardDocument()..remove('image_sub_url')).imageSub, '');
-  });
-
-  test('都道府県の表にない ID は、名前を空にする', () {
-    final card = _toLocalCard(cardDocument()..['prefecture_id'] = '00');
-
-    expect((card.prefecture.id, card.prefecture.name), ('00', ''));
-  });
 }

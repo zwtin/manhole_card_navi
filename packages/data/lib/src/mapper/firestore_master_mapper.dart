@@ -18,8 +18,7 @@ abstract final class FirestoreMasterMapper {
       publicationDate: model.publicationDate,
       distributionState: model.distributionState,
       image: model.imageUrl,
-      // image_sub_url を持たない世代の master もある。
-      imageSub: model.imageSubUrl ?? '',
+      imageSub: model.imageSubUrl,
       distributionPlaceHtml: model.distributionPlaceHtml,
       distributionTimeHtml: model.distributionTimeHtml,
       stockHtml: model.stockHtml,
@@ -30,15 +29,13 @@ abstract final class FirestoreMasterMapper {
             longitude: point.longitude,
           ),
       ],
-      // 都道府県・弾の表にない ID は名前を空にする。カード 1 枚の食い違いで、取り込み
-      // 全体を失敗させない。
       prefecture: LocalNamedModel(
         id: model.prefectureId,
-        name: prefectures[model.prefectureId] ?? '',
+        name: prefectures[model.prefectureId]!,
       ),
       volume: LocalNamedModel(
         id: model.volumeId,
-        name: volumes[model.volumeId] ?? '',
+        name: volumes[model.volumeId]!,
       ),
     );
   }

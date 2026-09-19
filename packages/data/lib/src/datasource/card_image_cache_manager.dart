@@ -68,22 +68,11 @@ class _FallbackFileService extends FileService {
       primaryError = exception;
     }
 
-    final fallbackUrl = ImageFallback.subUrlFrom(headers);
-    if (fallbackUrl == null) {
-      ImageLoadMonitor.recordFailure(
-        url: url,
-        error: primaryError,
-        recovered: false,
-      );
-      if (primaryResponse != null) {
-        // ステータス異常はキャッシュ層が HttpExceptionWithStatus を投げる。
-        return primaryResponse;
-      }
-      throw primaryError;
-    }
-
     try {
-      final fallbackResponse = await _send(fallbackUrl, headers);
+      final fallbackResponse = await _send(
+        ImageFallback.subUrlFrom(headers),
+        headers,
+      );
       if (fallbackResponse.statusCode == 200) {
         ImageLoadMonitor.recordFailure(
           url: url,
@@ -102,6 +91,7 @@ class _FallbackFileService extends FileService {
       recovered: false,
     );
     if (primaryResponse != null) {
+      // ステータス異常はキャッシュ層が HttpExceptionWithStatus を投げる。
       return primaryResponse;
     }
     throw primaryError;

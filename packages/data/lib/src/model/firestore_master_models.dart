@@ -51,8 +51,7 @@ class FirestoreCardModel {
 
   final String imageUrl;
 
-  /// これを持たない世代の master もある。
-  final String? imageSubUrl;
+  final String imageSubUrl;
 
   final String distributionPlaceHtml;
   final String distributionTimeHtml;

@@ -45,10 +45,6 @@ void main() {
     ]);
   });
 
-  test('代替配信元の URL は無くてもよい', () {
-    expect(decode(cardDocument()..remove('image_sub_url')).imageSubUrl, isNull);
-  });
-
   test('必須の項目が欠けていれば、どのドキュメントのどの項目かを添えて壊れたデータにする', () {
     expect(
       () => decode(cardDocument()..remove('name')),

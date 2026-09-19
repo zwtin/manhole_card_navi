@@ -27,7 +27,7 @@ ManholeCard card({
 LocalCardModel localCard({
   String id = '27-226-B001',
   String? image,
-  String imageSub = '',
+  String? imageSub,
   List<LocalCoordinateModel> distributionPoints = const [
     LocalCoordinateModel(latitude: 34.57, longitude: 135.6),
   ],
@@ -39,7 +39,7 @@ LocalCardModel localCard({
     publicationDate: DateTime(2026, 1, 1),
     distributionState: DistributionStateModel.stopped,
     image: image ?? 'https://example.com/$id.jpg',
-    imageSub: imageSub,
+    imageSub: imageSub ?? 'https://sub.example.com/$id.jpg',
     distributionPlaceHtml: '<p>藤井寺市役所</p>',
     distributionTimeHtml: '<p>9:00〜17:00</p>',
     stockHtml: '<p>あり</p>',
