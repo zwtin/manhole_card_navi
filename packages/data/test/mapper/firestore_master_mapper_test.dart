@@ -38,7 +38,7 @@ void main() {
     expect(_toLocalCard(cardDocument()..remove('image_sub_url')).imageSub, '');
   });
 
-  test('都道府県の一覧に無い ID（全国向けなど）は名前を空にする', () {
+  test('都道府県の表にない ID は、名前を空にする', () {
     final card = _toLocalCard(cardDocument()..['prefecture_id'] = '00');
 
     expect((card.prefecture.id, card.prefecture.name), ('00', ''));

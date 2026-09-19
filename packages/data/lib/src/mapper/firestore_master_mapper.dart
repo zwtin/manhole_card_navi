@@ -30,8 +30,8 @@ abstract final class FirestoreMasterMapper {
             longitude: point.longitude,
           ),
       ],
-      // 表にない都道府県は、名前を空にして全国のカードと同じ扱いにする
-      // （Prefecture.isNationwide）。
+      // 都道府県・弾の表にない ID は名前を空にする。カード 1 枚の食い違いで、取り込み
+      // 全体を失敗させない。
       prefecture: LocalNamedModel(
         id: model.prefectureId,
         name: prefectures[model.prefectureId] ?? '',
