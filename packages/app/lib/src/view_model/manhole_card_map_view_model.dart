@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../mapper/map_markers_view_data_mapper.dart';
 import '../router/app_router.dart';
 import '../router/current_route.dart';
+import '../router/navigation_service.dart';
 import '../service/marker_icon_builder.dart';
 import '../view_data/manhole_card_map_view_data.dart';
 import 'shell_view_model.dart';
@@ -24,13 +25,13 @@ class ManholeCardMapViewModel
     zoom: 12.0,
   );
 
-  late final AlreadyGetCardQueryService _alreadyGetCardQueryService;
-  late final DistributionCardsQueryService _distributionCardsQueryService;
-  late final PositionCardsQueryService _positionCardsQueryService;
-  late final SearchConditionQueryService _searchConditionQueryService;
+  late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
+  late final CardImageUseCase _cardImageUseCase;
+  late final CardUseCase _cardUseCase;
   late final LocationUseCase _locationUseCase;
   late final NavigationService _navigationService;
+  late final SearchConditionUseCase _searchConditionUseCase;
 
   GoogleMapController? _mapController;
 
@@ -42,14 +43,11 @@ class ManholeCardMapViewModel
 
   MapCoordinateType get _coordinateType => _searchCondition.map.coordinateType;
 
-  List<MapMarkerDTO> get _currentMarkerDTOList =>
-      _coordinateType == MapCoordinateType.position
-          ? _positionMarkerDTOList
-          : _distributionMarkerDTOList;
+  /// 座標の種別ごとのピン。カードを読み込むまでは空。
+  Map<MapCoordinateType, List<CardPin>> _pins = {};
 
-  final List<MapMarkerDTO> _positionMarkerDTOList = [];
-  final List<MapMarkerDTO> _distributionMarkerDTOList = [];
-  final List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
+  List<CardPin> get _currentPins => _pins[_coordinateType] ?? const [];
+  Set<String> _alreadyGetCardIds = {};
   double _zoom = initialCameraPosition.zoom;
   LatLng _position = initialCameraPosition.target;
 
@@ -62,17 +60,13 @@ class ManholeCardMapViewModel
 
   @override
   ManholeCardMapViewData build() {
-    _alreadyGetCardQueryService = ref.watch(alreadyGetCardQueryServiceProvider);
-    _distributionCardsQueryService = ref.watch(
-      distributionCardsQueryServiceProvider,
-    );
-    _positionCardsQueryService = ref.watch(positionCardsQueryServiceProvider);
-    _searchConditionQueryService = ref.watch(
-      searchConditionQueryServiceProvider,
-    );
+    _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
+    _cardImageUseCase = ref.watch(cardImageUseCaseProvider);
+    _cardUseCase = ref.watch(cardUseCaseProvider);
     _locationUseCase = ref.watch(locationUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
+    _searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
 
     ref.listen(currentRouteProvider, (previous, next) => _onRouteChanged(next));
     ref.listen(
@@ -87,7 +81,7 @@ class ManholeCardMapViewModel
     // 初期化フローを塞がないよう await しない。
     unawaited(MarkerIconBuilder.preloadFrames());
     await _loadSearchCondition();
-    await _fetchCurrentMarkerDTOList();
+    await _fetchCards();
     await _reloadMarkerViewData();
     _listenAlreadyGetCard();
     _listenSearchCondition();
@@ -167,14 +161,12 @@ class ManholeCardMapViewModel
   ///
   /// 配布場所マップでは 1 枚のカードに複数のピンがあるため、最初のピンを返す。
   Future<LatLng?> findCardPosition(String cardId) async {
-    await _fetchCurrentMarkerDTOList();
-    final dto = _currentMarkerDTOList
-        .where((element) => element.cardId == cardId)
-        .firstOrNull;
-    if (dto == null) {
+    await _fetchCards();
+    final pin = _currentPins.where((pin) => pin.card.id == cardId).firstOrNull;
+    if (pin == null) {
       return null;
     }
-    return LatLng(dto.latitude, dto.longitude);
+    return LatLng(pin.coordinate.latitude, pin.coordinate.longitude);
   }
 
   Future<void> sendScreenView() async {
@@ -239,7 +231,7 @@ class ManholeCardMapViewModel
   }
 
   Future<void> _loadSearchCondition() async {
-    final result = await _searchConditionQueryService.get();
+    final result = await _searchConditionUseCase.get();
     if (result is Success<SearchCondition>) {
       _applySearchCondition(result.value);
     }
@@ -253,61 +245,37 @@ class ManholeCardMapViewModel
     );
   }
 
-  /// 表示中の座標種別のピンを、未取得なら取得する。
-  Future<void> _fetchCurrentMarkerDTOList() async {
-    if (_coordinateType == MapCoordinateType.position) {
-      await _fetchPositionMarker();
-    } else {
-      await _fetchDistributionMarker();
-    }
-  }
-
-  Future<void> _fetchPositionMarker() async {
-    if (_positionMarkerDTOList.isNotEmpty) {
+  /// カードをまだ読み込んでいなければ読み込み、座標の種別ごとのピンを作る。
+  Future<void> _fetchCards() async {
+    if (_pins.isNotEmpty) {
       return;
     }
-    final result = await _positionCardsQueryService.fetch();
-    if (result is Failure) {
-      await _navigationService.showAlert(
-        title: 'エラー',
-        message: 'カード情報の取得に失敗しました',
+    final result = await _cardUseCase.fetchAll();
+    if (result case Failure(:final exception)) {
+      await _navigationService.showFailure(
+        title: 'カード情報を取得できませんでした',
+        exception: exception,
       );
       return;
     }
-    final dtoList = (result as Success<List<MapMarkerDTO>>).value;
-    _positionMarkerDTOList
-      ..clear()
-      ..addAll(dtoList);
-  }
-
-  Future<void> _fetchDistributionMarker() async {
-    if (_distributionMarkerDTOList.isNotEmpty) {
-      return;
-    }
-    final result = await _distributionCardsQueryService.fetch();
-    if (result is Failure) {
-      await _navigationService.showAlert(
-        title: 'エラー',
-        message: 'カード情報の取得に失敗しました',
-      );
-      return;
-    }
-    final dtoList = (result as Success<List<MapMarkerDTO>>).value;
-    _distributionMarkerDTOList
-      ..clear()
-      ..addAll(dtoList);
+    final cards = (result as Success<List<ManholeCard>>).value;
+    _pins = {
+      for (final coordinateType in MapCoordinateType.values)
+        coordinateType: MapMarkersViewDataMapper.pinsOf(cards, coordinateType),
+    };
   }
 
   void _listenAlreadyGetCard() {
-    final subscription = _alreadyGetCardQueryService.getStream().listen((
-      dtoList,
+    final subscription = _alreadyGetCardUseCase.getStream().listen((
+      cardIds,
     ) async {
       final generation = ++_markerGeneration;
       final newViewData = await MapMarkersViewDataMapper.convertToViewData(
-        mapMarkerDTOList: _currentMarkerDTOList,
-        alreadyGetCardDTOList: dtoList,
+        pins: _currentPins,
+        alreadyGetCardIds: cardIds,
         centerCoordinate: _position,
         searchCondition: _searchCondition.common,
+        cardImageUseCase: _cardImageUseCase,
         onPartial: (partial) {
           // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
           if (generation != _markerGeneration) {
@@ -322,21 +290,19 @@ class ManholeCardMapViewModel
         state = state.copyWith(markers: newViewData);
       }
 
-      _alreadyGetCardDTOList
-        ..clear()
-        ..addAll(dtoList);
+      _alreadyGetCardIds = cardIds;
     });
     ref.onDispose(subscription.cancel);
   }
 
   void _listenSearchCondition() {
-    final subscription = _searchConditionQueryService.getStream().listen((
+    final subscription = _searchConditionUseCase.getStream().listen((
       condition,
     ) async {
       // タイトル・フィルタバッジを更新する。
       _applySearchCondition(condition);
-      // 座標種別が変わっていれば、対応するマーカーを遅延取得する。
-      await _fetchCurrentMarkerDTOList();
+      // 起動時に読み込めていなければ、ここで読み込み直す。
+      await _fetchCards();
       await _reloadMarkerViewData();
     });
     ref.onDispose(subscription.cancel);
@@ -353,10 +319,11 @@ class ManholeCardMapViewModel
 
     final generation = ++_markerGeneration;
     final newViewData = await MapMarkersViewDataMapper.convertToViewData(
-      mapMarkerDTOList: _currentMarkerDTOList,
-      alreadyGetCardDTOList: _alreadyGetCardDTOList,
+      pins: _currentPins,
+      alreadyGetCardIds: _alreadyGetCardIds,
       centerCoordinate: _position,
       searchCondition: _searchCondition.common,
+      cardImageUseCase: _cardImageUseCase,
       onPartial: (partial) {
         // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
         if (generation != _markerGeneration) {
@@ -377,7 +344,7 @@ class ManholeCardMapViewModel
       return;
     }
     final result = await _locationUseCase.getCurrentLocation();
-    if (result is! Success<({double latitude, double longitude})>) {
+    if (result is! Success<Coordinate>) {
       return;
     }
     await _moveToLocation(

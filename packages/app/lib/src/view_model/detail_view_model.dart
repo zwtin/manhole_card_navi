@@ -4,6 +4,7 @@ import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../mapper/detail_card_view_data_mapper.dart';
+import '../router/navigation_service.dart';
 import '../view_data/detail_card_view_data.dart';
 
 /// 引数はカード ID。
@@ -15,7 +16,6 @@ final detailViewModelProvider = AsyncNotifierProvider.autoDispose
 /// カード詳細画面の ViewModel。
 class DetailViewModel
     extends AutoDisposeFamilyAsyncNotifier<DetailCardViewData, String> {
-  late final AlreadyGetCardQueryService _alreadyGetCardQueryService;
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
   late final CardUseCase _cardUseCase;
@@ -23,14 +23,13 @@ class DetailViewModel
 
   @override
   Future<DetailCardViewData> build(String cardId) async {
-    _alreadyGetCardQueryService = ref.watch(alreadyGetCardQueryServiceProvider);
     _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
     _cardUseCase = ref.watch(cardUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
 
-    final subscription = _alreadyGetCardQueryService.getStream().listen((
-      dtoList,
+    final subscription = _alreadyGetCardUseCase.getStream().listen((
+      cardIds,
     ) {
       final current = state.valueOrNull;
       if (current == null) {
@@ -38,29 +37,29 @@ class DetailViewModel
       }
       state = AsyncData(
         current.copyWith(
-          alreadyGet: dtoList.any((dto) => dto.cardId == cardId),
+          alreadyGet: cardIds.contains(cardId),
         ),
       );
     });
     ref.onDispose(subscription.cancel);
 
     final result = await _cardUseCase.get(id: cardId);
-    if (result is Failure) {
+    if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showAlert(
-          title: 'エラー',
-          message: 'カード情報の取得に失敗しました',
+        _navigationService.showFailure(
+          title: 'カード情報を取得できませんでした',
+          exception: exception,
         ),
       );
-      throw (result as Failure).exception;
+      throw exception;
     }
-    final cardDTO = (result as Success<CardDTO>).value;
+    final card = (result as Success<ManholeCard>).value;
 
-    final alreadyGetResult = await _alreadyGetCardQueryService.get();
+    final alreadyGetResult = await _alreadyGetCardUseCase.get();
     return DetailCardViewDataMapper.convertToViewData(
-      cardDTO: cardDTO,
-      alreadyGet: alreadyGetResult is Success<List<AlreadyGetCardDTO>> &&
-          alreadyGetResult.value.any((dto) => dto.cardId == cardId),
+      card: card,
+      alreadyGet: alreadyGetResult is Success<Set<String>> &&
+          alreadyGetResult.value.contains(cardId),
     );
   }
 
@@ -73,16 +72,24 @@ class DetailViewModel
     if (current == null) {
       return;
     }
+    final Result<void> result;
     if (!current.alreadyGet) {
-      await _alreadyGetCardUseCase.save(id: arg);
-      return;
+      result = await _alreadyGetCardUseCase.save(id: arg);
+    } else {
+      final confirmed = await _navigationService.showConfirm(
+        title: '確認',
+        message: 'カードを未取得に戻してよろしいですか？',
+      );
+      if (!confirmed) {
+        return;
+      }
+      result = await _alreadyGetCardUseCase.delete(id: arg);
     }
-    final confirmed = await _navigationService.showConfirm(
-      title: '確認',
-      message: 'カードを未取得に戻してよろしいですか？',
-    );
-    if (confirmed) {
-      await _alreadyGetCardUseCase.delete(id: arg);
+    if (result case Failure(:final exception)) {
+      await _navigationService.showFailure(
+        title: '取得状態を保存できませんでした',
+        exception: exception,
+      );
     }
   }
 

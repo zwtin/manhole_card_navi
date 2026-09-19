@@ -34,7 +34,7 @@ fvm flutter build ios --dart-define-from-file=dart_defines/production.env
 fvm flutter analyze
 
 # テストの実行（パッケージごと）
-(cd packages/domain && fvm flutter test)
+(cd packages/domain && fvm dart test)  # domain は Flutter に依存しないので dart で回せる
 (cd packages/data && fvm flutter test)
 (cd packages/app && fvm flutter test)
 
@@ -55,38 +55,60 @@ fvm flutter pub run flutter_native_splash:create
 ### パッケージ構成
 クリーンアーキテクチャの層ごとに `packages/` 配下のパッケージに分けています。依存の向きは `app → domain ← data` で、app と data は互いを知りません。
 
-1. **domain** (`packages/domain/`) - 他のパッケージに依存しない中心
-   - `entity/` - ビジネスエンティティ
+1. **domain** (`packages/domain/`) - 他のパッケージにも Flutter にも依存しない中心。provider の宣言には Flutter を含まない `riverpod` 本体を使う（`hooks_riverpod` は使わない）
+   - `core/` - エンティティではない、操作の結果を表す共通の型。成功か失敗かを包む `Result` と、失敗の種類 `DomainException`。Flutter の Clean Architecture でよく見る `core/error/` と同じ位置づけ
+   - `entity/` - アプリが扱うもの（カードのように ID で区別するものと、座標やバージョンのように値そのものに意味があるもの）
    - `repository/` - リポジトリインターフェースと、その provider
-   - `query_service/` - 画面表示用の読み取りインターフェースと、その provider
-   - `usecase/` - ビジネスロジックの実装と、その provider
-   - `dto/` - UseCase / QueryService が返すデータ
-   - `service/` - 画面遷移の窓口 `NavigationService` のインターフェース
+   - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装
-   - `repository/` / `query_service/` - Firestore・Realm・SharedPreferences・Remote Config などを使う実装
+   - `repository/` - Firestore・Realm・SharedPreferences・Remote Config などを使う実装
    - `dao/` - Realm のモデル
    - `mapper/` - DAO・JSON とエンティティの変換
+   - `service/` - Crashlytics への記録。失敗を記録する `FailureRecorder` と、provider の中のバグを記録する `UncaughtErrorObserver`
+   - `image/` - カード画像の取得。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
    - `provider/` - domain の provider を実装に差し替える `dataProviderOverrides`
 
 3. **app** (`packages/app/`) - 画面
-   - `router/` - go_router のルート定義、`NavigationService` の実装、下タブの `ShellScaffold`
+   - `router/` - go_router のルート定義、画面遷移の窓口 `NavigationService` とその go_router による実装、下タブの `ShellScaffold`
    - `view/` - 画面（`*_page.dart`）
    - `view_model/` - 画面ごとの ViewModel
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
-   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・DTO から表示用データへの変換・画像取得・テーマ
+   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティから表示用データへの変換・マーカー画像の合成・テーマ
    - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 
 4. **ルート** (`lib/`) - `main.dart` で Firebase を初期化し、3 パッケージを組み立てるだけ
 
 ### 依存性注入
-- Repository / QueryService / NavigationService の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` / `appProviderOverrides` を渡して実装に差し替える
+- Repository の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` を渡して実装に差し替える。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
+
+### UseCase・Repository の引数
+- 既にあるものを探す・指す・消すときは ID で渡す（`CardUseCase.get(id:)`、`AlreadyGetCardRepository.save(cardId:)`）。UseCase が Repository から正しいエンティティを読み直す
+- 保存する中身や新しく作るものは、値やエンティティで渡す（`SearchConditionRepository.save(searchCondition:)`、`MasterDataRepository.replace(cards:)`）
+- ID は値オブジェクトにせず String のまま扱う
+
+### 失敗の扱い
+- Repository は想定内の失敗（通信・サーバーのデータ・端末の保存領域）を投げずに `Result` に包んで返す。呼ぶ側は try / catch せずに `switch` で成功と失敗を分ける
+- 失敗の種類は domain の `DomainException`（sealed）で表す。表示の文言は持たない。種類は app が表示や対応を変えたいものの分だけ作り、区別が必要になったら足す
+- data は外部の例外を `DomainExceptionConverter` で種類に変換する。サーバーのデータはキャストに頼らず型を確かめ、合わなければ `CorruptedDataException` にする
+- app は `NavigationService.showFailure(title:, exception:)` で知らせる。タイトルは何に失敗したか（画面が決める）、本文は `ErrorMessageMapper` が種類から決める
+- バグ（Error）は `Result` に包まずにそのまま流す
+- 失敗ではない結果（位置情報を許可されなかった、アップデートが必要 など）は例外にせず戻り値で返す
+
+### 失敗とバグの記録（Crashlytics）
+- Crashlytics を知っているのは data と `main.dart` だけ。app と domain は記録に関わらない
+- data の Repository は、失敗をすべて `FailureRecorder.failure` を通して返し、そこで非重大として記録する。通信できない・タイムアウト（`UnavailableException`）は、時間をおけば直り調べても直せないので記録しない
+- 例外はカード画像の `CardImageRepositoryImpl` で、`FailureRecorder` を通さない。画像の失敗は `ImageLoadMonitor`（Analytics）と、下の `FlutterError` 経由の非重大で記録している
+- 扱われなかったバグはクラッシュ（fatal）として記録する。`main.dart` の Zone と `FlutterError.onError`、provider の生成中に起きたものは data の `UncaughtErrorObserver` が拾う。provider の中の失敗は Riverpod が受け止めるため Zone には届かない
+- 画像の読み込み失敗（`library` が `image resource service`）はバグではないので、`FlutterError.onError` でも非重大のまま記録する。画像が出ない問い合わせの調査はこの非重大の記録で行う。`CardImageProvider` は、ここに残るよう変換前の例外（`HandshakeException` など）を投げる
 
 ### 状態管理（app）
 - 1 画面 1 ViewModel 1 State。State は freezed、依存は `build()` で `ref.watch` して `late final` に保持する
 - 読み込むだけの画面は `AsyncNotifier`（`build()` で取得）、起動時チェックやマップのように読み込みに副作用を伴う画面は `Notifier` にして View の `useEffect` から `onLoad()` を呼ぶ
 - ViewModel は BuildContext を持たない。遷移・アラート・URL を開く操作は `NavigationService` 経由で行う
+- ViewModel が読み書きするのは UseCase だけで、Repository を直接呼ばない。処理のない読み取りも、Repository を素通しする UseCase のメソッドを通す
+- カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）が `CardImageUseCase` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない
 
 ### 画面遷移（app）
 - go_router の `StatefulShellRoute` で、マップ・リスト・設定のタブがそれぞれ独立した遷移スタックを持つ
@@ -128,6 +150,8 @@ realm はルートの `pubspec.yaml` にも書いています。iOS / Android �
 ```bash
 (cd packages/<パッケージ> && fvm dart run build_runner build --delete-conflicting-outputs)
 ```
+
+domain のファイルを消した後（freezed をやめて生成ファイルがなくなった場合も含む）は、app の build_runner が `InvalidOutputException: domain|lib/src/...` で落ちる。app の生成キャッシュが消えたファイルを指したままになるためで、app で `fvm dart run build_runner clean` してから build し直す。
 
 生成されるファイル：
 - `*.freezed.dart` - Freezedイミュータブルクラス（gitignore 済み）

@@ -1,10 +1,8 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:riverpod/riverpod.dart';
 
-import '../dto/privacy_policy_dto.dart';
-import '../entity/custom_exception.dart';
+import '../core/result.dart';
 import '../entity/privacy_policy.dart';
-import '../entity/result.dart';
 import '../repository/privacy_policy_repository.dart';
 
 final privacyPolicyUseCaseProvider = Provider.autoDispose<PrivacyPolicyUseCase>(
@@ -26,27 +24,8 @@ class PrivacyPolicyUseCase {
 
   final _logger = Logger();
 
-  Future<Result<PrivacyPolicyDTO>> get() async {
-    final result = await _privacyPolicyRepository.get();
-    if (result is Failure) {
-      final exception = (result as Failure).exception;
-      if (exception is CustomException) {
-        return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
-          ),
-        );
-      }
-    }
-    final privacyPolicy = (result as Success<PrivacyPolicy>).value;
-    return Result.success(
-      PrivacyPolicyDTO(
-        value: privacyPolicy.value,
-      ),
-    );
+  Future<Result<PrivacyPolicy>> get() {
+    return _privacyPolicyRepository.get();
   }
 
   void dispose() {

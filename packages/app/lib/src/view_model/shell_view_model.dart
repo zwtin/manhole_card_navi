@@ -15,7 +15,7 @@ final shellViewModelProvider =
 
 /// 下タブ（マップ・リスト・設定）を持つ画面の ViewModel。
 class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
-  late final AlreadyGetCardQueryService _alreadyGetCardQueryService;
+  late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
   late final AppBadgeUseCase _appBadgeUseCase;
   late final LocationUseCase _locationUseCase;
@@ -25,7 +25,7 @@ class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
 
   @override
   ShellViewData build() {
-    _alreadyGetCardQueryService = ref.watch(alreadyGetCardQueryServiceProvider);
+    _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
     _appBadgeUseCase = ref.watch(appBadgeUseCaseProvider);
     _locationUseCase = ref.watch(locationUseCaseProvider);
@@ -52,17 +52,17 @@ class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
   }
 
   Future<void> _listenAlreadyGetCard() async {
-    final result = await _alreadyGetCardQueryService.get();
-    if (result is Success<List<AlreadyGetCardDTO>>) {
+    final result = await _alreadyGetCardUseCase.get();
+    if (result is Success<Set<String>>) {
       _alreadyGetCardCount = result.value.length;
     }
-    final subscription = _alreadyGetCardQueryService.getStream().listen((
-      dtoList,
+    final subscription = _alreadyGetCardUseCase.getStream().listen((
+      cardIds,
     ) {
-      if (dtoList.length > _alreadyGetCardCount) {
+      if (cardIds.length > _alreadyGetCardCount) {
         state = state.copyWith(partyCount: state.partyCount + 1);
       }
-      _alreadyGetCardCount = dtoList.length;
+      _alreadyGetCardCount = cardIds.length;
     });
     ref.onDispose(subscription.cancel);
   }

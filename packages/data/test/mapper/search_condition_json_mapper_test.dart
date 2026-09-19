@@ -10,8 +10,8 @@ void main() {
           displayFilter: DisplayFilter.unacquired,
           volumeIds: {'0000', '0017'},
           distributionStates: {
-            const ManholeCardDistributionState.distributing(),
-            const ManholeCardDistributionState.notClear(),
+            ManholeCardDistributionState.distributing,
+            ManholeCardDistributionState.notClear,
           },
         ),
         map: const MapSearchCondition(
@@ -57,7 +57,7 @@ void main() {
       expect(restored.common.volumeIds, {'0001'});
       expect(
         restored.common.distributionStates,
-        {const ManholeCardDistributionState.distributing()},
+        {ManholeCardDistributionState.distributing},
       );
       expect(restored.map.coordinateType, MapCoordinateType.distribution);
     });

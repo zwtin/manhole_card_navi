@@ -1,7 +1,6 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
-import '../entity/manhole_card.dart';
-import '../entity/result.dart';
+import '../core/result.dart';
 
 /// main.dart の ProviderScope で data パッケージの実装に差し替える。
 final alreadyGetCardRepositoryProvider =
@@ -12,7 +11,17 @@ final alreadyGetCardRepositoryProvider =
           ),
     );
 
+/// どのカードを取得したかの記録。記録しているのはカードの ID そのもの。
 abstract class AlreadyGetCardRepository {
-  Future<Result<void>> save({required ManholeCard manholeCard});
-  Future<Result<void>> delete({required ManholeCard manholeCard});
+  /// 取得済みカードの ID。
+  Future<Result<Set<String>>> get();
+
+  /// 取得済みカードが変わるたびに流れる。購読を始めたときにも今の値が流れる。
+  Stream<Set<String>> getStream();
+
+  /// [cardId] のカードを取得済みにする。
+  Future<Result<void>> save({required String cardId});
+
+  /// [cardId] のカードを未取得に戻す。
+  Future<Result<void>> delete({required String cardId});
 }

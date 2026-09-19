@@ -2,7 +2,9 @@ import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
+import '../exception/domain_exception_converter.dart';
 import '../mapper/search_condition_json_mapper.dart';
+import '../service/failure_recorder.dart';
 
 /// 検索条件を端末保存するキー。
 const _searchConditionKey = 'search_condition';
@@ -13,35 +15,48 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
   );
 
   final _logger = Logger();
+  final _failureRecorder = FailureRecorder();
   final StreamingSharedPreferences _instance;
+
+  @override
+  Future<Result<SearchCondition>> get() async {
+    try {
+      final source = _instance
+          .getString(_searchConditionKey, defaultValue: '')
+          .getValue();
+      return Result.success(SearchConditionJsonMapper.fromJsonString(source));
+    } on Exception catch (error, stackTrace) {
+      return _failureRecorder.failure(
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
+      );
+    }
+  }
+
+  @override
+  Stream<SearchCondition> getStream() {
+    return _instance
+        .getString(_searchConditionKey, defaultValue: '')
+        .map(SearchConditionJsonMapper.fromJsonString);
+  }
 
   @override
   Future<Result<void>> save({
     required SearchCondition searchCondition,
   }) async {
     try {
-      final result = await _instance.setString(
+      final saved = await _instance.setString(
         _searchConditionKey,
         SearchConditionJsonMapper.toJsonString(searchCondition),
       );
-      if (result) {
-        return const Result.success(null);
-      } else {
-        throw const CustomException(
-          title: 'エラー',
-          text: 'データの更新に失敗しました。',
-        );
+      if (!saved) {
+        throw const PersistenceException(detail: '検索条件を保存できませんでした');
       }
-    } on CustomException catch (customException) {
-      return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '検索条件の保存に失敗しました。',
-        ),
+      return const Result.success(null);
+    } on Exception catch (error, stackTrace) {
+      return _failureRecorder.failure(
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }

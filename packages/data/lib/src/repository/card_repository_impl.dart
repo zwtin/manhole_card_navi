@@ -1,211 +1,65 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:domain/domain.dart';
-import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
-// GeoPoint は cloud_firestore と realm の両方にあるため、Firestore 側を使う。
-import 'package:realm/realm.dart' hide GeoPoint;
+import 'package:realm/realm.dart';
 
 import '../dao/realm_card_dao.dart';
 import '../dao/realm_configuration.dart';
+import '../exception/domain_exception_converter.dart';
 import '../mapper/realm_card_mapper.dart';
-import '../mapper/realm_cards_mapper.dart';
+import '../service/failure_recorder.dart';
 
 class CardRepositoryImpl implements CardRepository {
   final _logger = Logger();
-  final _firestore = FirebaseFirestore.instance;
-
-  @override
-  Future<Result<ManholeCards>> fetchMaster({
-    required InquiredMasterVersion inquiredMasterVersion,
-  }) async {
-    try {
-      // 配布場所・画像はカードに埋め込まれているため、cards の 1 クエリだけで
-      // 全カードが揃う。都道府県名・弾名は id のみ持ち、あとで引き当てる。
-      final cardsQuerySnapshot = await _firestore
-          .collection('master')
-          .doc(inquiredMasterVersion.value)
-          .collection('cards')
-          .get();
-
-      final cardList = cardsQuerySnapshot.docs.map(
-        (doc) {
-          final location = doc['location'] as GeoPoint;
-          final geoPointList = doc['distribution_points'] as List<dynamic>;
-          final distributionPoints = geoPointList
-              .whereType<GeoPoint>()
-              .map(
-                (geoPoint) => ManholeCardDistributionPoint(
-                  latitude: geoPoint.latitude,
-                  longitude: geoPoint.longitude,
-                ),
-              )
-              .toList();
-
-          return ManholeCard(
-            id: doc['id'] as String,
-            latitude: location.latitude,
-            longitude: location.longitude,
-            name: doc['name'] as String,
-            publicationDate: DateFormat('yyyy/MM/dd').parse(
-              doc['publication_date'] as String,
-            ),
-            distributionState: ManholeCardDistributionState.fromString(
-              doc['distribution_state'] as String,
-            ),
-            image: doc['image_url'] as String,
-            // image_sub_url（代替配信元）を持たない世代の master もあるため、
-            // data() 経由で読む。DocumentSnapshot の [] はフィールドが
-            // 存在しないと StateError を投げてしまう。
-            imageSub: doc.data()['image_sub_url'] as String? ?? '',
-            distributionPlaceHtml: doc['distribution_place_html'] as String,
-            distributionTimeHtml: doc['distribution_time_html'] as String,
-            stockHtml: doc['stock_html'] as String,
-            distributionPoints: ManholeCardDistributionPoints(
-              list: distributionPoints,
-            ),
-            prefecture: ManholeCardPrefecture(
-              id: doc['prefecture_id'] as String,
-              name: '',
-            ),
-            volume: ManholeCardVolume(
-              id: doc['volume_id'] as String,
-              name: '',
-            ),
-          );
-        },
-      ).toList();
-
-      return Result.success(
-        ManholeCards(
-          list: cardList,
-        ),
-      );
-    } on CustomException catch (customException) {
-      return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの取得に失敗しました。',
-        ),
-      );
-    }
-  }
-
-  @override
-  Future<Result<bool>> hasMaster() async {
-    try {
-      var realm = RealmConfiguration.open();
-      final isEmpty = realm.all<RealmCardDAO>().isEmpty;
-      realm.close();
-      return Result.success(!isEmpty);
-    } on CustomException catch (customException) {
-      return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの確認に失敗しました。',
-        ),
-      );
-    }
-  }
-
-  @override
-  Future<Result<void>> deleteMaster() async {
-    try {
-      var realm = RealmConfiguration.open();
-
-      realm.write(() {
-        realm.deleteAll<RealmCardDAO>();
-      });
-      realm.close();
-
-      return const Result.success(null);
-    } on CustomException catch (customException) {
-      return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの削除に失敗しました。',
-        ),
-      );
-    }
-  }
-
-  @override
-  Future<Result<void>> saveMaster({
-    required ManholeCards manholeCards,
-  }) async {
-    try {
-      var realm = RealmConfiguration.open();
-
-      final realmCards = RealmCardsMapper.convertFromEntity(
-        entity: manholeCards,
-      );
-
-      realm.write(() {
-        realm.addAll(
-          realmCards,
-          update: true,
-        );
-      });
-      realm.close();
-
-      return const Result.success(null);
-    } on CustomException catch (customException) {
-      return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'マスターデータの保存に失敗しました。',
-        ),
-      );
-    }
-  }
+  final _failureRecorder = FailureRecorder();
 
   @override
   Future<Result<ManholeCard>> get({
     required String id,
   }) async {
     try {
-      var realm = RealmConfiguration.open();
-
-      final daoOrNull = realm
-          .all<RealmCardDAO>()
-          .query(
-            "id == '$id'",
-          )
-          .firstOrNull;
-      if (daoOrNull == null) {
-        throw const CustomException(
-          title: 'エラー',
-          text: 'データが見つかりませんでした。',
-        );
+      final realm = RealmConfiguration.open();
+      try {
+        final dao = realm.all<RealmCardDAO>().query(r'id == $0', [id]).firstOrNull;
+        if (dao == null) {
+          return _failureRecorder.failure(
+            NotFoundException(detail: 'ID が $id のカードが端末にありません'),
+          );
+        }
+        return Result.success(RealmCardMapper.convertToEntity(dao: dao));
+      } finally {
+        realm.close();
       }
-      final card = RealmCardMapper.convertToEntity(dao: daoOrNull);
-      realm.close();
-      return Result.success(card);
-    } on CustomException catch (customException) {
-      return Result.failure(
-        customException,
+    } on Exception catch (error, stackTrace) {
+      return _failureRecorder.failure(
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'カードデータの取得に失敗しました。',
-        ),
+    }
+  }
+
+  @override
+  Future<Result<List<ManholeCard>>> fetchAll() async {
+    try {
+      final realm = RealmConfiguration.open();
+      try {
+        final daoList = realm.all<RealmCardDAO>();
+        if (daoList.isEmpty) {
+          return _failureRecorder.failure(
+            const NotFoundException(detail: '端末にマスターデータがありません'),
+          );
+        }
+        return Result.success(
+          daoList
+              .map((dao) => RealmCardMapper.convertToEntity(dao: dao))
+              .toList(),
+        );
+      } finally {
+        realm.close();
+      }
+    } on Exception catch (error, stackTrace) {
+      return _failureRecorder.failure(
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }

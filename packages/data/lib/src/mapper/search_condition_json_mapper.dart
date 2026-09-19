@@ -4,8 +4,7 @@ import 'package:domain/domain.dart';
 
 /// [SearchCondition] と端末保存用 JSON 文字列の相互変換。
 ///
-/// Repository（保存）と QueryService（取得・購読）の両方から使う。復号は堅牢に
-/// 行い、空文字・壊れた JSON・未知の enum 値などは黙って無視して
+/// 復号は堅牢に行い、空文字・壊れた JSON・未知の enum 値などは黙って無視して
 /// [SearchCondition.initial] へフォールバックする（アプリのバージョン間で JSON が
 /// 変わっても落ちないように）。
 class SearchConditionJsonMapper {
@@ -17,7 +16,7 @@ class SearchConditionJsonMapper {
         'displayFilter': condition.common.displayFilter.name,
         'volumeIds': condition.common.volumeIds.toList(),
         'distributionStates': condition.common.distributionStates
-            .map((state) => state.toStringValue())
+            .map((state) => state.name)
             .toList(),
       },
       'map': <String, dynamic>{
@@ -90,28 +89,7 @@ class SearchConditionJsonMapper {
     if (value is! List) {
       return const {};
     }
-    final result = <ManholeCardDistributionState>{};
-    for (final element in value) {
-      final state = _distributionStateFromValue(element);
-      if (state != null) {
-        result.add(state);
-      }
-    }
-    return result;
-  }
-
-  static ManholeCardDistributionState? _distributionStateFromValue(
-    Object? value,
-  ) {
-    switch (value) {
-      case 'distributing':
-        return const ManholeCardDistributionState.distributing();
-      case 'stopped':
-        return const ManholeCardDistributionState.stopped();
-      case 'notClear':
-        return const ManholeCardDistributionState.notClear();
-      default:
-        return null;
-    }
+    final byName = ManholeCardDistributionState.values.asNameMap();
+    return value.map((element) => byName[element]).nonNulls.toSet();
   }
 }

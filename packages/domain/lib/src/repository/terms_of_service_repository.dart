@@ -1,24 +1,27 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
-import '../entity/agreed_terms_of_service_version.dart';
-import '../entity/inquired_terms_of_service_version.dart';
-import '../entity/result.dart';
+import '../core/result.dart';
 import '../entity/terms_of_service.dart';
+import '../entity/terms_of_service_version.dart';
 
 /// main.dart の ProviderScope で data パッケージの実装に差し替える。
 final termsOfServiceRepositoryProvider =
     Provider.autoDispose<TermsOfServiceRepository>(
-      (ref) =>
-          throw UnimplementedError(
-            'termsOfServiceRepositoryProvider must be overridden',
-          ),
-    );
+  (ref) => throw UnimplementedError(
+    'termsOfServiceRepositoryProvider must be overridden',
+  ),
+);
 
 abstract class TermsOfServiceRepository {
   Future<Result<TermsOfService>> get();
-  Future<Result<InquiredTermsOfServiceVersion>> getInquiredVersion();
-  Future<Result<AgreedTermsOfServiceVersion>> getAgreedVersion();
+
+  /// 同意してもらう必要のある利用規約のバージョン（サーバーが指定するもの）。
+  Future<Result<TermsOfServiceVersion>> getInquiredVersion();
+
+  /// 同意済みのバージョン。まだ一度も同意していなければ null。
+  Future<Result<TermsOfServiceVersion?>> getAgreedVersion();
+
   Future<Result<void>> setAgreedVersion({
-    required AgreedTermsOfServiceVersion agreedTermsOfServiceVersion,
+    required TermsOfServiceVersion version,
   });
 }

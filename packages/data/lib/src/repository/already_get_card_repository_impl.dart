@@ -2,87 +2,81 @@ import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
+import '../exception/domain_exception_converter.dart';
+import '../service/failure_recorder.dart';
+
 class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   AlreadyGetCardRepositoryImpl(
     this._instance,
   );
 
+  /// 取得済みカードの ID の一覧を保存する SharedPreferences のキー。
+  static const _key = 'already_get_cards';
+
   final _logger = Logger();
+  final _failureRecorder = FailureRecorder();
   final StreamingSharedPreferences _instance;
 
   @override
+  Future<Result<Set<String>>> get() async {
+    try {
+      return Result.success(
+        _instance.getStringList(_key, defaultValue: []).getValue().toSet(),
+      );
+    } on Exception catch (error, stackTrace) {
+      return _failureRecorder.failure(
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
+      );
+    }
+  }
+
+  @override
+  Stream<Set<String>> getStream() {
+    return _instance
+        .getStringList(_key, defaultValue: [])
+        .map((cardIds) => cardIds.toSet());
+  }
+
+  @override
   Future<Result<void>> save({
-    required ManholeCard manholeCard,
+    required String cardId,
   }) async {
     try {
-      final list = _instance.getStringList(
-        'already_get_cards',
-        defaultValue: [],
-      ).getValue();
-      if (!list.contains(manholeCard.id)) {
-        list.add(manholeCard.id);
+      final list = _instance.getStringList(_key, defaultValue: []).getValue();
+      if (!list.contains(cardId)) {
+        list.add(cardId);
       }
-      final result = await _instance.setStringList(
-        'already_get_cards',
-        list,
-      );
-      if (result) {
-        return const Result.success(null);
-      } else {
-        throw const CustomException(
-          title: 'エラー',
-          text: 'データの更新に失敗しました。',
-        );
-      }
-    } on CustomException catch (customException) {
-      return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '取得済みカードの保存に失敗しました。',
-        ),
+      await _write(list);
+      return const Result.success(null);
+    } on Exception catch (error, stackTrace) {
+      return _failureRecorder.failure(
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
     }
   }
 
   @override
   Future<Result<void>> delete({
-    required ManholeCard manholeCard,
+    required String cardId,
   }) async {
     try {
-      final list = _instance.getStringList(
-        'already_get_cards',
-        defaultValue: [],
-      ).getValue();
-      if (list.contains(manholeCard.id)) {
-        list.remove(manholeCard.id);
-      }
-      final result = await _instance.setStringList(
-        'already_get_cards',
-        list,
+      final list = _instance.getStringList(_key, defaultValue: []).getValue();
+      list.remove(cardId);
+      await _write(list);
+      return const Result.success(null);
+    } on Exception catch (error, stackTrace) {
+      return _failureRecorder.failure(
+        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
+        stackTrace,
       );
-      if (result) {
-        return const Result.success(null);
-      } else {
-        throw const CustomException(
-          title: 'エラー',
-          text: 'データの更新に失敗しました。',
-        );
-      }
-    } on CustomException catch (customException) {
-      return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: '取得済みカードの削除に失敗しました。',
-        ),
-      );
+    }
+  }
+
+  Future<void> _write(List<String> cardIds) async {
+    if (!await _instance.setStringList(_key, cardIds)) {
+      throw const PersistenceException(detail: '取得済みカードを保存できませんでした');
     }
   }
 

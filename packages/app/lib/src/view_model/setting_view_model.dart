@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../router/navigation_service.dart';
 import '../view_data/setting_view_data.dart';
 
 final settingViewModelProvider =
@@ -23,19 +24,19 @@ class SettingViewModel extends AutoDisposeAsyncNotifier<SettingViewData> {
     _navigationService = ref.watch(navigationServiceProvider);
 
     final result = await _appInfoUseCase.get();
-    if (result is Failure) {
+    if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showAlert(
-          title: 'エラー',
-          message: 'アプリ情報の取得に失敗しました',
+        _navigationService.showFailure(
+          title: 'アプリの情報を取得できませんでした',
+          exception: exception,
         ),
       );
       return const SettingViewData();
     }
-    final appInfoDTO = (result as Success<AppInfoDTO>).value;
+    final appInfo = (result as Success<AppInfo>).value;
     return SettingViewData(
-      appName: appInfoDTO.name,
-      appVersion: appInfoDTO.version,
+      appName: appInfo.name,
+      appVersion: appInfo.version.value,
     );
   }
 

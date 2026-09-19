@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../router/navigation_service.dart';
 import '../view_data/check_app_update_view_data.dart';
 
 final checkAppUpdateViewModelProvider = NotifierProvider.autoDispose<
@@ -37,15 +38,15 @@ class CheckAppUpdateViewModel
       state = state.copyWith(isLoading: true);
       final result = await _checkAppUpdateUseCase.getNeedUpdate();
       state = state.copyWith(isLoading: false);
-      if (result is Failure) {
-        await _navigationService.showAlert(
-          title: 'エラー',
-          message: 'アプリバージョンの取得に失敗しました',
+      if (result case Failure(:final exception)) {
+        await _navigationService.showFailure(
+          title: 'アプリのバージョンを確認できませんでした',
+          exception: exception,
         );
         continue;
       }
-      final needAppUpdateDTO = (result as Success<NeedAppUpdateDTO>).value;
-      if (needAppUpdateDTO.value) {
+      final needAppUpdate = (result as Success<bool>).value;
+      if (needAppUpdate) {
         await _navigationService.showAlert(
           title: 'バージョンエラー',
           message: '最新のバージョンがリリースされています。アプリをアップデートしてください。',

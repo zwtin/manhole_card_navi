@@ -2,8 +2,12 @@ import 'package:domain/domain.dart';
 import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
 import 'package:logger/logger.dart';
 
+import '../exception/domain_exception_converter.dart';
+import '../service/failure_recorder.dart';
+
 class AppBadgeRepositoryImpl implements AppBadgeRepository {
   final _logger = Logger();
+  final _failureRecorder = FailureRecorder();
 
   @override
   Future<Result<void>> updateCount({
@@ -12,16 +16,10 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
     try {
       FlutterAppBadgeControl.updateBadgeCount(count);
       return const Result.success(null);
-    } on CustomException catch (customException) {
-      return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'バッジの更新に失敗しました。',
-        ),
+    } on Exception catch (error, stackTrace) {
+      return _failureRecorder.failure(
+        DomainExceptionConverter.fromPlatform(error, stackTrace),
+        stackTrace,
       );
     }
   }
@@ -31,16 +29,10 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
     try {
       FlutterAppBadgeControl.removeBadge();
       return const Result.success(null);
-    } on CustomException catch (customException) {
-      return Result.failure(
-        customException,
-      );
-    } on Exception catch (_) {
-      return const Result.failure(
-        CustomException(
-          title: 'エラー',
-          text: 'バッジの削除に失敗しました。',
-        ),
+    } on Exception catch (error, stackTrace) {
+      return _failureRecorder.failure(
+        DomainExceptionConverter.fromPlatform(error, stackTrace),
+        stackTrace,
       );
     }
   }

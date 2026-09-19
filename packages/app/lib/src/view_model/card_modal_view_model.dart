@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../mapper/modal_card_view_data_mapper.dart';
+import '../router/navigation_service.dart';
 import '../view_data/card_modal_view_data.dart';
 import 'manhole_card_map_view_model.dart';
 
@@ -20,7 +21,6 @@ final cardModalViewModelProvider = AsyncNotifierProvider.autoDispose
 /// マップタブでピンをタップしたときに出るカードのモーダルの ViewModel。
 class CardModalViewModel
     extends AutoDisposeFamilyAsyncNotifier<CardModalViewData, CardModalArgs> {
-  late final AlreadyGetCardQueryService _alreadyGetCardQueryService;
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
   late final CardUseCase _cardUseCase;
@@ -28,15 +28,14 @@ class CardModalViewModel
 
   @override
   Future<CardModalViewData> build(CardModalArgs arg) async {
-    _alreadyGetCardQueryService = ref.watch(alreadyGetCardQueryServiceProvider);
     _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
     _cardUseCase = ref.watch(cardUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
     final mapViewModel = ref.read(manholeCardMapViewModelProvider.notifier);
 
-    final subscription = _alreadyGetCardQueryService.getStream().listen((
-      dtoList,
+    final subscription = _alreadyGetCardUseCase.getStream().listen((
+      cardIds,
     ) {
       final current = state.valueOrNull;
       if (current == null) {
@@ -44,39 +43,39 @@ class CardModalViewModel
       }
       state = AsyncData(
         current.copyWith(
-          alreadyGet: dtoList.any((dto) => dto.cardId == arg.cardId),
+          alreadyGet: cardIds.contains(arg.cardId),
         ),
       );
     });
     ref.onDispose(subscription.cancel);
 
     final result = await _cardUseCase.get(id: arg.cardId);
-    if (result is Failure) {
+    if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showAlert(
-          title: 'エラー',
-          message: 'カード情報の取得に失敗しました',
+        _navigationService.showFailure(
+          title: 'カード情報を取得できませんでした',
+          exception: exception,
         ),
       );
-      throw (result as Failure).exception;
+      throw exception;
     }
-    final cardDTO = (result as Success<CardDTO>).value;
+    final card = (result as Success<ManholeCard>).value;
 
     final latitude = arg.latitude;
     final longitude = arg.longitude;
     final position = latitude != null && longitude != null
         ? LatLng(latitude, longitude)
         : await mapViewModel.findCardPosition(arg.cardId) ??
-            LatLng(cardDTO.latitude, cardDTO.longitude);
+            LatLng(card.position.latitude, card.position.longitude);
 
-    final alreadyGetResult = await _alreadyGetCardQueryService.get();
+    final alreadyGetResult = await _alreadyGetCardUseCase.get();
     return CardModalViewData(
       card: await ModalCardViewDataMapper.convertToViewData(
-        cardDTO: cardDTO,
+        card: card,
         position: position,
       ),
-      alreadyGet: alreadyGetResult is Success<List<AlreadyGetCardDTO>> &&
-          alreadyGetResult.value.any((dto) => dto.cardId == arg.cardId),
+      alreadyGet: alreadyGetResult is Success<Set<String>> &&
+          alreadyGetResult.value.contains(arg.cardId),
     );
   }
 
@@ -89,16 +88,24 @@ class CardModalViewModel
     if (current == null) {
       return;
     }
+    final Result<void> result;
     if (!current.alreadyGet) {
-      await _alreadyGetCardUseCase.save(id: arg.cardId);
-      return;
+      result = await _alreadyGetCardUseCase.save(id: arg.cardId);
+    } else {
+      final confirmed = await _navigationService.showConfirm(
+        title: '確認',
+        message: 'カードを未取得に戻してよろしいですか？',
+      );
+      if (!confirmed) {
+        return;
+      }
+      result = await _alreadyGetCardUseCase.delete(id: arg.cardId);
     }
-    final confirmed = await _navigationService.showConfirm(
-      title: '確認',
-      message: 'カードを未取得に戻してよろしいですか？',
-    );
-    if (confirmed) {
-      await _alreadyGetCardUseCase.delete(id: arg.cardId);
+    if (result case Failure(:final exception)) {
+      await _navigationService.showFailure(
+        title: '取得状態を保存できませんでした',
+        exception: exception,
+      );
     }
   }
 

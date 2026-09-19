@@ -3,7 +3,7 @@ import 'package:domain/domain.dart';
 import '../dao/realm_card_dao.dart';
 import '../dao/realm_prefecture_dao.dart';
 import '../dao/realm_volume_dao.dart';
-import 'realm_distribution_points_mapper.dart';
+import 'realm_distribution_point_mapper.dart';
 import 'realm_prefecture_mapper.dart';
 import 'realm_volume_mapper.dart';
 
@@ -13,11 +13,10 @@ class RealmCardMapper {
   }) {
     return ManholeCard(
       id: dao.id,
-      latitude: dao.latitude,
-      longitude: dao.longitude,
+      position: Coordinate(latitude: dao.latitude, longitude: dao.longitude),
       name: dao.name,
       publicationDate: dao.publicationDate,
-      distributionState: ManholeCardDistributionState.fromString(
+      distributionState: ManholeCardDistributionState.values.byName(
         dao.distributionState,
       ),
       image: dao.image,
@@ -25,9 +24,11 @@ class RealmCardMapper {
       distributionPlaceHtml: dao.distributionPlaceHtml,
       distributionTimeHtml: dao.distributionTimeHtml,
       stockHtml: dao.stockHtml,
-      distributionPoints: RealmDistributionPointsMapper.convertToEntity(
-        daoList: dao.distributionPoints.toList(),
-      ),
+      distributionPoints: dao.distributionPoints
+          .map(
+            (point) => RealmDistributionPointMapper.convertToEntity(dao: point),
+          )
+          .toList(),
       prefecture: RealmPrefectureMapper.convertToEntity(
         dao: dao.prefecture ??
             RealmPrefectureDAO(
@@ -43,5 +44,37 @@ class RealmCardMapper {
             ),
       ),
     );
+  }
+
+  static RealmCardDAO convertFromEntity({
+    required ManholeCard entity,
+  }) {
+    final dao = RealmCardDAO(
+      entity.id,
+      entity.position.latitude,
+      entity.position.longitude,
+      entity.name,
+      entity.publicationDate,
+      entity.distributionState.name,
+      entity.image,
+      entity.imageSub,
+      entity.distributionPlaceHtml,
+      entity.distributionTimeHtml,
+      entity.stockHtml,
+    );
+    dao.prefecture = RealmPrefectureMapper.convertFromEntity(
+      entity: entity.prefecture,
+    );
+    dao.volume = RealmVolumeMapper.convertFromEntity(
+      entity: entity.volume,
+    );
+    dao.distributionPoints.addAll(
+      entity.distributionPoints.map(
+        (point) => RealmDistributionPointMapper.convertFromEntity(
+          entity: point,
+        ),
+      ),
+    );
+    return dao;
   }
 }

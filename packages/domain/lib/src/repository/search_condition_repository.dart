@@ -1,6 +1,6 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
-import '../entity/result.dart';
+import '../core/result.dart';
 import '../entity/search_condition.dart';
 
 /// main.dart の ProviderScope で data パッケージの実装に差し替える。
@@ -13,5 +13,10 @@ final searchConditionRepositoryProvider =
     );
 
 abstract class SearchConditionRepository {
+  Future<Result<SearchCondition>> get();
+
+  /// 検索条件が変わるたびに流れる。購読を始めたときにも今の値が流れる。
+  Stream<SearchCondition> getStream();
+
   Future<Result<void>> save({required SearchCondition searchCondition});
 }

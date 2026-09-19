@@ -1,6 +1,7 @@
 import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../router/navigation_service.dart';
 import '../view_data/search_condition_view_data.dart';
 
 final searchConditionViewModelProvider = AsyncNotifierProvider.autoDispose<
@@ -11,33 +12,29 @@ final searchConditionViewModelProvider = AsyncNotifierProvider.autoDispose<
 /// 検索条件画面の ViewModel。
 ///
 /// 編集内容はドラフトとして保持し、「この条件で表示」で端末保存する。保存した条件は
-/// QueryService の Stream を通じてマップ・リストの両画面へ反映される。
+/// SearchConditionUseCase の Stream を通じてマップ・リストの両画面へ反映される。
 class SearchConditionViewModel
     extends AutoDisposeAsyncNotifier<SearchConditionViewData> {
   /// 配布状態の選択肢。表示順は固定。
   static const List<DistributionStateOption> distributionStateOptions = [
-    (state: ManholeCardDistributionState.distributing(), name: '配布中'),
-    (state: ManholeCardDistributionState.stopped(), name: '配布停止'),
-    (state: ManholeCardDistributionState.notClear(), name: '不明'),
+    (state: ManholeCardDistributionState.distributing, name: '配布中'),
+    (state: ManholeCardDistributionState.stopped, name: '配布停止'),
+    (state: ManholeCardDistributionState.notClear, name: '不明'),
   ];
 
-  late final SearchConditionQueryService _searchConditionQueryService;
   late final SearchConditionUseCase _searchConditionUseCase;
-  late final ListCardsQueryService _listCardsQueryService;
+  late final CardUseCase _cardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
   late final NavigationService _navigationService;
 
   @override
   Future<SearchConditionViewData> build() async {
-    _searchConditionQueryService = ref.watch(
-      searchConditionQueryServiceProvider,
-    );
     _searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
-    _listCardsQueryService = ref.watch(listCardsQueryServiceProvider);
+    _cardUseCase = ref.watch(cardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
 
-    final result = await _searchConditionQueryService.get();
+    final result = await _searchConditionUseCase.get();
     return SearchConditionViewData(
       draft: result is Success<SearchCondition>
           ? result.value
@@ -140,7 +137,16 @@ class SearchConditionViewModel
       return;
     }
     final normalized = current.draft.normalized(allVolumeIds: _allVolumeIds);
-    await _searchConditionUseCase.save(searchCondition: normalized);
+    final result = await _searchConditionUseCase.save(
+      searchCondition: normalized,
+    );
+    if (result case Failure(:final exception)) {
+      await _navigationService.showFailure(
+        title: '検索条件を保存できませんでした',
+        exception: exception,
+      );
+      return;
+    }
     _navigationService.pop();
   }
 
@@ -171,16 +177,16 @@ class SearchConditionViewModel
   }
 
   Future<List<VolumeOption>> _loadVolumeOptions() async {
-    final result = await _listCardsQueryService.fetch();
-    if (result is! Success<List<ListCardDTO>>) {
+    final result = await _cardUseCase.fetchAll();
+    if (result is! Success<List<ManholeCard>>) {
       return const [];
     }
     final byVolume = <String, String>{};
-    for (final dto in result.value) {
-      if (dto.volumeId.isEmpty) {
+    for (final card in result.value) {
+      if (card.volume.id.isEmpty) {
         continue;
       }
-      byVolume.putIfAbsent(dto.volumeId, () => dto.volumeName);
+      byVolume.putIfAbsent(card.volume.id, () => card.volume.name);
     }
     final entries = byVolume.entries.toList()
       // volumeId は「弾番号 - 1」を 4 桁ゼロ埋めした値（第01弾=0000 … 第18弾=0017）

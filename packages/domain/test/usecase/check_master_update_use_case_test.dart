@@ -1,65 +1,54 @@
 import 'package:domain/domain.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:test/test.dart';
 
-class MockCardRepository extends Mock implements CardRepository {}
+class MockMasterDataRepository extends Mock implements MasterDataRepository {}
 
 class MockMasterVersionRepository extends Mock
     implements MasterVersionRepository {}
 
-class MockPrefectureRepository extends Mock implements PrefectureRepository {}
-
-class MockVolumeRepository extends Mock implements VolumeRepository {}
-
 void main() {
-  late MockCardRepository cardRepository;
+  late MockMasterDataRepository masterDataRepository;
   late MockMasterVersionRepository masterVersionRepository;
-  late MockPrefectureRepository prefectureRepository;
-  late MockVolumeRepository volumeRepository;
   late ProviderContainer container;
+
+  const inquiredVersion = MasterVersion(value: '0006');
 
   final card = ManholeCard(
     id: '27-226-B001',
-    latitude: 34.5,
-    longitude: 135.6,
+    position: const Coordinate(latitude: 34.5, longitude: 135.6),
     name: '藤井寺市',
     publicationDate: DateTime(2026, 1, 1),
-    distributionState: const ManholeCardDistributionState.distributing(),
+    distributionState: ManholeCardDistributionState.distributing,
     image: 'https://example.com/27-226-B001.jpg',
     imageSub: '',
     distributionPlaceHtml: '',
     distributionTimeHtml: '',
     stockHtml: '',
-    distributionPoints: const ManholeCardDistributionPoints(list: []),
-    // 取得直後のカードは都道府県名・弾名を持たない。
-    prefecture: const ManholeCardPrefecture(id: '27', name: ''),
-    volume: const ManholeCardVolume(id: '0000', name: ''),
+    distributionPoints: const [],
+    prefecture: const ManholeCardPrefecture(id: '27', name: '大阪府'),
+    volume: const ManholeCardVolume(id: '0000', name: '第1弾'),
   );
 
   setUpAll(() {
-    registerFallbackValue(const InquiredMasterVersion(value: ''));
-    registerFallbackValue(const CurrentMasterVersion(value: ''));
-    registerFallbackValue(const ManholeCards(list: []));
-    registerFallbackValue(const ManholeCardPrefectures(list: []));
-    registerFallbackValue(const ManholeCardVolumes(list: []));
+    registerFallbackValue(const MasterVersion(value: ''));
+    registerFallbackValue(<ManholeCard>[]);
   });
 
   setUp(() {
-    cardRepository = MockCardRepository();
+    masterDataRepository = MockMasterDataRepository();
     masterVersionRepository = MockMasterVersionRepository();
-    prefectureRepository = MockPrefectureRepository();
-    volumeRepository = MockVolumeRepository();
     container = ProviderContainer(
       overrides: [
-        cardRepositoryProvider.overrideWithValue(cardRepository),
+        masterDataRepositoryProvider.overrideWithValue(masterDataRepository),
         masterVersionRepositoryProvider.overrideWithValue(
           masterVersionRepository,
         ),
-        prefectureRepositoryProvider.overrideWithValue(prefectureRepository),
-        volumeRepositoryProvider.overrideWithValue(volumeRepository),
       ],
     );
+    when(() => masterVersionRepository.getInquiredVersion())
+        .thenAnswer((_) async => const Result.success(inquiredVersion));
   });
 
   tearDown(() {
@@ -70,188 +59,114 @@ void main() {
     return container.read(checkMasterUpdateUseCaseProvider);
   }
 
-  void stubVersions({required String current, required String inquired}) {
-    when(() => masterVersionRepository.getCurrentVersion()).thenAnswer(
-      (_) async => Result.success(CurrentMasterVersion(value: current)),
-    );
-    when(() => masterVersionRepository.getInquiredVersion()).thenAnswer(
-      (_) async => Result.success(InquiredMasterVersion(value: inquired)),
-    );
+  void stubCurrentVersion(MasterVersion? version) {
+    when(() => masterVersionRepository.getCurrentVersion())
+        .thenAnswer((_) async => Result.success(version));
   }
 
   group('getNeedUpdate', () {
-    test('取得済みと要求のバージョンが違えば更新が必要', () async {
-      stubVersions(current: '0005', inquired: '0006');
+    test('取り込み済みと要求のバージョンが違えば更新が必要', () async {
+      stubCurrentVersion(const MasterVersion(value: '0005'));
 
       final result = await getUseCase().getNeedUpdate();
 
-      expect((result as Success<NeedMasterUpdateDTO>).value.value, isTrue);
-      verifyNever(() => cardRepository.hasMaster());
+      expect((result as Success<bool>).value, isTrue);
+      verifyNever(() => masterDataRepository.exists());
     });
 
-    test('バージョンが同じでもローカルにカードが無ければ更新が必要', () async {
-      stubVersions(current: '0006', inquired: '0006');
-      when(() => cardRepository.hasMaster())
+    test('まだ一度も取り込んでいなければ更新が必要', () async {
+      stubCurrentVersion(null);
+
+      final result = await getUseCase().getNeedUpdate();
+
+      expect((result as Success<bool>).value, isTrue);
+    });
+
+    test('バージョンが同じでも端末にマスターデータが無ければ更新が必要', () async {
+      stubCurrentVersion(inquiredVersion);
+      when(() => masterDataRepository.exists())
           .thenAnswer((_) async => const Result.success(false));
 
       final result = await getUseCase().getNeedUpdate();
 
-      expect((result as Success<NeedMasterUpdateDTO>).value.value, isTrue);
+      expect((result as Success<bool>).value, isTrue);
     });
 
-    test('バージョンが同じでローカルにカードがあれば更新は不要', () async {
-      stubVersions(current: '0006', inquired: '0006');
-      when(() => cardRepository.hasMaster())
+    test('バージョンが同じで端末にマスターデータがあれば更新は不要', () async {
+      stubCurrentVersion(inquiredVersion);
+      when(() => masterDataRepository.exists())
           .thenAnswer((_) async => const Result.success(true));
 
       final result = await getUseCase().getNeedUpdate();
 
-      expect((result as Success<NeedMasterUpdateDTO>).value.value, isFalse);
+      expect((result as Success<bool>).value, isFalse);
     });
 
-    test('要求バージョンが取れていなければ、カードの有無を見ずに更新しない', () async {
-      stubVersions(current: '', inquired: '');
+    test('要求バージョンの取得の失敗は、種類を変えずにそのまま返す', () async {
+      const failure = OfflineException();
+      when(() => masterVersionRepository.getInquiredVersion())
+          .thenAnswer((_) async => const Result.failure(failure));
 
       final result = await getUseCase().getNeedUpdate();
 
-      expect((result as Success<NeedMasterUpdateDTO>).value.value, isFalse);
-      verifyNever(() => cardRepository.hasMaster());
-    });
-
-    test('バージョンの取得に失敗したら失敗を返す', () async {
-      when(() => masterVersionRepository.getCurrentVersion()).thenAnswer(
-        (_) async => const Result.failure(
-          CustomException(title: 'エラー', text: '取得に失敗'),
-        ),
-      );
-      when(() => masterVersionRepository.getInquiredVersion()).thenAnswer(
-        (_) async =>
-            const Result.success(InquiredMasterVersion(value: '0006')),
-      );
-
-      final result = await getUseCase().getNeedUpdate();
-
-      expect(result, isA<Failure<NeedMasterUpdateDTO>>());
+      expect((result as Failure<bool>).exception, same(failure));
     });
   });
 
   group('updateMaster', () {
     setUp(() {
-      when(() => masterVersionRepository.getInquiredVersion()).thenAnswer(
-        (_) async =>
-            const Result.success(InquiredMasterVersion(value: '0006')),
-      );
-      when(
-        () => prefectureRepository.fetchMaster(
-          inquiredMasterVersion: any(named: 'inquiredMasterVersion'),
-        ),
-      ).thenAnswer(
-        (_) async => const Result.success(
-          ManholeCardPrefectures(
-            list: [ManholeCardPrefecture(id: '27', name: '大阪府')],
-          ),
-        ),
-      );
-      when(() => prefectureRepository.deleteMaster())
+      when(() => masterDataRepository.fetch(version: any(named: 'version')))
+          .thenAnswer((_) async => Result.success([card]));
+      when(() => masterDataRepository.replace(cards: any(named: 'cards')))
           .thenAnswer((_) async => const Result.success(null));
-      when(
-        () => prefectureRepository.saveMaster(
-          manholeCardPrefectures: any(named: 'manholeCardPrefectures'),
-        ),
-      ).thenAnswer((_) async => const Result.success(null));
-      when(
-        () => volumeRepository.fetchMaster(
-          inquiredMasterVersion: any(named: 'inquiredMasterVersion'),
-        ),
-      ).thenAnswer(
-        (_) async => const Result.success(
-          ManholeCardVolumes(
-            list: [ManholeCardVolume(id: '0000', name: '第1弾')],
-          ),
-        ),
-      );
-      when(() => volumeRepository.deleteMaster())
-          .thenAnswer((_) async => const Result.success(null));
-      when(
-        () => volumeRepository.saveMaster(
-          manholeCardVolumes: any(named: 'manholeCardVolumes'),
-        ),
-      ).thenAnswer((_) async => const Result.success(null));
-      when(
-        () => cardRepository.fetchMaster(
-          inquiredMasterVersion: any(named: 'inquiredMasterVersion'),
-        ),
-      ).thenAnswer((_) async => Result.success(ManholeCards(list: [card])));
-      when(() => cardRepository.deleteMaster())
-          .thenAnswer((_) async => const Result.success(null));
-      when(
-        () => cardRepository.saveMaster(
-          manholeCards: any(named: 'manholeCards'),
-        ),
-      ).thenAnswer((_) async => const Result.success(null));
       when(
         () => masterVersionRepository.setCurrentVersion(
-          currentMasterVersion: any(named: 'currentMasterVersion'),
+          version: any(named: 'version'),
         ),
       ).thenAnswer((_) async => const Result.success(null));
     });
 
-    test('カードより先に都道府県・弾を取り込む', () async {
+    test('要求バージョンのマスターデータで入れ替えてから、取り込み済みバージョンを記録する',
+        () async {
       final result = await getUseCase().updateMaster();
 
       expect(result, isA<Success<void>>());
       verifyInOrder([
-        () => prefectureRepository.saveMaster(
-              manholeCardPrefectures: any(named: 'manholeCardPrefectures'),
-            ),
-        () => volumeRepository.saveMaster(
-              manholeCardVolumes: any(named: 'manholeCardVolumes'),
-            ),
-        () => cardRepository.saveMaster(
-              manholeCards: any(named: 'manholeCards'),
+        () => masterDataRepository.fetch(version: inquiredVersion),
+        () => masterDataRepository.replace(cards: [card]),
+        () => masterVersionRepository.setCurrentVersion(
+              version: inquiredVersion,
             ),
       ]);
     });
 
-    test('都道府県名・弾名を引き当ててからカードを保存する', () async {
-      await getUseCase().updateMaster();
-
-      final saved = verify(
-        () => cardRepository.saveMaster(
-          manholeCards: captureAny(named: 'manholeCards'),
-        ),
-      ).captured.single as ManholeCards;
-      expect(saved.list.single.prefecture.name, '大阪府');
-      expect(saved.list.single.volume.name, '第1弾');
-    });
-
-    test('取り込みが終わったら取得済みバージョンを要求バージョンにする', () async {
-      await getUseCase().updateMaster();
-
-      verify(
-        () => masterVersionRepository.setCurrentVersion(
-          currentMasterVersion: const CurrentMasterVersion(value: '0006'),
-        ),
-      ).called(1);
-    });
-
-    test('カードの取得に失敗したら、取得済みバージョンを更新しない', () async {
-      when(
-        () => cardRepository.fetchMaster(
-          inquiredMasterVersion: any(named: 'inquiredMasterVersion'),
-        ),
-      ).thenAnswer(
-        (_) async => const Result.failure(
-          CustomException(title: 'エラー', text: '取得に失敗'),
-        ),
-      );
+    test('取得に失敗したら、入れ替えも記録もせずに失敗を返す', () async {
+      const failure = OfflineException();
+      when(() => masterDataRepository.fetch(version: any(named: 'version')))
+          .thenAnswer((_) async => const Result.failure(failure));
 
       final result = await getUseCase().updateMaster();
 
-      expect(result, isA<Failure<void>>());
+      expect((result as Failure<void>).exception, same(failure));
+      verifyNever(() => masterDataRepository.replace(cards: any(named: 'cards')));
       verifyNever(
         () => masterVersionRepository.setCurrentVersion(
-          currentMasterVersion: any(named: 'currentMasterVersion'),
+          version: any(named: 'version'),
+        ),
+      );
+    });
+
+    test('入れ替えに失敗したら、取り込み済みバージョンを記録しない', () async {
+      const failure = PersistenceException();
+      when(() => masterDataRepository.replace(cards: any(named: 'cards')))
+          .thenAnswer((_) async => const Result.failure(failure));
+
+      final result = await getUseCase().updateMaster();
+
+      expect((result as Failure<void>).exception, same(failure));
+      verifyNever(
+        () => masterVersionRepository.setCurrentVersion(
+          version: any(named: 'version'),
         ),
       );
     });

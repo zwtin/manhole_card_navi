@@ -26,7 +26,7 @@ void main() {
     test('すべての配布状態を選んだ状態は、未選択に畳む', () {
       final condition = SearchCondition(
         common: CommonSearchCondition(
-          distributionStates: allDistributionStates,
+          distributionStates: ManholeCardDistributionState.values.toSet(),
         ),
       );
 
@@ -47,7 +47,7 @@ void main() {
           displayFilter: DisplayFilter.acquired,
           volumeIds: {'0000', '0001'},
           distributionStates: {
-            const ManholeCardDistributionState.stopped(),
+            ManholeCardDistributionState.stopped,
           },
         ),
         map: const MapSearchCondition(
@@ -64,19 +64,34 @@ void main() {
       const condition = CommonSearchCondition();
 
       expect(condition.matchesVolume('0005'), isTrue);
-      expect(condition.matchesDistributionState('notClear'), isTrue);
+      expect(
+        condition.matchesDistributionState(
+          ManholeCardDistributionState.notClear,
+        ),
+        isTrue,
+      );
       expect(condition.matchesDisplay(alreadyGet: false), isTrue);
     });
 
-    test('配布状態は文字列値で照合する', () {
+    test('配布状態は、選んだ状態だけを通す', () {
       final condition = CommonSearchCondition(
         distributionStates: {
-          const ManholeCardDistributionState.distributing(),
+          ManholeCardDistributionState.distributing,
         },
       );
 
-      expect(condition.matchesDistributionState('distributing'), isTrue);
-      expect(condition.matchesDistributionState('stopped'), isFalse);
+      expect(
+        condition.matchesDistributionState(
+          ManholeCardDistributionState.distributing,
+        ),
+        isTrue,
+      );
+      expect(
+        condition.matchesDistributionState(
+          ManholeCardDistributionState.stopped,
+        ),
+        isFalse,
+      );
     });
 
     test('取得状態の絞り込み', () {

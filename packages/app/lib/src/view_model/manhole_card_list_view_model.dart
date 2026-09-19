@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:domain/domain.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../mapper/list_prefectures_view_data_mapper.dart';
+import '../router/navigation_service.dart';
 import '../view_data/list_prefectures_view_data.dart';
 import '../view_data/manhole_card_list_view_data.dart';
 
@@ -15,14 +17,14 @@ final manholeCardListViewModelProvider = AsyncNotifierProvider.autoDispose<
 /// リストタブの ViewModel。
 class ManholeCardListViewModel
     extends AutoDisposeAsyncNotifier<ManholeCardListViewData> {
-  late final AlreadyGetCardQueryService _alreadyGetCardQueryService;
+  late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
-  late final ListCardsQueryService _listCardsQueryService;
-  late final SearchConditionQueryService _searchConditionQueryService;
+  late final CardUseCase _cardUseCase;
+  late final SearchConditionUseCase _searchConditionUseCase;
   late final NavigationService _navigationService;
 
-  List<ListCardDTO> _listCardDTOList = [];
-  List<AlreadyGetCardDTO> _alreadyGetCardDTOList = [];
+  List<ManholeCard> _cards = [];
+  Set<String> _alreadyGetCardIds = {};
   SearchCondition _searchCondition = SearchCondition.initial();
 
   /// 展開中の都道府県。取得状態や検索条件が変わって一覧を作り直しても開いたままにする。
@@ -30,47 +32,45 @@ class ManholeCardListViewModel
 
   @override
   Future<ManholeCardListViewData> build() async {
-    _alreadyGetCardQueryService = ref.watch(alreadyGetCardQueryServiceProvider);
+    _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _listCardsQueryService = ref.watch(listCardsQueryServiceProvider);
-    _searchConditionQueryService = ref.watch(
-      searchConditionQueryServiceProvider,
-    );
+    _cardUseCase = ref.watch(cardUseCaseProvider);
+    _searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
 
-    final cardsResult = await _listCardsQueryService.fetch();
-    if (cardsResult is Success<List<ListCardDTO>>) {
-      _listCardDTOList = cardsResult.value;
-    } else {
-      unawaited(
-        _navigationService.showAlert(
-          title: 'エラー',
-          message: 'カード情報の取得に失敗しました',
-        ),
-      );
+    switch (await _cardUseCase.fetchAll()) {
+      case Success(:final value):
+        _cards = value;
+      case Failure(:final exception):
+        unawaited(
+          _navigationService.showFailure(
+            title: 'カード一覧を取得できませんでした',
+            exception: exception,
+          ),
+        );
     }
-    final conditionResult = await _searchConditionQueryService.get();
+    final conditionResult = await _searchConditionUseCase.get();
     if (conditionResult is Success<SearchCondition>) {
       _searchCondition = conditionResult.value;
     }
-    final alreadyGetResult = await _alreadyGetCardQueryService.get();
-    if (alreadyGetResult is Success<List<AlreadyGetCardDTO>>) {
-      _alreadyGetCardDTOList = alreadyGetResult.value;
+    final alreadyGetResult = await _alreadyGetCardUseCase.get();
+    if (alreadyGetResult is Success<Set<String>>) {
+      _alreadyGetCardIds = alreadyGetResult.value;
     }
 
-    final alreadyGetSubscription = _alreadyGetCardQueryService
+    final alreadyGetSubscription = _alreadyGetCardUseCase
         .getStream()
-        .listen((dtoList) async {
+        .listen((cardIds) async {
       // 購読開始時にも現在値が流れてくるため、変わっていなければ作り直さない。
-      if (_sameCardIds(dtoList, _alreadyGetCardDTOList)) {
+      if (setEquals(cardIds, _alreadyGetCardIds)) {
         return;
       }
-      _alreadyGetCardDTOList = dtoList;
+      _alreadyGetCardIds = cardIds;
       state = AsyncData(await _buildViewData());
     });
     ref.onDispose(alreadyGetSubscription.cancel);
 
-    final searchConditionSubscription = _searchConditionQueryService
+    final searchConditionSubscription = _searchConditionUseCase
         .getStream()
         .listen((condition) async {
       if (condition == _searchCondition) {
@@ -125,8 +125,8 @@ class ManholeCardListViewModel
 
   Future<ManholeCardListViewData> _buildViewData() async {
     final prefectures = await ListPrefecturesViewDataMapper.convertToViewData(
-      listCardDTOList: _listCardDTOList,
-      alreadyGetCardDTOList: _alreadyGetCardDTOList,
+      cards: _cards,
+      alreadyGetCardIds: _alreadyGetCardIds,
       searchCondition: _searchCondition.common,
     );
     return ManholeCardListViewData(
@@ -141,24 +141,9 @@ class ManholeCardListViewModel
             )
             .toList(),
       ),
-      totalCount: _listCardDTOList.length,
-      alreadyGetCount: _alreadyGetCardDTOList.length,
+      totalCount: _cards.length,
+      alreadyGetCount: _alreadyGetCardIds.length,
       activeFilterCount: _searchCondition.activeFilterCount,
     );
-  }
-
-  static bool _sameCardIds(
-    List<AlreadyGetCardDTO> a,
-    List<AlreadyGetCardDTO> b,
-  ) {
-    if (a.length != b.length) {
-      return false;
-    }
-    for (var i = 0; i < a.length; i++) {
-      if (a[i].cardId != b[i].cardId) {
-        return false;
-      }
-    }
-    return true;
   }
 }

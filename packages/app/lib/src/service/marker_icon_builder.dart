@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:domain/domain.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 
@@ -35,14 +36,17 @@ class MarkerIconBuilder {
   /// 旧レイアウトで合成した古いキャッシュとは別エントリになる。
   static String get sizeKey => '${_iconWidth}x${_iconHeight}_v$_layoutVersion';
 
-  /// 頒布状況 → 枠 PNG アセットパス。
-  static const Map<String, String> _framePathByState = <String, String>{
-    'distributing': 'packages/app/assets/images/markers/frame_green.png',
-    'stopped': 'packages/app/assets/images/markers/frame_red.png',
-    'notClear': 'packages/app/assets/images/markers/frame_yellow.png',
-  };
-  static const String _defaultFramePath =
-      'packages/app/assets/images/markers/frame_yellow.png';
+  /// 頒布状況に対応する枠 PNG のアセットパス。
+  static String _framePath(ManholeCardDistributionState distributionState) {
+    switch (distributionState) {
+      case ManholeCardDistributionState.distributing:
+        return 'packages/app/assets/images/markers/frame_green.png';
+      case ManholeCardDistributionState.stopped:
+        return 'packages/app/assets/images/markers/frame_red.png';
+      case ManholeCardDistributionState.notClear:
+        return 'packages/app/assets/images/markers/frame_yellow.png';
+    }
+  }
 
   /// デコード済みの枠 PNG（アセットパス → ui.Image）のキャッシュ。
   static final Map<String, ui.Image> _frameCache = <String, ui.Image>{};
@@ -50,14 +54,16 @@ class MarkerIconBuilder {
   /// 枠 PNG（3 色）を事前にデコードしてキャッシュしておく。地図表示前に
   /// 呼んでおくと、最初のマーカー合成時のアセット読み込み待ちを避けられる。
   static Future<void> preloadFrames() async {
-    final paths = <String>{..._framePathByState.values, _defaultFramePath};
-    await Future.wait(paths.map(_loadFramePath));
+    await Future.wait(
+      ManholeCardDistributionState.values.map(_framePath).map(_loadFramePath),
+    );
   }
 
   /// 頒布状況に対応する枠 PNG アセットを読み込み、デコードして返す。
-  static Future<ui.Image> _loadFrame(String distributionState) {
-    final path = _framePathByState[distributionState] ?? _defaultFramePath;
-    return _loadFramePath(path);
+  static Future<ui.Image> _loadFrame(
+    ManholeCardDistributionState distributionState,
+  ) {
+    return _loadFramePath(_framePath(distributionState));
   }
 
   /// アセットパスから枠 PNG を読み込み、デコードして返す（結果をキャッシュ）。
@@ -91,11 +97,10 @@ class MarkerIconBuilder {
   /// 枠画像の上に原本画像を重ねて合成し、PNG バイト列を返す。
   ///
   /// [originalBytes] は原本画像のエンコード済みバイト列。
-  /// [distributionState] は 'distributing'/'stopped'/'notClear'。
   /// [alreadyGet] が false の場合はグレースケールで描画する。
   static Future<Uint8List> build({
     required Uint8List originalBytes,
-    required String distributionState,
+    required ManholeCardDistributionState distributionState,
     required bool alreadyGet,
   }) async {
     final frame = await _loadFrame(distributionState);

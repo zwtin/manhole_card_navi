@@ -1,0 +1,105 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:data/src/exception/domain_exception_converter.dart';
+import 'package:domain/domain.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+
+void main() {
+  final stackTrace = StackTrace.current;
+
+  FirebaseException firestoreError(String code) {
+    return FirebaseException(plugin: 'cloud_firestore', code: code);
+  }
+
+  group('fromFirestore', () {
+    test('unavailable は通信できない失敗にし、元の例外を残す', () {
+      final error = firestoreError('unavailable');
+
+      final exception = DomainExceptionConverter.fromFirestore(
+        error,
+        stackTrace,
+      );
+
+      expect(exception, isA<OfflineException>());
+      expect(exception.cause, same(error));
+      expect(exception.stackTrace, same(stackTrace));
+    });
+
+    test('deadline-exceeded とタイムアウトは、応答が遅すぎる失敗にする', () {
+      expect(
+        DomainExceptionConverter.fromFirestore(
+          firestoreError('deadline-exceeded'),
+          stackTrace,
+        ),
+        isA<TimedOutException>(),
+      );
+      expect(
+        DomainExceptionConverter.fromFirestore(
+          TimeoutException('timeout'),
+          stackTrace,
+        ),
+        isA<TimedOutException>(),
+      );
+    });
+
+    test('それ以外は不明な失敗にする', () {
+      expect(
+        DomainExceptionConverter.fromFirestore(
+          firestoreError('permission-denied'),
+          stackTrace,
+        ),
+        isA<UnknownException>(),
+      );
+    });
+  });
+
+  test('端末の DB などの失敗は、保存できない失敗にする', () {
+    expect(
+      DomainExceptionConverter.fromLocalStorage(Exception('io'), stackTrace),
+      isA<PersistenceException>(),
+    );
+  });
+
+  group('fromHttp', () {
+    test('経路上で割り込まれた・接続できない失敗は、通信できない失敗にする', () {
+      for (final error in <Exception>[
+        const HandshakeException('WRONG_VERSION_NUMBER(tls_record.cc:127)'),
+        const SocketException('Failed host lookup'),
+        http.ClientException('Connection closed'),
+      ]) {
+        final exception = DomainExceptionConverter.fromHttp(error, stackTrace);
+
+        expect(exception, isA<OfflineException>(), reason: '$error');
+        expect(exception.cause, same(error));
+      }
+    });
+
+    test('タイムアウトは、応答が遅すぎる失敗にする', () {
+      expect(
+        DomainExceptionConverter.fromHttp(TimeoutException(''), stackTrace),
+        isA<TimedOutException>(),
+      );
+    });
+
+    test('404 はデータがない失敗、それ以外のステータスは不明な失敗にする', () {
+      expect(
+        DomainExceptionConverter.fromHttp(
+          const HttpExceptionWithStatus(404, 'Not Found'),
+          stackTrace,
+        ),
+        isA<NotFoundException>(),
+      );
+      expect(
+        DomainExceptionConverter.fromHttp(
+          const HttpExceptionWithStatus(503, 'Service Unavailable'),
+          stackTrace,
+        ),
+        isA<UnknownException>(),
+      );
+    });
+  });
+}

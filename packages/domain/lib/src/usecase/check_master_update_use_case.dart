@@ -1,29 +1,18 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:riverpod/riverpod.dart';
 
-import '../dto/need_master_update_dto.dart';
-import '../entity/current_master_version.dart';
-import '../entity/custom_exception.dart';
-import '../entity/inquired_master_version.dart';
-import '../entity/manhole_card_prefecture.dart';
-import '../entity/manhole_card_prefectures.dart';
-import '../entity/manhole_card_volume.dart';
-import '../entity/manhole_card_volumes.dart';
-import '../entity/manhole_cards.dart';
-import '../entity/result.dart';
-import '../repository/card_repository.dart';
+import '../core/result.dart';
+import '../entity/manhole_card.dart';
+import '../entity/master_version.dart';
+import '../repository/master_data_repository.dart';
 import '../repository/master_version_repository.dart';
-import '../repository/prefecture_repository.dart';
-import '../repository/volume_repository.dart';
 
 final checkMasterUpdateUseCaseProvider =
     Provider.autoDispose<CheckMasterUpdateUseCase>(
   (ref) {
     final checkMasterUpdateUseCase = CheckMasterUpdateUseCase(
-      ref.watch(cardRepositoryProvider),
+      ref.watch(masterDataRepositoryProvider),
       ref.watch(masterVersionRepositoryProvider),
-      ref.watch(prefectureRepositoryProvider),
-      ref.watch(volumeRepositoryProvider),
     );
     ref.onDispose(checkMasterUpdateUseCase.dispose);
     return checkMasterUpdateUseCase;
@@ -32,223 +21,77 @@ final checkMasterUpdateUseCaseProvider =
 
 class CheckMasterUpdateUseCase {
   CheckMasterUpdateUseCase(
-    this._cardRepository,
+    this._masterDataRepository,
     this._masterVersionRepository,
-    this._prefectureRepository,
-    this._volumeRepository,
   );
 
-  final CardRepository _cardRepository;
+  final MasterDataRepository _masterDataRepository;
   final MasterVersionRepository _masterVersionRepository;
-  final PrefectureRepository _prefectureRepository;
-  final VolumeRepository _volumeRepository;
 
   final _logger = Logger();
 
-  Future<Result<NeedMasterUpdateDTO>> getNeedUpdate() async {
-    final result = await Future.wait([
-      _masterVersionRepository.getCurrentVersion(),
-      _masterVersionRepository.getInquiredVersion(),
-    ]);
-
-    if (result.whereType<Failure>().isNotEmpty) {
-      return _convertFailure(
-        (result.firstWhere((element) => element is Failure) as Failure)
-            .exception,
-      );
+  /// マスターデータを取り込み直す必要があるか。
+  Future<Result<bool>> getNeedUpdate() async {
+    final MasterVersion inquiredVersion;
+    switch (await _masterVersionRepository.getInquiredVersion()) {
+      case Failure(:final exception):
+        return Result.failure(exception);
+      case Success(:final value):
+        inquiredVersion = value;
     }
 
-    final currentVersion =
-        (result.elementAt(0) as Success<CurrentMasterVersion>).value;
-    final inquiredVersion =
-        (result.elementAt(1) as Success<InquiredMasterVersion>).value;
-
-    if (currentVersion.value != inquiredVersion.value) {
-      return const Result.success(NeedMasterUpdateDTO(value: true));
+    final MasterVersion? currentVersion;
+    switch (await _masterVersionRepository.getCurrentVersion()) {
+      case Failure(:final exception):
+        return Result.failure(exception);
+      case Success(:final value):
+        currentVersion = value;
     }
 
-    // バージョンが一致していても、ローカルにカードが無ければ取り直す。
+    if (currentVersion != inquiredVersion) {
+      return const Result.success(true);
+    }
+
+    // バージョンが一致していても、端末にマスターデータが無ければ取り直す。
     //
     // Realm のスキーマを変更するとローカル DB は丸ごと作り直されるが
-    // （RealmConfiguration の shouldDeleteIfMigrationNeeded）、取得済みバージョンは
-    // SharedPreferences 側に残る。バージョン比較だけだと「DB は空なのに更新不要」と
-    // 判定され、カードが 1 件も表示されないまま復旧しなくなる。
-    if (inquiredVersion.value.isEmpty) {
-      // 要求バージョンが取れていない状態で取りに行っても失敗するだけなので待つ。
-      return const Result.success(NeedMasterUpdateDTO(value: false));
+    // （RealmConfiguration の shouldDeleteIfMigrationNeeded）、取り込み済みの
+    // バージョンは SharedPreferences 側に残る。バージョン比較だけだと「DB は空なのに
+    // 更新不要」と判定され、カードが 1 件も表示されないまま復旧しなくなる。
+    switch (await _masterDataRepository.exists()) {
+      case Failure(:final exception):
+        return Result.failure(exception);
+      case Success(:final value):
+        return Result.success(!value);
     }
-    final hasMasterResult = await _cardRepository.hasMaster();
-    if (hasMasterResult is Failure) {
-      return _convertFailure((hasMasterResult as Failure).exception);
-    }
-    final hasMaster = (hasMasterResult as Success<bool>).value;
-
-    return Result.success(NeedMasterUpdateDTO(value: !hasMaster));
   }
 
+  /// サーバーが指定するバージョンのマスターデータを取得し、端末のものと入れ替える。
   Future<Result<void>> updateMaster() async {
-    final getInquiredVersionResult =
-        await _masterVersionRepository.getInquiredVersion();
-    if (getInquiredVersionResult is Failure) {
-      return _convertFailure((getInquiredVersionResult as Failure).exception);
-    }
-    final inquiredVersion =
-        (getInquiredVersionResult as Success<InquiredMasterVersion>).value;
-
-    // 都道府県・弾はカードから参照するため、カードより先に取り込む。
-    final updatePrefectureMasterResult = await _updatePrefectureMaster(
-      inquiredVersion: inquiredVersion,
-    );
-    if (updatePrefectureMasterResult is Failure) {
-      return _convertFailure(
-        (updatePrefectureMasterResult as Failure).exception,
-      );
-    }
-    final manholeCardPrefectures =
-        (updatePrefectureMasterResult as Success<ManholeCardPrefectures>).value;
-
-    final updateVolumeMasterResult = await _updateVolumeMaster(
-      inquiredVersion: inquiredVersion,
-    );
-    if (updateVolumeMasterResult is Failure) {
-      return _convertFailure((updateVolumeMasterResult as Failure).exception);
-    }
-    final manholeCardVolumes =
-        (updateVolumeMasterResult as Success<ManholeCardVolumes>).value;
-
-    final updateCardMasterResult = await _updateCardMaster(
-      inquiredVersion: inquiredVersion,
-      manholeCardPrefectures: manholeCardPrefectures,
-      manholeCardVolumes: manholeCardVolumes,
-    );
-    if (updateCardMasterResult is Failure) {
-      return _convertFailure(updateCardMasterResult.exception);
+    final MasterVersion inquiredVersion;
+    switch (await _masterVersionRepository.getInquiredVersion()) {
+      case Failure(:final exception):
+        return Result.failure(exception);
+      case Success(:final value):
+        inquiredVersion = value;
     }
 
-    final currentMasterVersion = CurrentMasterVersion(
-      value: inquiredVersion.value,
-    );
-    final setCurrentMasterVersionResult = await _masterVersionRepository
-        .setCurrentVersion(currentMasterVersion: currentMasterVersion);
-    if (setCurrentMasterVersionResult is Failure) {
-      return _convertFailure(setCurrentMasterVersionResult.exception);
+    final List<ManholeCard> cards;
+    switch (await _masterDataRepository.fetch(version: inquiredVersion)) {
+      case Failure(:final exception):
+        return Result.failure(exception);
+      case Success(:final value):
+        cards = value;
     }
 
-    return const Result.success(null);
-  }
-
-  /// カードは 1 クエリで全件取れる。都道府県名・弾名は id しか持たないため、
-  /// 取り込み済みのマスタから引き当てて肉付けする。
-  Future<Result<void>> _updateCardMaster({
-    required InquiredMasterVersion inquiredVersion,
-    required ManholeCardPrefectures manholeCardPrefectures,
-    required ManholeCardVolumes manholeCardVolumes,
-  }) async {
-    final fetchResult = await _cardRepository.fetchMaster(
-      inquiredMasterVersion: inquiredVersion,
-    );
-    if (fetchResult is Failure) {
-      return _convertFailure((fetchResult as Failure).exception);
-    }
-    final fetchedManholeCards = (fetchResult as Success<ManholeCards>).value;
-
-    final prefectureById = <String, ManholeCardPrefecture>{
-      for (final prefecture in manholeCardPrefectures.list)
-        prefecture.id: prefecture,
-    };
-    final volumeById = <String, ManholeCardVolume>{
-      for (final volume in manholeCardVolumes.list) volume.id: volume,
-    };
-
-    final manholeCards = ManholeCards(
-      list: fetchedManholeCards.map(
-        (manholeCard) {
-          return manholeCard.copyWith(
-            prefecture: prefectureById[manholeCard.prefecture.id] ??
-                manholeCard.prefecture,
-            volume: volumeById[manholeCard.volume.id] ?? manholeCard.volume,
-          );
-        },
-      ).toList(),
-    );
-
-    final deleteResult = await _cardRepository.deleteMaster();
-    if (deleteResult is Failure) {
-      return _convertFailure(deleteResult.exception);
-    }
-
-    final saveResult = await _cardRepository.saveMaster(
-      manholeCards: manholeCards,
-    );
-    if (saveResult is Failure) {
-      return _convertFailure(saveResult.exception);
-    }
-
-    return const Result.success(null);
-  }
-
-  Future<Result<ManholeCardPrefectures>> _updatePrefectureMaster({
-    required InquiredMasterVersion inquiredVersion,
-  }) async {
-    final fetchResult = await _prefectureRepository.fetchMaster(
-      inquiredMasterVersion: inquiredVersion,
-    );
-    if (fetchResult is Failure) {
-      return _convertFailure((fetchResult as Failure).exception);
-    }
-    final manholeCardPrefectures =
-        (fetchResult as Success<ManholeCardPrefectures>).value;
-
-    final deleteResult = await _prefectureRepository.deleteMaster();
-    if (deleteResult is Failure) {
-      return _convertFailure(deleteResult.exception);
-    }
-
-    final saveResult = await _prefectureRepository.saveMaster(
-      manholeCardPrefectures: manholeCardPrefectures,
-    );
-    if (saveResult is Failure) {
-      return _convertFailure(saveResult.exception);
-    }
-
-    return Result.success(manholeCardPrefectures);
-  }
-
-  Future<Result<ManholeCardVolumes>> _updateVolumeMaster({
-    required InquiredMasterVersion inquiredVersion,
-  }) async {
-    final fetchResult = await _volumeRepository.fetchMaster(
-      inquiredMasterVersion: inquiredVersion,
-    );
-    if (fetchResult is Failure) {
-      return _convertFailure((fetchResult as Failure).exception);
-    }
-    final manholeCardVolumes =
-        (fetchResult as Success<ManholeCardVolumes>).value;
-
-    final deleteResult = await _volumeRepository.deleteMaster();
-    if (deleteResult is Failure) {
-      return _convertFailure(deleteResult.exception);
-    }
-
-    final saveResult = await _volumeRepository.saveMaster(
-      manholeCardVolumes: manholeCardVolumes,
-    );
-    if (saveResult is Failure) {
-      return _convertFailure(saveResult.exception);
-    }
-
-    return Result.success(manholeCardVolumes);
-  }
-
-  /// 失敗した Result を、呼び出し元が返せる型の Result に詰め替える。
-  Result<T> _convertFailure<T>(Exception exception) {
-    if (exception is CustomException) {
+    if (await _masterDataRepository.replace(cards: cards)
+        case Failure(:final exception)) {
       return Result.failure(exception);
     }
-    return const Result.failure(
-      CustomException(title: 'エラー', text: '不明なエラーが発生しました。'),
-    );
+
+    // 入れ替えが済んでから記録する。先に記録すると、入れ替えに失敗したときに
+    // 古いデータのまま「取り込み済み」になってしまう。
+    return _masterVersionRepository.setCurrentVersion(version: inquiredVersion);
   }
 
   void dispose() {

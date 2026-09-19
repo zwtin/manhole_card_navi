@@ -3,14 +3,15 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 import '../view_data/detail_card_view_data.dart';
+import 'prefecture_name_mapper.dart';
 
 class DetailCardViewDataMapper {
   static Future<DetailCardViewData> convertToViewData({
-    required CardDTO cardDTO,
+    required ManholeCard card,
     required bool alreadyGet,
   }) async {
     final map = <String, dynamic>{};
-    map['cardDTO'] = cardDTO;
+    map['card'] = card;
     map['alreadyGet'] = alreadyGet;
     return compute(_convert, map);
   }
@@ -18,23 +19,23 @@ class DetailCardViewDataMapper {
   static Future<DetailCardViewData> _convert(
     Map<String, dynamic> parameter,
   ) async {
-    final cardDTO = parameter['cardDTO'] as CardDTO;
+    final card = parameter['card'] as ManholeCard;
     final alreadyGet = parameter['alreadyGet'] as bool;
 
     final dateFormatter = DateFormat('yyyy/MM/dd');
 
     return DetailCardViewData(
-      id: cardDTO.id,
-      imageUrl: cardDTO.imagePath,
-      imageSubUrl: cardDTO.imageSubPath,
+      id: card.id,
+      imageUrl: card.image,
+      imageSubUrl: card.imageSub,
       alreadyGet: alreadyGet,
-      name: cardDTO.name,
-      prefecture: cardDTO.prefectureName,
-      volume: cardDTO.volumeName,
-      publicationDate: dateFormatter.format(cardDTO.publicationDate.toLocal()),
-      distributionPlaceHtml: cardDTO.distributionPlaceHtml,
-      distributionTimeHtml: cardDTO.distributionTimeHtml,
-      stockHtml: cardDTO.stockHtml,
+      name: card.name,
+      prefecture: PrefectureNameMapper.nameOf(card.prefecture),
+      volume: card.volume.name,
+      publicationDate: dateFormatter.format(card.publicationDate.toLocal()),
+      distributionPlaceHtml: card.distributionPlaceHtml,
+      distributionTimeHtml: card.distributionTimeHtml,
+      stockHtml: card.stockHtml,
     );
   }
 }

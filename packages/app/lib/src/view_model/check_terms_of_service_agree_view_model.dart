@@ -1,6 +1,7 @@
 import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../router/navigation_service.dart';
 import '../view_data/check_terms_of_service_agree_view_data.dart';
 
 final checkTermsOfServiceAgreeViewModelProvider = NotifierProvider.autoDispose<
@@ -12,17 +13,14 @@ final checkTermsOfServiceAgreeViewModelProvider = NotifierProvider.autoDispose<
 class CheckTermsOfServiceAgreeViewModel
     extends AutoDisposeNotifier<CheckTermsOfServiceAgreeViewData> {
   late final AnalyticsUseCase _analyticsUseCase;
-  late final SaveTermsOfServiceAgreeVersionUseCase
-      _saveTermsOfServiceAgreeVersionUseCase;
   late final NavigationService _navigationService;
+  late final TermsOfServiceUseCase _termsOfServiceUseCase;
 
   @override
   CheckTermsOfServiceAgreeViewData build() {
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _saveTermsOfServiceAgreeVersionUseCase = ref.watch(
-      saveTermsOfServiceAgreeVersionUseCaseProvider,
-    );
     _navigationService = ref.watch(navigationServiceProvider);
+    _termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
     return const CheckTermsOfServiceAgreeViewData();
   }
 
@@ -63,12 +61,12 @@ class CheckTermsOfServiceAgreeViewModel
   Future<void> _saveAgreedVersion() async {
     while (true) {
       state = state.copyWith(isLoading: true);
-      final result = await _saveTermsOfServiceAgreeVersionUseCase.save();
+      final result = await _termsOfServiceUseCase.agree();
       state = state.copyWith(isLoading: false);
-      if (result is Failure) {
-        await _navigationService.showAlert(
-          title: 'エラー',
-          message: '同意バージョンの保存に失敗しました',
+      if (result case Failure(:final exception)) {
+        await _navigationService.showFailure(
+          title: '同意を保存できませんでした',
+          exception: exception,
         );
         continue;
       }

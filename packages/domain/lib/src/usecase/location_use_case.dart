@@ -1,7 +1,8 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:riverpod/riverpod.dart';
 
-import '../entity/result.dart';
+import '../core/result.dart';
+import '../entity/coordinate.dart';
 import '../repository/location_repository.dart';
 
 final locationUseCaseProvider = Provider.autoDispose<LocationUseCase>(
@@ -23,7 +24,7 @@ class LocationUseCase {
 
   final _logger = Logger();
 
-  Future<Result<void>> requestPermission() async {
+  Future<Result<bool>> requestPermission() async {
     return _locationRepository.requestPermission();
   }
 
@@ -31,8 +32,7 @@ class LocationUseCase {
     return _locationRepository.isPermissionGranted();
   }
 
-  Future<Result<({double latitude, double longitude})>>
-      getCurrentLocation() async {
+  Future<Result<Coordinate>> getCurrentLocation() async {
     return _locationRepository.getCurrentLocation();
   }
 

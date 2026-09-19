@@ -1,10 +1,8 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:riverpod/riverpod.dart';
 
-import '../dto/card_dto.dart';
-import '../entity/custom_exception.dart';
+import '../core/result.dart';
 import '../entity/manhole_card.dart';
-import '../entity/result.dart';
 import '../repository/card_repository.dart';
 
 final cardUseCaseProvider = Provider.autoDispose<CardUseCase>(
@@ -25,43 +23,13 @@ class CardUseCase {
   final CardRepository _cardRepository;
   final _logger = Logger();
 
-  Future<Result<CardDTO>> get({
-    required String id,
-  }) async {
-    final result = await _cardRepository.get(id: id);
-    if (result is Failure) {
-      final exception = (result as Failure).exception;
-      if (exception is CustomException) {
-        return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
-          ),
-        );
-      }
-    }
-    final card = (result as Success<ManholeCard>).value;
+  Future<Result<ManholeCard>> get({required String id}) {
+    return _cardRepository.get(id: id);
+  }
 
-    return Result.success(
-      CardDTO(
-        id: card.id,
-        name: card.name,
-        imagePath: card.image,
-        imageSubPath: card.imageSub,
-        latitude: card.latitude,
-        longitude: card.longitude,
-        prefectureId: card.prefecture.id,
-        prefectureName: card.prefecture.name,
-        volumeId: card.volume.id,
-        volumeName: card.volume.name,
-        publicationDate: card.publicationDate,
-        distributionPlaceHtml: card.distributionPlaceHtml,
-        distributionTimeHtml: card.distributionTimeHtml,
-        stockHtml: card.stockHtml,
-      ),
-    );
+  /// 端末に取り込んだすべてのカード。
+  Future<Result<List<ManholeCard>>> fetchAll() {
+    return _cardRepository.fetchAll();
   }
 
   void dispose() {

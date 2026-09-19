@@ -1,11 +1,8 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:riverpod/riverpod.dart';
 
-import '../dto/need_app_update_dto.dart';
+import '../core/result.dart';
 import '../entity/app_info.dart';
-import '../entity/custom_exception.dart';
-import '../entity/inquired_app_version.dart';
-import '../entity/result.dart';
 import '../repository/app_info_repository.dart';
 
 final checkAppUpdateUseCaseProvider =
@@ -28,62 +25,22 @@ class CheckAppUpdateUseCase {
 
   final _logger = Logger();
 
-  Future<Result<NeedAppUpdateDTO>> getNeedUpdate() async {
-    final result = await Future.wait([
-      _appInfoRepository.getAppInfo(),
-      _appInfoRepository.getInquiredAppVersion(),
-    ]);
-
-    if (result.whereType<Failure>().isNotEmpty) {
-      final exception =
-          (result.firstWhere((element) => element is Failure) as Failure)
-              .exception;
-      if (exception is CustomException) {
+  /// アプリのアップデートが必要か（動かすのに必要なバージョンより古いか）。
+  Future<Result<bool>> getNeedUpdate() async {
+    final AppInfo appInfo;
+    switch (await _appInfoRepository.getAppInfo()) {
+      case Failure(:final exception):
         return Result.failure(exception);
-      } else {
-        return const Result.failure(
-          CustomException(
-            title: 'エラー',
-            text: '不明なエラーが発生しました。',
-          ),
-        );
-      }
+      case Success(:final value):
+        appInfo = value;
     }
 
-    final appInfo = (result.elementAt(0) as Success<AppInfo>).value;
-    final inquiredVersion =
-        (result.elementAt(1) as Success<InquiredAppVersion>).value;
-
-    return Result.success(
-      NeedAppUpdateDTO(
-        value: _checkNeedUpdate(
-          appInfo: appInfo,
-          inquiredVersion: inquiredVersion,
-        ),
-      ),
-    );
-  }
-
-  bool _checkNeedUpdate({
-    required AppInfo appInfo,
-    required InquiredAppVersion inquiredVersion,
-  }) {
-    final currentAppVersionList =
-        appInfo.version.split('.').map(int.parse).toList();
-    final inquiredAppVersionList =
-        inquiredVersion.value.split('.').map(int.parse).toList();
-
-    final forceVersionMap = inquiredAppVersionList.asMap();
-    for (final index in forceVersionMap.keys) {
-      final forceVersionElement = inquiredAppVersionList.elementAt(index);
-      final appVersionElement = currentAppVersionList.elementAt(index);
-      if (forceVersionElement > appVersionElement) {
-        return true;
-      } else {
-        continue;
-      }
+    switch (await _appInfoRepository.getInquiredVersion()) {
+      case Failure(:final exception):
+        return Result.failure(exception);
+      case Success(value: final inquiredVersion):
+        return Result.success(appInfo.version < inquiredVersion);
     }
-    return false;
   }
 
   void dispose() {
