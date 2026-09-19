@@ -6,35 +6,29 @@ import '../exception/domain_exception_converter.dart';
 import '../service/failure_recorder.dart';
 
 class AppBadgeRepositoryImpl implements AppBadgeRepository {
+  AppBadgeRepositoryImpl(
+    this._failureRecorder,
+  );
+
   final _logger = Logger();
-  final _failureRecorder = FailureRecorder();
+  final FailureRecorder _failureRecorder;
 
   @override
   Future<Result<void>> updateCount({
     required int count,
-  }) async {
-    try {
-      await FlutterAppBadgeControl.updateBadgeCount(count);
-      return const Result.success(null);
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromPlatform(error, stackTrace),
-        stackTrace,
-      );
-    }
+  }) {
+    return _failureRecorder.guard(
+      () => FlutterAppBadgeControl.updateBadgeCount(count),
+      convert: DomainExceptionConverter.fromPlatform,
+    );
   }
 
   @override
-  Future<Result<void>> remove() async {
-    try {
-      await FlutterAppBadgeControl.removeBadge();
-      return const Result.success(null);
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromPlatform(error, stackTrace),
-        stackTrace,
-      );
-    }
+  Future<Result<void>> remove() {
+    return _failureRecorder.guard(
+      FlutterAppBadgeControl.removeBadge,
+      convert: DomainExceptionConverter.fromPlatform,
+    );
   }
 
   void dispose() {

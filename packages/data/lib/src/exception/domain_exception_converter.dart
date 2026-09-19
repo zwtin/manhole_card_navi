@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 ///
 /// どの失敗をどの種類にするかは data の知識なので、ここに集める。すでに
 /// [DomainException] になっているもの（実装の中で投げたもの）はそのまま返すので、
-/// 実装は `on Exception catch` 1 つでここに渡せばよい。
+/// 実装は `FailureRecorder.guard` の `convert` にこれを渡せばよい。
 abstract final class DomainExceptionConverter {
   /// Firestore の読み書きの失敗。
   static DomainException fromFirestore(Object error, StackTrace stackTrace) {

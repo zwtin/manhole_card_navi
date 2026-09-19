@@ -6,59 +6,51 @@ import '../exception/domain_exception_converter.dart';
 import '../mapper/search_condition_json_mapper.dart';
 import '../service/failure_recorder.dart';
 
-/// 検索条件を端末保存するキー。
-const _searchConditionKey = 'search_condition';
-
 class SearchConditionRepositoryImpl implements SearchConditionRepository {
   SearchConditionRepositoryImpl(
-    this._instance,
+    this._preferences,
+    this._failureRecorder,
   );
 
+  /// 検索条件を保存する SharedPreferences のキー。
+  static const _key = 'search_condition';
+
   final _logger = Logger();
-  final _failureRecorder = FailureRecorder();
-  final StreamingSharedPreferences _instance;
+  final StreamingSharedPreferences _preferences;
+  final FailureRecorder _failureRecorder;
+
+  Preference<String> get _source =>
+      _preferences.getString(_key, defaultValue: '');
 
   @override
-  Future<Result<SearchCondition>> get() async {
-    try {
-      final source = _instance
-          .getString(_searchConditionKey, defaultValue: '')
-          .getValue();
-      return Result.success(SearchConditionJsonMapper.fromJsonString(source));
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
-        stackTrace,
-      );
-    }
+  Future<Result<SearchCondition>> get() {
+    return _failureRecorder.guard(
+      () async => SearchConditionJsonMapper.fromJsonString(_source.getValue()),
+      convert: DomainExceptionConverter.fromLocalStorage,
+    );
   }
 
   @override
   Stream<SearchCondition> getStream() {
-    return _instance
-        .getString(_searchConditionKey, defaultValue: '')
-        .map(SearchConditionJsonMapper.fromJsonString);
+    return _source.map(SearchConditionJsonMapper.fromJsonString);
   }
 
   @override
   Future<Result<void>> save({
     required SearchCondition searchCondition,
-  }) async {
-    try {
-      final saved = await _instance.setString(
-        _searchConditionKey,
-        SearchConditionJsonMapper.toJsonString(searchCondition),
-      );
-      if (!saved) {
-        throw const PersistenceException(detail: '検索条件を保存できませんでした');
-      }
-      return const Result.success(null);
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
-        stackTrace,
-      );
-    }
+  }) {
+    return _failureRecorder.guard(
+      () async {
+        final saved = await _preferences.setString(
+          _key,
+          SearchConditionJsonMapper.toJsonString(searchCondition),
+        );
+        if (!saved) {
+          throw const PersistenceException(detail: '検索条件を保存できませんでした');
+        }
+      },
+      convert: DomainExceptionConverter.fromLocalStorage,
+    );
   }
 
   void dispose() {

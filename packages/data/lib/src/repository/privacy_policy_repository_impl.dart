@@ -6,24 +6,26 @@ import '../remote_config/remote_config_reader.dart';
 import '../service/failure_recorder.dart';
 
 class PrivacyPolicyRepositoryImpl implements PrivacyPolicyRepository {
+  PrivacyPolicyRepositoryImpl(
+    this._remoteConfigReader,
+    this._failureRecorder,
+  );
+
   /// プライバシーポリシーの HTML を配信する Remote Config のキー。
   static const _key = 'privacy_policy';
 
   final _logger = Logger();
-  final _failureRecorder = FailureRecorder();
-  final _remoteConfigReader = RemoteConfigReader();
+  final RemoteConfigReader _remoteConfigReader;
+  final FailureRecorder _failureRecorder;
 
   @override
-  Future<Result<PrivacyPolicy>> get() async {
-    try {
-      final value = await _remoteConfigReader.readString(_key);
-      return Result.success(PrivacyPolicy(value: value));
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromRemoteConfig(error, stackTrace),
-        stackTrace,
-      );
-    }
+  Future<Result<PrivacyPolicy>> get() {
+    return _failureRecorder.guard(
+      () async => PrivacyPolicy(
+        value: await _remoteConfigReader.readString(_key),
+      ),
+      convert: DomainExceptionConverter.fromRemoteConfig,
+    );
   }
 
   void dispose() {
