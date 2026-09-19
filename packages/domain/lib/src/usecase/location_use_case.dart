@@ -32,7 +32,8 @@ class LocationUseCase {
     return _locationRepository.isPermissionGranted();
   }
 
-  Future<Result<Coordinate>> getCurrentLocation() async {
+  /// 現在地。端末の位置情報がオフ・許可されていないときは null。
+  Future<Result<Coordinate?>> getCurrentLocation() async {
     return _locationRepository.getCurrentLocation();
   }
 

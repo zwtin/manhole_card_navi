@@ -43,12 +43,17 @@ class LocationRepositoryImpl implements LocationRepository {
   }
 
   @override
-  Future<Result<Coordinate>> getCurrentLocation() async {
+  Future<Result<Coordinate?>> getCurrentLocation() async {
     try {
       final position = await Geolocator.getCurrentPosition();
       return Result.success(
         Coordinate(latitude: position.latitude, longitude: position.longitude),
       );
+    } on LocationServiceDisabledException {
+      // 端末の位置情報がオフ。利用者が選んだ状態なので失敗にしない。
+      return const Result.success(null);
+    } on PermissionDeniedException {
+      return const Result.success(null);
     } on TimeoutException catch (error, stackTrace) {
       return _failureRecorder.failure(
         TimedOutException(cause: error, stackTrace: stackTrace),
