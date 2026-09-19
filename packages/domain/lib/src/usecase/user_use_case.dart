@@ -23,9 +23,9 @@ class UserUseCase {
 
   final _logger = Logger();
 
-  /// 利用者を識別できる状態にする。[UserRepository.ensureSignedIn] と同じ。
-  Future<Result<void>> ensureSignedIn() {
-    return _userRepository.ensureSignedIn();
+  /// 利用者としてログインする。[UserRepository.signIn] と同じ。
+  Future<Result<void>> signIn() {
+    return _userRepository.signIn();
   }
 
   void dispose() {

@@ -48,7 +48,7 @@ void main() {
     final current = user('uid-1');
     when(() => auth.currentUser).thenReturn(current);
 
-    final result = await repository.ensureSignedIn();
+    final result = await repository.signIn();
 
     expect(result, isA<Success<void>>());
     verifyNever(() => auth.signInAnonymously());
@@ -63,7 +63,7 @@ void main() {
     when(() => auth.currentUser).thenReturn(null);
     when(() => auth.signInAnonymously()).thenAnswer((_) async => credential);
 
-    final result = await repository.ensureSignedIn();
+    final result = await repository.signIn();
 
     expect(result, isA<Success<void>>());
     verify(() => analytics.setUserId(id: 'uid-2')).called(1);
@@ -75,7 +75,7 @@ void main() {
       FirebaseAuthException(code: 'network-request-failed'),
     );
 
-    final result = await repository.ensureSignedIn();
+    final result = await repository.signIn();
 
     expect((result as Failure<void>).exception, isA<OfflineException>());
     verifyNever(() => analytics.setUserId(id: any(named: 'id')));
@@ -87,7 +87,7 @@ void main() {
     when(() => analytics.setUserId(id: any(named: 'id')))
         .thenThrow(Exception('送れない'));
 
-    final result = await repository.ensureSignedIn();
+    final result = await repository.signIn();
 
     expect(result, isA<Success<void>>());
     expect(recordedErrors(crashlytics).single.error, isA<UnknownException>());

@@ -70,7 +70,7 @@ class CheckAppUpdateViewModel
   Future<void> _signIn() async {
     while (true) {
       state = state.copyWith(isLoading: true);
-      final result = await _userUseCase.ensureSignedIn();
+      final result = await _userUseCase.signIn();
       state = state.copyWith(isLoading: false);
       if (result case Failure(:final exception)) {
         await _navigationService.showFailure(

@@ -22,7 +22,7 @@ class UserRepositoryImpl implements UserRepository {
   final FailureRecorder _failureRecorder;
 
   @override
-  Future<Result<void>> ensureSignedIn() {
+  Future<Result<void>> signIn() {
     return _failureRecorder.guard(
       () async {
         // 匿名ユーザーは端末に残るので、2 回目以降はオフラインでもここで済む。

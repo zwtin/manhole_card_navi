@@ -10,7 +10,9 @@ final userRepositoryProvider = Provider<UserRepository>(
 
 /// アプリの利用者。
 abstract class UserRepository {
-  /// 利用者を識別できる状態にする。まだ登録していなければ匿名で登録する（初回だけ
-  /// 通信が要る）。以降に送るイベントや障害の記録には、この利用者の ID が付く。
-  Future<Result<void>> ensureSignedIn();
+  /// 利用者としてログインする。以降に送るイベントや障害の記録には、この利用者の
+  /// ID が付く。
+  ///
+  /// ログイン済みならそのまま済む。まだなら匿名で登録するので、初回だけ通信が要る。
+  Future<Result<void>> signIn();
 }
