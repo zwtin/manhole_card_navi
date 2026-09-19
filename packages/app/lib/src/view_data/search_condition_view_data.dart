@@ -8,7 +8,7 @@ typedef VolumeOption = ({String id, String name});
 
 /// 配布状態の選択肢（値と表示名）。
 typedef DistributionStateOption = ({
-  ManholeCardDistributionState state,
+  DistributionState state,
   String name,
 });
 
@@ -21,13 +21,13 @@ abstract class SearchConditionViewData with _$SearchConditionViewData {
   }) = _SearchConditionViewData;
   const SearchConditionViewData._();
 
-  DisplayFilter get displayFilter => draft.common.displayFilter;
+  AlreadyGetFilter get alreadyGetFilter => draft.common.alreadyGetFilter;
 
   MapCoordinateType get coordinateType => draft.map.coordinateType;
 
   bool isVolumeSelected(String volumeId) =>
       draft.common.volumeIds.contains(volumeId);
 
-  bool isDistributionStateSelected(ManholeCardDistributionState state) =>
+  bool isDistributionStateSelected(DistributionState state) =>
       draft.common.distributionStates.contains(state);
 }

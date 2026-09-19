@@ -1,10 +1,9 @@
-import 'package:domain/domain.dart';
-import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import '../datasource/failure_recorder.dart';
-import '../datasource/remote_config_data_source.dart';
-import '../mapper/domain_exception_mapper.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/remote_config_data_source.dart';
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:domain/domain.dart';
 
 class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
   TermsOfServiceRepositoryImpl(
@@ -13,16 +12,10 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
     this._failureRecorder,
   );
 
-  /// 利用規約の HTML を配信する Remote Config のキー。
   static const _termsOfServiceKey = 'terms_of_service';
-
-  /// 同意が必要な利用規約のバージョンを配信する Remote Config のキー。
   static const _inquiredVersionKey = 'inquired_terms_of_service_version';
-
-  /// 同意済みのバージョンを保存する SharedPreferences のキー。
   static const _agreedVersionKey = 'agreed_terms_of_service_version';
 
-  final _logger = Logger();
   final StreamingSharedPreferences _preferences;
   final RemoteConfigDataSource _remoteConfig;
   final FailureRecorder _failureRecorder;
@@ -54,7 +47,6 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
         final value = _preferences
             .getString(_agreedVersionKey, defaultValue: '')
             .getValue();
-        // まだ一度も同意していなければ、保存されていない（空文字が返る）。
         return value.isEmpty ? null : TermsOfServiceVersion(value: value);
       },
       convert: DomainExceptionMapper.fromLocalStorage,
@@ -75,9 +67,5 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
       },
       convert: DomainExceptionMapper.fromLocalStorage,
     );
-  }
-
-  void dispose() {
-    _logger.d('TermsOfServiceRepositoryImpl dispose');
   }
 }

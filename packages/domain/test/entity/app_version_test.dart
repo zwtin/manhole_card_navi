@@ -1,5 +1,6 @@
-import 'package:domain/domain.dart';
 import 'package:test/test.dart';
+
+import 'package:domain/domain.dart';
 
 void main() {
   AppVersion version(String value) => AppVersion.parse(value);

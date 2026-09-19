@@ -1,11 +1,10 @@
-import 'package:domain/domain.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:logger/logger.dart';
 
-import '../datasource/failure_recorder.dart';
-import '../mapper/domain_exception_mapper.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:domain/domain.dart';
 
 class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(
@@ -15,17 +14,16 @@ class UserRepositoryImpl implements UserRepository {
     this._failureRecorder,
   );
 
-  final _logger = Logger();
   final FirebaseAuth _auth;
   final FirebaseAnalytics _analytics;
   final FirebaseCrashlytics _crashlytics;
   final FailureRecorder _failureRecorder;
 
   @override
-  Future<Result<void>> ensureSignedIn() {
+  Future<Result<void>> signIn() {
     return _failureRecorder.guard(
       () async {
-        // 匿名ユーザーは端末に残るので、2 回目以降はオフラインでもここで済む。
+        // 匿名の利用者は端末に残るので、2 回目以降はオフラインでも済む。
         final user =
             _auth.currentUser ?? (await _auth.signInAnonymously()).user;
         if (user == null) {
@@ -37,8 +35,7 @@ class UserRepositoryImpl implements UserRepository {
     );
   }
 
-  /// Analytics のイベントと Crashlytics の記録に、利用者の ID を付ける。付けられ
-  /// なくてもアプリは使えるので、失敗は記録するだけで止めない。
+  /// ID を付けられなくてもアプリは使えるので、失敗は記録するだけで止めない。
   Future<void> _setUserId(String uid) async {
     try {
       await _analytics.setUserId(id: uid);
@@ -49,9 +46,5 @@ class UserRepositoryImpl implements UserRepository {
         stackTrace,
       );
     }
-  }
-
-  void dispose() {
-    _logger.d('UserRepositoryImpl dispose');
   }
 }

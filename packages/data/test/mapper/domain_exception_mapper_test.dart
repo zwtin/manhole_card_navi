@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:data/src/mapper/domain_exception_mapper.dart';
-import 'package:domain/domain.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:data/src/model/malformed_data_exception.dart';
+import 'package:domain/domain.dart';
 
 void main() {
   final stackTrace = StackTrace.current;
@@ -55,6 +57,30 @@ void main() {
         isA<UnknownException>(),
       );
     });
+  });
+
+  test('DataSource・model の形の違いは、どこから読んだものでも壊れたデータにする', () {
+    final cause = Exception('decode');
+    final causeStackTrace = StackTrace.current;
+    final error = MalformedDataException(
+      'master/0006/cards/A の name が読めません',
+      cause: cause,
+      stackTrace: causeStackTrace,
+    );
+
+    for (final convert in [
+      DomainExceptionMapper.fromFirestore,
+      DomainExceptionMapper.fromRemoteConfig,
+      DomainExceptionMapper.fromLocalStorage,
+      DomainExceptionMapper.fromPlatform,
+    ]) {
+      final exception = convert(error, stackTrace);
+
+      expect(exception, isA<CorruptedDataException>());
+      expect(exception.detail, 'master/0006/cards/A の name が読めません');
+      expect(exception.cause, same(cause));
+      expect(exception.stackTrace, same(causeStackTrace));
+    }
   });
 
   test('端末の DB などの失敗は、保存できない失敗にする', () {

@@ -25,8 +25,7 @@ class ImageDetailPage extends HookConsumerWidget {
     useScreenView(ref, viewModel.sendScreenView);
 
     return ImageDetail(
-      imageUrl: args.imageUrl,
-      imageSubUrl: args.imageSubUrl,
+      cardId: args.cardId,
       alreadyGet: args.alreadyGet,
       imageTag: args.heroTag,
     );

@@ -17,117 +17,87 @@ import 'infrastructure.dart';
 List<Override> repositoryOverrides(Infrastructure infrastructure) {
   final failureRecorder = infrastructure.failureRecorder;
   return [
-    alreadyGetCardRepositoryProvider.overrideWith((ref) {
-      final repository = AlreadyGetCardRepositoryImpl(
+    alreadyGetCardRepositoryProvider.overrideWith(
+      (_) => AlreadyGetCardRepositoryImpl(
         infrastructure.preferences,
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    analyticsRepositoryProvider.overrideWith((ref) {
-      final repository = AnalyticsRepositoryImpl(
+      ),
+    ),
+    analyticsRepositoryProvider.overrideWith(
+      (_) => AnalyticsRepositoryImpl(
         FirebaseAnalytics.instance,
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    appBadgeRepositoryProvider.overrideWith((ref) {
-      final repository = AppBadgeRepositoryImpl(failureRecorder);
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    appInfoRepositoryProvider.overrideWith((ref) {
-      final repository = AppInfoRepositoryImpl(
+      ),
+    ),
+    appBadgeRepositoryProvider.overrideWith(
+      (_) => AppBadgeRepositoryImpl(failureRecorder),
+    ),
+    appInfoRepositoryProvider.overrideWith(
+      (_) => AppInfoRepositoryImpl(
         infrastructure.packageInfo,
         infrastructure.remoteConfig,
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    cardImageRepositoryProvider.overrideWith((ref) {
-      final repository = CardImageRepositoryImpl(CardImageCacheManager());
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    cardRepositoryProvider.overrideWith((ref) {
-      final repository = CardRepositoryImpl(
+      ),
+    ),
+    cardRepositoryProvider.overrideWith(
+      (_) => CardRepositoryImpl(
         infrastructure.masterData,
+        CardImageCacheManager(),
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    locationRepositoryProvider.overrideWith((ref) {
-      final repository = LocationRepositoryImpl(
+      ),
+    ),
+    locationRepositoryProvider.overrideWith(
+      (_) => LocationRepositoryImpl(
         const LocationDataSource(),
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    masterDataRepositoryProvider.overrideWith((ref) {
-      final repository = MasterDataRepositoryImpl(
+      ),
+    ),
+    masterDataRepositoryProvider.overrideWith(
+      (_) => MasterDataRepositoryImpl(
         FirebaseFirestore.instance,
         infrastructure.masterData,
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    masterVersionRepositoryProvider.overrideWith((ref) {
-      final repository = MasterVersionRepositoryImpl(
+      ),
+    ),
+    masterVersionRepositoryProvider.overrideWith(
+      (_) => MasterVersionRepositoryImpl(
         infrastructure.preferences,
         infrastructure.remoteConfig,
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    privacyPolicyRepositoryProvider.overrideWith((ref) {
-      final repository = PrivacyPolicyRepositoryImpl(
+      ),
+    ),
+    privacyPolicyRepositoryProvider.overrideWith(
+      (_) => PrivacyPolicyRepositoryImpl(
         infrastructure.remoteConfig,
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    pushNotificationRepositoryProvider.overrideWith((ref) {
-      final repository = PushNotificationRepositoryImpl(
+      ),
+    ),
+    pushNotificationRepositoryProvider.overrideWith(
+      (_) => PushNotificationRepositoryImpl(
         FirebaseMessaging.instance,
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    searchConditionRepositoryProvider.overrideWith((ref) {
-      final repository = SearchConditionRepositoryImpl(
+      ),
+    ),
+    searchConditionRepositoryProvider.overrideWith(
+      (_) => SearchConditionRepositoryImpl(
         infrastructure.preferences,
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    termsOfServiceRepositoryProvider.overrideWith((ref) {
-      final repository = TermsOfServiceRepositoryImpl(
+      ),
+    ),
+    termsOfServiceRepositoryProvider.overrideWith(
+      (_) => TermsOfServiceRepositoryImpl(
         infrastructure.preferences,
         infrastructure.remoteConfig,
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
-    userRepositoryProvider.overrideWith((ref) {
-      final repository = UserRepositoryImpl(
+      ),
+    ),
+    userRepositoryProvider.overrideWith(
+      (_) => UserRepositoryImpl(
         FirebaseAuth.instance,
         FirebaseAnalytics.instance,
         FirebaseCrashlytics.instance,
         failureRecorder,
-      );
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
+      ),
+    ),
   ];
 }

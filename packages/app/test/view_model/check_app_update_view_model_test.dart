@@ -37,9 +37,9 @@ void main() {
         userUseCaseProvider.overrideWithValue(userUseCase),
       ],
     );
-    when(() => userUseCase.ensureSignedIn())
+    when(() => userUseCase.signIn())
         .thenAnswer((_) async => const Result.success(null));
-    when(() => analyticsUseCase.sendOpen())
+    when(() => analyticsUseCase.send(event: const AnalyticsEvent.appOpen()))
         .thenAnswer((_) async => const Result.success(null));
     // autoDispose の ViewModel がテスト中に破棄されないよう購読しておく。
     container.listen(checkAppUpdateViewModelProvider, (_, __) {});
@@ -134,7 +134,7 @@ void main() {
       const Result<void>.failure(OfflineException()),
       const Result<void>.success(null),
     ];
-    when(() => userUseCase.ensureSignedIn())
+    when(() => userUseCase.signIn())
         .thenAnswer((_) async => signInResults.removeAt(0));
     stubNeedUpdate([const Result.success(false)]);
 
@@ -145,11 +145,13 @@ void main() {
             title: 'アプリの準備ができませんでした',
             exception: any(named: 'exception', that: isA<OfflineException>()),
           ),
-      () => userUseCase.ensureSignedIn(),
-      () => analyticsUseCase.sendOpen(),
+      () => userUseCase.signIn(),
+      () => analyticsUseCase.send(event: const AnalyticsEvent.appOpen()),
       () => checkAppUpdateUseCase.getNeedUpdate(),
     ]);
     // 送るのは 1 回だけ（verifyInOrder で確かめた分のほかに呼ばれていない）。
-    verifyNever(() => analyticsUseCase.sendOpen());
+    verifyNever(
+      () => analyticsUseCase.send(event: const AnalyticsEvent.appOpen()),
+    );
   });
 }

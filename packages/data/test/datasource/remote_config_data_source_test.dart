@@ -1,11 +1,12 @@
-import 'package:data/src/datasource/failure_recorder.dart';
-import 'package:data/src/datasource/remote_config_data_source.dart';
-import 'package:domain/domain.dart';
 // FirebaseException は firebase_core のもので、firebase_auth も公開している。
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseException;
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/remote_config_data_source.dart';
+import 'package:data/src/model/malformed_data_exception.dart';
 
 import 'crashlytics_mock.dart';
 
@@ -48,7 +49,7 @@ void main() {
 
     await expectLater(
       reader.readString('key'),
-      throwsA(isA<CorruptedDataException>()),
+      throwsA(isA<MalformedDataException>()),
     );
   });
 

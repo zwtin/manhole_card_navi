@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:data/src/model/firestore_master_models.dart';
-import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'package:data/src/model/distribution_state_model.dart';
+import 'package:data/src/model/firestore_master_models.dart';
+import 'package:data/src/model/malformed_data_exception.dart';
 
 const _path = 'master/0006/cards/27-226-B001';
 
@@ -34,7 +36,7 @@ void main() {
     expect(model.id, '27-226-B001');
     expect(model.location, const GeoPoint(34.5, 135.6));
     expect(model.publicationDate, DateTime(2026, 1, 1));
-    expect(model.distributionState, ManholeCardDistributionState.distributing);
+    expect(model.distributionState, DistributionStateModel.distributing);
   });
 
   test('配布地点は座標でない要素を読み飛ばす', () {
@@ -43,17 +45,13 @@ void main() {
     ]);
   });
 
-  test('代替配信元の URL は無くてもよい', () {
-    expect(decode(cardDocument()..remove('image_sub_url')).imageSubUrl, isNull);
-  });
-
   test('必須の項目が欠けていれば、どのドキュメントのどの項目かを添えて壊れたデータにする', () {
     expect(
       () => decode(cardDocument()..remove('name')),
       throwsA(
-        isA<CorruptedDataException>().having(
-          (exception) => exception.detail,
-          'detail',
+        isA<MalformedDataException>().having(
+          (exception) => exception.message,
+          'message',
           contains('$_path の name'),
         ),
       ),
@@ -69,7 +67,7 @@ void main() {
     }.entries) {
       expect(
         () => decode(cardDocument()..[entry.key] = entry.value),
-        throwsA(isA<CorruptedDataException>()),
+        throwsA(isA<MalformedDataException>()),
         reason: entry.key,
       );
     }
@@ -88,7 +86,7 @@ void main() {
         {'id': '0000'},
         path: 'master/0006/volumes/0000',
       ),
-      throwsA(isA<CorruptedDataException>()),
+      throwsA(isA<MalformedDataException>()),
     );
   });
 }

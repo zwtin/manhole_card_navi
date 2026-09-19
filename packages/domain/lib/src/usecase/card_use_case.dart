@@ -1,18 +1,15 @@
-import 'package:logger/logger.dart';
+import 'dart:typed_data';
+
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/manhole_card.dart';
-import '../repository/card_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/manhole_card.dart';
+import 'package:domain/src/repository/card_repository.dart';
 
-final cardUseCaseProvider = Provider.autoDispose<CardUseCase>(
-  (ref) {
-    final cardUseCase = CardUseCase(
-      ref.watch(cardRepositoryProvider),
-    );
-    ref.onDispose(cardUseCase.dispose);
-    return cardUseCase;
-  },
+final cardUseCaseProvider = Provider<CardUseCase>(
+  (ref) => CardUseCase(
+    ref.watch(cardRepositoryProvider),
+  ),
 );
 
 class CardUseCase {
@@ -21,18 +18,19 @@ class CardUseCase {
   );
 
   final CardRepository _cardRepository;
-  final _logger = Logger();
 
   Future<Result<ManholeCard>> get({required String id}) {
     return _cardRepository.get(id: id);
   }
 
-  /// 端末に取り込んだすべてのカード。
   Future<Result<List<ManholeCard>>> fetchAll() {
     return _cardRepository.fetchAll();
   }
 
-  void dispose() {
-    _logger.d('CardUseCase dispose');
+  Future<Result<Uint8List>> fetchImage({
+    required String cardId,
+    int? maxWidth,
+  }) {
+    return _cardRepository.fetchImage(cardId: cardId, maxWidth: maxWidth);
   }
 }

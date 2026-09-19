@@ -57,15 +57,11 @@ abstract final class AppRoutePath {
 class ImageDetailArgs {
   const ImageDetailArgs({
     required this.cardId,
-    required this.imageUrl,
-    required this.imageSubUrl,
     required this.alreadyGet,
     required this.heroTag,
   });
 
   final String cardId;
-  final String imageUrl;
-  final String imageSubUrl;
   final bool alreadyGet;
   final String heroTag;
 }

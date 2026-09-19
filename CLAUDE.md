@@ -62,15 +62,15 @@ fvm flutter pub run flutter_native_splash:create
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装。組み立て（どの実装をどの部品で作るか）は持たず、実装クラスを公開するだけ
-   - `repository/` - Repository の実装。データソースから取り、model を経て mapper でエンティティにして返す。失敗は `FailureRecorder.guard` で種類に変換・記録して返す
-   - `datasource/` - 外界と話すクラス。Firestore・Firebase Auth・Analytics・Messaging・SharedPreferences は SDK のインスタンスをそのまま使い、中身があるもの・static な API だけを包む
+   - `repository/` - Repository の実装。DataSource から model を受け取り、mapper でエンティティにして返す。失敗は `FailureRecorder.guard` で種類に変換・記録して返す
+   - `datasource/` - 外界と話すクラス。Firestore・Firebase Auth・Analytics・Messaging・SharedPreferences は SDK のインスタンスをそのまま使い、中身があるもの・static な API だけを包む。返すのは model（か SDK の型）で、エンティティにはしない。domain を知らず、形の違うデータは data の中だけの `MalformedDataException` で知らせる（domain の失敗の種類にするのは Repository）
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
      - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）
-     - `CardImageCacheManager` / `ImageFallback` / `ImageLoadMonitor`: カード画像の取得。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
+     - `CardImageCacheManager` / `ImageFallback` / `ImageLoadMonitor`: カード画像の取得（`CardRepositoryImpl.fetchImage` が使う）。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
      - `LocationDataSource`: 位置情報（geolocator の static な API の包み）
-     - `FailureRecorder` / `UncaughtErrorObserver`: Crashlytics への記録
-   - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば `CorruptedDataException` にする（`decodeModel`）。エンティティは JSON を知らない
-   - `mapper/` - model とエンティティの変換（`toCard`・`toModel` など、出力するもので名前を付ける）と、外部の例外と失敗の種類の変換（`DomainExceptionMapper`）
+     - `FailureRecorder` / `UncaughtErrorObserver`: Crashlytics への記録。domain の失敗の種類を見て記録するかを決めるので、この 2 つだけは domain を知っている
+   - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば `MalformedDataException` にする（`decodeModel`）。保存する値の enum も model が持ち、値の名前を保存する文字列にそろえる（domain の名前を変えても保存済みの値は変わらない）。エンティティは JSON を知らない
+   - `mapper/` - model とエンティティ・model どうしの変換（`toCard`・`toModel`・`toLocalCard` など、出力するもので名前を付ける）と、外部の例外・`MalformedDataException` と失敗の種類の変換（`DomainExceptionMapper`）
 
 3. **app** (`packages/app/`) - 画面
    - `router/` - go_router のルート定義、画面遷移の窓口 `NavigationService` とその go_router による実装、下タブの `ShellScaffold`
@@ -85,18 +85,23 @@ fvm flutter pub run flutter_native_splash:create
    - `di/repository_overrides.dart` - domain の Repository の provider に data の実装を当てはめる override の一覧
 
 ### 依存性注入
-- Repository の provider は domain で `throw UnimplementedError` として宣言し、ルートの `lib/di/repository_overrides.dart` が data の実装に差し替える。Repository は状態を持たないか全体で共有するものなので、`autoDispose` にせずアプリ全体で 1 つにする（UseCase・ViewModel は画面の寿命に合わせて `autoDispose`）。どの実装を、どの部品で作るかを知っているのはルートだけ。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
+- Repository の provider は domain で `throw UnimplementedError` として宣言し、ルートの `lib/di/repository_overrides.dart` が data の実装に差し替える。どの実装を、どの部品で作るかを知っているのはルートだけ。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
+- provider の寿命
+  - Repository は状態を持たないか、アプリ全体で共有するもの（端末に取り込んだマスターデータなど）なので、`autoDispose` にせずアプリ全体で 1 つにする
+  - UseCase も状態を持たない（状態は ViewModel か data に置く）ので、画面ごとに分けず（`family` にせず）、`autoDispose` にもせずアプリ全体で 1 つにする。クリーンアーキテクチャ・DDD の慣習でも、UseCase（アプリケーションサービス）に求められるのは状態を持たないことで、寿命は決めごとにしていない
+  - ViewModel は画面の状態を持つので、画面の寿命に合わせて `autoDispose` にする
+  - アプリ全体で 1 つの Repository・UseCase は、アプリが動いている間は dispose されない。閉じる必要のある資源（StreamController・HTTP クライアントなど）を持つクラスだけ `dispose` を作り、`ref.onDispose` に登録する
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
 
 ### UseCase・Repository の引数
-- 既にあるものを探す・指す・消すときは ID で渡す（`CardUseCase.get(id:)`、`AlreadyGetCardRepository.save(cardId:)`）。UseCase が Repository から正しいエンティティを読み直す
-- 保存する中身や新しく作るものは、値やエンティティで渡す（`SearchConditionRepository.save(searchCondition:)`、`MasterDataRepository.replace(cards:)`）
+- 既にあるものを探す・指す・消すときは ID で渡す（`CardUseCase.get(id:)`、`AlreadyGetCardRepository.save(cardId:)`、サーバーのマスターデータを指す `MasterDataRepository.replace(version:)`）。UseCase が Repository から正しいエンティティを読み直す
+- 保存する中身や新しく作るものは、値やエンティティで渡す（`SearchConditionRepository.save(searchCondition:)`）
 - ID は値オブジェクトにせず String のまま扱う
 
 ### 失敗の扱い
 - Repository は想定内の失敗（通信・サーバーのデータ・端末の保存領域）を投げずに `Result` に包んで返す。呼ぶ側は try / catch せずに `switch` で成功と失敗を分ける
 - 失敗の種類は domain の `DomainException`（sealed）で表す。表示の文言は持たない。種類は app が表示や対応を変えたいものの分だけ作り、区別が必要になったら足す
-- data は外部の例外を `DomainExceptionMapper` で種類に変換する。サーバーのデータはキャストに頼らず型を確かめ、合わなければ `CorruptedDataException` にする
+- data は外部の例外を `DomainExceptionMapper` で種類に変換する。サーバーのデータはキャストに頼らず型を確かめ、合わなければ `MalformedDataException` を経て `CorruptedDataException` にする
 - app は `NavigationService.showFailure(title:, exception:)` で知らせる。タイトルは何に失敗したか（画面が決める）、本文は `ErrorMessageMapper` が種類から決める
 - バグ（Error）は `Result` に包まずにそのまま流す
 - 失敗ではない結果（位置情報を許可されなかった、アップデートが必要 など）は例外にせず戻り値で返す
@@ -104,7 +109,7 @@ fvm flutter pub run flutter_native_splash:create
 ### 失敗とバグの記録（Crashlytics）
 - Crashlytics を知っているのは data と `main.dart` だけ。app と domain は記録に関わらない
 - data の Repository は、失敗をすべて `FailureRecorder`（ふつうは `guard`）を通して返し、そこで非重大として記録する。通信できない・タイムアウト（`UnavailableException`）は、時間をおけば直り調べても直せないので記録しない
-- 例外はカード画像の `CardImageRepositoryImpl` で、`FailureRecorder` を通さない。画像の失敗は `ImageLoadMonitor`（Analytics）と、下の `FlutterError` 経由の非重大で記録している
+- 例外はカード画像（`CardRepositoryImpl.fetchImage`）の取得の失敗で、`FailureRecorder` を通さない。画像の失敗は `ImageLoadMonitor`（Analytics）と、下の `FlutterError` 経由の非重大で記録している
 - 扱われなかったバグはクラッシュ（fatal）として記録する。`main.dart` の Zone と `FlutterError.onError`、provider の生成中に起きたものは data の `UncaughtErrorObserver` が拾う。provider の中の失敗は Riverpod が受け止めるため Zone には届かない
 - 画像の読み込み失敗（`library` が `image resource service`）はバグではないので、`FlutterError.onError` でも非重大のまま記録する。画像が出ない問い合わせの調査はこの非重大の記録で行う。`CardImageProvider` は、ここに残るよう変換前の例外（`HandshakeException` など）を投げる
 
@@ -113,7 +118,7 @@ fvm flutter pub run flutter_native_splash:create
 - 読み込むだけの画面は `AsyncNotifier`（`build()` で取得）、起動時チェックやマップのように読み込みに副作用を伴う画面は `Notifier` にして View の `useEffect` から `onLoad()` を呼ぶ
 - ViewModel は BuildContext を持たない。遷移・アラート・URL を開く操作は `NavigationService` 経由で行う
 - ViewModel が読み書きするのは UseCase だけで、Repository を直接呼ばない。処理のない読み取りも、Repository を素通しする UseCase のメソッドを通す
-- カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）が `CardImageUseCase` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない
+- カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）がカードの ID で `CardUseCase.fetchImage` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない。画像の URL・代わりの配信元・端末に保存するかは data だけが知っていて、エンティティにも画像の URL は持たせない
 
 ### 画面遷移（app）
 - go_router の `StatefulShellRoute` で、マップ・リスト・設定のタブがそれぞれ独立した遷移スタックを持つ
@@ -126,7 +131,7 @@ fvm flutter pub run flutter_native_splash:create
 
 ### データ層
 - **リモート:** クラウドデータ用のFirebase Firestore
-- **ローカル:** 取り込んだマスターデータは 1 つの JSON ファイル（`MasterDataLocalDataSource`）。全件をまとめて読んでメモリに持ち、入れ替えは一時ファイルに書いてから名前を変えて行う。ファイルの形を変えたらファイル名のバージョンを上げ、古い形は取り込んでいない扱いにして取り直す。利用者の設定・取得済みカードは SharedPreferences
+- **ローカル:** 取り込んだマスターデータは 1 つの JSON ファイル（`MasterDataLocalDataSource`）。Firestore から取ったカードは、エンティティを通さずに端末に保存する形（`LocalCardModel`）にして書く。全件をまとめて読んでメモリに持ち、入れ替えは一時ファイルに書いてから名前を変えて行う。ファイルの形を変えたらファイル名のバージョンを上げ、古い形は取り込んでいない扱いにして取り直す。利用者の設定・取得済みカードは SharedPreferences
 - **コード生成:** イミュータブルモデル用のFreezed
 
 ### 主要な依存関係
@@ -135,6 +140,12 @@ fvm flutter pub run flutter_native_splash:create
 - 状態管理用のRiverpod + Flutter Hooks
 - 画面遷移用の go_router
 - データモデル用のFreezed
+
+## コードの書き方
+domain と data はこの形にそろえてある。app はまだそろえていない。
+
+- import は相対パスにせず `package:` の形で書く。`dart:`・外部のパッケージ・このアプリのパッケージ（`package:domain/` など）の順にまとめ、まとまりの間に空行を入れる。domain と data は lint（`always_use_package_imports`）で相対パスを禁じている。テストの中でテスト用のファイルを読むときだけは相対パスで、最後のまとまりにする
+- コメントは、コードを読んでもわからないこと（そうしている理由・型や名前に表れない約束・名前だけでは意味の取れないもの）だけを書く。コードを言い直すコメントや、設計の方針（このファイルに書く）はコードに書かない。コメントとコードを二重に管理しないため
 
 ## 環境設定
 

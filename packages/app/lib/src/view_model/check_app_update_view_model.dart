@@ -70,7 +70,7 @@ class CheckAppUpdateViewModel
   Future<void> _signIn() async {
     while (true) {
       state = state.copyWith(isLoading: true);
-      final result = await _userUseCase.ensureSignedIn();
+      final result = await _userUseCase.signIn();
       state = state.copyWith(isLoading: false);
       if (result case Failure(:final exception)) {
         await _navigationService.showFailure(
@@ -79,17 +79,16 @@ class CheckAppUpdateViewModel
         );
         continue;
       }
-      await _analyticsUseCase.sendOpen();
+      await _analyticsUseCase.send(event: const AnalyticsEvent.appOpen());
       return;
     }
   }
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'check_app_update_view',
-      },
+      event: const AnalyticsEvent.screenView(
+        screenName: 'check_app_update_view',
+      ),
     );
   }
 

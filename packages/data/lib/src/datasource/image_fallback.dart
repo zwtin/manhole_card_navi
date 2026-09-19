@@ -1,52 +1,26 @@
-/// カード画像の代替配信元（フォールバック先）URL を、画像取得の実処理まで運ぶ。
+/// 代わりの配信元の URL（カードごとのデータで、主系の URL からは作れない）を、
+/// HTTP ヘッダに載せて flutter_cache_manager の `FileService` まで運ぶ。
+/// `FileService` に URL 以外を渡す道がヘッダしかないため。送る前に取り除くので、
+/// ネットワークには出ない。
 ///
-/// 主系は Cloudflare R2 だが、新規取得ドメインのため一部のネットワーク
-/// （キャリアのフィルタリング、学校・企業のネットワーク、DNS フィルタ）で
-/// 遮断されることがある。遮断された端末ではカード画像が一切表示されないため、
-/// master の `image_sub_url` に入っている別ドメインの URL から取り直す。
-///
-/// 代替 URL は **カードごとのデータ**（Firestore の `image_sub_url`）なので、
-/// URL 文字列から機械的に導出することはできない。一方で画像の取得は
-/// flutter_cache_manager の `FileService` で行っていて、そこへ URL 以外の情報を
-/// 渡す経路は HTTP ヘッダしかない。そこで代替 URL を [headerKey] のヘッダに載せて
-/// 運ぶ。
-///
-/// **このヘッダはネットワークには出ない。** `FileService` 側で
-/// [withoutSubUrl] を使って実際のリクエストから取り除く。
-///
-/// キャッシュのキーは主系の URL のままなので、代替から取得しても以降は
-/// 透過的に扱われる（flutter_cache_manager はヘッダをキーに含めない）。
+/// キャッシュのキーは主系の URL のまま（ヘッダはキーに含まれない）なので、代わりの
+/// 配信元から取った画像も主系の URL で引ける。
 class ImageFallback {
   ImageFallback._();
 
-  /// 代替配信元 URL を載せるヘッダ名。実際のリクエストには含めない。
   static const String headerKey = 'x-image-sub-url';
 
-  /// キャッシュ層に渡すヘッダを作る。代替が無ければ null。
-  static Map<String, String>? headers(String imageSubUrl) {
-    if (imageSubUrl.isEmpty) {
-      return null;
-    }
-    return <String, String>{headerKey: imageSubUrl};
+  static Map<String, String> headers(String subUrl) {
+    return <String, String>{headerKey: subUrl};
   }
 
-  /// ヘッダから代替配信元 URL を取り出す。無ければ null。
-  static String? subUrlFrom(Map<String, String>? headers) {
-    final subUrl = headers?[headerKey];
-    if (subUrl == null || subUrl.isEmpty) {
-      return null;
-    }
-    return subUrl;
+  static String subUrlFrom(Map<String, String>? headers) {
+    return headers![headerKey]!;
   }
 
-  /// 実際のリクエストに使うヘッダ（[headerKey] を除いたもの）。
-  ///
-  /// 渡された Map は変更しない（呼び出し元が使い回している可能性があるため）。
+  /// 渡された Map は、呼び出し元が使い回しているかもしれないので変えない。
   static Map<String, String>? withoutSubUrl(Map<String, String>? headers) {
-    if (headers == null || !headers.containsKey(headerKey)) {
-      return headers;
-    }
-    final rest = Map<String, String>.of(headers)..remove(headerKey);
+    final rest = Map<String, String>.of(headers!)..remove(headerKey);
     return rest.isEmpty ? null : rest;
   }
 }

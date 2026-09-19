@@ -9,7 +9,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockCardImageUseCase extends Mock implements CardImageUseCase {}
+class MockCardUseCase extends Mock implements CardUseCase {}
 
 /// 1x1 の PNG。
 final _pngBytes = base64Decode(
@@ -17,18 +17,17 @@ final _pngBytes = base64Decode(
 );
 
 void main() {
-  late MockCardImageUseCase useCase;
+  late MockCardUseCase useCase;
 
   setUp(() {
-    useCase = MockCardImageUseCase();
+    useCase = MockCardUseCase();
     PaintingBinding.instance.imageCache.clear();
   });
 
   void stubFetch(Result<Uint8List> result) {
     when(
-      () => useCase.fetch(
-        url: any(named: 'url'),
-        subUrl: any(named: 'subUrl'),
+      () => useCase.fetchImage(
+        cardId: any(named: 'cardId'),
         maxWidth: any(named: 'maxWidth'),
       ),
     ).thenAnswer((_) async => result);
@@ -53,21 +52,12 @@ void main() {
 
     final loaded = await load(
       tester,
-      CardImageProvider(
-        useCase: useCase,
-        url: 'https://example.com/a.jpg',
-        subUrl: 'https://example.web.app/a.jpg',
-        maxWidth: 520,
-      ),
+      CardImageProvider(useCase: useCase, cardId: 'A', maxWidth: 520),
     );
 
     expect((loaded! as ImageInfo).image.width, 1);
     verify(
-      () => useCase.fetch(
-        url: 'https://example.com/a.jpg',
-        subUrl: 'https://example.web.app/a.jpg',
-        maxWidth: 520,
-      ),
+      () => useCase.fetchImage(cardId: 'A', maxWidth: 520),
     ).called(1);
   });
 
@@ -81,25 +71,22 @@ void main() {
 
     final loaded = await load(
       tester,
-      CardImageProvider(
-        useCase: useCase,
-        url: 'https://example.com/b.jpg',
-        subUrl: '',
-      ),
+      CardImageProvider(useCase: useCase, cardId: 'B'),
     );
 
     expect(loaded, same(cause));
   });
 
-  test('URL と保存する幅が同じなら、同じ画像として扱う', () {
-    final a = CardImageProvider(useCase: useCase, url: 'u', subUrl: 's');
-    final b = CardImageProvider(useCase: useCase, url: 'u', subUrl: '');
+  test('カードと保存する幅が同じなら、同じ画像として扱う', () {
+    final a = CardImageProvider(useCase: useCase, cardId: 'A');
+    final b = CardImageProvider(useCase: MockCardUseCase(), cardId: 'A');
 
     expect(a, b);
     expect(a.hashCode, b.hashCode);
+    expect(a, isNot(CardImageProvider(useCase: useCase, cardId: 'B')));
     expect(
       a,
-      isNot(CardImageProvider(useCase: useCase, url: 'u', subUrl: 's', maxWidth: 520)),
+      isNot(CardImageProvider(useCase: useCase, cardId: 'A', maxWidth: 520)),
     );
   });
 }

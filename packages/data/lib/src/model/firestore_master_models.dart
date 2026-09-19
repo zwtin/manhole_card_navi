@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:domain/domain.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'firestore_converters.dart';
-import 'json_decoding.dart';
+import 'package:data/src/model/distribution_state_model.dart';
+import 'package:data/src/model/firestore_converters.dart';
+import 'package:data/src/model/json_decoding.dart';
 
 part 'firestore_master_models.g.dart';
 
-/// Firestore の `master/{バージョン}/cards/{ID}` のドキュメント。
 @JsonSerializable(
   checked: true,
   createToJson: false,
@@ -30,8 +29,6 @@ class FirestoreCardModel {
     required this.volumeId,
   });
 
-  /// 形が想定と違えば [CorruptedDataException] を投げる。[path] はドキュメントの
-  /// パスで、どれがおかしいかを調べるための補足に使う。
   factory FirestoreCardModel.fromDocument(
     Map<String, dynamic> data, {
     required String path,
@@ -41,7 +38,7 @@ class FirestoreCardModel {
 
   final String id;
 
-  /// マンホールの位置。
+  /// 蓋（マンホール）の位置。
   @GeoPointConverter()
   final GeoPoint location;
 
@@ -50,18 +47,16 @@ class FirestoreCardModel {
   @SlashDateConverter()
   final DateTime publicationDate;
 
-  final ManholeCardDistributionState distributionState;
+  final DistributionStateModel distributionState;
 
   final String imageUrl;
 
-  /// 代替の配信元。これを持たない世代の master もある。
-  final String? imageSubUrl;
+  final String imageSubUrl;
 
   final String distributionPlaceHtml;
   final String distributionTimeHtml;
   final String stockHtml;
 
-  /// 配布場所の位置（0〜複数）。座標でない要素は読み飛ばす。
   @GeoPointListConverter()
   final List<GeoPoint> distributionPoints;
 
@@ -69,7 +64,6 @@ class FirestoreCardModel {
   final String volumeId;
 }
 
-/// Firestore の `master/{バージョン}/prefectures/{ID}` のドキュメント。
 @JsonSerializable(checked: true, createToJson: false)
 class FirestorePrefectureModel {
   const FirestorePrefectureModel({required this.id, required this.name});
@@ -85,7 +79,6 @@ class FirestorePrefectureModel {
   final String name;
 }
 
-/// Firestore の `master/{バージョン}/volumes/{ID}` のドキュメント。
 @JsonSerializable(checked: true, createToJson: false)
 class FirestoreVolumeModel {
   const FirestoreVolumeModel({required this.id, required this.name});

@@ -62,8 +62,7 @@ class SettingViewModel extends AutoDisposeAsyncNotifier<SettingViewData> {
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {'screen_name': 'setting_view'},
+      event: const AnalyticsEvent.screenView(screenName: 'setting_view'),
     );
   }
 }

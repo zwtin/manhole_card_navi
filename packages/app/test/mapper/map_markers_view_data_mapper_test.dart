@@ -11,15 +11,13 @@ ManholeCard _card({
     position: const Coordinate(latitude: 35.68, longitude: 139.76),
     name: 'カード',
     publicationDate: DateTime(2026, 1, 1),
-    distributionState: ManholeCardDistributionState.distributing,
-    image: '',
-    imageSub: '',
+    distributionState: DistributionState.distributing,
     distributionPlaceHtml: '',
     distributionTimeHtml: '',
     stockHtml: '',
     distributionPoints: distributionPoints,
-    prefecture: const ManholeCardPrefecture(id: '13', name: '東京都'),
-    volume: const ManholeCardVolume(id: '0011', name: '第12弾'),
+    prefecture: const Prefecture(id: '13', name: '東京都'),
+    volume: const Volume(id: '0011', name: '第12弾'),
   );
 }
 

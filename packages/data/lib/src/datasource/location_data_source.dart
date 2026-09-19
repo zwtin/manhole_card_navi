@@ -1,6 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 
-/// 端末の位置情報（geolocator）。static な API を、テストで差し替えられるように包む。
+/// geolocator の static な API を、テストで差し替えられるように包む。
 class LocationDataSource {
   const LocationDataSource();
 

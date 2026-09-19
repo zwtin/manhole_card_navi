@@ -1,14 +1,15 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
+
+import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:data/src/datasource/remote_config_data_source.dart';
 import 'package:data/src/repository/already_get_card_repository_impl.dart';
 import 'package:data/src/repository/master_version_repository_impl.dart';
 import 'package:data/src/repository/search_condition_repository_impl.dart';
 import 'package:data/src/repository/terms_of_service_repository_impl.dart';
-import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:domain/domain.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import '../datasource/crashlytics_mock.dart';
 
@@ -43,7 +44,7 @@ void main() {
       await repository.save(cardId: 'B');
       await repository.save(cardId: 'A');
 
-      expect((await repository.get() as Success<Set<String>>).value, {'A', 'B'});
+      expect(await repository.watch().first, {'A', 'B'});
     });
 
     test('未取得に戻すと、その ID だけ消える', () async {
@@ -52,12 +53,12 @@ void main() {
 
       await repository.delete(cardId: 'A');
 
-      expect((await repository.get() as Success<Set<String>>).value, {'B'});
+      expect(await repository.watch().first, {'B'});
     });
 
     test('変わるたびに、取得済みの ID が流れる', () async {
       final values = <Set<String>>[];
-      final subscription = repository.getStream().listen(values.add);
+      final subscription = repository.watch().listen(values.add);
 
       await repository.save(cardId: 'A');
       await pumpEventQueue();
@@ -73,21 +74,17 @@ void main() {
         preferences,
         failureRecorder,
       );
-      expect(
-        (await repository.get() as Success<SearchCondition>).value,
-        SearchCondition.initial(),
-      );
+      expect(await repository.watch().first, SearchCondition.initial());
 
       const condition = SearchCondition(
-        common: CommonSearchCondition(displayFilter: DisplayFilter.acquired),
+        common: CommonSearchCondition(
+          alreadyGetFilter: AlreadyGetFilter.alreadyGet,
+        ),
         map: MapSearchCondition(coordinateType: MapCoordinateType.position),
       );
       await repository.save(searchCondition: condition);
 
-      expect(
-        (await repository.get() as Success<SearchCondition>).value,
-        condition,
-      );
+      expect(await repository.watch().first, condition);
     });
   });
 

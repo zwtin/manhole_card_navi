@@ -20,15 +20,13 @@ ManholeCard _card({required String volumeId, required String volumeName}) {
     position: const Coordinate(latitude: 34.69, longitude: 135.50),
     name: 'カード',
     publicationDate: DateTime(2026, 1, 1),
-    distributionState: ManholeCardDistributionState.distributing,
-    image: '',
-    imageSub: '',
+    distributionState: DistributionState.distributing,
     distributionPlaceHtml: '',
     distributionTimeHtml: '',
     stockHtml: '',
     distributionPoints: const [],
-    prefecture: const ManholeCardPrefecture(id: '27', name: '大阪府'),
-    volume: ManholeCardVolume(id: volumeId, name: volumeName),
+    prefecture: const Prefecture(id: '27', name: '大阪府'),
+    volume: Volume(id: volumeId, name: volumeName),
   );
 }
 
@@ -46,8 +44,8 @@ void main() {
     searchConditionUseCase = MockSearchConditionUseCase();
     navigationService = MockNavigationService();
 
-    when(() => searchConditionUseCase.get()).thenAnswer(
-      (_) async => Result.success(SearchCondition.initial()),
+    when(() => searchConditionUseCase.watch()).thenAnswer(
+      (_) => Stream.value(SearchCondition.initial()),
     );
     when(() => cardUseCase.fetchAll()).thenAnswer(
       (_) async => Result.success([
@@ -117,13 +115,13 @@ void main() {
   test('一部の弾を選んで適用すると、その条件を保存して閉じる', () async {
     viewModel()
       ..toggleVolume('0001')
-      ..setDisplayFilter(DisplayFilter.acquired);
+      ..setAlreadyGetFilter(AlreadyGetFilter.alreadyGet);
 
     await viewModel().onApply();
 
     final saved = savedCondition();
     expect(saved.common.volumeIds, {'0001'});
-    expect(saved.common.displayFilter, DisplayFilter.acquired);
+    expect(saved.common.alreadyGetFilter, AlreadyGetFilter.alreadyGet);
     verify(() => navigationService.pop()).called(1);
   });
 
@@ -138,7 +136,7 @@ void main() {
   test('リセットは絞り込みだけを消し、マップ表示は残す', () {
     viewModel()
       ..setCoordinateType(MapCoordinateType.position)
-      ..toggleDistributionState(ManholeCardDistributionState.stopped)
+      ..toggleDistributionState(DistributionState.stopped)
       ..clearAllFilters();
 
     final state = container.read(searchConditionViewModelProvider).requireValue;

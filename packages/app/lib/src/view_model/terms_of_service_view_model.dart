@@ -38,10 +38,9 @@ class TermsOfServiceViewModel extends AutoDisposeAsyncNotifier<String> {
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'terms_of_service_view',
-      },
+      event: const AnalyticsEvent.screenView(
+        screenName: 'terms_of_service_view',
+      ),
     );
   }
 }

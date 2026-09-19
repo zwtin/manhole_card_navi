@@ -1,9 +1,9 @@
-import 'package:domain/domain.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:logger/logger.dart';
 
-import '../datasource/failure_recorder.dart';
-import '../mapper/domain_exception_mapper.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:domain/domain.dart';
 
 class AnalyticsRepositoryImpl implements AnalyticsRepository {
   AnalyticsRepositoryImpl(
@@ -16,30 +16,21 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
   final FailureRecorder _failureRecorder;
 
   @override
-  Future<Result<void>> sendEvent({
-    required AnalyticsEvent analyticsEvent,
-  }) {
+  Future<Result<void>> send({required AnalyticsEvent event}) {
     return _failureRecorder.guard(
       () async {
-        await _analytics.logEvent(
-          name: analyticsEvent.name,
-          parameters: analyticsEvent.parameters,
-        );
-        _logger.d('${analyticsEvent.name} ${analyticsEvent.parameters}');
+        switch (event) {
+          case AppOpen():
+            await _analytics.logAppOpen();
+          case ScreenView(:final screenName, :final parameters):
+            await _analytics.logEvent(
+              name: 'screen_pv',
+              parameters: {'screen_name': screenName, ...parameters},
+            );
+        }
+        _logger.d('$event');
       },
       convert: DomainExceptionMapper.fromPlatform,
     );
-  }
-
-  @override
-  Future<Result<void>> sendAppOpen() {
-    return _failureRecorder.guard(
-      _analytics.logAppOpen,
-      convert: DomainExceptionMapper.fromPlatform,
-    );
-  }
-
-  void dispose() {
-    _logger.d('AnalyticsRepositoryImpl dispose');
   }
 }

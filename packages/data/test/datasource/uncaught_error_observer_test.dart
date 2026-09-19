@@ -1,8 +1,9 @@
-import 'package:data/data.dart';
-import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
+
+import 'package:data/data.dart';
+import 'package:domain/domain.dart';
 
 import 'crashlytics_mock.dart';
 

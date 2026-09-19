@@ -1,22 +1,16 @@
-import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/manhole_card.dart';
-import '../entity/master_version.dart';
-import '../repository/master_data_repository.dart';
-import '../repository/master_version_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/master_version.dart';
+import 'package:domain/src/repository/master_data_repository.dart';
+import 'package:domain/src/repository/master_version_repository.dart';
 
 final checkMasterUpdateUseCaseProvider =
-    Provider.autoDispose<CheckMasterUpdateUseCase>(
-  (ref) {
-    final checkMasterUpdateUseCase = CheckMasterUpdateUseCase(
-      ref.watch(masterDataRepositoryProvider),
-      ref.watch(masterVersionRepositoryProvider),
-    );
-    ref.onDispose(checkMasterUpdateUseCase.dispose);
-    return checkMasterUpdateUseCase;
-  },
+    Provider<CheckMasterUpdateUseCase>(
+  (ref) => CheckMasterUpdateUseCase(
+    ref.watch(masterDataRepositoryProvider),
+    ref.watch(masterVersionRepositoryProvider),
+  ),
 );
 
 class CheckMasterUpdateUseCase {
@@ -28,9 +22,6 @@ class CheckMasterUpdateUseCase {
   final MasterDataRepository _masterDataRepository;
   final MasterVersionRepository _masterVersionRepository;
 
-  final _logger = Logger();
-
-  /// マスターデータを取り込み直す必要があるか。
   Future<Result<bool>> getNeedUpdate() async {
     final MasterVersion inquiredVersion;
     switch (await _masterVersionRepository.getInquiredVersion()) {
@@ -52,12 +43,8 @@ class CheckMasterUpdateUseCase {
       return const Result.success(true);
     }
 
-    // バージョンが一致していても、端末にマスターデータが無ければ取り直す。
-    //
-    // 端末のマスターデータは、保存の形を変えたときや壊れていたときに消えることが
-    // あるが、取り込み済みのバージョンの記録は残る。バージョン比較だけだと
-    // 「マスターデータは無いのに更新不要」と判定され、カードが 1 件も表示されない
-    // まま復旧しなくなる。
+    // 端末のマスターデータは壊れていたときなどに消えるが、取り込み済みのバージョン
+    // の記録は残る。バージョンだけで判定すると、カードが 1 件もないまま取り直さない。
     switch (await _masterDataRepository.exists()) {
       case Failure(:final exception):
         return Result.failure(exception);
@@ -66,7 +53,6 @@ class CheckMasterUpdateUseCase {
     }
   }
 
-  /// サーバーが指定するバージョンのマスターデータを取得し、端末のものと入れ替える。
   Future<Result<void>> updateMaster() async {
     final MasterVersion inquiredVersion;
     switch (await _masterVersionRepository.getInquiredVersion()) {
@@ -76,25 +62,12 @@ class CheckMasterUpdateUseCase {
         inquiredVersion = value;
     }
 
-    final List<ManholeCard> cards;
-    switch (await _masterDataRepository.fetch(version: inquiredVersion)) {
-      case Failure(:final exception):
-        return Result.failure(exception);
-      case Success(:final value):
-        cards = value;
-    }
-
-    if (await _masterDataRepository.replace(cards: cards)
+    if (await _masterDataRepository.replace(version: inquiredVersion)
         case Failure(:final exception)) {
       return Result.failure(exception);
     }
 
-    // 入れ替えが済んでから記録する。先に記録すると、入れ替えに失敗したときに
-    // 古いデータのまま「取り込み済み」になってしまう。
+    // 先に記録すると、入れ替えに失敗したときに古いデータのまま取り込み済みになる。
     return _masterVersionRepository.setCurrentVersion(version: inquiredVersion);
-  }
-
-  void dispose() {
-    _logger.d('CheckMasterUpdateUseCase dispose');
   }
 }

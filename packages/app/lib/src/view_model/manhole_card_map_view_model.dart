@@ -27,7 +27,6 @@ class ManholeCardMapViewModel
 
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
-  late final CardImageUseCase _cardImageUseCase;
   late final CardUseCase _cardUseCase;
   late final LocationUseCase _locationUseCase;
   late final NavigationService _navigationService;
@@ -62,7 +61,6 @@ class ManholeCardMapViewModel
   ManholeCardMapViewData build() {
     _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _cardImageUseCase = ref.watch(cardImageUseCaseProvider);
     _cardUseCase = ref.watch(cardUseCaseProvider);
     _locationUseCase = ref.watch(locationUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
@@ -170,12 +168,13 @@ class ManholeCardMapViewModel
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'manhole_card_map_view',
-        'coordinate_type': state.coordinateType.name,
-        'active_filter_count': state.activeFilterCount,
-      },
+      event: AnalyticsEvent.screenView(
+        screenName: 'manhole_card_map_view',
+        parameters: {
+          'coordinate_type': state.coordinateType.name,
+          'active_filter_count': state.activeFilterCount,
+        },
+      ),
     );
   }
 
@@ -230,10 +229,7 @@ class ManholeCardMapViewModel
   }
 
   Future<void> _loadSearchCondition() async {
-    final result = await _searchConditionUseCase.get();
-    if (result is Success<SearchCondition>) {
-      _applySearchCondition(result.value);
-    }
+    _applySearchCondition(await _searchConditionUseCase.watch().first);
   }
 
   void _applySearchCondition(SearchCondition condition) {
@@ -265,7 +261,7 @@ class ManholeCardMapViewModel
   }
 
   void _listenAlreadyGetCard() {
-    final subscription = _alreadyGetCardUseCase.getStream().listen((
+    final subscription = _alreadyGetCardUseCase.watch().listen((
       cardIds,
     ) async {
       final generation = ++_markerGeneration;
@@ -274,7 +270,7 @@ class ManholeCardMapViewModel
         alreadyGetCardIds: cardIds,
         centerCoordinate: _position,
         searchCondition: _searchCondition.common,
-        cardImageUseCase: _cardImageUseCase,
+        cardUseCase: _cardUseCase,
         onPartial: (partial) {
           // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
           if (generation != _markerGeneration) {
@@ -295,7 +291,7 @@ class ManholeCardMapViewModel
   }
 
   void _listenSearchCondition() {
-    final subscription = _searchConditionUseCase.getStream().listen((
+    final subscription = _searchConditionUseCase.watch().listen((
       condition,
     ) async {
       // タイトル・フィルタバッジを更新する。
@@ -322,7 +318,7 @@ class ManholeCardMapViewModel
       alreadyGetCardIds: _alreadyGetCardIds,
       centerCoordinate: _position,
       searchCondition: _searchCondition.common,
-      cardImageUseCase: _cardImageUseCase,
+      cardUseCase: _cardUseCase,
       onPartial: (partial) {
         // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
         if (generation != _markerGeneration) {

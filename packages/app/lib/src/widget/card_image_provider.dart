@@ -5,11 +5,11 @@ import 'package:domain/domain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 
-/// カード画像を [CardImageUseCase] から受け取って表示する [ImageProvider]。
+/// カード画像を [CardUseCase.fetchImage] から受け取って表示する [ImageProvider]。
 ///
 /// 画像の取得（端末への保存・配信元の切り替え・失敗の計測）は data が受け持ち、
 /// ここは受け取ったデータをデコードするだけにする。デコードした画像は Flutter の
-/// ImageCache に [url] と [maxWidth] の組で保存されるので、同じ画像を出す画面
+/// ImageCache に [cardId] と [maxWidth] の組で保存されるので、同じ画像を出す画面
 /// どうし（詳細のサムネイルと画像拡大など）で共有される。
 ///
 /// 表示するときの縮小は [ResizeImage] で包んで行う。
@@ -17,18 +17,14 @@ import 'package:flutter/painting.dart';
 class CardImageProvider extends ImageProvider<CardImageProvider> {
   const CardImageProvider({
     required this.useCase,
-    required this.url,
-    required this.subUrl,
+    required this.cardId,
     this.maxWidth,
   });
 
-  final CardImageUseCase useCase;
+  final CardUseCase useCase;
 
-  /// 画像の URL（主系の配信元）。
-  final String url;
-
-  /// 代わりの配信元の URL。代わりがなければ空文字。
-  final String subUrl;
+  /// 画像を出すカードの ID。
+  final String cardId;
 
   /// 端末に縮小して保存する幅。null なら原寸のまま扱う。
   final int? maxWidth;
@@ -46,7 +42,7 @@ class CardImageProvider extends ImageProvider<CardImageProvider> {
     return MultiFrameImageStreamCompleter(
       codec: _loadCodec(key, decode),
       scale: 1.0,
-      debugLabel: key.url,
+      debugLabel: key.cardId,
       informationCollector: () => <DiagnosticsNode>[
         DiagnosticsProperty<ImageProvider>('Image provider', this),
         DiagnosticsProperty<CardImageProvider>('Image key', key),
@@ -58,9 +54,8 @@ class CardImageProvider extends ImageProvider<CardImageProvider> {
     CardImageProvider key,
     ImageDecoderCallback decode,
   ) async {
-    switch (await key.useCase.fetch(
-      url: key.url,
-      subUrl: key.subUrl,
+    switch (await key.useCase.fetchImage(
+      cardId: key.cardId,
       maxWidth: key.maxWidth,
     )) {
       case Failure(:final exception):
@@ -83,14 +78,14 @@ class CardImageProvider extends ImageProvider<CardImageProvider> {
   @override
   bool operator ==(Object other) {
     return other is CardImageProvider &&
-        other.url == url &&
+        other.cardId == cardId &&
         other.maxWidth == maxWidth;
   }
 
   @override
-  int get hashCode => Object.hash(url, maxWidth);
+  int get hashCode => Object.hash(cardId, maxWidth);
 
   @override
   String toString() =>
-      '${objectRuntimeType(this, 'CardImageProvider')}("$url", maxWidth: $maxWidth)';
+      '${objectRuntimeType(this, 'CardImageProvider')}("$cardId", maxWidth: $maxWidth)';
 }

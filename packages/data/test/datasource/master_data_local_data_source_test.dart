@@ -1,8 +1,10 @@
 import 'dart:io';
 
-import 'package:data/src/datasource/master_data_local_data_source.dart';
-import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'package:data/src/datasource/master_data_local_data_source.dart';
+import 'package:data/src/model/local_card_model.dart';
+import 'package:data/src/model/malformed_data_exception.dart';
 
 import '../fixtures.dart';
 
@@ -19,6 +21,10 @@ void main() {
 
   MasterDataLocalDataSource store() => MasterDataLocalDataSource(directory: () async => directory);
 
+  List<Map<String, dynamic>> toJson(List<LocalCardModel>? cards) {
+    return [for (final card in cards!) card.toJson()];
+  }
+
   List<String> fileNames() {
     return directory
         .listSync()
@@ -33,21 +39,21 @@ void main() {
   });
 
   test('書いたカード一式は、次に起動したときにも読める', () async {
-    final cards = [card(), card(id: '00-101-A001')];
+    final cards = [localCard(), localCard(id: '00-101-A001')];
 
     await store().writeAll(cards);
 
     final next = store();
     expect(await next.exists(), isTrue);
-    expect(await next.readAll(), cards);
+    expect(toJson(await next.readAll()), toJson(cards));
     expect(fileNames(), ['master_data_v1.json']);
   });
 
   test('入れ替えると、前のカードは残らない', () async {
     final target = store();
-    await target.writeAll([card(id: 'A')]);
+    await target.writeAll([localCard(id: 'A')]);
 
-    await target.writeAll([card(id: 'B')]);
+    await target.writeAll([localCard(id: 'B')]);
 
     expect((await store().readAll())!.map((card) => card.id), ['B']);
   });
@@ -66,7 +72,7 @@ void main() {
 
     await expectLater(
       store().readAll(),
-      throwsA(isA<CorruptedDataException>()),
+      throwsA(isA<MalformedDataException>()),
     );
     expect(await store().exists(), isFalse);
   });
@@ -79,7 +85,7 @@ void main() {
     );
 
     await target.exists();
-    await target.writeAll([card()]);
+    await target.writeAll([localCard()]);
     await target.readAll();
 
     expect(cleanUpCount, 1);

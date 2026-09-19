@@ -28,7 +28,7 @@ class DetailViewModel
     _cardUseCase = ref.watch(cardUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
 
-    final subscription = _alreadyGetCardUseCase.getStream().listen((
+    final subscription = _alreadyGetCardUseCase.watch().listen((
       cardIds,
     ) {
       final current = state.valueOrNull;
@@ -55,11 +55,10 @@ class DetailViewModel
     }
     final card = (result as Success<ManholeCard>).value;
 
-    final alreadyGetResult = await _alreadyGetCardUseCase.get();
+    final alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
     return DetailCardViewDataMapper.convertToViewData(
       card: card,
-      alreadyGet: alreadyGetResult is Success<Set<String>> &&
-          alreadyGetResult.value.contains(cardId),
+      alreadyGet: alreadyGetCardIds.contains(cardId),
     );
   }
 
@@ -100,8 +99,6 @@ class DetailViewModel
     }
     await _navigationService.presentImageDetail(
       cardId: arg,
-      imageUrl: current.imageUrl,
-      imageSubUrl: current.imageSubUrl,
       alreadyGet: current.alreadyGet,
       heroTag: heroTag,
     );
@@ -109,11 +106,10 @@ class DetailViewModel
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'detail_view',
-        'card_id': arg,
-      },
+      event: AnalyticsEvent.screenView(
+        screenName: 'detail_view',
+        parameters: {'card_id': arg},
+      ),
     );
   }
 }

@@ -1,26 +1,21 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:domain/domain.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
 
-/// 外部の仕組みの失敗を、domain の失敗の種類（[DomainException]）に変換する。
-///
-/// どの失敗をどの種類にするかは data の知識なので、ここに集める。すでに
-/// [DomainException] になっているもの（実装の中で投げたもの）はそのまま返すので、
-/// 実装は `FailureRecorder.guard` の `convert` にこれを渡せばよい。
+import 'package:data/src/model/malformed_data_exception.dart';
+import 'package:domain/domain.dart';
+
 abstract final class DomainExceptionMapper {
-  /// Firestore の読み書きの失敗。
   static DomainException fromFirestore(Object error, StackTrace stackTrace) {
-    if (error is DomainException) {
-      return error;
+    if (_known(error, stackTrace) case final known?) {
+      return known;
     }
     if (error is FirebaseException) {
       switch (error.code) {
-        // サーバー側の一時的な障害でもこのコードになるが、スマホでは電波の問題が
-        // ほとんどなので、通信できない失敗として扱う。
+        // サーバーの一時的な障害でもこのコードになるが、スマホではほとんどが電波。
         case 'unavailable':
           return OfflineException(cause: error, stackTrace: stackTrace);
         case 'deadline-exceeded':
@@ -33,10 +28,9 @@ abstract final class DomainExceptionMapper {
     return UnknownException(cause: error, stackTrace: stackTrace);
   }
 
-  /// Firebase Authentication（匿名ログイン）の失敗。
   static DomainException fromAuth(Object error, StackTrace stackTrace) {
-    if (error is DomainException) {
-      return error;
+    if (_known(error, stackTrace) case final known?) {
+      return known;
     }
     if (error is FirebaseAuthException &&
         error.code == 'network-request-failed') {
@@ -48,10 +42,9 @@ abstract final class DomainExceptionMapper {
     return UnknownException(cause: error, stackTrace: stackTrace);
   }
 
-  /// 画像など、HTTP で配信元から取るときの失敗。
   static DomainException fromHttp(Object error, StackTrace stackTrace) {
-    if (error is DomainException) {
-      return error;
+    if (_known(error, stackTrace) case final known?) {
+      return known;
     }
     if (error is TimeoutException) {
       return TimedOutException(cause: error, stackTrace: stackTrace);
@@ -61,19 +54,18 @@ abstract final class DomainExceptionMapper {
           ? NotFoundException(cause: error, stackTrace: stackTrace)
           : UnknownException(cause: error, stackTrace: stackTrace);
     }
-    // 接続できない・名前が引けない・TLS の途中で割り込まれる（経路上のフィルタ）
-    // など。どれも利用者から見れば通信できない失敗。
+    // 接続できない・名前が引けない・経路上のフィルタに割り込まれる など。利用者から
+    // 見ればどれも通信できない。
     if (error is IOException || error is http.ClientException) {
       return OfflineException(cause: error, stackTrace: stackTrace);
     }
     return UnknownException(cause: error, stackTrace: stackTrace);
   }
 
-  /// Remote Config の取得の失敗。取得できない原因はほぼ通信なので、通信できない
-  /// 失敗として扱う。
+  /// 取れない原因はほぼ通信なので、通信できない失敗にする。
   static DomainException fromRemoteConfig(Object error, StackTrace stackTrace) {
-    if (error is DomainException) {
-      return error;
+    if (_known(error, stackTrace) case final known?) {
+      return known;
     }
     if (error is FirebaseException) {
       return OfflineException(cause: error, stackTrace: stackTrace);
@@ -81,20 +73,33 @@ abstract final class DomainExceptionMapper {
     return UnknownException(cause: error, stackTrace: stackTrace);
   }
 
-  /// 端末の機能（通知・バッジ・位置情報・Analytics など）の失敗。種類を
-  /// 見分けて対応を変える必要がないので、まとめて不明な失敗にする。
+  /// 端末の機能（通知・バッジ・位置情報・Analytics など）の失敗は、種類で対応を
+  /// 変えないので、まとめて不明な失敗にする。
   static DomainException fromPlatform(Object error, StackTrace stackTrace) {
-    if (error is DomainException) {
-      return error;
+    if (_known(error, stackTrace) case final known?) {
+      return known;
     }
     return UnknownException(cause: error, stackTrace: stackTrace);
   }
 
-  /// 端末の DB（Realm）や SharedPreferences の読み書きの失敗。
   static DomainException fromLocalStorage(Object error, StackTrace stackTrace) {
+    if (_known(error, stackTrace) case final known?) {
+      return known;
+    }
+    return PersistenceException(cause: error, stackTrace: stackTrace);
+  }
+
+  static DomainException? _known(Object error, StackTrace stackTrace) {
     if (error is DomainException) {
       return error;
     }
-    return PersistenceException(cause: error, stackTrace: stackTrace);
+    if (error is MalformedDataException) {
+      return CorruptedDataException(
+        detail: error.message,
+        cause: error.cause,
+        stackTrace: error.stackTrace ?? stackTrace,
+      );
+    }
+    return null;
   }
 }

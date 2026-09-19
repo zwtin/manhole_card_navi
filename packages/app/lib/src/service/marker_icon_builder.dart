@@ -37,13 +37,13 @@ class MarkerIconBuilder {
   static String get sizeKey => '${_iconWidth}x${_iconHeight}_v$_layoutVersion';
 
   /// 頒布状況に対応する枠 PNG のアセットパス。
-  static String _framePath(ManholeCardDistributionState distributionState) {
+  static String _framePath(DistributionState distributionState) {
     switch (distributionState) {
-      case ManholeCardDistributionState.distributing:
+      case DistributionState.distributing:
         return 'packages/app/assets/images/markers/frame_green.png';
-      case ManholeCardDistributionState.stopped:
+      case DistributionState.stopped:
         return 'packages/app/assets/images/markers/frame_red.png';
-      case ManholeCardDistributionState.notClear:
+      case DistributionState.notClear:
         return 'packages/app/assets/images/markers/frame_yellow.png';
     }
   }
@@ -55,13 +55,13 @@ class MarkerIconBuilder {
   /// 呼んでおくと、最初のマーカー合成時のアセット読み込み待ちを避けられる。
   static Future<void> preloadFrames() async {
     await Future.wait(
-      ManholeCardDistributionState.values.map(_framePath).map(_loadFramePath),
+      DistributionState.values.map(_framePath).map(_loadFramePath),
     );
   }
 
   /// 頒布状況に対応する枠 PNG アセットを読み込み、デコードして返す。
   static Future<ui.Image> _loadFrame(
-    ManholeCardDistributionState distributionState,
+    DistributionState distributionState,
   ) {
     return _loadFramePath(_framePath(distributionState));
   }
@@ -100,7 +100,7 @@ class MarkerIconBuilder {
   /// [alreadyGet] が false の場合はグレースケールで描画する。
   static Future<Uint8List> build({
     required Uint8List originalBytes,
-    required ManholeCardDistributionState distributionState,
+    required DistributionState distributionState,
     required bool alreadyGet,
   }) async {
     final frame = await _loadFrame(distributionState);

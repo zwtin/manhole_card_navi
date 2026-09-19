@@ -102,8 +102,6 @@ class GoRouterNavigationService implements NavigationService {
   @override
   Future<void> presentImageDetail({
     required String cardId,
-    required String imageUrl,
-    required String imageSubUrl,
     required bool alreadyGet,
     required String heroTag,
   }) async {
@@ -111,8 +109,6 @@ class GoRouterNavigationService implements NavigationService {
       AppRoutePath.imageDetail,
       extra: ImageDetailArgs(
         cardId: cardId,
-        imageUrl: imageUrl,
-        imageSubUrl: imageSubUrl,
         alreadyGet: alreadyGet,
         heroTag: heroTag,
       ),

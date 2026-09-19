@@ -1,18 +1,13 @@
-import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/analytics_event.dart';
-import '../repository/analytics_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/analytics_event.dart';
+import 'package:domain/src/repository/analytics_repository.dart';
 
-final analyticsUseCaseProvider = Provider.autoDispose<AnalyticsUseCase>(
-  (ref) {
-    final analyticsUseCase = AnalyticsUseCase(
-      ref.watch(analyticsRepositoryProvider),
-    );
-    ref.onDispose(analyticsUseCase.dispose);
-    return analyticsUseCase;
-  },
+final analyticsUseCaseProvider = Provider<AnalyticsUseCase>(
+  (ref) => AnalyticsUseCase(
+    ref.watch(analyticsRepositoryProvider),
+  ),
 );
 
 class AnalyticsUseCase {
@@ -22,21 +17,7 @@ class AnalyticsUseCase {
 
   final AnalyticsRepository _analyticsRepository;
 
-  final _logger = Logger();
-
-  Future<Result<void>> send({
-    required String name,
-    Map<String, Object>? parameters,
-  }) async {
-    final event = AnalyticsEvent(name: name, parameters: parameters);
-    return _analyticsRepository.sendEvent(analyticsEvent: event);
-  }
-
-  Future<Result<void>> sendOpen() async {
-    return _analyticsRepository.sendAppOpen();
-  }
-
-  void dispose() {
-    _logger.d('AnalyticsUseCase dispose');
+  Future<Result<void>> send({required AnalyticsEvent event}) {
+    return _analyticsRepository.send(event: event);
   }
 }

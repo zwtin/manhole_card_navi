@@ -30,10 +30,9 @@ class CustomIntroductionViewModel extends AutoDisposeFamilyNotifier<void, bool> 
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'custom_introduction_view',
-      },
+      event: const AnalyticsEvent.screenView(
+        screenName: 'custom_introduction_view',
+      ),
     );
   }
 }

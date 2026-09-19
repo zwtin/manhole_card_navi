@@ -1,18 +1,13 @@
-import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/privacy_policy.dart';
-import '../repository/privacy_policy_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/privacy_policy.dart';
+import 'package:domain/src/repository/privacy_policy_repository.dart';
 
-final privacyPolicyUseCaseProvider = Provider.autoDispose<PrivacyPolicyUseCase>(
-  (ref) {
-    final privacyPolicyUseCase = PrivacyPolicyUseCase(
-      ref.watch(privacyPolicyRepositoryProvider),
-    );
-    ref.onDispose(privacyPolicyUseCase.dispose);
-    return privacyPolicyUseCase;
-  },
+final privacyPolicyUseCaseProvider = Provider<PrivacyPolicyUseCase>(
+  (ref) => PrivacyPolicyUseCase(
+    ref.watch(privacyPolicyRepositoryProvider),
+  ),
 );
 
 class PrivacyPolicyUseCase {
@@ -22,13 +17,7 @@ class PrivacyPolicyUseCase {
 
   final PrivacyPolicyRepository _privacyPolicyRepository;
 
-  final _logger = Logger();
-
   Future<Result<PrivacyPolicy>> get() {
     return _privacyPolicyRepository.get();
-  }
-
-  void dispose() {
-    _logger.d('PrivacyPolicyUseCase dispose');
   }
 }

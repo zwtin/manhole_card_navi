@@ -1,23 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:domain/domain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../mapper/local_card_mapper.dart';
-import '../model/local_card_model.dart';
+import 'package:data/src/model/local_card_model.dart';
+import 'package:data/src/model/malformed_data_exception.dart';
 
-/// 端末に取り込んだマスターデータ（カード一式）を、1 つの JSON ファイルで持つ。
-///
-/// 読むときは全件をまとめて読み、メモリに持っておく（一覧・マップはどのみち全件を
-/// 使う）。書くときは一時ファイルに書いてから名前を変えて置き換えるので、途中で
-/// 失敗しても前のデータが残る。
-///
-/// ファイルの形を変えたら [_formatVersion] を上げる。ファイル名にバージョンが入るので、
-/// 古い形のファイルは読まれず「まだ取り込んでいない」扱いになり、マスターデータを
-/// 取り直す。古い形のファイルは消す。
-///
 /// 読み込んだカードをメモリに持つので、アプリ全体で 1 つだけ作る。
 class MasterDataLocalDataSource {
   MasterDataLocalDataSource({
@@ -26,8 +15,6 @@ class MasterDataLocalDataSource {
   })  : _directory = directory,
         _cleanUp = cleanUp;
 
-  /// Application Support にファイルを置く。最初に使うときに、以前マスターデータを
-  /// 入れていた Realm のファイルを消す。
   factory MasterDataLocalDataSource.inApplicationSupport() {
     return MasterDataLocalDataSource(
       directory: getApplicationSupportDirectory,
@@ -35,6 +22,8 @@ class MasterDataLocalDataSource {
     );
   }
 
+  /// ファイルの形を変えたら上げる。古い形のファイルは読まずに消すので、取り込んで
+  /// いない扱いになって取り直す。
   static const _formatVersion = 1;
   static const _fileName = 'master_data_v$_formatVersion.json';
   static final _oldFileName = RegExp(r'^master_data_v\d+\.json(\.tmp)?$');
@@ -43,13 +32,11 @@ class MasterDataLocalDataSource {
   final Future<void> Function()? _cleanUp;
 
   Future<File>? _file;
-  List<ManholeCard>? _cards;
+  List<LocalCardModel>? _cards;
 
-  /// 取り込んだカード一式。まだ取り込んでいなければ null。
-  ///
-  /// ファイルが壊れていれば消して [CorruptedDataException] を投げる。消しておくと、
-  /// 次の起動時の確認で「取り込んでいない」とわかり、取り直す。
-  Future<List<ManholeCard>?> readAll() async {
+  /// まだ取り込んでいなければ null。壊れたファイルは消すので、次の起動時の確認で
+  /// 取り込んでいない扱いになって取り直す。
+  Future<List<LocalCardModel>?> readAll() async {
     final cached = _cards;
     if (cached != null) {
       return cached;
@@ -60,26 +47,25 @@ class MasterDataLocalDataSource {
     }
     final source = await file.readAsString();
     try {
-      // 2MB ほどあるので、変換は別の Isolate で行う。
+      // 1〜2 MB あるので、別の Isolate で変換する。
       final cards = await compute(_decode, source);
       return _cards = List.unmodifiable(cards);
-    } on CorruptedDataException {
+    } on MalformedDataException {
       await file.delete();
       rethrow;
     }
   }
 
-  /// カード一式を [cards] で丸ごと入れ替える。
-  Future<void> writeAll(List<ManholeCard> cards) async {
+  Future<void> writeAll(List<LocalCardModel> cards) async {
     final file = await _resolveFile();
     final source = await compute(_encode, cards);
+    // 途中で失敗しても前のファイルが残るよう、別のファイルに書いてから置き換える。
     final temporary = File('${file.path}.tmp');
     await temporary.writeAsString(source, flush: true);
     await temporary.rename(file.path);
     _cards = List.unmodifiable(cards);
   }
 
-  /// 端末にカード一式があるか。
   Future<bool> exists() async {
     if (_cards != null) {
       return true;
@@ -87,33 +73,31 @@ class MasterDataLocalDataSource {
     return (await _resolveFile()).exists();
   }
 
-  static String _encode(List<ManholeCard> cards) {
-    return jsonEncode([
-      for (final card in cards) LocalCardMapper.toModel(card).toJson(),
-    ]);
+  static String _encode(List<LocalCardModel> cards) {
+    return jsonEncode([for (final card in cards) card.toJson()]);
   }
 
-  static List<ManholeCard> _decode(String source) {
+  static List<LocalCardModel> _decode(String source) {
     final Object? json;
     try {
       json = jsonDecode(source);
     } on FormatException catch (error, stackTrace) {
-      throw CorruptedDataException(
-        detail: '端末のマスターデータが JSON として読めません',
+      throw MalformedDataException(
+        '端末のマスターデータが JSON として読めません',
         cause: error,
         stackTrace: stackTrace,
       );
     }
     if (json is! List<dynamic>) {
-      throw const CorruptedDataException(detail: '端末のマスターデータがカードの一覧ではありません');
+      throw const MalformedDataException('端末のマスターデータがカードの一覧ではありません');
     }
     return [
       for (final item in json)
         if (item is Map<String, dynamic>)
-          LocalCardMapper.toCard(LocalCardModel.fromStoredJson(item))
+          LocalCardModel.fromStoredJson(item)
         else
-          throw const CorruptedDataException(
-            detail: '端末のマスターデータにカードでない要素があります',
+          throw const MalformedDataException(
+            '端末のマスターデータにカードでない要素があります',
           ),
     ];
   }
@@ -134,11 +118,8 @@ class MasterDataLocalDataSource {
   }
 }
 
-/// 以前マスターデータを入れていた Realm のファイルを消す。
-///
-/// realm は iOS では Documents、Android では files ディレクトリ（Application Support と
-/// 同じ場所）に `default.realm` と付随するファイルを置いていた。消せなくても動作には
-/// 関わらないので、失敗は無視する。
+/// 以前マスターデータを入れていた Realm のファイルを消す。Realm は iOS では
+/// Documents、Android では files（Application Support と同じ場所）に置いていた。
 Future<void> _deleteRealmFiles() async {
   for (final getDirectory in [
     getApplicationDocumentsDirectory,
@@ -156,7 +137,7 @@ Future<void> _deleteRealmFiles() async {
         }
       }
     } on FileSystemException {
-      // 残っても害はない。
+      // 残っても動作には関わらない。
     }
   }
 }

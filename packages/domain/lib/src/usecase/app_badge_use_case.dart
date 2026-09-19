@@ -1,17 +1,12 @@
-import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../repository/app_badge_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/repository/app_badge_repository.dart';
 
-final appBadgeUseCaseProvider = Provider.autoDispose<AppBadgeUseCase>(
-  (ref) {
-    final appBadgeUseCase = AppBadgeUseCase(
-      ref.watch(appBadgeRepositoryProvider),
-    );
-    ref.onDispose(appBadgeUseCase.dispose);
-    return appBadgeUseCase;
-  },
+final appBadgeUseCaseProvider = Provider<AppBadgeUseCase>(
+  (ref) => AppBadgeUseCase(
+    ref.watch(appBadgeRepositoryProvider),
+  ),
 );
 
 class AppBadgeUseCase {
@@ -21,8 +16,6 @@ class AppBadgeUseCase {
 
   final AppBadgeRepository _appBadgeRepository;
 
-  final _logger = Logger();
-
   Future<Result<void>> updateCount({
     required int count,
   }) async {
@@ -31,9 +24,5 @@ class AppBadgeUseCase {
 
   Future<Result<void>> remove() async {
     return _appBadgeRepository.remove();
-  }
-
-  void dispose() {
-    _logger.d('AppBadgeUseCase dispose');
   }
 }

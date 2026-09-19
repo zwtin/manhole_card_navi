@@ -1,10 +1,9 @@
-import 'package:domain/domain.dart';
-import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../datasource/failure_recorder.dart';
-import '../datasource/remote_config_data_source.dart';
-import '../mapper/domain_exception_mapper.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/remote_config_data_source.dart';
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:domain/domain.dart';
 
 class AppInfoRepositoryImpl implements AppInfoRepository {
   AppInfoRepositoryImpl(
@@ -13,10 +12,8 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
     this._failureRecorder,
   );
 
-  /// 動かすのに必要な最低限のアプリのバージョンを配信する Remote Config のキー。
   static const _inquiredVersionKey = 'inquired_app_version';
 
-  final _logger = Logger();
   final PackageInfo _packageInfo;
   final RemoteConfigDataSource _remoteConfig;
   final FailureRecorder _failureRecorder;
@@ -57,9 +54,5 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
       },
       convert: DomainExceptionMapper.fromRemoteConfig,
     );
-  }
-
-  void dispose() {
-    _logger.d('AppInfoRepositoryImpl dispose');
   }
 }

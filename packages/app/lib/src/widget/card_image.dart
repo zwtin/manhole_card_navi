@@ -6,18 +6,14 @@ import 'card_image_provider.dart';
 
 /// マンホールカードの画像を表示するウィジェット。
 ///
-/// 原本画像（カラー）URL を [imageUrl] に渡す。未所持（[alreadyGet] が false）の
-/// 場合は実行時に彩度 0 のカラーフィルターを掛けてグレースケール表示する。
-///
-/// [imageSubUrl] は代替配信元の URL（master の `image_sub_url`）。[imageUrl] を
-/// 取得できなかったときに使われる。代替が無いカードでは空文字を渡す。
+/// [cardId] のカードの画像を出す。未所持（[alreadyGet] が false）の場合は実行時に
+/// 彩度 0 のカラーフィルターを掛けてグレースケール表示する。
 ///
 /// [memCacheWidth] は表示するときの幅、[maxWidthDiskCache] は端末に縮小して保存する
 /// 幅。指定すると原寸デコードを避けられる。
 class CardImage extends ConsumerWidget {
   const CardImage({
-    required this.imageUrl,
-    required this.imageSubUrl,
+    required this.cardId,
     required this.alreadyGet,
     this.memCacheWidth,
     this.maxWidthDiskCache,
@@ -25,8 +21,7 @@ class CardImage extends ConsumerWidget {
     super.key,
   });
 
-  final String imageUrl;
-  final String imageSubUrl;
+  final String cardId;
   final bool alreadyGet;
   final int? memCacheWidth;
   final int? maxWidthDiskCache;
@@ -83,9 +78,8 @@ class CardImage extends ConsumerWidget {
         memCacheWidth,
         null,
         CardImageProvider(
-          useCase: ref.watch(cardImageUseCaseProvider),
-          url: imageUrl,
-          subUrl: imageSubUrl,
+          useCase: ref.watch(cardUseCaseProvider),
+          cardId: cardId,
           maxWidth: maxWidthDiskCache,
         ),
       ),

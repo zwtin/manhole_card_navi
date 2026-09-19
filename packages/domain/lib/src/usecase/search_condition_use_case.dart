@@ -1,16 +1,14 @@
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/search_condition.dart';
-import '../repository/search_condition_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/search_condition.dart';
+import 'package:domain/src/repository/search_condition_repository.dart';
 
 final searchConditionUseCaseProvider =
-    Provider.autoDispose<SearchConditionUseCase>(
-  (ref) {
-    return SearchConditionUseCase(
-      ref.watch(searchConditionRepositoryProvider),
-    );
-  },
+    Provider<SearchConditionUseCase>(
+  (ref) => SearchConditionUseCase(
+    ref.watch(searchConditionRepositoryProvider),
+  ),
 );
 
 class SearchConditionUseCase {
@@ -20,13 +18,8 @@ class SearchConditionUseCase {
 
   final SearchConditionRepository _searchConditionRepository;
 
-  Future<Result<SearchCondition>> get() {
-    return _searchConditionRepository.get();
-  }
-
-  /// 検索条件が変わるたびに流れる。購読を始めたときにも今の値が流れる。
-  Stream<SearchCondition> getStream() {
-    return _searchConditionRepository.getStream();
+  Stream<SearchCondition> watch() {
+    return _searchConditionRepository.watch();
   }
 
   Future<Result<void>> save({

@@ -1,19 +1,14 @@
-import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/app_info.dart';
-import '../repository/app_info_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/app_info.dart';
+import 'package:domain/src/repository/app_info_repository.dart';
 
 final checkAppUpdateUseCaseProvider =
-    Provider.autoDispose<CheckAppUpdateUseCase>(
-  (ref) {
-    final checkAppUpdateUseCase = CheckAppUpdateUseCase(
-      ref.watch(appInfoRepositoryProvider),
-    );
-    ref.onDispose(checkAppUpdateUseCase.dispose);
-    return checkAppUpdateUseCase;
-  },
+    Provider<CheckAppUpdateUseCase>(
+  (ref) => CheckAppUpdateUseCase(
+    ref.watch(appInfoRepositoryProvider),
+  ),
 );
 
 class CheckAppUpdateUseCase {
@@ -23,9 +18,6 @@ class CheckAppUpdateUseCase {
 
   final AppInfoRepository _appInfoRepository;
 
-  final _logger = Logger();
-
-  /// アプリのアップデートが必要か（動かすのに必要なバージョンより古いか）。
   Future<Result<bool>> getNeedUpdate() async {
     final AppInfo appInfo;
     switch (await _appInfoRepository.getAppInfo()) {
@@ -41,9 +33,5 @@ class CheckAppUpdateUseCase {
       case Success(value: final inquiredVersion):
         return Result.success(appInfo.version < inquiredVersion);
     }
-  }
-
-  void dispose() {
-    _logger.d('CheckAppUpdateUseCase dispose');
   }
 }

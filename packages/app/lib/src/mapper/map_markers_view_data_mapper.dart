@@ -81,7 +81,7 @@ class MapMarkersViewDataMapper {
     required Set<String> alreadyGetCardIds,
     required LatLng centerCoordinate,
     required CommonSearchCondition searchCondition,
-    required CardImageUseCase cardImageUseCase,
+    required CardUseCase cardUseCase,
     void Function(MapMarkersViewData partial)? onPartial,
   }) async {
     // 近傍 30 件に絞る前に、横断フィルタ（弾数・配布状態・取得状態）を適用する。
@@ -91,7 +91,7 @@ class MapMarkersViewDataMapper {
           searchCondition.matchesDistributionState(
             pin.card.distributionState,
           ) &&
-          searchCondition.matchesDisplay(
+          searchCondition.matchesAlreadyGet(
             alreadyGet: alreadyGetCardIds.contains(pin.card.id),
           );
     }).toList();
@@ -127,7 +127,7 @@ class MapMarkersViewDataMapper {
         final icon = await _buildIcon(
           card: pin.card,
           alreadyGet: alreadyGet,
-          cardImageUseCase: cardImageUseCase,
+          cardUseCase: cardUseCase,
         );
         if (icon == null) {
           return;
@@ -165,8 +165,6 @@ class MapMarkersViewDataMapper {
           '${pin.coordinate.longitude}',
       cardId: pin.card.id,
       icon: icon,
-      imageUrl: pin.card.image,
-      imageSubUrl: pin.card.imageSub,
       latitude: pin.coordinate.latitude,
       longitude: pin.coordinate.longitude,
     );
@@ -183,7 +181,7 @@ class MapMarkersViewDataMapper {
   static Future<Uint8List?> _buildIcon({
     required ManholeCard card,
     required bool alreadyGet,
-    required CardImageUseCase cardImageUseCase,
+    required CardUseCase cardUseCase,
   }) {
     final key = _cacheKey(card: card, alreadyGet: alreadyGet);
 
@@ -202,7 +200,7 @@ class MapMarkersViewDataMapper {
       key: key,
       card: card,
       alreadyGet: alreadyGet,
-      cardImageUseCase: cardImageUseCase,
+      cardUseCase: cardUseCase,
     );
     _inFlight[key] = future;
     return future.whenComplete(() => _inFlight.remove(key));
@@ -213,7 +211,7 @@ class MapMarkersViewDataMapper {
     required String key,
     required ManholeCard card,
     required bool alreadyGet,
-    required CardImageUseCase cardImageUseCase,
+    required CardUseCase cardUseCase,
   }) async {
     final fromDisk = await _readDisk(key);
     if (fromDisk != null) {
@@ -223,12 +221,8 @@ class MapMarkersViewDataMapper {
 
     // 原本画像は一覧・詳細と同じく data から受け取る（端末に保存済みならそれを
     // 使い、主系で取れなければ代わりの配信元から取る。失敗の計測も data が行う）。
-    // 保存するのは合成したアイコンだけにし、原本は保存しない。
     final Uint8List originalBytes;
-    switch (await cardImageUseCase.fetchWithoutStoring(
-      url: card.image,
-      subUrl: card.imageSub,
-    )) {
+    switch (await cardUseCase.fetchImage(cardId: card.id)) {
       case Failure():
         return null;
       case Success(:final value):

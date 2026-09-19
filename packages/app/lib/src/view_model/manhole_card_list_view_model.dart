@@ -49,17 +49,11 @@ class ManholeCardListViewModel
           ),
         );
     }
-    final conditionResult = await _searchConditionUseCase.get();
-    if (conditionResult is Success<SearchCondition>) {
-      _searchCondition = conditionResult.value;
-    }
-    final alreadyGetResult = await _alreadyGetCardUseCase.get();
-    if (alreadyGetResult is Success<Set<String>>) {
-      _alreadyGetCardIds = alreadyGetResult.value;
-    }
+    _searchCondition = await _searchConditionUseCase.watch().first;
+    _alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
 
     final alreadyGetSubscription = _alreadyGetCardUseCase
-        .getStream()
+        .watch()
         .listen((cardIds) async {
       // 購読開始時にも現在値が流れてくるため、変わっていなければ作り直さない。
       if (setEquals(cardIds, _alreadyGetCardIds)) {
@@ -71,7 +65,7 @@ class ManholeCardListViewModel
     ref.onDispose(alreadyGetSubscription.cancel);
 
     final searchConditionSubscription = _searchConditionUseCase
-        .getStream()
+        .watch()
         .listen((condition) async {
       if (condition == _searchCondition) {
         return;
@@ -115,11 +109,10 @@ class ManholeCardListViewModel
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'manhole_card_list_view',
-        'active_filter_count': _searchCondition.activeFilterCount,
-      },
+      event: AnalyticsEvent.screenView(
+        screenName: 'manhole_card_list_view',
+        parameters: {'active_filter_count': _searchCondition.activeFilterCount},
+      ),
     );
   }
 
