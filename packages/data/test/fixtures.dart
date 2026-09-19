@@ -15,8 +15,6 @@ ManholeCard card({
     name: '藤井寺市',
     publicationDate: DateTime(2026, 1, 1),
     distributionState: DistributionState.stopped,
-    image: 'https://example.com/$id.jpg',
-    imageSub: '',
     distributionPlaceHtml: '<p>藤井寺市役所</p>',
     distributionTimeHtml: '<p>9:00〜17:00</p>',
     stockHtml: '<p>あり</p>',
@@ -26,9 +24,11 @@ ManholeCard card({
   );
 }
 
-/// テスト用の、端末に保存するカード。値は [card] と同じ。
+/// テスト用の、端末に保存するカード。画像の URL のほかは [card] と同じ値。
 LocalCardModel localCard({
   String id = '27-226-B001',
+  String? image,
+  String imageSub = '',
   List<LocalCoordinateModel> distributionPoints = const [
     LocalCoordinateModel(latitude: 34.57, longitude: 135.6),
   ],
@@ -39,8 +39,8 @@ LocalCardModel localCard({
     name: '藤井寺市',
     publicationDate: DateTime(2026, 1, 1),
     distributionState: DistributionStateModel.stopped,
-    image: 'https://example.com/$id.jpg',
-    imageSub: '',
+    image: image ?? 'https://example.com/$id.jpg',
+    imageSub: imageSub,
     distributionPlaceHtml: '<p>藤井寺市役所</p>',
     distributionTimeHtml: '<p>9:00〜17:00</p>',
     stockHtml: '<p>あり</p>',

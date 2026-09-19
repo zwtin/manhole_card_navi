@@ -12,8 +12,6 @@ ManholeCard _card({
     name: 'カード',
     publicationDate: DateTime(2026, 1, 1),
     distributionState: DistributionState.distributing,
-    image: '',
-    imageSub: '',
     distributionPlaceHtml: '',
     distributionTimeHtml: '',
     stockHtml: '',

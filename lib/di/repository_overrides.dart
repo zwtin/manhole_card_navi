@@ -47,14 +47,10 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
       ref.onDispose(repository.dispose);
       return repository;
     }),
-    cardImageRepositoryProvider.overrideWith((ref) {
-      final repository = CardImageRepositoryImpl(CardImageCacheManager());
-      ref.onDispose(repository.dispose);
-      return repository;
-    }),
     cardRepositoryProvider.overrideWith((ref) {
       final repository = CardRepositoryImpl(
         infrastructure.masterData,
+        CardImageCacheManager(),
         failureRecorder,
       );
       ref.onDispose(repository.dispose);

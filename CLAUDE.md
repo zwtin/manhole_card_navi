@@ -66,7 +66,7 @@ fvm flutter pub run flutter_native_splash:create
    - `datasource/` - 外界と話すクラス。Firestore・Firebase Auth・Analytics・Messaging・SharedPreferences は SDK のインスタンスをそのまま使い、中身があるもの・static な API だけを包む。返すのは model（か SDK の型）で、エンティティにはしない。domain を知らず、形の違うデータは data の中だけの `MalformedDataException` で知らせる（domain の失敗の種類にするのは Repository）
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
      - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）
-     - `CardImageCacheManager` / `ImageFallback` / `ImageLoadMonitor`: カード画像の取得。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
+     - `CardImageCacheManager` / `ImageFallback` / `ImageLoadMonitor`: カード画像の取得（`CardRepositoryImpl.fetchImage` が使う）。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
      - `LocationDataSource`: 位置情報（geolocator の static な API の包み）
      - `FailureRecorder` / `UncaughtErrorObserver`: Crashlytics への記録。domain の失敗の種類を見て記録するかを決めるので、この 2 つだけは domain を知っている
    - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば `MalformedDataException` にする（`decodeModel`）。保存する値の enum も model が持ち、値の名前を保存する文字列にそろえる（domain の名前を変えても保存済みの値は変わらない）。エンティティは JSON を知らない
@@ -108,7 +108,7 @@ fvm flutter pub run flutter_native_splash:create
 ### 失敗とバグの記録（Crashlytics）
 - Crashlytics を知っているのは data と `main.dart` だけ。app と domain は記録に関わらない
 - data の Repository は、失敗をすべて `FailureRecorder`（ふつうは `guard`）を通して返し、そこで非重大として記録する。通信できない・タイムアウト（`UnavailableException`）は、時間をおけば直り調べても直せないので記録しない
-- 例外はカード画像の `CardImageRepositoryImpl` で、`FailureRecorder` を通さない。画像の失敗は `ImageLoadMonitor`（Analytics）と、下の `FlutterError` 経由の非重大で記録している
+- 例外はカード画像（`CardRepositoryImpl.fetchImage`）の取得の失敗で、`FailureRecorder` を通さない。画像の失敗は `ImageLoadMonitor`（Analytics）と、下の `FlutterError` 経由の非重大で記録している
 - 扱われなかったバグはクラッシュ（fatal）として記録する。`main.dart` の Zone と `FlutterError.onError`、provider の生成中に起きたものは data の `UncaughtErrorObserver` が拾う。provider の中の失敗は Riverpod が受け止めるため Zone には届かない
 - 画像の読み込み失敗（`library` が `image resource service`）はバグではないので、`FlutterError.onError` でも非重大のまま記録する。画像が出ない問い合わせの調査はこの非重大の記録で行う。`CardImageProvider` は、ここに残るよう変換前の例外（`HandshakeException` など）を投げる
 
@@ -117,7 +117,7 @@ fvm flutter pub run flutter_native_splash:create
 - 読み込むだけの画面は `AsyncNotifier`（`build()` で取得）、起動時チェックやマップのように読み込みに副作用を伴う画面は `Notifier` にして View の `useEffect` から `onLoad()` を呼ぶ
 - ViewModel は BuildContext を持たない。遷移・アラート・URL を開く操作は `NavigationService` 経由で行う
 - ViewModel が読み書きするのは UseCase だけで、Repository を直接呼ばない。処理のない読み取りも、Repository を素通しする UseCase のメソッドを通す
-- カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）が `CardImageUseCase` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない
+- カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）がカードの ID で `CardUseCase.fetchImage` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない。画像の URL・代わりの配信元・端末に保存するかは data だけが知っていて、エンティティにも画像の URL は持たせない
 
 ### 画面遷移（app）
 - go_router の `StatefulShellRoute` で、マップ・リスト・設定のタブがそれぞれ独立した遷移スタックを持つ

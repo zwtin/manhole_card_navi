@@ -14,8 +14,6 @@ abstract final class LocalCardMapper {
       distributionState: DistributionStateMapper.toDistributionState(
         model.distributionState,
       ),
-      image: model.image,
-      imageSub: model.imageSub,
       distributionPlaceHtml: model.distributionPlaceHtml,
       distributionTimeHtml: model.distributionTimeHtml,
       stockHtml: model.stockHtml,

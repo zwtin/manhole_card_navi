@@ -13,7 +13,6 @@ export 'src/repository/already_get_card_repository_impl.dart';
 export 'src/repository/analytics_repository_impl.dart';
 export 'src/repository/app_badge_repository_impl.dart';
 export 'src/repository/app_info_repository_impl.dart';
-export 'src/repository/card_image_repository_impl.dart';
 export 'src/repository/card_repository_impl.dart';
 export 'src/repository/location_repository_impl.dart';
 export 'src/repository/master_data_repository_impl.dart';

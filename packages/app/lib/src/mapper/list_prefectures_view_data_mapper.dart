@@ -58,8 +58,6 @@ class ListPrefecturesViewDataMapper {
                     }
                     return ListCardViewData(
                       id: card.id,
-                      imageUrl: card.image,
-                      imageSubUrl: card.imageSub,
                       alreadyGet: alreadyGet,
                       name: card.name,
                       volume: card.volume.name,

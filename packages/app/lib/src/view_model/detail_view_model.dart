@@ -99,8 +99,6 @@ class DetailViewModel
     }
     await _navigationService.presentImageDetail(
       cardId: arg,
-      imageUrl: current.imageUrl,
-      imageSubUrl: current.imageSubUrl,
       alreadyGet: current.alreadyGet,
       heroTag: heroTag,
     );

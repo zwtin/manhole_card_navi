@@ -67,10 +67,9 @@ class DetailPage extends HookConsumerWidget {
                                         await precacheImage(
                                           CardImageProvider(
                                             useCase: ref.read(
-                                              cardImageUseCaseProvider,
+                                              cardUseCaseProvider,
                                             ),
-                                            url: card.imageUrl,
-                                            subUrl: card.imageSubUrl,
+                                            cardId: cardId,
                                           ),
                                           context,
                                         );
@@ -94,8 +93,7 @@ class DetailPage extends HookConsumerWidget {
                                         // マップが共有され、初回タップでも
                                         // Hero 遷移が成立する。
                                         child: CardImage(
-                                          imageUrl: card.imageUrl,
-                                          imageSubUrl: card.imageSubUrl,
+                                          cardId: cardId,
                                           alreadyGet: card.alreadyGet,
                                         ),
                                       ),

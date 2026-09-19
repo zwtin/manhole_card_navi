@@ -59,8 +59,6 @@ abstract class NavigationService {
   /// カード画像の拡大表示をタブの外にフェードで表示する。
   Future<void> presentImageDetail({
     required String cardId,
-    required String imageUrl,
-    required String imageSubUrl,
     required bool alreadyGet,
     required String heroTag,
   });

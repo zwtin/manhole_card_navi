@@ -11,14 +11,12 @@ import 'card_image_provider.dart';
 class ImageDetail extends ConsumerStatefulWidget {
   const ImageDetail({
     super.key,
-    required this.imageUrl,
-    required this.imageSubUrl,
+    required this.cardId,
     required this.alreadyGet,
     required this.imageTag,
   });
 
-  final String imageUrl;
-  final String imageSubUrl;
+  final String cardId;
   final bool alreadyGet;
   final String imageTag;
 
@@ -105,9 +103,8 @@ class ImageDetailViewState extends ConsumerState<ImageDetail> {
       backgroundDecoration: const BoxDecoration(color: Colors.transparent),
       // 詳細のサムネイル・先読みと同じ原寸の画像にし、デコード済みの画像を共有する。
       imageProvider: CardImageProvider(
-        useCase: ref.watch(cardImageUseCaseProvider),
-        url: widget.imageUrl,
-        subUrl: widget.imageSubUrl,
+        useCase: ref.watch(cardUseCaseProvider),
+        cardId: widget.cardId,
       ),
       heroAttributes: PhotoViewHeroAttributes(
         tag: widget.imageTag,

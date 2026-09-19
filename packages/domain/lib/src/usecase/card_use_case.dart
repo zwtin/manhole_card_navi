@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -31,6 +33,14 @@ class CardUseCase {
   /// 端末に取り込んだすべてのカード。
   Future<Result<List<ManholeCard>>> fetchAll() {
     return _cardRepository.fetchAll();
+  }
+
+  /// [cardId] のカードの画像のデータ。引数は [CardRepository.fetchImage] と同じ。
+  Future<Result<Uint8List>> fetchImage({
+    required String cardId,
+    int? maxWidth,
+  }) {
+    return _cardRepository.fetchImage(cardId: cardId, maxWidth: maxWidth);
   }
 
   void dispose() {

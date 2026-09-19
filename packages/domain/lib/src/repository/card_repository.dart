@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:riverpod/riverpod.dart';
 
 import '../core/result.dart';
@@ -14,4 +16,13 @@ abstract class CardRepository {
 
   /// 端末に取り込んだすべてのカード。
   Future<Result<List<ManholeCard>>> fetchAll();
+
+  /// [cardId] のカードの画像のデータ（JPEG などのエンコード済みのバイト列）。
+  ///
+  /// [maxWidth] を渡すと、その幅に縮小した画像を返す。どこから取るか・端末に
+  /// 保存して使い回すかは data が決める。
+  Future<Result<Uint8List>> fetchImage({
+    required String cardId,
+    int? maxWidth,
+  });
 }

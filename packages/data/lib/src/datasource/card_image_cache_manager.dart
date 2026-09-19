@@ -11,7 +11,7 @@ import 'image_load_monitor.dart';
 ///
 /// 既定の [DefaultCacheManager] の代わりにこれを使う。主系（Cloudflare R2）で
 /// 取得できなかった画像を Firebase Hosting から取り直す [_FallbackFileService] を
-/// 差し込むためで、カード画像の取得（`CardImageRepositoryImpl`）はすべてこの 1 か所を
+/// 差し込むためで、カード画像の取得（`CardRepositoryImpl.fetchImage`）はすべてこの 1 か所を
 /// 通る。
 ///
 /// キャッシュキーは [DefaultCacheManager] と同じ `libCachedImageData` にしてある。

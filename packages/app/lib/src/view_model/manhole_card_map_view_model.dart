@@ -27,7 +27,6 @@ class ManholeCardMapViewModel
 
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
-  late final CardImageUseCase _cardImageUseCase;
   late final CardUseCase _cardUseCase;
   late final LocationUseCase _locationUseCase;
   late final NavigationService _navigationService;
@@ -62,7 +61,6 @@ class ManholeCardMapViewModel
   ManholeCardMapViewData build() {
     _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _cardImageUseCase = ref.watch(cardImageUseCaseProvider);
     _cardUseCase = ref.watch(cardUseCaseProvider);
     _locationUseCase = ref.watch(locationUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
@@ -272,7 +270,7 @@ class ManholeCardMapViewModel
         alreadyGetCardIds: cardIds,
         centerCoordinate: _position,
         searchCondition: _searchCondition.common,
-        cardImageUseCase: _cardImageUseCase,
+        cardUseCase: _cardUseCase,
         onPartial: (partial) {
           // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
           if (generation != _markerGeneration) {
@@ -320,7 +318,7 @@ class ManholeCardMapViewModel
       alreadyGetCardIds: _alreadyGetCardIds,
       centerCoordinate: _position,
       searchCondition: _searchCondition.common,
-      cardImageUseCase: _cardImageUseCase,
+      cardUseCase: _cardUseCase,
       onPartial: (partial) {
         // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
         if (generation != _markerGeneration) {
