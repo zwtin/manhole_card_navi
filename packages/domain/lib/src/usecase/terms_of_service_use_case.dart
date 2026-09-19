@@ -1,12 +1,11 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/terms_of_service.dart';
-import '../entity/terms_of_service_version.dart';
-import '../repository/terms_of_service_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/terms_of_service.dart';
+import 'package:domain/src/entity/terms_of_service_version.dart';
+import 'package:domain/src/repository/terms_of_service_repository.dart';
 
-/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
 final termsOfServiceUseCaseProvider =
     Provider<TermsOfServiceUseCase>(
   (ref) {
@@ -18,7 +17,6 @@ final termsOfServiceUseCaseProvider =
   },
 );
 
-/// 利用規約の表示と、同意の確認・記録。
 class TermsOfServiceUseCase {
   TermsOfServiceUseCase(
     this._termsOfServiceRepository,
@@ -32,7 +30,6 @@ class TermsOfServiceUseCase {
     return _termsOfServiceRepository.get();
   }
 
-  /// 利用規約への同意が必要か（まだ一度も同意していないか）。
   Future<Result<bool>> getNeedAgree() async {
     switch (await _termsOfServiceRepository.getAgreedVersion()) {
       case Failure(:final exception):
@@ -42,7 +39,6 @@ class TermsOfServiceUseCase {
     }
   }
 
-  /// 利用規約が更新されていて、再同意が必要か。
   Future<Result<bool>> getNeedUpdate() async {
     final TermsOfServiceVersion? agreedVersion;
     switch (await _termsOfServiceRepository.getAgreedVersion()) {
@@ -60,7 +56,6 @@ class TermsOfServiceUseCase {
     }
   }
 
-  /// 今の要求バージョンに同意したことを記録する。
   Future<Result<void>> agree() async {
     switch (await _termsOfServiceRepository.getInquiredVersion()) {
       case Failure(:final exception):

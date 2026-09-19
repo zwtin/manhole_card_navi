@@ -1,5 +1,6 @@
-import 'package:domain/domain.dart';
 import 'package:test/test.dart';
+
+import 'package:domain/domain.dart';
 
 void main() {
   test('名前のない都道府県は、国の機関・全国組織のカードとして扱う', () {

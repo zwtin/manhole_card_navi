@@ -1,10 +1,9 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../repository/already_get_card_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/repository/already_get_card_repository.dart';
 
-/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
 final alreadyGetCardUseCaseProvider =
     Provider<AlreadyGetCardUseCase>(
   (ref) {
@@ -25,19 +24,16 @@ class AlreadyGetCardUseCase {
 
   final _logger = Logger();
 
-  /// 取得済みカードの ID。購読を始めたときに今の値が流れ、変わるたびに流れる。
   Stream<Set<String>> watch() {
     return _alreadyGetCardRepository.watch();
   }
 
-  /// [id] のカードを取得済みにする。
   Future<Result<void>> save({
     required String id,
   }) {
     return _alreadyGetCardRepository.save(cardId: id);
   }
 
-  /// [id] のカードを未取得に戻す。
   Future<Result<void>> delete({
     required String id,
   }) {

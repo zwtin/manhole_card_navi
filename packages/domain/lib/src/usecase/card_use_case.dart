@@ -3,11 +3,10 @@ import 'dart:typed_data';
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/manhole_card.dart';
-import '../repository/card_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/manhole_card.dart';
+import 'package:domain/src/repository/card_repository.dart';
 
-/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
 final cardUseCaseProvider = Provider<CardUseCase>(
   (ref) {
     final cardUseCase = CardUseCase(
@@ -30,12 +29,10 @@ class CardUseCase {
     return _cardRepository.get(id: id);
   }
 
-  /// 端末に取り込んだすべてのカード。
   Future<Result<List<ManholeCard>>> fetchAll() {
     return _cardRepository.fetchAll();
   }
 
-  /// [cardId] のカードの画像のデータ。引数は [CardRepository.fetchImage] と同じ。
   Future<Result<Uint8List>> fetchImage({
     required String cardId,
     int? maxWidth,

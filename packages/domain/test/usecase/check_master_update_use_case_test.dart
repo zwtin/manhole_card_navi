@@ -1,7 +1,8 @@
-import 'package:domain/domain.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:test/test.dart';
+
+import 'package:domain/domain.dart';
 
 class MockMasterDataRepository extends Mock implements MasterDataRepository {}
 

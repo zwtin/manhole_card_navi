@@ -1,10 +1,9 @@
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/search_condition.dart';
-import '../repository/search_condition_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/search_condition.dart';
+import 'package:domain/src/repository/search_condition_repository.dart';
 
-/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
 final searchConditionUseCaseProvider =
     Provider<SearchConditionUseCase>(
   (ref) {
@@ -21,7 +20,6 @@ class SearchConditionUseCase {
 
   final SearchConditionRepository _searchConditionRepository;
 
-  /// 検索条件。購読を始めたときに今の値が流れ、変わるたびに流れる。
   Stream<SearchCondition> watch() {
     return _searchConditionRepository.watch();
   }

@@ -1,11 +1,10 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/app_info.dart';
-import '../repository/app_info_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/app_info.dart';
+import 'package:domain/src/repository/app_info_repository.dart';
 
-/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
 final appInfoUseCaseProvider = Provider<AppInfoUseCase>(
   (ref) {
     final appInfoUseCase = AppInfoUseCase(

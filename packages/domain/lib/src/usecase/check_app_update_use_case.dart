@@ -1,11 +1,10 @@
 import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/app_info.dart';
-import '../repository/app_info_repository.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/app_info.dart';
+import 'package:domain/src/repository/app_info_repository.dart';
 
-/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
 final checkAppUpdateUseCaseProvider =
     Provider<CheckAppUpdateUseCase>(
   (ref) {
@@ -26,7 +25,6 @@ class CheckAppUpdateUseCase {
 
   final _logger = Logger();
 
-  /// アプリのアップデートが必要か（動かすのに必要なバージョンより古いか）。
   Future<Result<bool>> getNeedUpdate() async {
     final AppInfo appInfo;
     switch (await _appInfoRepository.getAppInfo()) {

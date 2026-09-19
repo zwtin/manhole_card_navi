@@ -1,7 +1,8 @@
-import 'package:domain/domain.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:test/test.dart';
+
+import 'package:domain/domain.dart';
 
 class MockTermsOfServiceRepository extends Mock
     implements TermsOfServiceRepository {}
@@ -27,7 +28,6 @@ void main() {
     container.dispose();
   });
 
-  /// [value] が null なら、まだ一度も同意していない。
   void stubAgreed(String? value) {
     when(() => repository.getAgreedVersion()).thenAnswer(
       (_) async => Result.success(

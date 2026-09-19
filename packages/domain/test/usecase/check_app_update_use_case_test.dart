@@ -1,7 +1,8 @@
-import 'package:domain/domain.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:test/test.dart';
+
+import 'package:domain/domain.dart';
 
 class MockAppInfoRepository extends Mock implements AppInfoRepository {}
 
@@ -20,7 +21,6 @@ void main() {
     container.dispose();
   });
 
-  /// 端末のアプリが [current]、動かすのに必要なのが [inquired] のときの判定。
   Future<Result<bool>> getNeedUpdate({
     required String current,
     required String inquired,

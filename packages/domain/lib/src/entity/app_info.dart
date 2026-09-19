@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'app_version.dart';
+import 'package:domain/src/entity/app_version.dart';
 
 part 'app_info.freezed.dart';
 

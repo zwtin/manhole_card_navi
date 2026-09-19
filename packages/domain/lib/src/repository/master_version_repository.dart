@@ -1,9 +1,8 @@
 import 'package:riverpod/riverpod.dart';
 
-import '../core/result.dart';
-import '../entity/master_version.dart';
+import 'package:domain/src/core/result.dart';
+import 'package:domain/src/entity/master_version.dart';
 
-/// アプリ全体で 1 つ。アプリのルート（lib/di/）で data パッケージの実装に差し替える。
 final masterVersionRepositoryProvider =
     Provider<MasterVersionRepository>(
   (ref) => throw UnimplementedError(
@@ -12,10 +11,10 @@ final masterVersionRepositoryProvider =
 );
 
 abstract class MasterVersionRepository {
-  /// 使うべきマスターデータのバージョン（サーバーが指定するもの）。
+  /// 使うべきバージョン。
   Future<Result<MasterVersion>> getInquiredVersion();
 
-  /// 端末に取り込み済みのバージョン。まだ一度も取り込んでいなければ null。
+  /// 端末に取り込み済みのバージョン。まだ取り込んでいなければ null。
   Future<Result<MasterVersion?>> getCurrentVersion();
 
   Future<Result<void>> setCurrentVersion({required MasterVersion version});
