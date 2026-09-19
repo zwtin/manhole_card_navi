@@ -1,15 +1,15 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'manhole_card_prefecture.freezed.dart';
+part 'prefecture.freezed.dart';
 
 /// カードを発行した都道府県。
 @freezed
-abstract class ManholeCardPrefecture with _$ManholeCardPrefecture {
-  const factory ManholeCardPrefecture({
+abstract class Prefecture with _$Prefecture {
+  const factory Prefecture({
     required String id,
     required String name,
-  }) = _ManholeCardPrefecture;
-  const ManholeCardPrefecture._();
+  }) = _Prefecture;
+  const Prefecture._();
 
   /// どの都道府県にも属さない、国の機関・全国組織のカードか。
   ///

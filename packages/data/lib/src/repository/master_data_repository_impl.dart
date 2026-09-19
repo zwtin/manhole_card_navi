@@ -34,7 +34,7 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
           master.collection('prefectures').get(),
           master.collection('volumes').get(),
         ]);
-        final prefectures = <String, ManholeCardPrefecture>{};
+        final prefectures = <String, Prefecture>{};
         for (final doc in snapshots[1].docs) {
           final prefecture = FirestoreMasterMapper.toPrefecture(
             FirestorePrefectureModel.fromDocument(
@@ -44,7 +44,7 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
           );
           prefectures[prefecture.id] = prefecture;
         }
-        final volumes = <String, ManholeCardVolume>{};
+        final volumes = <String, Volume>{};
         for (final doc in snapshots[2].docs) {
           final volume = FirestoreMasterMapper.toVolume(
             FirestoreVolumeModel.fromDocument(

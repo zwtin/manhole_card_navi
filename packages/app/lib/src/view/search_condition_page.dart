@@ -70,15 +70,15 @@ class SearchConditionPage extends HookConsumerWidget {
           _SectionCard(
             palette: palette,
             title: '表示',
-            child: _Segmented<DisplayFilter>(
+            child: _Segmented<AlreadyGetFilter>(
               palette: palette,
-              value: state.displayFilter,
+              value: state.alreadyGetFilter,
               options: const [
-                ('すべて', DisplayFilter.all),
-                ('取得済みのみ', DisplayFilter.acquired),
-                ('未取得のみ', DisplayFilter.unacquired),
+                ('すべて', AlreadyGetFilter.all),
+                ('取得済みのみ', AlreadyGetFilter.alreadyGet),
+                ('未取得のみ', AlreadyGetFilter.notAlreadyGet),
               ],
-              onChanged: viewModel.setDisplayFilter,
+              onChanged: viewModel.setAlreadyGetFilter,
             ),
           ),
 

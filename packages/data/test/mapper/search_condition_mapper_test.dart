@@ -13,11 +13,11 @@ void main() {
   test('保存して読み戻すと同じ条件になる', () {
     final original = SearchCondition(
       common: CommonSearchCondition(
-        displayFilter: DisplayFilter.unacquired,
+        alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
         volumeIds: {'0000', '0017'},
         distributionStates: {
-          ManholeCardDistributionState.distributing,
-          ManholeCardDistributionState.notClear,
+          DistributionState.distributing,
+          DistributionState.notClear,
         },
       ),
       map: const MapSearchCondition(
@@ -39,14 +39,36 @@ void main() {
       ),
       SearchCondition(
         common: CommonSearchCondition(
-          displayFilter: DisplayFilter.acquired,
+          alreadyGetFilter: AlreadyGetFilter.alreadyGet,
           volumeIds: {'0001'},
-          distributionStates: {ManholeCardDistributionState.stopped},
+          distributionStates: {DistributionState.stopped},
         ),
         map: const MapSearchCondition(
           coordinateType: MapCoordinateType.position,
         ),
       ),
+    );
+  });
+
+  test('保存する文字列は以前のバージョンと同じ', () {
+    const condition = SearchCondition(
+      common: CommonSearchCondition(
+        alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
+        distributionStates: {DistributionState.notClear},
+      ),
+      map: MapSearchCondition(coordinateType: MapCoordinateType.position),
+    );
+
+    expect(
+      SearchConditionMapper.toModel(condition).toJson(),
+      {
+        'common': {
+          'displayFilter': 'unacquired',
+          'volumeIds': <String>[],
+          'distributionStates': ['notClear'],
+        },
+        'map': {'coordinateType': 'position'},
+      },
     );
   });
 
@@ -63,11 +85,11 @@ void main() {
       '"map":{"coordinateType":"unknown"}}',
     );
 
-    expect(restored.common.displayFilter, DisplayFilter.all);
+    expect(restored.common.alreadyGetFilter, AlreadyGetFilter.all);
     expect(restored.common.volumeIds, {'0001'});
     expect(
       restored.common.distributionStates,
-      {ManholeCardDistributionState.distributing},
+      {DistributionState.distributing},
     );
     expect(restored.map.coordinateType, MapCoordinateType.distribution);
   });

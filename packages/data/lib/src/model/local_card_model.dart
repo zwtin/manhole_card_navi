@@ -1,6 +1,7 @@
 import 'package:domain/domain.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import 'distribution_state_model.dart';
 import 'json_decoding.dart';
 
 part 'local_card_model.g.dart';
@@ -38,7 +39,7 @@ class LocalCardModel {
   final LocalCoordinateModel position;
   final String name;
   final DateTime publicationDate;
-  final ManholeCardDistributionState distributionState;
+  final DistributionStateModel distributionState;
   final String image;
   final String imageSub;
   final String distributionPlaceHtml;

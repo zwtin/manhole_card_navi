@@ -17,9 +17,9 @@ class SearchConditionViewModel
     extends AutoDisposeAsyncNotifier<SearchConditionViewData> {
   /// 配布状態の選択肢。表示順は固定。
   static const List<DistributionStateOption> distributionStateOptions = [
-    (state: ManholeCardDistributionState.distributing, name: '配布中'),
-    (state: ManholeCardDistributionState.stopped, name: '配布停止'),
-    (state: ManholeCardDistributionState.notClear, name: '不明'),
+    (state: DistributionState.distributing, name: '配布中'),
+    (state: DistributionState.stopped, name: '配布停止'),
+    (state: DistributionState.notClear, name: '不明'),
   ];
 
   late final SearchConditionUseCase _searchConditionUseCase;
@@ -43,10 +43,10 @@ class SearchConditionViewModel
     );
   }
 
-  void setDisplayFilter(DisplayFilter value) {
+  void setAlreadyGetFilter(AlreadyGetFilter value) {
     _updateDraft(
       (draft) => draft.copyWith(
-        common: draft.common.copyWith(displayFilter: value),
+        common: draft.common.copyWith(alreadyGetFilter: value),
       ),
     );
   }
@@ -88,9 +88,9 @@ class SearchConditionViewModel
     );
   }
 
-  void toggleDistributionState(ManholeCardDistributionState state) {
+  void toggleDistributionState(DistributionState state) {
     _updateDraft((draft) {
-      final next = Set<ManholeCardDistributionState>.of(
+      final next = Set<DistributionState>.of(
         draft.common.distributionStates,
       );
       if (!next.remove(state)) {

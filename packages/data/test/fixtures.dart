@@ -12,14 +12,14 @@ ManholeCard card({
     position: const Coordinate(latitude: 34.5, longitude: 135.6),
     name: '藤井寺市',
     publicationDate: DateTime(2026, 1, 1),
-    distributionState: ManholeCardDistributionState.stopped,
+    distributionState: DistributionState.stopped,
     image: 'https://example.com/$id.jpg',
     imageSub: '',
     distributionPlaceHtml: '<p>藤井寺市役所</p>',
     distributionTimeHtml: '<p>9:00〜17:00</p>',
     stockHtml: '<p>あり</p>',
     distributionPoints: distributionPoints,
-    prefecture: const ManholeCardPrefecture(id: '027', name: '大阪府'),
-    volume: const ManholeCardVolume(id: '0000', name: '第1弾'),
+    prefecture: const Prefecture(id: '027', name: '大阪府'),
+    volume: const Volume(id: '0000', name: '第1弾'),
   );
 }

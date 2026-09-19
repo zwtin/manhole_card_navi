@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:domain/domain.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import 'distribution_state_model.dart';
 import 'firestore_converters.dart';
 import 'json_decoding.dart';
 
@@ -50,7 +51,7 @@ class FirestoreCardModel {
   @SlashDateConverter()
   final DateTime publicationDate;
 
-  final ManholeCardDistributionState distributionState;
+  final DistributionStateModel distributionState;
 
   final String imageUrl;
 

@@ -1,6 +1,7 @@
 import 'package:domain/domain.dart';
 
 import '../model/local_card_model.dart';
+import 'distribution_state_mapper.dart';
 
 /// 端末に保存するカード（model）とエンティティの変換。
 abstract final class LocalCardMapper {
@@ -10,7 +11,7 @@ abstract final class LocalCardMapper {
       position: _toCoordinateModel(card.position),
       name: card.name,
       publicationDate: card.publicationDate,
-      distributionState: card.distributionState,
+      distributionState: DistributionStateMapper.toModel(card.distributionState),
       image: card.image,
       imageSub: card.imageSub,
       distributionPlaceHtml: card.distributionPlaceHtml,
@@ -33,7 +34,9 @@ abstract final class LocalCardMapper {
       position: _toCoordinate(model.position),
       name: model.name,
       publicationDate: model.publicationDate,
-      distributionState: model.distributionState,
+      distributionState: DistributionStateMapper.toDistributionState(
+        model.distributionState,
+      ),
       image: model.image,
       imageSub: model.imageSub,
       distributionPlaceHtml: model.distributionPlaceHtml,
@@ -42,11 +45,11 @@ abstract final class LocalCardMapper {
       distributionPoints: [
         for (final point in model.distributionPoints) _toCoordinate(point),
       ],
-      prefecture: ManholeCardPrefecture(
+      prefecture: Prefecture(
         id: model.prefecture.id,
         name: model.prefecture.name,
       ),
-      volume: ManholeCardVolume(id: model.volume.id, name: model.volume.name),
+      volume: Volume(id: model.volume.id, name: model.volume.name),
     );
   }
 

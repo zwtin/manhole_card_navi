@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:data/src/model/distribution_state_model.dart';
 import 'package:data/src/model/firestore_master_models.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,7 +35,7 @@ void main() {
     expect(model.id, '27-226-B001');
     expect(model.location, const GeoPoint(34.5, 135.6));
     expect(model.publicationDate, DateTime(2026, 1, 1));
-    expect(model.distributionState, ManholeCardDistributionState.distributing);
+    expect(model.distributionState, DistributionStateModel.distributing);
   });
 
   test('配布地点は座標でない要素を読み飛ばす', () {

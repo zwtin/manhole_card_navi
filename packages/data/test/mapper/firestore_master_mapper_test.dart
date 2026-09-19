@@ -9,10 +9,10 @@ ManholeCard _toCard(Map<String, dynamic> data) {
   return FirestoreMasterMapper.toCard(
     FirestoreCardModel.fromDocument(data, path: 'master/0006/cards/27-226-B001'),
     prefectures: const {
-      '27': ManholeCardPrefecture(id: '27', name: '大阪府'),
+      '27': Prefecture(id: '27', name: '大阪府'),
     },
     volumes: const {
-      '0000': ManholeCardVolume(id: '0000', name: '第1弾'),
+      '0000': Volume(id: '0000', name: '第1弾'),
     },
   );
 }
@@ -37,6 +37,6 @@ void main() {
   test('都道府県の一覧に無い ID（全国向けなど）は名前を空にする', () {
     final card = _toCard(cardDocument()..['prefecture_id'] = '00');
 
-    expect(card.prefecture, const ManholeCardPrefecture(id: '00', name: ''));
+    expect(card.prefecture, const Prefecture(id: '00', name: ''));
   });
 }

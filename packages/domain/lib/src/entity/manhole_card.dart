@@ -1,9 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'coordinate.dart';
-import 'manhole_card_distribution_state.dart';
-import 'manhole_card_prefecture.dart';
-import 'manhole_card_volume.dart';
+import 'distribution_state.dart';
+import 'prefecture.dart';
+import 'volume.dart';
 
 part 'manhole_card.freezed.dart';
 
@@ -16,7 +16,7 @@ abstract class ManholeCard with _$ManholeCard {
     required Coordinate position,
     required String name,
     required DateTime publicationDate,
-    required ManholeCardDistributionState distributionState,
+    required DistributionState distributionState,
 
     /// カード画像の配信用フル URL。Firestore にそのまま格納された値を用いる。
     /// 例: `https://images.example.com/master/v0003/images/00-101-A001.jpg`
@@ -42,8 +42,8 @@ abstract class ManholeCard with _$ManholeCard {
 
     /// 配布場所の位置。0 件のカードもある。
     required List<Coordinate> distributionPoints,
-    required ManholeCardPrefecture prefecture,
-    required ManholeCardVolume volume,
+    required Prefecture prefecture,
+    required Volume volume,
   }) = _ManholeCard;
   const ManholeCard._();
 }

@@ -20,15 +20,15 @@ void main() {
     position: const Coordinate(latitude: 34.5, longitude: 135.6),
     name: '藤井寺市',
     publicationDate: DateTime(2026, 1, 1),
-    distributionState: ManholeCardDistributionState.distributing,
+    distributionState: DistributionState.distributing,
     image: 'https://example.com/27-226-B001.jpg',
     imageSub: '',
     distributionPlaceHtml: '',
     distributionTimeHtml: '',
     stockHtml: '',
     distributionPoints: const [],
-    prefecture: const ManholeCardPrefecture(id: '27', name: '大阪府'),
-    volume: const ManholeCardVolume(id: '0000', name: '第1弾'),
+    prefecture: const Prefecture(id: '27', name: '大阪府'),
+    volume: const Volume(id: '0000', name: '第1弾'),
   );
 
   setUpAll(() {

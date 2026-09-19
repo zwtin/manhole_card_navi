@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:domain/domain.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import 'distribution_state_model.dart';
 
 part 'search_condition_model.g.dart';
 
@@ -65,7 +66,7 @@ class CommonSearchConditionModel {
 
   factory CommonSearchConditionModel.initial() {
     return const CommonSearchConditionModel(
-      displayFilter: DisplayFilter.all,
+      displayFilter: DisplayFilterModel.all,
       volumeIds: {},
       distributionStates: {},
     );
@@ -74,16 +75,16 @@ class CommonSearchConditionModel {
   Map<String, dynamic> toJson() => _$CommonSearchConditionModelToJson(this);
 
   @JsonKey(
-    defaultValue: DisplayFilter.all,
-    unknownEnumValue: DisplayFilter.all,
+    defaultValue: DisplayFilterModel.all,
+    unknownEnumValue: DisplayFilterModel.all,
   )
-  final DisplayFilter displayFilter;
+  final DisplayFilterModel displayFilter;
 
   @_StringSetConverter()
   final Set<String> volumeIds;
 
   @_DistributionStateSetConverter()
-  final Set<ManholeCardDistributionState> distributionStates;
+  final Set<DistributionStateModel> distributionStates;
 }
 
 @JsonSerializable()
@@ -95,17 +96,34 @@ class MapSearchConditionModel {
 
   factory MapSearchConditionModel.initial() {
     return const MapSearchConditionModel(
-      coordinateType: MapCoordinateType.distribution,
+      coordinateType: CoordinateTypeModel.distribution,
     );
   }
 
   Map<String, dynamic> toJson() => _$MapSearchConditionModelToJson(this);
 
   @JsonKey(
-    defaultValue: MapCoordinateType.distribution,
-    unknownEnumValue: MapCoordinateType.distribution,
+    defaultValue: CoordinateTypeModel.distribution,
+    unknownEnumValue: CoordinateTypeModel.distribution,
   )
-  final MapCoordinateType coordinateType;
+  final CoordinateTypeModel coordinateType;
+}
+
+/// 取得済みかどうかによる絞り込み（`common.displayFilter`）。
+///
+/// 値の名前がそのまま保存される文字列になる。変えると保存済みの値が読めなくなる。
+enum DisplayFilterModel {
+  all,
+  acquired,
+  unacquired,
+}
+
+/// マップに表示する座標の種別（`map.coordinateType`）。
+///
+/// 値の名前がそのまま保存される文字列になる。変えると保存済みの値が読めなくなる。
+enum CoordinateTypeModel {
+  distribution,
+  position,
 }
 
 /// 文字列の集合。文字列でない要素は読み飛ばす。
@@ -123,20 +141,20 @@ class _StringSetConverter implements JsonConverter<Set<String>, Object?> {
 
 /// 配布状態の集合。知らない値は読み飛ばす。
 class _DistributionStateSetConverter
-    implements JsonConverter<Set<ManholeCardDistributionState>, Object?> {
+    implements JsonConverter<Set<DistributionStateModel>, Object?> {
   const _DistributionStateSetConverter();
 
   @override
-  Set<ManholeCardDistributionState> fromJson(Object? json) {
+  Set<DistributionStateModel> fromJson(Object? json) {
     if (json is! List<dynamic>) {
       return {};
     }
-    final byName = ManholeCardDistributionState.values.asNameMap();
+    final byName = DistributionStateModel.values.asNameMap();
     return json.map((element) => byName[element]).nonNulls.toSet();
   }
 
   @override
-  Object? toJson(Set<ManholeCardDistributionState> object) {
+  Object? toJson(Set<DistributionStateModel> object) {
     return object.map((state) => state.name).toList();
   }
 }

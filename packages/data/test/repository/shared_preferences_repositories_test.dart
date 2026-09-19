@@ -79,7 +79,7 @@ void main() {
       );
 
       const condition = SearchCondition(
-        common: CommonSearchCondition(displayFilter: DisplayFilter.acquired),
+        common: CommonSearchCondition(alreadyGetFilter: AlreadyGetFilter.alreadyGet),
         map: MapSearchCondition(coordinateType: MapCoordinateType.position),
       );
       await repository.save(searchCondition: condition);

@@ -51,7 +51,7 @@ class ListPrefecturesViewDataMapper {
                 .map(
                   (card) {
                     final alreadyGet = alreadyGetIds.contains(card.id);
-                    if (!searchCondition.matchesDisplay(
+                    if (!searchCondition.matchesAlreadyGet(
                       alreadyGet: alreadyGet,
                     )) {
                       return null;

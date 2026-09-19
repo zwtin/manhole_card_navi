@@ -26,7 +26,7 @@ void main() {
     test('すべての配布状態を選んだ状態は、未選択に畳む', () {
       final condition = SearchCondition(
         common: CommonSearchCondition(
-          distributionStates: ManholeCardDistributionState.values.toSet(),
+          distributionStates: DistributionState.values.toSet(),
         ),
       );
 
@@ -44,10 +44,10 @@ void main() {
     test('取得状態・弾数・配布状態をそれぞれ 1 と数え、マップ表示は数えない', () {
       final condition = SearchCondition(
         common: CommonSearchCondition(
-          displayFilter: DisplayFilter.acquired,
+          alreadyGetFilter: AlreadyGetFilter.alreadyGet,
           volumeIds: {'0000', '0001'},
           distributionStates: {
-            ManholeCardDistributionState.stopped,
+            DistributionState.stopped,
           },
         ),
         map: const MapSearchCondition(
@@ -66,46 +66,46 @@ void main() {
       expect(condition.matchesVolume('0005'), isTrue);
       expect(
         condition.matchesDistributionState(
-          ManholeCardDistributionState.notClear,
+          DistributionState.notClear,
         ),
         isTrue,
       );
-      expect(condition.matchesDisplay(alreadyGet: false), isTrue);
+      expect(condition.matchesAlreadyGet(alreadyGet: false), isTrue);
     });
 
     test('配布状態は、選んだ状態だけを通す', () {
       final condition = CommonSearchCondition(
         distributionStates: {
-          ManholeCardDistributionState.distributing,
+          DistributionState.distributing,
         },
       );
 
       expect(
         condition.matchesDistributionState(
-          ManholeCardDistributionState.distributing,
+          DistributionState.distributing,
         ),
         isTrue,
       );
       expect(
         condition.matchesDistributionState(
-          ManholeCardDistributionState.stopped,
+          DistributionState.stopped,
         ),
         isFalse,
       );
     });
 
     test('取得状態の絞り込み', () {
-      const acquired = CommonSearchCondition(
-        displayFilter: DisplayFilter.acquired,
+      const alreadyGet = CommonSearchCondition(
+        alreadyGetFilter: AlreadyGetFilter.alreadyGet,
       );
-      const unacquired = CommonSearchCondition(
-        displayFilter: DisplayFilter.unacquired,
+      const notAlreadyGet = CommonSearchCondition(
+        alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
       );
 
-      expect(acquired.matchesDisplay(alreadyGet: true), isTrue);
-      expect(acquired.matchesDisplay(alreadyGet: false), isFalse);
-      expect(unacquired.matchesDisplay(alreadyGet: true), isFalse);
-      expect(unacquired.matchesDisplay(alreadyGet: false), isTrue);
+      expect(alreadyGet.matchesAlreadyGet(alreadyGet: true), isTrue);
+      expect(alreadyGet.matchesAlreadyGet(alreadyGet: false), isFalse);
+      expect(notAlreadyGet.matchesAlreadyGet(alreadyGet: true), isFalse);
+      expect(notAlreadyGet.matchesAlreadyGet(alreadyGet: false), isTrue);
     });
   });
 

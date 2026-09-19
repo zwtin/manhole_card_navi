@@ -6,13 +6,13 @@ void main() {
   test('全国のカードは「全国」、それ以外は都道府県名を表示する', () {
     expect(
       PrefectureNameMapper.nameOf(
-        const ManholeCardPrefecture(id: '000', name: ''),
+        const Prefecture(id: '000', name: ''),
       ),
       '全国',
     );
     expect(
       PrefectureNameMapper.nameOf(
-        const ManholeCardPrefecture(id: '027', name: '大阪府'),
+        const Prefecture(id: '027', name: '大阪府'),
       ),
       '大阪府',
     );

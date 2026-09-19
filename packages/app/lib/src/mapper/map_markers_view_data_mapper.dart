@@ -91,7 +91,7 @@ class MapMarkersViewDataMapper {
           searchCondition.matchesDistributionState(
             pin.card.distributionState,
           ) &&
-          searchCondition.matchesDisplay(
+          searchCondition.matchesAlreadyGet(
             alreadyGet: alreadyGetCardIds.contains(pin.card.id),
           );
     }).toList();

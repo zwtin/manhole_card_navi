@@ -1,8 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'display_filter.dart';
-import 'manhole_card_distribution_state.dart';
-import 'map_coordinate_type.dart';
+import 'distribution_state.dart';
 
 part 'search_condition.freezed.dart';
 
@@ -42,7 +40,7 @@ abstract class SearchCondition with _$SearchCondition {
       volumeIds = const {};
     }
     var distributionStates = common.distributionStates;
-    if (distributionStates.containsAll(ManholeCardDistributionState.values)) {
+    if (distributionStates.containsAll(DistributionState.values)) {
       distributionStates = const {};
     }
     return copyWith(
@@ -61,22 +59,22 @@ abstract class SearchCondition with _$SearchCondition {
 @freezed
 abstract class CommonSearchCondition with _$CommonSearchCondition {
   const factory CommonSearchCondition({
-    /// 取得状態による絞り込み。
-    @Default(DisplayFilter.all) DisplayFilter displayFilter,
+    /// 取得済みかどうかによる絞り込み。
+    @Default(AlreadyGetFilter.all) AlreadyGetFilter alreadyGetFilter,
 
     /// 対象とする弾（volume）の ID 集合。空なら弾で絞り込まない。
     @Default(<String>{}) Set<String> volumeIds,
 
     /// 対象とする配布状態の集合。空なら配布状態で絞り込まない。
-    @Default(<ManholeCardDistributionState>{})
-    Set<ManholeCardDistributionState> distributionStates,
+    @Default(<DistributionState>{})
+    Set<DistributionState> distributionStates,
   }) = _CommonSearchCondition;
   const CommonSearchCondition._();
 
   /// 有効な絞り込みの数。
   int get activeFilterCount {
     var count = 0;
-    if (displayFilter != DisplayFilter.all) {
+    if (alreadyGetFilter != AlreadyGetFilter.all) {
       count++;
     }
     if (volumeIds.isNotEmpty) {
@@ -94,18 +92,18 @@ abstract class CommonSearchCondition with _$CommonSearchCondition {
   }
 
   /// 配布状態の条件に合致するか（空なら常に true）。
-  bool matchesDistributionState(ManholeCardDistributionState state) {
+  bool matchesDistributionState(DistributionState state) {
     return distributionStates.isEmpty || distributionStates.contains(state);
   }
 
-  /// 取得状態の条件に合致するか。
-  bool matchesDisplay({required bool alreadyGet}) {
-    switch (displayFilter) {
-      case DisplayFilter.all:
+  /// 取得済みかどうかの条件に合致するか。
+  bool matchesAlreadyGet({required bool alreadyGet}) {
+    switch (alreadyGetFilter) {
+      case AlreadyGetFilter.all:
         return true;
-      case DisplayFilter.acquired:
+      case AlreadyGetFilter.alreadyGet:
         return alreadyGet;
-      case DisplayFilter.unacquired:
+      case AlreadyGetFilter.notAlreadyGet:
         return !alreadyGet;
     }
   }
@@ -118,4 +116,25 @@ abstract class MapSearchCondition with _$MapSearchCondition {
     /// 表示する座標の種別。
     @Default(MapCoordinateType.distribution) MapCoordinateType coordinateType,
   }) = _MapSearchCondition;
+}
+
+/// 取得済みかどうかによる絞り込み。一覧・マップの両方に同じ意味で効く。
+enum AlreadyGetFilter {
+  /// 絞り込まない（すべて表示）。
+  all,
+
+  /// 取得済みのカードだけ表示。
+  alreadyGet,
+
+  /// 未取得のカードだけ表示。
+  notAlreadyGet,
+}
+
+/// マップに表示する座標の種別。マップ画面にだけ効く表示の設定で、一覧には関わらない。
+enum MapCoordinateType {
+  /// 配布場所の座標。
+  distribution,
+
+  /// 蓋（マンホール）の座標。
+  position,
 }
