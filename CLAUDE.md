@@ -85,7 +85,11 @@ fvm flutter pub run flutter_native_splash:create
    - `di/repository_overrides.dart` - domain の Repository の provider に data の実装を当てはめる override の一覧
 
 ### 依存性注入
-- Repository の provider は domain で `throw UnimplementedError` として宣言し、ルートの `lib/di/repository_overrides.dart` が data の実装に差し替える。Repository は状態を持たないか全体で共有するものなので、`autoDispose` にせずアプリ全体で 1 つにする（UseCase・ViewModel は画面の寿命に合わせて `autoDispose`）。どの実装を、どの部品で作るかを知っているのはルートだけ。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
+- Repository の provider は domain で `throw UnimplementedError` として宣言し、ルートの `lib/di/repository_overrides.dart` が data の実装に差し替える。どの実装を、どの部品で作るかを知っているのはルートだけ。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
+- provider の寿命
+  - Repository は状態を持たないか、アプリ全体で共有するもの（端末に取り込んだマスターデータなど）なので、`autoDispose` にせずアプリ全体で 1 つにする
+  - UseCase も状態を持たない（状態は ViewModel か data に置く）ので、画面ごとに分けず（`family` にせず）、`autoDispose` にもせずアプリ全体で 1 つにする。クリーンアーキテクチャ・DDD の慣習でも、UseCase（アプリケーションサービス）に求められるのは状態を持たないことで、寿命は決めごとにしていない
+  - ViewModel は画面の状態を持つので、画面の寿命に合わせて `autoDispose` にする
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
 
 ### UseCase・Repository の引数

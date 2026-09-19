@@ -5,7 +5,8 @@ import '../core/result.dart';
 import '../entity/manhole_card.dart';
 import '../repository/card_repository.dart';
 
-final cardUseCaseProvider = Provider.autoDispose<CardUseCase>(
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
+final cardUseCaseProvider = Provider<CardUseCase>(
   (ref) {
     final cardUseCase = CardUseCase(
       ref.watch(cardRepositoryProvider),

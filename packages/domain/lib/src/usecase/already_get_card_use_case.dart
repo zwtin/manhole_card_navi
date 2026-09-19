@@ -4,8 +4,9 @@ import 'package:riverpod/riverpod.dart';
 import '../core/result.dart';
 import '../repository/already_get_card_repository.dart';
 
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
 final alreadyGetCardUseCaseProvider =
-    Provider.autoDispose<AlreadyGetCardUseCase>(
+    Provider<AlreadyGetCardUseCase>(
   (ref) {
     final alreadyGetCardUseCase = AlreadyGetCardUseCase(
       ref.watch(alreadyGetCardRepositoryProvider),

@@ -5,7 +5,8 @@ import '../core/result.dart';
 import '../entity/app_info.dart';
 import '../repository/app_info_repository.dart';
 
-final appInfoUseCaseProvider = Provider.autoDispose<AppInfoUseCase>(
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
+final appInfoUseCaseProvider = Provider<AppInfoUseCase>(
   (ref) {
     final appInfoUseCase = AppInfoUseCase(
       ref.watch(appInfoRepositoryProvider),

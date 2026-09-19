@@ -4,8 +4,9 @@ import '../core/result.dart';
 import '../entity/search_condition.dart';
 import '../repository/search_condition_repository.dart';
 
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
 final searchConditionUseCaseProvider =
-    Provider.autoDispose<SearchConditionUseCase>(
+    Provider<SearchConditionUseCase>(
   (ref) {
     return SearchConditionUseCase(
       ref.watch(searchConditionRepositoryProvider),

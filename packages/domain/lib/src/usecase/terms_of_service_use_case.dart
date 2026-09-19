@@ -6,8 +6,9 @@ import '../entity/terms_of_service.dart';
 import '../entity/terms_of_service_version.dart';
 import '../repository/terms_of_service_repository.dart';
 
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
 final termsOfServiceUseCaseProvider =
-    Provider.autoDispose<TermsOfServiceUseCase>(
+    Provider<TermsOfServiceUseCase>(
   (ref) {
     final termsOfServiceUseCase = TermsOfServiceUseCase(
       ref.watch(termsOfServiceRepositoryProvider),

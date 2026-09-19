@@ -6,7 +6,8 @@ import 'package:riverpod/riverpod.dart';
 import '../core/result.dart';
 import '../repository/card_image_repository.dart';
 
-final cardImageUseCaseProvider = Provider.autoDispose<CardImageUseCase>(
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
+final cardImageUseCaseProvider = Provider<CardImageUseCase>(
   (ref) {
     final cardImageUseCase = CardImageUseCase(
       ref.watch(cardImageRepositoryProvider),

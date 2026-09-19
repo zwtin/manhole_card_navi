@@ -4,7 +4,8 @@ import 'package:riverpod/riverpod.dart';
 import '../core/result.dart';
 import '../repository/user_repository.dart';
 
-final userUseCaseProvider = Provider.autoDispose<UserUseCase>(
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
+final userUseCaseProvider = Provider<UserUseCase>(
   (ref) {
     final userUseCase = UserUseCase(
       ref.watch(userRepositoryProvider),

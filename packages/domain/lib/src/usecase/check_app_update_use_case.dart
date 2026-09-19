@@ -5,8 +5,9 @@ import '../core/result.dart';
 import '../entity/app_info.dart';
 import '../repository/app_info_repository.dart';
 
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
 final checkAppUpdateUseCaseProvider =
-    Provider.autoDispose<CheckAppUpdateUseCase>(
+    Provider<CheckAppUpdateUseCase>(
   (ref) {
     final checkAppUpdateUseCase = CheckAppUpdateUseCase(
       ref.watch(appInfoRepositoryProvider),

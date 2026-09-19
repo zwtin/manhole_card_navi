@@ -5,7 +5,8 @@ import '../core/result.dart';
 import '../entity/analytics_event.dart';
 import '../repository/analytics_repository.dart';
 
-final analyticsUseCaseProvider = Provider.autoDispose<AnalyticsUseCase>(
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
+final analyticsUseCaseProvider = Provider<AnalyticsUseCase>(
   (ref) {
     final analyticsUseCase = AnalyticsUseCase(
       ref.watch(analyticsRepositoryProvider),

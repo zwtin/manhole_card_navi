@@ -7,8 +7,9 @@ import '../entity/master_version.dart';
 import '../repository/master_data_repository.dart';
 import '../repository/master_version_repository.dart';
 
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
 final checkMasterUpdateUseCaseProvider =
-    Provider.autoDispose<CheckMasterUpdateUseCase>(
+    Provider<CheckMasterUpdateUseCase>(
   (ref) {
     final checkMasterUpdateUseCase = CheckMasterUpdateUseCase(
       ref.watch(masterDataRepositoryProvider),

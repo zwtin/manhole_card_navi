@@ -4,7 +4,8 @@ import 'package:riverpod/riverpod.dart';
 import '../core/result.dart';
 import '../repository/app_badge_repository.dart';
 
-final appBadgeUseCaseProvider = Provider.autoDispose<AppBadgeUseCase>(
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
+final appBadgeUseCaseProvider = Provider<AppBadgeUseCase>(
   (ref) {
     final appBadgeUseCase = AppBadgeUseCase(
       ref.watch(appBadgeRepositoryProvider),

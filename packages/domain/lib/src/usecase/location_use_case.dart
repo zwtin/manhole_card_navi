@@ -5,7 +5,8 @@ import '../core/result.dart';
 import '../entity/coordinate.dart';
 import '../repository/location_repository.dart';
 
-final locationUseCaseProvider = Provider.autoDispose<LocationUseCase>(
+/// UseCase は状態を持たないので、画面ごとに分けずアプリ全体で 1 つ。
+final locationUseCaseProvider = Provider<LocationUseCase>(
   (ref) {
     final locationUseCase = LocationUseCase(
       ref.watch(locationRepositoryProvider),
