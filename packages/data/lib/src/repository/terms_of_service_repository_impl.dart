@@ -2,13 +2,15 @@ import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../remote_config/remote_config_reader.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../datasource/remote_config_data_source.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
   TermsOfServiceRepositoryImpl(
-    this._instance,
+    this._preferences,
+    this._remoteConfig,
+    this._failureRecorder,
   );
 
   /// 利用規約の HTML を配信する Remote Config のキー。
@@ -21,70 +23,58 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
   static const _agreedVersionKey = 'agreed_terms_of_service_version';
 
   final _logger = Logger();
-  final _failureRecorder = FailureRecorder();
-  final _remoteConfigReader = RemoteConfigReader();
-  final StreamingSharedPreferences _instance;
+  final StreamingSharedPreferences _preferences;
+  final RemoteConfigDataSource _remoteConfig;
+  final FailureRecorder _failureRecorder;
 
   @override
-  Future<Result<TermsOfService>> get() async {
-    try {
-      final value = await _remoteConfigReader.readString(_termsOfServiceKey);
-      return Result.success(TermsOfService(value: value));
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromRemoteConfig(error, stackTrace),
-        stackTrace,
-      );
-    }
+  Future<Result<TermsOfService>> get() {
+    return _failureRecorder.guard(
+      () async => TermsOfService(
+        value: await _remoteConfig.readString(_termsOfServiceKey),
+      ),
+      convert: DomainExceptionMapper.fromRemoteConfig,
+    );
   }
 
   @override
-  Future<Result<TermsOfServiceVersion>> getInquiredVersion() async {
-    try {
-      final value = await _remoteConfigReader.readString(_inquiredVersionKey);
-      return Result.success(TermsOfServiceVersion(value: value));
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromRemoteConfig(error, stackTrace),
-        stackTrace,
-      );
-    }
+  Future<Result<TermsOfServiceVersion>> getInquiredVersion() {
+    return _failureRecorder.guard(
+      () async => TermsOfServiceVersion(
+        value: await _remoteConfig.readString(_inquiredVersionKey),
+      ),
+      convert: DomainExceptionMapper.fromRemoteConfig,
+    );
   }
 
   @override
-  Future<Result<TermsOfServiceVersion?>> getAgreedVersion() async {
-    try {
-      final value = _instance
-          .getString(_agreedVersionKey, defaultValue: '')
-          .getValue();
-      // まだ一度も同意していなければ、保存されていない（空文字が返る）。
-      return Result.success(
-        value.isEmpty ? null : TermsOfServiceVersion(value: value),
-      );
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
-        stackTrace,
-      );
-    }
+  Future<Result<TermsOfServiceVersion?>> getAgreedVersion() {
+    return _failureRecorder.guard(
+      () async {
+        final value = _preferences
+            .getString(_agreedVersionKey, defaultValue: '')
+            .getValue();
+        // まだ一度も同意していなければ、保存されていない（空文字が返る）。
+        return value.isEmpty ? null : TermsOfServiceVersion(value: value);
+      },
+      convert: DomainExceptionMapper.fromLocalStorage,
+    );
   }
 
   @override
   Future<Result<void>> setAgreedVersion({
     required TermsOfServiceVersion version,
-  }) async {
-    try {
-      final saved = await _instance.setString(_agreedVersionKey, version.value);
-      if (!saved) {
-        throw const PersistenceException(detail: '同意した利用規約のバージョンを保存できませんでした');
-      }
-      return const Result.success(null);
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
-        stackTrace,
-      );
-    }
+  }) {
+    return _failureRecorder.guard(
+      () async {
+        if (!await _preferences.setString(_agreedVersionKey, version.value)) {
+          throw const PersistenceException(
+            detail: '同意した利用規約のバージョンを保存できませんでした',
+          );
+        }
+      },
+      convert: DomainExceptionMapper.fromLocalStorage,
+    );
   }
 
   void dispose() {

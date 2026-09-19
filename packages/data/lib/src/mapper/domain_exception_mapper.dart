@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:domain/domain.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,8 +10,8 @@ import 'package:http/http.dart' as http;
 ///
 /// どの失敗をどの種類にするかは data の知識なので、ここに集める。すでに
 /// [DomainException] になっているもの（実装の中で投げたもの）はそのまま返すので、
-/// 実装は `on Exception catch` 1 つでここに渡せばよい。
-abstract final class DomainExceptionConverter {
+/// 実装は `FailureRecorder.guard` の `convert` にこれを渡せばよい。
+abstract final class DomainExceptionMapper {
   /// Firestore の読み書きの失敗。
   static DomainException fromFirestore(Object error, StackTrace stackTrace) {
     if (error is DomainException) {
@@ -26,6 +26,21 @@ abstract final class DomainExceptionConverter {
         case 'deadline-exceeded':
           return TimedOutException(cause: error, stackTrace: stackTrace);
       }
+    }
+    if (error is TimeoutException) {
+      return TimedOutException(cause: error, stackTrace: stackTrace);
+    }
+    return UnknownException(cause: error, stackTrace: stackTrace);
+  }
+
+  /// Firebase Authentication（匿名ログイン）の失敗。
+  static DomainException fromAuth(Object error, StackTrace stackTrace) {
+    if (error is DomainException) {
+      return error;
+    }
+    if (error is FirebaseAuthException &&
+        error.code == 'network-request-failed') {
+      return OfflineException(cause: error, stackTrace: stackTrace);
     }
     if (error is TimeoutException) {
       return TimedOutException(cause: error, stackTrace: stackTrace);

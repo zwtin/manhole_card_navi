@@ -2,80 +2,60 @@ import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   AlreadyGetCardRepositoryImpl(
-    this._instance,
+    this._preferences,
+    this._failureRecorder,
   );
 
   /// 取得済みカードの ID の一覧を保存する SharedPreferences のキー。
   static const _key = 'already_get_cards';
 
   final _logger = Logger();
-  final _failureRecorder = FailureRecorder();
-  final StreamingSharedPreferences _instance;
+  final StreamingSharedPreferences _preferences;
+  final FailureRecorder _failureRecorder;
+
+  Preference<List<String>> get _cardIds =>
+      _preferences.getStringList(_key, defaultValue: []);
 
   @override
-  Future<Result<Set<String>>> get() async {
-    try {
-      return Result.success(
-        _instance.getStringList(_key, defaultValue: []).getValue().toSet(),
-      );
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
-        stackTrace,
-      );
-    }
+  Future<Result<Set<String>>> get() {
+    return _failureRecorder.guard(
+      () async => _cardIds.getValue().toSet(),
+      convert: DomainExceptionMapper.fromLocalStorage,
+    );
   }
 
   @override
   Stream<Set<String>> getStream() {
-    return _instance
-        .getStringList(_key, defaultValue: [])
-        .map((cardIds) => cardIds.toSet());
+    return _cardIds.map((cardIds) => cardIds.toSet());
   }
 
   @override
   Future<Result<void>> save({
     required String cardId,
-  }) async {
-    try {
-      final list = _instance.getStringList(_key, defaultValue: []).getValue();
-      if (!list.contains(cardId)) {
-        list.add(cardId);
-      }
-      await _write(list);
-      return const Result.success(null);
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
-        stackTrace,
-      );
-    }
+  }) {
+    return _failureRecorder.guard(
+      () => _write({..._cardIds.getValue(), cardId}),
+      convert: DomainExceptionMapper.fromLocalStorage,
+    );
   }
 
   @override
   Future<Result<void>> delete({
     required String cardId,
-  }) async {
-    try {
-      final list = _instance.getStringList(_key, defaultValue: []).getValue();
-      list.remove(cardId);
-      await _write(list);
-      return const Result.success(null);
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
-        stackTrace,
-      );
-    }
+  }) {
+    return _failureRecorder.guard(
+      () => _write(_cardIds.getValue().toSet()..remove(cardId)),
+      convert: DomainExceptionMapper.fromLocalStorage,
+    );
   }
 
-  Future<void> _write(List<String> cardIds) async {
-    if (!await _instance.setStringList(_key, cardIds)) {
+  Future<void> _write(Set<String> cardIds) async {
+    if (!await _preferences.setStringList(_key, cardIds.toList())) {
       throw const PersistenceException(detail: '取得済みカードを保存できませんでした');
     }
   }

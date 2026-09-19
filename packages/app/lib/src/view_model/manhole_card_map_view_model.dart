@@ -112,14 +112,13 @@ class ManholeCardMapViewModel
   }
 
   Future<void> onTapCurrentLocationButton() async {
-    if (!state.myLocationEnabled) {
+    if (!state.myLocationEnabled ||
+        await _moveToCurrentLocation(false) == _CurrentLocation.unavailable) {
       await _navigationService.showAlert(
         title: 'エラー',
         message: '位置情報を取得できません。設定を変更してください。',
       );
-      return;
     }
-    await _moveToCurrentLocation(false);
   }
 
   Future<void> onTapMarker(String markerId) async {
@@ -339,18 +338,23 @@ class ManholeCardMapViewModel
     }
   }
 
-  Future<void> _moveToCurrentLocation(bool animation) async {
+  /// 現在地へカメラを動かす。動かせなかったときは、その理由を返す。
+  Future<_CurrentLocation> _moveToCurrentLocation(bool animation) async {
     if (!state.myLocationEnabled) {
-      return;
+      return _CurrentLocation.unavailable;
     }
-    final result = await _locationUseCase.getCurrentLocation();
-    if (result is! Success<Coordinate>) {
-      return;
+    switch (await _locationUseCase.getCurrentLocation()) {
+      case Failure():
+        return _CurrentLocation.failed;
+      case Success(value: null):
+        return _CurrentLocation.unavailable;
+      case Success(value: final coordinate?):
+        await _moveToLocation(
+          LatLng(coordinate.latitude, coordinate.longitude),
+          animation,
+        );
+        return _CurrentLocation.moved;
     }
-    await _moveToLocation(
-      LatLng(result.value.latitude, result.value.longitude),
-      animation,
-    );
   }
 
   Future<void> _moveToLocation(LatLng latLng, bool animation) async {
@@ -365,4 +369,15 @@ class ManholeCardMapViewModel
     _position = latLng;
     await _reloadMarkerViewData();
   }
+}
+
+/// 現在地へカメラを動かした結果。
+enum _CurrentLocation {
+  moved,
+
+  /// 端末の位置情報がオフ・許可されていない。
+  unavailable,
+
+  /// 取得に失敗した（タイムアウトなど）。
+  failed,
 }

@@ -3,8 +3,8 @@ import 'package:riverpod/riverpod.dart';
 import '../core/result.dart';
 import '../entity/coordinate.dart';
 
-/// main.dart の ProviderScope で data パッケージの実装に差し替える。
-final locationRepositoryProvider = Provider.autoDispose<LocationRepository>(
+/// アプリ全体で 1 つ。アプリのルート（lib/di/）で data パッケージの実装に差し替える。
+final locationRepositoryProvider = Provider<LocationRepository>(
   (ref) =>
       throw UnimplementedError('locationRepositoryProvider must be overridden'),
 );
@@ -17,6 +17,7 @@ abstract class LocationRepository {
   /// 位置情報の利用が許可されているか（使用中のみ・常に のどちらでもよい）。
   Future<Result<bool>> isPermissionGranted();
 
-  /// 現在地を取得する。許可されていない場合は失敗を返す。
-  Future<Result<Coordinate>> getCurrentLocation();
+  /// 現在地を取得する。端末の位置情報がオフ・許可されていないときは null
+  /// （失敗ではない）。
+  Future<Result<Coordinate?>> getCurrentLocation();
 }

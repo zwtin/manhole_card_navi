@@ -22,8 +22,8 @@ environment:
   sdk: ^3.7.2
 
 # アプリ本体は packages/ 配下の 3 パッケージに分かれている。
-#   domain: Entity・Repository / QueryService の interface・UseCase・DTO
-#   data  : Repository / QueryService の実装（Firestore・Realm・SharedPreferences など）
+#   domain: Entity・Repository の interface・UseCase
+#   data  : Repository の実装（Firestore・SharedPreferences・端末のファイルなど）
 #   app   : 画面（go_router・ViewModel・View）
 # このパッケージは起動処理（lib/main.dart）で 3 つを組み立てるだけを担う。
 dependencies:
@@ -46,6 +46,8 @@ dependencies:
 
   # To use Firebase
   firebase_core: ^3.13.0
+  cloud_firestore: ^5.6.7
+  firebase_messaging: ^15.2.5
   firebase_auth: ^5.5.3
   firebase_storage: ^12.4.5
   firebase_crashlytics: ^4.3.5
@@ -53,11 +55,6 @@ dependencies:
   firebase_performance: ^0.10.1+5
   cloud_functions: ^5.5.0
   firebase_remote_config: ^5.4.3
-
-  # For local database
-  # 使うのは data パッケージだが、iOS / Android のビルド時にアプリのルートで
-  # `dart run realm install` が走り、直接の依存でないと実行できないためここにも書く。
-  realm: ^20.2.0
 
   package_info_plus: ^8.3.0
 
@@ -90,7 +87,7 @@ flutter:
   # プリコンパイル版と duplicate symbols (307 個) を起こしてリンクに失敗する。
   # SPM へ寄せるには invertase 版をやめる必要があり、Firestore のソースビルドで
   # ビルド時間が延びる。加えて flutter_app_badge_control /
-  # flutter_keyboard_visibility / google_maps_flutter_ios / realm が SPM 非対応で
+  # flutter_keyboard_visibility / google_maps_flutter_ios が SPM 非対応で
   # どのみち CocoaPods 併用が残るため、当面は CocoaPods に一本化しておく。
   config:
     enable-swift-package-manager: false

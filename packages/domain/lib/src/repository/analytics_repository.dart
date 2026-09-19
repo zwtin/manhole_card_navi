@@ -3,8 +3,8 @@ import 'package:riverpod/riverpod.dart';
 import '../core/result.dart';
 import '../entity/analytics_event.dart';
 
-/// main.dart の ProviderScope で data パッケージの実装に差し替える。
-final analyticsRepositoryProvider = Provider.autoDispose<AnalyticsRepository>(
+/// アプリ全体で 1 つ。アプリのルート（lib/di/）で data パッケージの実装に差し替える。
+final analyticsRepositoryProvider = Provider<AnalyticsRepository>(
   (ref) =>
       throw UnimplementedError(
         'analyticsRepositoryProvider must be overridden',

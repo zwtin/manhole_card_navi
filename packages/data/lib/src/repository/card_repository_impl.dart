@@ -1,67 +1,50 @@
 import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
-import 'package:realm/realm.dart';
 
-import '../dao/realm_card_dao.dart';
-import '../dao/realm_configuration.dart';
-import '../exception/domain_exception_converter.dart';
-import '../mapper/realm_card_mapper.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../datasource/master_data_local_data_source.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class CardRepositoryImpl implements CardRepository {
+  CardRepositoryImpl(
+    this._masterData,
+    this._failureRecorder,
+  );
+
   final _logger = Logger();
-  final _failureRecorder = FailureRecorder();
+  final MasterDataLocalDataSource _masterData;
+  final FailureRecorder _failureRecorder;
 
   @override
   Future<Result<ManholeCard>> get({
     required String id,
-  }) async {
-    try {
-      final realm = RealmConfiguration.open();
-      try {
-        final dao = realm.all<RealmCardDAO>().query(r'id == $0', [id]).firstOrNull;
-        if (dao == null) {
-          return _failureRecorder.failure(
-            NotFoundException(detail: 'ID が $id のカードが端末にありません'),
-          );
+  }) {
+    return _failureRecorder.guard(
+      () async {
+        final card = (await _readAll()).where((card) => card.id == id);
+        if (card.isEmpty) {
+          throw NotFoundException(detail: 'ID が $id のカードが端末にありません');
         }
-        return Result.success(RealmCardMapper.convertToEntity(dao: dao));
-      } finally {
-        realm.close();
-      }
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
-        stackTrace,
-      );
-    }
+        return card.first;
+      },
+      convert: DomainExceptionMapper.fromLocalStorage,
+    );
   }
 
   @override
-  Future<Result<List<ManholeCard>>> fetchAll() async {
-    try {
-      final realm = RealmConfiguration.open();
-      try {
-        final daoList = realm.all<RealmCardDAO>();
-        if (daoList.isEmpty) {
-          return _failureRecorder.failure(
-            const NotFoundException(detail: '端末にマスターデータがありません'),
-          );
-        }
-        return Result.success(
-          daoList
-              .map((dao) => RealmCardMapper.convertToEntity(dao: dao))
-              .toList(),
-        );
-      } finally {
-        realm.close();
-      }
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromLocalStorage(error, stackTrace),
-        stackTrace,
-      );
+  Future<Result<List<ManholeCard>>> fetchAll() {
+    return _failureRecorder.guard(
+      _readAll,
+      convert: DomainExceptionMapper.fromLocalStorage,
+    );
+  }
+
+  Future<List<ManholeCard>> _readAll() async {
+    final cards = await _masterData.readAll();
+    if (cards == null || cards.isEmpty) {
+      throw const NotFoundException(detail: '端末にマスターデータがありません');
     }
+    return cards;
   }
 
   void dispose() {

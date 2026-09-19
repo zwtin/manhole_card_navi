@@ -1,29 +1,31 @@
 import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 
-import '../exception/domain_exception_converter.dart';
-import '../remote_config/remote_config_reader.dart';
-import '../service/failure_recorder.dart';
+import '../datasource/failure_recorder.dart';
+import '../datasource/remote_config_data_source.dart';
+import '../mapper/domain_exception_mapper.dart';
 
 class PrivacyPolicyRepositoryImpl implements PrivacyPolicyRepository {
+  PrivacyPolicyRepositoryImpl(
+    this._remoteConfig,
+    this._failureRecorder,
+  );
+
   /// プライバシーポリシーの HTML を配信する Remote Config のキー。
   static const _key = 'privacy_policy';
 
   final _logger = Logger();
-  final _failureRecorder = FailureRecorder();
-  final _remoteConfigReader = RemoteConfigReader();
+  final RemoteConfigDataSource _remoteConfig;
+  final FailureRecorder _failureRecorder;
 
   @override
-  Future<Result<PrivacyPolicy>> get() async {
-    try {
-      final value = await _remoteConfigReader.readString(_key);
-      return Result.success(PrivacyPolicy(value: value));
-    } on Exception catch (error, stackTrace) {
-      return _failureRecorder.failure(
-        DomainExceptionConverter.fromRemoteConfig(error, stackTrace),
-        stackTrace,
-      );
-    }
+  Future<Result<PrivacyPolicy>> get() {
+    return _failureRecorder.guard(
+      () async => PrivacyPolicy(
+        value: await _remoteConfig.readString(_key),
+      ),
+      convert: DomainExceptionMapper.fromRemoteConfig,
+    );
   }
 
   void dispose() {

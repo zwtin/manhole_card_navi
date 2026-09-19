@@ -1,4 +1,4 @@
-import 'package:data/src/service/failure_recorder.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -63,5 +63,42 @@ void main() {
     final recorded = recordedErrors(crashlytics);
     expect(recorded[0].stackTrace, same(causeStackTrace));
     expect(recorded[1].stackTrace, same(catchStackTrace));
+  });
+
+  group('guard', () {
+    DomainException convert(Object error, StackTrace stackTrace) {
+      return UnknownException(cause: error, stackTrace: stackTrace);
+    }
+
+    test('例外が出なければ、値を成功として返す', () async {
+      final result = await recorder.guard(() async => 1, convert: convert);
+
+      expect((result as Success<int>).value, 1);
+    });
+
+    test('例外は変換して記録し、失敗として返す', () async {
+      final result = await recorder.guard<int>(
+        () async => throw const FormatException('壊れている'),
+        convert: convert,
+      );
+
+      final exception = (result as Failure<int>).exception;
+      expect(exception, isA<UnknownException>());
+      expect(exception.cause, isA<FormatException>());
+      expect(recordedErrors(crashlytics).single.error, same(exception));
+    });
+
+    test('中で投げた DomainException は、そのまま失敗になる', () async {
+      const thrown = NotFoundException(detail: 'ない');
+
+      final result = await recorder.guard<int>(
+        () async => throw thrown,
+        convert: (error, stackTrace) => error is DomainException
+            ? error
+            : UnknownException(cause: error),
+      );
+
+      expect((result as Failure<int>).exception, same(thrown));
+    });
   });
 }
