@@ -7,9 +7,7 @@ import 'package:domain/domain.dart';
 /// 復号は堅牢に行い、空文字・壊れた JSON・未知の enum 値などは黙って無視して
 /// [SearchCondition.initial] へフォールバックする（アプリのバージョン間で JSON が
 /// 変わっても落ちないように）。
-class SearchConditionJsonMapper {
-  const SearchConditionJsonMapper._();
-
+abstract final class SearchConditionJsonMapper {
   static String toJsonString(SearchCondition condition) {
     final map = <String, dynamic>{
       'common': <String, dynamic>{
