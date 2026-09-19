@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -14,6 +15,8 @@ import '../repository/privacy_policy_repository_impl.dart';
 import '../repository/push_notification_repository_impl.dart';
 import '../repository/search_condition_repository_impl.dart';
 import '../repository/terms_of_service_repository_impl.dart';
+import '../service/failure_recorder.dart';
+import '../storage/master_data_store.dart';
 import 'platform_provider.dart';
 
 /// domain パッケージが宣言した Repository の provider を、このパッケージの実装に
@@ -50,7 +53,10 @@ final List<Override> dataProviderOverrides = [
     return repository;
   }),
   cardRepositoryProvider.overrideWith((ref) {
-    final repository = CardRepositoryImpl();
+    final repository = CardRepositoryImpl(
+      ref.watch(masterDataStoreProvider),
+      ref.watch(failureRecorderProvider),
+    );
     ref.onDispose(repository.dispose);
     return repository;
   }),
@@ -60,7 +66,11 @@ final List<Override> dataProviderOverrides = [
     return repository;
   }),
   masterDataRepositoryProvider.overrideWith((ref) {
-    final repository = MasterDataRepositoryImpl();
+    final repository = MasterDataRepositoryImpl(
+      FirebaseFirestore.instance,
+      ref.watch(masterDataStoreProvider),
+      ref.watch(failureRecorderProvider),
+    );
     ref.onDispose(repository.dispose);
     return repository;
   }),

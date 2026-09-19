@@ -27,28 +27,6 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 
 flutter_ios_podfile_setup
 
-# realm の podspec は prepare_command にチェックアウトの絶対パス（この ios ディレクトリ）を
-# 埋め込むため、そのままでは Podfile.lock の SPEC CHECKSUMS の realm の行がチェックアウトの
-# 場所ごとに変わり、ワークツリーで必ず差分が出る。
-# CocoaPods は :path で読んだ podspec を Pods/Local Podspecs/<name>.podspec.json に書き出し、
-# その SHA1 をチェックサムにしている（cocoapods-core の Specification#checksum）。
-# realm に限り、この ios ディレクトリの絶対パスを固定の文字列に置き換えてから SHA1 を取り、
-# 場所に依存しない値にする。Podfile.lock と Pods/Manifest.lock の両方がこの値で書かれるため、
-# ビルドフェーズの [CP] Check Pods Manifest.lock とは食い違わない。
-# realm は提供終了済み（20.2.0 が最終版）で SPM 対応も来ないため、Realm を外すまでこれで凌ぐ。
-podfile_dirs = [File.dirname(File.expand_path(__FILE__)), File.dirname(File.realpath(__FILE__))].uniq
-Pod::Specification.prepend(Module.new do
-  define_method(:checksum) do
-    return super() unless root? && name == 'realm' && defined_in_file
-    @checksum ||= begin
-      require 'digest'
-      json = File.read(defined_in_file)
-      podfile_dirs.each { |dir| json = json.gsub(dir, '<ios>') }
-      Digest::SHA1.hexdigest(json)
-    end
-  end
-end)
-
 target 'Runner' do
   use_frameworks!
   use_modular_headers!

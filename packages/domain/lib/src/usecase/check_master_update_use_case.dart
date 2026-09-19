@@ -54,10 +54,10 @@ class CheckMasterUpdateUseCase {
 
     // バージョンが一致していても、端末にマスターデータが無ければ取り直す。
     //
-    // Realm のスキーマを変更するとローカル DB は丸ごと作り直されるが
-    // （RealmConfiguration の shouldDeleteIfMigrationNeeded）、取り込み済みの
-    // バージョンは SharedPreferences 側に残る。バージョン比較だけだと「DB は空なのに
-    // 更新不要」と判定され、カードが 1 件も表示されないまま復旧しなくなる。
+    // 端末のマスターデータは、保存の形を変えたときや壊れていたときに消えることが
+    // あるが、取り込み済みのバージョンの記録は残る。バージョン比較だけだと
+    // 「マスターデータは無いのに更新不要」と判定され、カードが 1 件も表示されない
+    // まま復旧しなくなる。
     switch (await _masterDataRepository.exists()) {
       case Failure(:final exception):
         return Result.failure(exception);

@@ -62,9 +62,9 @@ fvm flutter pub run flutter_native_splash:create
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装
-   - `repository/` - Firestore・Realm・SharedPreferences・Remote Config などを使う実装
-   - `dao/` - Realm のモデル
-   - `mapper/` - DAO・JSON とエンティティの変換
+   - `repository/` - Firestore・SharedPreferences・Remote Config・端末のファイルなどを使う実装
+   - `storage/` - 端末に取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ `MasterDataStore`
+   - `mapper/` - Firestore・JSON とエンティティの変換
    - `service/` - Crashlytics への記録。失敗を記録する `FailureRecorder` と、provider の中のバグを記録する `UncaughtErrorObserver`
    - `image/` - カード画像の取得。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
    - `provider/` - domain の provider を実装に差し替える `dataProviderOverrides`
@@ -119,18 +119,15 @@ fvm flutter pub run flutter_native_splash:create
 
 ### データ層
 - **リモート:** クラウドデータ用のFirebase Firestore
-- **ローカル:** オフラインストレージ用のRealmデータベース
-- **コード生成:** イミュータブルモデル用のFreezed、Realm のモデル
+- **ローカル:** 取り込んだマスターデータは 1 つの JSON ファイル（`MasterDataStore`）。全件をまとめて読んでメモリに持ち、入れ替えは一時ファイルに書いてから名前を変えて行う。ファイルの形を変えたらファイル名のバージョンを上げ、古い形は取り込んでいない扱いにして取り直す。利用者の設定・取得済みカードは SharedPreferences
+- **コード生成:** イミュータブルモデル用のFreezed
 
 ### 主要な依存関係
 - Firebaseスイート（Auth、Firestore、Storage、Analytics、Crashlyticsなど）
 - Google Maps統合
-- ローカルデータベース用のRealm
 - 状態管理用のRiverpod + Flutter Hooks
 - 画面遷移用の go_router
 - データモデル用のFreezed
-
-realm はルートの `pubspec.yaml` にも書いています。iOS / Android のビルド時にアプリのルートで `dart run realm install` が走り、直接の依存でないと実行できないためです。
 
 ## 環境設定
 
@@ -146,7 +143,7 @@ realm はルートの `pubspec.yaml` にも書いています。iOS / Android �
 - Firebase Auth、Firestore、Storage、Analytics、Crashlytics、Performance、Messaging、Remote Config、Cloud Functionsを使用
 
 ## コード生成
-モデルはFreezedとRealmを使用。モデル変更後は、変更したパッケージで以下を実行（app は domain の型を解析するため、domain を変えたら app も生成し直す）：
+モデルはFreezedを使用。モデル変更後は、変更したパッケージで以下を実行（app は domain の型を解析するため、domain を変えたら app も生成し直す）：
 ```bash
 (cd packages/<パッケージ> && fvm dart run build_runner build --delete-conflicting-outputs)
 ```
@@ -155,12 +152,11 @@ domain のファイルを消した後（freezed をやめて生成ファイル�
 
 生成されるファイル：
 - `*.freezed.dart` - Freezedイミュータブルクラス（gitignore 済み）
-- `*.realm.dart` - Realmデータベースモデル（gitignore 済み）
 - `packages/app/lib/src/gen/*.gen.dart` - flutter_gen のアセット・色の定義（git 管理）
 
 ## ワークツリーでの動作確認
 
-Claude Code のワークツリーは `.claude/worktrees/` 配下に作られます。git 管理外のファイル（`.idea/`、`dart_defines/*.env`、`firebase.json`、Android の署名ファイルと `google-services.json`、iOS の `GoogleService-Info.plist`、`*.freezed.dart` / `*.g.dart` / `*.realm.dart`、`.dart_tool/`、`ios/Pods/`）はワークツリーに引き継がれないため、そのままではビルドできません。
+Claude Code のワークツリーは `.claude/worktrees/` 配下に作られます。git 管理外のファイル（`.idea/`、`dart_defines/*.env`、`firebase.json`、Android の署名ファイルと `google-services.json`、iOS の `GoogleService-Info.plist`、`*.freezed.dart` / `*.g.dart`、`.dart_tool/`、`ios/Pods/`）はワークツリーに引き継がれないため、そのままではビルドできません。
 
 ### セットアップ
 動作確認（ビルド・実機デプロイ）をする場合は、**Android Studio / Xcode で開く前に**ワークツリーのルートで以下を実行してください。順序を逆にすると、未解決 import だらけの状態で Gradle Sync やインデックスが走って無駄になります。
@@ -182,8 +178,6 @@ Claude Code のワークツリーは `.claude/worktrees/` 配下に作られま�
 - **（macOS のみ）`fvm flutter build ios --config-only`**: `pod install` と、Xcode 用のビルド設定（`ios/Flutter/Generated.xcconfig`）の生成。flavor は development を入れる
 
 **ビルド時にコピー先として書き込まれるファイルは symlink してはいけません。** 書き込みが symlink を辿って本体側のファイルを上書きします。該当するのは `android/app/google-services.json`、`ios/Runner/GoogleService-Info.plist`、`ios/Flutter/Dart-Defines.xcconfig` の 3 つで、いずれもビルドのたびに上のファイルから生成されます。
-
-`ios/Podfile` の realm のチェックサムを補正する処理は消さないでください。realm の podspec はチェックアウトの絶対パスを埋め込むため、補正がないと `ios/Podfile.lock` の `realm:` の行がチェックアウトの場所ごとに変わり、ワークツリーで必ず差分が出ます。戻そうとして `git checkout` すると `ios/Pods/Manifest.lock` と食い違い、Xcode のビルドが `The sandbox is not in sync with the Podfile.lock` で落ちます。Realm を外すときは補正も一緒に消します。
 
 `.fvmrc` は末尾改行なしで管理しています。`fvm install` がこの形式で書き直すため、末尾改行を付けるとワークツリーごとに差分が出ます。
 
