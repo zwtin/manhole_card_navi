@@ -1,30 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
-import 'view_model/app_view_model.dart';
 
 /// アプリのルート Widget。routerProvider の GoRouter を MaterialApp.router に渡す。
-class App extends HookConsumerWidget {
+class App extends ConsumerWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(appViewModelProvider);
     final router = ref.watch(routerProvider);
-
-    useEffect(
-      () {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await ref.read(appViewModelProvider.notifier).onLoad();
-        });
-        return null;
-      },
-      const [],
-    );
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,

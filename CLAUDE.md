@@ -67,7 +67,7 @@ fvm flutter pub run flutter_native_splash:create
    - `mapper/` - Firestore・JSON とエンティティの変換
    - `service/` - Crashlytics への記録。失敗を記録する `FailureRecorder` と、provider の中のバグを記録する `UncaughtErrorObserver`
    - `image/` - カード画像の取得。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
-   - `provider/` - domain の provider を実装に差し替える `dataProviderOverrides`
+   - `provider/` - 起動時の準備（SharedPreferences などの初期化・Remote Config の取得）をして、domain の provider を実装に差し替える override を返す `initializeData`
 
 3. **app** (`packages/app/`) - 画面
    - `router/` - go_router のルート定義、画面遷移の窓口 `NavigationService` とその go_router による実装、下タブの `ShellScaffold`
@@ -80,7 +80,7 @@ fvm flutter pub run flutter_native_splash:create
 4. **ルート** (`lib/`) - `main.dart` で Firebase を初期化し、3 パッケージを組み立てるだけ
 
 ### 依存性注入
-- Repository の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` で `dataProviderOverrides` を渡して実装に差し替える。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
+- Repository の provider は domain で `throw UnimplementedError` として宣言し、`lib/main.dart` の `ProviderScope` に data の `initializeData()` が返す override を渡して実装に差し替える。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
 
 ### UseCase・Repository の引数
@@ -113,6 +113,8 @@ fvm flutter pub run flutter_native_splash:create
 ### 画面遷移（app）
 - go_router の `StatefulShellRoute` で、マップ・リスト・設定のタブがそれぞれ独立した遷移スタックを持つ
 - 起動時チェックは `go` で置き換えながら進み、タブの外に出す画面（検索条件・画像拡大・起動時の規約）は root Navigator に積む
+- 起動時チェックの最初（アプリのバージョン確認の画面）で匿名ログインを済ませてから `app_open` を送る。イベントに利用者の ID が付いた状態でアプリを使ってもらうため。初回だけ通信が要り、できなければやり直す
+- オフラインでも起動できる。起動時の Remote Config の取得（待ち時間 10 秒）は失敗しても止まらず前回の値で続け、マスターデータは端末のものを使う。前回の値がない初回は、起動時チェックが「通信できませんでした」を出してやり直す
 - マップのカードモーダルもルート（`/map/card/:cardId`）で、マップはその有無で表示エリアを縮める
 - 戻る操作はタブ内の画面があればそれを閉じ、タブのルートでは `ShellScaffold` の `PopScope` がタブ切り替え／アプリ終了を決める
 - PV は各画面の `useScreenView` が、GoRouter 上で最前面になったとき（表示・戻り・タブ切り替え）に送る

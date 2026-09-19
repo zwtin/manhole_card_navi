@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:domain/domain.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -19,15 +21,15 @@ import '../repository/privacy_policy_repository_impl.dart';
 import '../repository/push_notification_repository_impl.dart';
 import '../repository/search_condition_repository_impl.dart';
 import '../repository/terms_of_service_repository_impl.dart';
+import '../repository/user_repository_impl.dart';
 import '../service/failure_recorder.dart';
 import '../storage/master_data_store.dart';
+import 'initialize_data.dart';
 import 'platform_provider.dart';
 
 /// domain パッケージが宣言した Repository の provider を、このパッケージの実装に
-/// 差し替える。main.dart の ProviderScope に渡す。
-///
-/// 実装が [sharedPreferencesProvider] / [packageInfoProvider] を読むため、
-/// その 2 つも合わせて override すること。
+/// 差し替える。[initializeData] が、準備した [sharedPreferencesProvider] /
+/// [packageInfoProvider] と合わせて返す。
 final List<Override> dataProviderOverrides = [
   alreadyGetCardRepositoryProvider.overrideWith((ref) {
     final repository = AlreadyGetCardRepositoryImpl(
@@ -128,6 +130,16 @@ final List<Override> dataProviderOverrides = [
     final repository = TermsOfServiceRepositoryImpl(
       ref.watch(sharedPreferencesProvider),
       ref.watch(remoteConfigReaderProvider),
+      ref.watch(failureRecorderProvider),
+    );
+    ref.onDispose(repository.dispose);
+    return repository;
+  }),
+  userRepositoryProvider.overrideWith((ref) {
+    final repository = UserRepositoryImpl(
+      FirebaseAuth.instance,
+      FirebaseAnalytics.instance,
+      FirebaseCrashlytics.instance,
       ref.watch(failureRecorderProvider),
     );
     ref.onDispose(repository.dispose);

@@ -11,9 +11,13 @@ class MockCheckAppUpdateUseCase extends Mock implements CheckAppUpdateUseCase {}
 
 class MockNavigationService extends Mock implements NavigationService {}
 
+class MockUserUseCase extends Mock implements UserUseCase {}
+
 void main() {
+  late MockAnalyticsUseCase analyticsUseCase;
   late MockCheckAppUpdateUseCase checkAppUpdateUseCase;
   late MockNavigationService navigationService;
+  late MockUserUseCase userUseCase;
   late ProviderContainer container;
 
   setUpAll(() {
@@ -21,15 +25,22 @@ void main() {
   });
 
   setUp(() {
+    analyticsUseCase = MockAnalyticsUseCase();
     checkAppUpdateUseCase = MockCheckAppUpdateUseCase();
     navigationService = MockNavigationService();
+    userUseCase = MockUserUseCase();
     container = ProviderContainer(
       overrides: [
-        analyticsUseCaseProvider.overrideWithValue(MockAnalyticsUseCase()),
+        analyticsUseCaseProvider.overrideWithValue(analyticsUseCase),
         checkAppUpdateUseCaseProvider.overrideWithValue(checkAppUpdateUseCase),
         navigationServiceProvider.overrideWithValue(navigationService),
+        userUseCaseProvider.overrideWithValue(userUseCase),
       ],
     );
+    when(() => userUseCase.ensureSignedIn())
+        .thenAnswer((_) async => const Result.success(null));
+    when(() => analyticsUseCase.sendOpen())
+        .thenAnswer((_) async => const Result.success(null));
     // autoDispose の ViewModel がテスト中に破棄されないよう購読しておく。
     container.listen(checkAppUpdateViewModelProvider, (_, __) {});
     when(
@@ -116,5 +127,29 @@ void main() {
       () => navigationService.goToCheckMasterUpdate(),
     ]);
     verify(() => checkAppUpdateUseCase.getNeedUpdate()).called(2);
+  });
+
+  test('最初に利用者を識別できる状態にし、それからアプリを開いたイベントを送る', () async {
+    final signInResults = [
+      const Result<void>.failure(OfflineException()),
+      const Result<void>.success(null),
+    ];
+    when(() => userUseCase.ensureSignedIn())
+        .thenAnswer((_) async => signInResults.removeAt(0));
+    stubNeedUpdate([const Result.success(false)]);
+
+    await container.read(checkAppUpdateViewModelProvider.notifier).onLoad();
+
+    verifyInOrder([
+      () => navigationService.showFailure(
+            title: 'アプリの準備ができませんでした',
+            exception: any(named: 'exception', that: isA<OfflineException>()),
+          ),
+      () => userUseCase.ensureSignedIn(),
+      () => analyticsUseCase.sendOpen(),
+      () => checkAppUpdateUseCase.getNeedUpdate(),
+    ]);
+    // 送るのは 1 回だけ（verifyInOrder で確かめた分のほかに呼ばれていない）。
+    verifyNever(() => analyticsUseCase.sendOpen());
   });
 }

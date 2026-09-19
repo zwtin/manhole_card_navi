@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data/src/exception/domain_exception_converter.dart';
 import 'package:domain/domain.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -96,6 +96,28 @@ void main() {
       expect(
         DomainExceptionConverter.fromHttp(
           const HttpExceptionWithStatus(503, 'Service Unavailable'),
+          stackTrace,
+        ),
+        isA<UnknownException>(),
+      );
+    });
+  });
+
+  group('fromAuth', () {
+    test('通信の失敗は、通信できない失敗にする', () {
+      expect(
+        DomainExceptionConverter.fromAuth(
+          FirebaseAuthException(code: 'network-request-failed'),
+          stackTrace,
+        ),
+        isA<OfflineException>(),
+      );
+    });
+
+    test('それ以外は、不明な失敗にする', () {
+      expect(
+        DomainExceptionConverter.fromAuth(
+          FirebaseAuthException(code: 'operation-not-allowed'),
           stackTrace,
         ),
         isA<UnknownException>(),

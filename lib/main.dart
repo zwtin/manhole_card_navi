@@ -2,15 +2,10 @@ import 'dart:async';
 
 import 'package:app/app.dart';
 import 'package:data/data.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import 'debug_proxy.dart';
 import 'firebase_options.dart';
@@ -38,39 +33,11 @@ FutureOr<void> main() async {
         }
       };
 
-      final streamSharedPreference = await StreamingSharedPreferences.instance;
-      final packageInfo = await PackageInfo.fromPlatform();
-
-      if (FirebaseAuth.instance.currentUser == null) {
-        await FirebaseAuth.instance.signInAnonymously();
-      }
-
-      final currentUser = FirebaseAuth.instance.currentUser;
-      FirebaseAnalytics.instance.setUserId(id: currentUser!.uid);
-      FirebaseCrashlytics.instance.setUserIdentifier(currentUser.uid);
-
-      final remoteConfig = FirebaseRemoteConfig.instance;
-      if (const String.fromEnvironment('flavor') == 'development') {
-        await remoteConfig.setConfigSettings(RemoteConfigSettings(
-          fetchTimeout: const Duration(seconds: 10),
-          minimumFetchInterval: const Duration(seconds: 0),
-        ));
-      }
-      await remoteConfig.fetchAndActivate();
-
       runApp(
         ProviderScope(
           observers: [UncaughtErrorObserver()],
-          overrides: [
-            sharedPreferencesProvider.overrideWithValue(
-              streamSharedPreference,
-            ),
-            packageInfoProvider.overrideWithValue(
-              packageInfo,
-            ),
-            // domain が宣言した Repository を data の実装に差し替える。
-            ...dataProviderOverrides,
-          ],
+          // domain が宣言した Repository を、data の実装に差し替える。
+          overrides: await initializeData(),
           child: const App(),
         ),
       );
