@@ -1,8 +1,8 @@
-import 'package:domain/domain.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'distribution_state_model.dart';
 import 'json_decoding.dart';
+import 'malformed_data_exception.dart';
 
 part 'local_card_model.g.dart';
 
@@ -25,7 +25,7 @@ class LocalCardModel {
     required this.volume,
   });
 
-  /// 形が想定と違えば [CorruptedDataException] を投げる。
+  /// 形が想定と違えば [MalformedDataException] を投げる。
   factory LocalCardModel.fromStoredJson(Map<String, dynamic> json) {
     return decodeModel(json, _$LocalCardModelFromJson, source: '端末のマスターデータ');
   }

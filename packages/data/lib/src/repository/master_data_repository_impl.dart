@@ -6,6 +6,7 @@ import '../datasource/failure_recorder.dart';
 import '../datasource/master_data_local_data_source.dart';
 import '../mapper/domain_exception_mapper.dart';
 import '../mapper/firestore_master_mapper.dart';
+import '../mapper/local_card_mapper.dart';
 import '../model/firestore_master_models.dart';
 
 class MasterDataRepositoryImpl implements MasterDataRepository {
@@ -82,7 +83,9 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
   @override
   Future<Result<void>> replace({required List<ManholeCard> cards}) {
     return _failureRecorder.guard(
-      () => _masterData.writeAll(cards),
+      () => _masterData.writeAll([
+        for (final card in cards) LocalCardMapper.toModel(card),
+      ]),
       convert: DomainExceptionMapper.fromLocalStorage,
     );
   }

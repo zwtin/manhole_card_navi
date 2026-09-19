@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:domain/domain.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'distribution_state_model.dart';
 import 'firestore_converters.dart';
 import 'json_decoding.dart';
+import 'malformed_data_exception.dart';
 
 part 'firestore_master_models.g.dart';
 
@@ -31,7 +31,7 @@ class FirestoreCardModel {
     required this.volumeId,
   });
 
-  /// 形が想定と違えば [CorruptedDataException] を投げる。[path] はドキュメントの
+  /// 形が想定と違えば [MalformedDataException] を投げる。[path] はドキュメントの
   /// パスで、どれがおかしいかを調べるための補足に使う。
   factory FirestoreCardModel.fromDocument(
     Map<String, dynamic> data, {

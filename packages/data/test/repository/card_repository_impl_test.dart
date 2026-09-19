@@ -31,15 +31,15 @@ void main() {
   });
 
   test('ID でカードを読む', () async {
-    await store.writeAll([card(id: 'A'), card(id: 'B')]);
+    await store.writeAll([localCard(id: 'A'), localCard(id: 'B')]);
 
     final result = await repository.get(id: 'B');
 
-    expect((result as Success<ManholeCard>).value.id, 'B');
+    expect((result as Success<ManholeCard>).value, card(id: 'B'));
   });
 
   test('ない ID は、データがない失敗として返し、記録する', () async {
-    await store.writeAll([card(id: 'A')]);
+    await store.writeAll([localCard(id: 'A')]);
 
     final result = await repository.get(id: 'Z');
 

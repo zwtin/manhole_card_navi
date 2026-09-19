@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:data/src/mapper/local_card_mapper.dart';
 import 'package:data/src/model/local_card_model.dart';
+import 'package:data/src/model/malformed_data_exception.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -47,7 +48,7 @@ void main() {
     ]) {
       expect(
         () => LocalCardModel.fromStoredJson(json),
-        throwsA(isA<CorruptedDataException>()),
+        throwsA(isA<MalformedDataException>()),
         reason: '$json',
       );
     }

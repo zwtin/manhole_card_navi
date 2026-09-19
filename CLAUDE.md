@@ -62,15 +62,15 @@ fvm flutter pub run flutter_native_splash:create
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装。組み立て（どの実装をどの部品で作るか）は持たず、実装クラスを公開するだけ
-   - `repository/` - Repository の実装。データソースから取り、model を経て mapper でエンティティにして返す。失敗は `FailureRecorder.guard` で種類に変換・記録して返す
-   - `datasource/` - 外界と話すクラス。Firestore・Firebase Auth・Analytics・Messaging・SharedPreferences は SDK のインスタンスをそのまま使い、中身があるもの・static な API だけを包む
+   - `repository/` - Repository の実装。DataSource から model を受け取り、mapper でエンティティにして返す。失敗は `FailureRecorder.guard` で種類に変換・記録して返す
+   - `datasource/` - 外界と話すクラス。Firestore・Firebase Auth・Analytics・Messaging・SharedPreferences は SDK のインスタンスをそのまま使い、中身があるもの・static な API だけを包む。返すのは model（か SDK の型）で、エンティティにはしない。domain を知らず、形の違うデータは data の中だけの `MalformedDataException` で知らせる（domain の失敗の種類にするのは Repository）
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
      - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）
      - `CardImageCacheManager` / `ImageFallback` / `ImageLoadMonitor`: カード画像の取得。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
      - `LocationDataSource`: 位置情報（geolocator の static な API の包み）
-     - `FailureRecorder` / `UncaughtErrorObserver`: Crashlytics への記録
-   - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば `CorruptedDataException` にする（`decodeModel`）。エンティティは JSON を知らない
-   - `mapper/` - model とエンティティの変換（`toCard`・`toModel` など、出力するもので名前を付ける）と、外部の例外と失敗の種類の変換（`DomainExceptionMapper`）
+     - `FailureRecorder` / `UncaughtErrorObserver`: Crashlytics への記録。domain の失敗の種類を見て記録するかを決めるので、この 2 つだけは domain を知っている
+   - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば `MalformedDataException` にする（`decodeModel`）。保存する値の enum も model が持ち、値の名前を保存する文字列にそろえる（domain の名前を変えても保存済みの値は変わらない）。エンティティは JSON を知らない
+   - `mapper/` - model とエンティティの変換（`toCard`・`toModel` など、出力するもので名前を付ける）と、外部の例外・`MalformedDataException` と失敗の種類の変換（`DomainExceptionMapper`）
 
 3. **app** (`packages/app/`) - 画面
    - `router/` - go_router のルート定義、画面遷移の窓口 `NavigationService` とその go_router による実装、下タブの `ShellScaffold`
@@ -100,7 +100,7 @@ fvm flutter pub run flutter_native_splash:create
 ### 失敗の扱い
 - Repository は想定内の失敗（通信・サーバーのデータ・端末の保存領域）を投げずに `Result` に包んで返す。呼ぶ側は try / catch せずに `switch` で成功と失敗を分ける
 - 失敗の種類は domain の `DomainException`（sealed）で表す。表示の文言は持たない。種類は app が表示や対応を変えたいものの分だけ作り、区別が必要になったら足す
-- data は外部の例外を `DomainExceptionMapper` で種類に変換する。サーバーのデータはキャストに頼らず型を確かめ、合わなければ `CorruptedDataException` にする
+- data は外部の例外を `DomainExceptionMapper` で種類に変換する。サーバーのデータはキャストに頼らず型を確かめ、合わなければ `MalformedDataException` を経て `CorruptedDataException` にする
 - app は `NavigationService.showFailure(title:, exception:)` で知らせる。タイトルは何に失敗したか（画面が決める）、本文は `ErrorMessageMapper` が種類から決める
 - バグ（Error）は `Result` に包まずにそのまま流す
 - 失敗ではない結果（位置情報を許可されなかった、アップデートが必要 など）は例外にせず戻り値で返す

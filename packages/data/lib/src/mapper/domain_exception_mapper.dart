@@ -6,16 +6,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
 
+import '../model/malformed_data_exception.dart';
+
 /// 外部の仕組みの失敗を、domain の失敗の種類（[DomainException]）に変換する。
 ///
 /// どの失敗をどの種類にするかは data の知識なので、ここに集める。すでに
-/// [DomainException] になっているもの（実装の中で投げたもの）はそのまま返すので、
+/// [DomainException] になっているもの（Repository の中で投げたもの）はそのまま返し、
+/// DataSource・model が投げる [MalformedDataException] は壊れたデータにするので、
 /// 実装は `FailureRecorder.guard` の `convert` にこれを渡せばよい。
 abstract final class DomainExceptionMapper {
   /// Firestore の読み書きの失敗。
   static DomainException fromFirestore(Object error, StackTrace stackTrace) {
-    if (error is DomainException) {
-      return error;
+    if (_known(error, stackTrace) case final known?) {
+      return known;
     }
     if (error is FirebaseException) {
       switch (error.code) {
@@ -35,8 +38,8 @@ abstract final class DomainExceptionMapper {
 
   /// Firebase Authentication（匿名ログイン）の失敗。
   static DomainException fromAuth(Object error, StackTrace stackTrace) {
-    if (error is DomainException) {
-      return error;
+    if (_known(error, stackTrace) case final known?) {
+      return known;
     }
     if (error is FirebaseAuthException &&
         error.code == 'network-request-failed') {
@@ -50,8 +53,8 @@ abstract final class DomainExceptionMapper {
 
   /// 画像など、HTTP で配信元から取るときの失敗。
   static DomainException fromHttp(Object error, StackTrace stackTrace) {
-    if (error is DomainException) {
-      return error;
+    if (_known(error, stackTrace) case final known?) {
+      return known;
     }
     if (error is TimeoutException) {
       return TimedOutException(cause: error, stackTrace: stackTrace);
@@ -72,8 +75,8 @@ abstract final class DomainExceptionMapper {
   /// Remote Config の取得の失敗。取得できない原因はほぼ通信なので、通信できない
   /// 失敗として扱う。
   static DomainException fromRemoteConfig(Object error, StackTrace stackTrace) {
-    if (error is DomainException) {
-      return error;
+    if (_known(error, stackTrace) case final known?) {
+      return known;
     }
     if (error is FirebaseException) {
       return OfflineException(cause: error, stackTrace: stackTrace);
@@ -84,17 +87,32 @@ abstract final class DomainExceptionMapper {
   /// 端末の機能（通知・バッジ・位置情報・Analytics など）の失敗。種類を
   /// 見分けて対応を変える必要がないので、まとめて不明な失敗にする。
   static DomainException fromPlatform(Object error, StackTrace stackTrace) {
-    if (error is DomainException) {
-      return error;
+    if (_known(error, stackTrace) case final known?) {
+      return known;
     }
     return UnknownException(cause: error, stackTrace: stackTrace);
   }
 
-  /// 端末の DB（Realm）や SharedPreferences の読み書きの失敗。
+  /// 端末のファイルや SharedPreferences の読み書きの失敗。
   static DomainException fromLocalStorage(Object error, StackTrace stackTrace) {
+    if (_known(error, stackTrace) case final known?) {
+      return known;
+    }
+    return PersistenceException(cause: error, stackTrace: stackTrace);
+  }
+
+  /// どの外部の仕組みでも同じ扱いにするもの。
+  static DomainException? _known(Object error, StackTrace stackTrace) {
     if (error is DomainException) {
       return error;
     }
-    return PersistenceException(cause: error, stackTrace: stackTrace);
+    if (error is MalformedDataException) {
+      return CorruptedDataException(
+        detail: error.message,
+        cause: error.cause,
+        stackTrace: error.stackTrace ?? stackTrace,
+      );
+    }
+    return null;
   }
 }

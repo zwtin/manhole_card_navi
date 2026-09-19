@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data/src/model/distribution_state_model.dart';
 import 'package:data/src/model/firestore_master_models.dart';
-import 'package:domain/domain.dart';
+import 'package:data/src/model/malformed_data_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _path = 'master/0006/cards/27-226-B001';
@@ -52,9 +52,9 @@ void main() {
     expect(
       () => decode(cardDocument()..remove('name')),
       throwsA(
-        isA<CorruptedDataException>().having(
-          (exception) => exception.detail,
-          'detail',
+        isA<MalformedDataException>().having(
+          (exception) => exception.message,
+          'message',
           contains('$_path の name'),
         ),
       ),
@@ -70,7 +70,7 @@ void main() {
     }.entries) {
       expect(
         () => decode(cardDocument()..[entry.key] = entry.value),
-        throwsA(isA<CorruptedDataException>()),
+        throwsA(isA<MalformedDataException>()),
         reason: entry.key,
       );
     }
@@ -89,7 +89,7 @@ void main() {
         {'id': '0000'},
         path: 'master/0006/volumes/0000',
       ),
-      throwsA(isA<CorruptedDataException>()),
+      throwsA(isA<MalformedDataException>()),
     );
   });
 }
