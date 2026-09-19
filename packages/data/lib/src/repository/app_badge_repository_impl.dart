@@ -14,7 +14,7 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
     required int count,
   }) async {
     try {
-      FlutterAppBadgeControl.updateBadgeCount(count);
+      await FlutterAppBadgeControl.updateBadgeCount(count);
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {
       return _failureRecorder.failure(
@@ -27,7 +27,7 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
   @override
   Future<Result<void>> remove() async {
     try {
-      FlutterAppBadgeControl.removeBadge();
+      await FlutterAppBadgeControl.removeBadge();
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {
       return _failureRecorder.failure(
