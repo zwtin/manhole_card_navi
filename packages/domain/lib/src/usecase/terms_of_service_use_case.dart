@@ -1,4 +1,3 @@
-import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'package:domain/src/core/result.dart';
@@ -8,13 +7,9 @@ import 'package:domain/src/repository/terms_of_service_repository.dart';
 
 final termsOfServiceUseCaseProvider =
     Provider<TermsOfServiceUseCase>(
-  (ref) {
-    final termsOfServiceUseCase = TermsOfServiceUseCase(
-      ref.watch(termsOfServiceRepositoryProvider),
-    );
-    ref.onDispose(termsOfServiceUseCase.dispose);
-    return termsOfServiceUseCase;
-  },
+  (ref) => TermsOfServiceUseCase(
+    ref.watch(termsOfServiceRepositoryProvider),
+  ),
 );
 
 class TermsOfServiceUseCase {
@@ -23,8 +18,6 @@ class TermsOfServiceUseCase {
   );
 
   final TermsOfServiceRepository _termsOfServiceRepository;
-
-  final _logger = Logger();
 
   Future<Result<TermsOfService>> get() {
     return _termsOfServiceRepository.get();
@@ -65,9 +58,5 @@ class TermsOfServiceUseCase {
           version: inquiredVersion,
         );
     }
-  }
-
-  void dispose() {
-    _logger.d('TermsOfServiceUseCase dispose');
   }
 }

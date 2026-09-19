@@ -1,4 +1,3 @@
-import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:data/src/datasource/failure_recorder.dart';
@@ -15,7 +14,6 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
 
   static const _inquiredVersionKey = 'inquired_app_version';
 
-  final _logger = Logger();
   final PackageInfo _packageInfo;
   final RemoteConfigDataSource _remoteConfig;
   final FailureRecorder _failureRecorder;
@@ -56,9 +54,5 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
       },
       convert: DomainExceptionMapper.fromRemoteConfig,
     );
-  }
-
-  void dispose() {
-    _logger.d('AppInfoRepositoryImpl dispose');
   }
 }

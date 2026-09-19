@@ -1,7 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:logger/logger.dart';
 
 import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
@@ -15,7 +14,6 @@ class UserRepositoryImpl implements UserRepository {
     this._failureRecorder,
   );
 
-  final _logger = Logger();
   final FirebaseAuth _auth;
   final FirebaseAnalytics _analytics;
   final FirebaseCrashlytics _crashlytics;
@@ -48,9 +46,5 @@ class UserRepositoryImpl implements UserRepository {
         stackTrace,
       );
     }
-  }
-
-  void dispose() {
-    _logger.d('UserRepositoryImpl dispose');
   }
 }

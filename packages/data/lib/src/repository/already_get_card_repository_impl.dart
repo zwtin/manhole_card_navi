@@ -1,4 +1,3 @@
-import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import 'package:data/src/datasource/failure_recorder.dart';
@@ -13,7 +12,6 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
 
   static const _key = 'already_get_cards';
 
-  final _logger = Logger();
   final StreamingSharedPreferences _preferences;
   final FailureRecorder _failureRecorder;
 
@@ -49,9 +47,5 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
     if (!await _preferences.setStringList(_key, cardIds.toList())) {
       throw const PersistenceException(detail: '取得済みカードを保存できませんでした');
     }
-  }
-
-  void dispose() {
-    _logger.d('AlreadyGetCardRepositoryImpl dispose');
   }
 }

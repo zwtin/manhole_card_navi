@@ -1,4 +1,3 @@
-import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import 'package:data/src/datasource/failure_recorder.dart';
@@ -17,7 +16,6 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
   static const _inquiredVersionKey = 'inquired_terms_of_service_version';
   static const _agreedVersionKey = 'agreed_terms_of_service_version';
 
-  final _logger = Logger();
   final StreamingSharedPreferences _preferences;
   final RemoteConfigDataSource _remoteConfig;
   final FailureRecorder _failureRecorder;
@@ -69,9 +67,5 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
       },
       convert: DomainExceptionMapper.fromLocalStorage,
     );
-  }
-
-  void dispose() {
-    _logger.d('TermsOfServiceRepositoryImpl dispose');
   }
 }

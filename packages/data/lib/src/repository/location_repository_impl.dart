@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:geolocator/geolocator.dart';
-import 'package:logger/logger.dart';
 
 import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:data/src/datasource/location_data_source.dart';
@@ -14,7 +13,6 @@ class LocationRepositoryImpl implements LocationRepository {
     this._failureRecorder,
   );
 
-  final _logger = Logger();
   final LocationDataSource _location;
   final FailureRecorder _failureRecorder;
 
@@ -69,9 +67,5 @@ class LocationRepositoryImpl implements LocationRepository {
   static bool _isGranted(LocationPermission permission) {
     return permission == LocationPermission.whileInUse ||
         permission == LocationPermission.always;
-  }
-
-  void dispose() {
-    _logger.d('LocationRepositoryImpl dispose');
   }
 }

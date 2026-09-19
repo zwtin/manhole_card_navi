@@ -1,4 +1,3 @@
-import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import 'package:data/src/datasource/failure_recorder.dart';
@@ -16,7 +15,6 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
   static const _inquiredVersionKey = 'inquired_master_version';
   static const _currentVersionKey = 'current_master_version';
 
-  final _logger = Logger();
   final StreamingSharedPreferences _preferences;
   final RemoteConfigDataSource _remoteConfig;
   final FailureRecorder _failureRecorder;
@@ -58,9 +56,5 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
       },
       convert: DomainExceptionMapper.fromLocalStorage,
     );
-  }
-
-  void dispose() {
-    _logger.d('MasterVersionRepositoryImpl dispose');
   }
 }

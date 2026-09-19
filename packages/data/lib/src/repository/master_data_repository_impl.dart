@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:logger/logger.dart';
 
 import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
@@ -16,7 +15,6 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
     this._failureRecorder,
   );
 
-  final _logger = Logger();
   final FirebaseFirestore _firestore;
   final MasterDataLocalDataSource _masterData;
   final FailureRecorder _failureRecorder;
@@ -85,9 +83,5 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
       _masterData.exists,
       convert: DomainExceptionMapper.fromLocalStorage,
     );
-  }
-
-  void dispose() {
-    _logger.d('MasterDataRepositoryImpl dispose');
   }
 }

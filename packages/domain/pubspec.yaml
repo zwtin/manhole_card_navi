@@ -6,7 +6,6 @@ environment:
 
 dependencies:
   freezed_annotation: ^3.0.0
-  logger: ^2.5.0
   riverpod: ^2.6.1
 
 dev_dependencies:

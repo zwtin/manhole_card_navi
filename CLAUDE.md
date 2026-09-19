@@ -90,6 +90,7 @@ fvm flutter pub run flutter_native_splash:create
   - Repository は状態を持たないか、アプリ全体で共有するもの（端末に取り込んだマスターデータなど）なので、`autoDispose` にせずアプリ全体で 1 つにする
   - UseCase も状態を持たない（状態は ViewModel か data に置く）ので、画面ごとに分けず（`family` にせず）、`autoDispose` にもせずアプリ全体で 1 つにする。クリーンアーキテクチャ・DDD の慣習でも、UseCase（アプリケーションサービス）に求められるのは状態を持たないことで、寿命は決めごとにしていない
   - ViewModel は画面の状態を持つので、画面の寿命に合わせて `autoDispose` にする
+  - アプリ全体で 1 つの Repository・UseCase は、アプリが動いている間は dispose されない。閉じる必要のある資源（StreamController・HTTP クライアントなど）を持つクラスだけ `dispose` を作り、`ref.onDispose` に登録する
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
 
 ### UseCase・Repository の引数

@@ -6,11 +6,9 @@ import 'package:domain/src/repository/search_condition_repository.dart';
 
 final searchConditionUseCaseProvider =
     Provider<SearchConditionUseCase>(
-  (ref) {
-    return SearchConditionUseCase(
-      ref.watch(searchConditionRepositoryProvider),
-    );
-  },
+  (ref) => SearchConditionUseCase(
+    ref.watch(searchConditionRepositoryProvider),
+  ),
 );
 
 class SearchConditionUseCase {

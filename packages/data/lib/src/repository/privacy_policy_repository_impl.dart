@@ -1,4 +1,3 @@
-import 'package:logger/logger.dart';
 
 import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:data/src/datasource/remote_config_data_source.dart';
@@ -13,7 +12,6 @@ class PrivacyPolicyRepositoryImpl implements PrivacyPolicyRepository {
 
   static const _key = 'privacy_policy';
 
-  final _logger = Logger();
   final RemoteConfigDataSource _remoteConfig;
   final FailureRecorder _failureRecorder;
 
@@ -25,9 +23,5 @@ class PrivacyPolicyRepositoryImpl implements PrivacyPolicyRepository {
       ),
       convert: DomainExceptionMapper.fromRemoteConfig,
     );
-  }
-
-  void dispose() {
-    _logger.d('PrivacyPolicyRepositoryImpl dispose');
   }
 }

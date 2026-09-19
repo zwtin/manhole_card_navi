@@ -1,5 +1,4 @@
 import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
-import 'package:logger/logger.dart';
 
 import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
@@ -10,7 +9,6 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
     this._failureRecorder,
   );
 
-  final _logger = Logger();
   final FailureRecorder _failureRecorder;
 
   @override
@@ -29,9 +27,5 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
       FlutterAppBadgeControl.removeBadge,
       convert: DomainExceptionMapper.fromPlatform,
     );
-  }
-
-  void dispose() {
-    _logger.d('AppBadgeRepositoryImpl dispose');
   }
 }

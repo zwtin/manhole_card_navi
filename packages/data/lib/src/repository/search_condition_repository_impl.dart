@@ -1,4 +1,3 @@
-import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import 'package:data/src/datasource/failure_recorder.dart';
@@ -15,7 +14,6 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
 
   static const _key = 'search_condition';
 
-  final _logger = Logger();
   final StreamingSharedPreferences _preferences;
   final FailureRecorder _failureRecorder;
 
@@ -49,9 +47,5 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
     return SearchConditionMapper.toSearchCondition(
       SearchConditionModel.fromJsonString(source),
     );
-  }
-
-  void dispose() {
-    _logger.d('SearchConditionRepositoryImpl dispose');
   }
 }

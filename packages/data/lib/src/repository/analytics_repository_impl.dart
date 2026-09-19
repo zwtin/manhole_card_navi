@@ -33,8 +33,4 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       convert: DomainExceptionMapper.fromPlatform,
     );
   }
-
-  void dispose() {
-    _logger.d('AnalyticsRepositoryImpl dispose');
-  }
 }

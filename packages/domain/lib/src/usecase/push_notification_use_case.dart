@@ -1,4 +1,3 @@
-import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'package:domain/src/core/result.dart';
@@ -6,13 +5,9 @@ import 'package:domain/src/repository/push_notification_repository.dart';
 
 final pushNotificationUseCaseProvider =
     Provider<PushNotificationUseCase>(
-  (ref) {
-    final pushNotificationUseCase = PushNotificationUseCase(
-      ref.watch(pushNotificationRepositoryProvider),
-    );
-    ref.onDispose(pushNotificationUseCase.dispose);
-    return pushNotificationUseCase;
-  },
+  (ref) => PushNotificationUseCase(
+    ref.watch(pushNotificationRepositoryProvider),
+  ),
 );
 
 class PushNotificationUseCase {
@@ -22,13 +17,7 @@ class PushNotificationUseCase {
 
   final PushNotificationRepository _pushNotificationRepository;
 
-  final _logger = Logger();
-
   Future<Result<void>> requestPermission() async {
     return _pushNotificationRepository.requestPermission();
-  }
-
-  void dispose() {
-    _logger.d('PushNotificationUseCase dispose');
   }
 }

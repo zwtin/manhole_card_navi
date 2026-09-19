@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:logger/logger.dart';
 
 import 'package:data/src/datasource/card_image_cache_manager.dart';
 import 'package:data/src/datasource/failure_recorder.dart';
@@ -19,7 +18,6 @@ class CardRepositoryImpl implements CardRepository {
     this._failureRecorder,
   );
 
-  final _logger = Logger();
   final MasterDataLocalDataSource _masterData;
   final CardImageCacheManager _imageCacheManager;
   final FailureRecorder _failureRecorder;
@@ -99,9 +97,5 @@ class CardRepositoryImpl implements CardRepository {
       throw const NotFoundException(detail: '端末にマスターデータがありません');
     }
     return cards;
-  }
-
-  void dispose() {
-    _logger.d('CardRepositoryImpl dispose');
   }
 }
