@@ -4,9 +4,9 @@ import '../core/result.dart';
 import '../entity/terms_of_service.dart';
 import '../entity/terms_of_service_version.dart';
 
-/// main.dart の ProviderScope で data パッケージの実装に差し替える。
+/// アプリ全体で 1 つ。アプリのルート（lib/di/）で data パッケージの実装に差し替える。
 final termsOfServiceRepositoryProvider =
-    Provider.autoDispose<TermsOfServiceRepository>(
+    Provider<TermsOfServiceRepository>(
   (ref) => throw UnimplementedError(
     'termsOfServiceRepositoryProvider must be overridden',
   ),

@@ -4,9 +4,9 @@ import '../core/result.dart';
 import '../entity/manhole_card.dart';
 import '../entity/master_version.dart';
 
-/// main.dart の ProviderScope で data パッケージの実装に差し替える。
+/// アプリ全体で 1 つ。アプリのルート（lib/di/）で data パッケージの実装に差し替える。
 final masterDataRepositoryProvider =
-    Provider.autoDispose<MasterDataRepository>(
+    Provider<MasterDataRepository>(
   (ref) => throw UnimplementedError(
     'masterDataRepositoryProvider must be overridden',
   ),
