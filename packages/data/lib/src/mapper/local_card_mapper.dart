@@ -3,31 +3,8 @@ import 'package:domain/domain.dart';
 import '../model/local_card_model.dart';
 import 'distribution_state_mapper.dart';
 
-/// 端末に保存するカード（model）とエンティティの変換。
+/// 端末に保存するカード（model）をエンティティにする。
 abstract final class LocalCardMapper {
-  static LocalCardModel toModel(ManholeCard card) {
-    return LocalCardModel(
-      id: card.id,
-      position: _toCoordinateModel(card.position),
-      name: card.name,
-      publicationDate: card.publicationDate,
-      distributionState: DistributionStateMapper.toModel(card.distributionState),
-      image: card.image,
-      imageSub: card.imageSub,
-      distributionPlaceHtml: card.distributionPlaceHtml,
-      distributionTimeHtml: card.distributionTimeHtml,
-      stockHtml: card.stockHtml,
-      distributionPoints: [
-        for (final point in card.distributionPoints) _toCoordinateModel(point),
-      ],
-      prefecture: LocalNamedModel(
-        id: card.prefecture.id,
-        name: card.prefecture.name,
-      ),
-      volume: LocalNamedModel(id: card.volume.id, name: card.volume.name),
-    );
-  }
-
   static ManholeCard toCard(LocalCardModel model) {
     return ManholeCard(
       id: model.id,
@@ -50,13 +27,6 @@ abstract final class LocalCardMapper {
         name: model.prefecture.name,
       ),
       volume: Volume(id: model.volume.id, name: model.volume.name),
-    );
-  }
-
-  static LocalCoordinateModel _toCoordinateModel(Coordinate coordinate) {
-    return LocalCoordinateModel(
-      latitude: coordinate.latitude,
-      longitude: coordinate.longitude,
     );
   }
 

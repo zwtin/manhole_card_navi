@@ -2,7 +2,6 @@ import 'package:logger/logger.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../core/result.dart';
-import '../entity/manhole_card.dart';
 import '../entity/master_version.dart';
 import '../repository/master_data_repository.dart';
 import '../repository/master_version_repository.dart';
@@ -77,15 +76,7 @@ class CheckMasterUpdateUseCase {
         inquiredVersion = value;
     }
 
-    final List<ManholeCard> cards;
-    switch (await _masterDataRepository.fetch(version: inquiredVersion)) {
-      case Failure(:final exception):
-        return Result.failure(exception);
-      case Success(:final value):
-        cards = value;
-    }
-
-    if (await _masterDataRepository.replace(cards: cards)
+    if (await _masterDataRepository.replace(version: inquiredVersion)
         case Failure(:final exception)) {
       return Result.failure(exception);
     }

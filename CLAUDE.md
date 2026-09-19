@@ -70,7 +70,7 @@ fvm flutter pub run flutter_native_splash:create
      - `LocationDataSource`: 位置情報（geolocator の static な API の包み）
      - `FailureRecorder` / `UncaughtErrorObserver`: Crashlytics への記録。domain の失敗の種類を見て記録するかを決めるので、この 2 つだけは domain を知っている
    - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば `MalformedDataException` にする（`decodeModel`）。保存する値の enum も model が持ち、値の名前を保存する文字列にそろえる（domain の名前を変えても保存済みの値は変わらない）。エンティティは JSON を知らない
-   - `mapper/` - model とエンティティの変換（`toCard`・`toModel` など、出力するもので名前を付ける）と、外部の例外・`MalformedDataException` と失敗の種類の変換（`DomainExceptionMapper`）
+   - `mapper/` - model とエンティティ・model どうしの変換（`toCard`・`toModel`・`toLocalCard` など、出力するもので名前を付ける）と、外部の例外・`MalformedDataException` と失敗の種類の変換（`DomainExceptionMapper`）
 
 3. **app** (`packages/app/`) - 画面
    - `router/` - go_router のルート定義、画面遷移の窓口 `NavigationService` とその go_router による実装、下タブの `ShellScaffold`
@@ -93,8 +93,8 @@ fvm flutter pub run flutter_native_splash:create
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
 
 ### UseCase・Repository の引数
-- 既にあるものを探す・指す・消すときは ID で渡す（`CardUseCase.get(id:)`、`AlreadyGetCardRepository.save(cardId:)`）。UseCase が Repository から正しいエンティティを読み直す
-- 保存する中身や新しく作るものは、値やエンティティで渡す（`SearchConditionRepository.save(searchCondition:)`、`MasterDataRepository.replace(cards:)`）
+- 既にあるものを探す・指す・消すときは ID で渡す（`CardUseCase.get(id:)`、`AlreadyGetCardRepository.save(cardId:)`、サーバーのマスターデータを指す `MasterDataRepository.replace(version:)`）。UseCase が Repository から正しいエンティティを読み直す
+- 保存する中身や新しく作るものは、値やエンティティで渡す（`SearchConditionRepository.save(searchCondition:)`）
 - ID は値オブジェクトにせず String のまま扱う
 
 ### 失敗の扱い
@@ -130,7 +130,7 @@ fvm flutter pub run flutter_native_splash:create
 
 ### データ層
 - **リモート:** クラウドデータ用のFirebase Firestore
-- **ローカル:** 取り込んだマスターデータは 1 つの JSON ファイル（`MasterDataLocalDataSource`）。全件をまとめて読んでメモリに持ち、入れ替えは一時ファイルに書いてから名前を変えて行う。ファイルの形を変えたらファイル名のバージョンを上げ、古い形は取り込んでいない扱いにして取り直す。利用者の設定・取得済みカードは SharedPreferences
+- **ローカル:** 取り込んだマスターデータは 1 つの JSON ファイル（`MasterDataLocalDataSource`）。Firestore から取ったカードは、エンティティを通さずに端末に保存する形（`LocalCardModel`）にして書く。全件をまとめて読んでメモリに持ち、入れ替えは一時ファイルに書いてから名前を変えて行う。ファイルの形を変えたらファイル名のバージョンを上げ、古い形は取り込んでいない扱いにして取り直す。利用者の設定・取得済みカードは SharedPreferences
 - **コード生成:** イミュータブルモデル用のFreezed
 
 ### 主要な依存関係
