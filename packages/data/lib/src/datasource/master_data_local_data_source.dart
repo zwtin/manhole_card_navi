@@ -1,10 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:domain/domain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../mapper/manhole_card_json_mapper.dart';
+import '../mapper/local_card_mapper.dart';
+import '../model/local_card_model.dart';
 
 /// 端末に取り込んだマスターデータ（カード一式）を、1 つの JSON ファイルで持つ。
 ///
@@ -59,7 +61,7 @@ class MasterDataLocalDataSource {
     final source = await file.readAsString();
     try {
       // 2MB ほどあるので、変換は別の Isolate で行う。
-      final cards = await compute(ManholeCardJsonMapper.fromJsonString, source);
+      final cards = await compute(_decode, source);
       return _cards = List.unmodifiable(cards);
     } on CorruptedDataException {
       await file.delete();
@@ -70,7 +72,7 @@ class MasterDataLocalDataSource {
   /// カード一式を [cards] で丸ごと入れ替える。
   Future<void> writeAll(List<ManholeCard> cards) async {
     final file = await _resolveFile();
-    final source = await compute(ManholeCardJsonMapper.toJsonString, cards);
+    final source = await compute(_encode, cards);
     final temporary = File('${file.path}.tmp');
     await temporary.writeAsString(source, flush: true);
     await temporary.rename(file.path);
@@ -83,6 +85,37 @@ class MasterDataLocalDataSource {
       return true;
     }
     return (await _resolveFile()).exists();
+  }
+
+  static String _encode(List<ManholeCard> cards) {
+    return jsonEncode([
+      for (final card in cards) LocalCardMapper.toModel(card).toJson(),
+    ]);
+  }
+
+  static List<ManholeCard> _decode(String source) {
+    final Object? json;
+    try {
+      json = jsonDecode(source);
+    } on FormatException catch (error, stackTrace) {
+      throw CorruptedDataException(
+        detail: '端末のマスターデータが JSON として読めません',
+        cause: error,
+        stackTrace: stackTrace,
+      );
+    }
+    if (json is! List<dynamic>) {
+      throw const CorruptedDataException(detail: '端末のマスターデータがカードの一覧ではありません');
+    }
+    return [
+      for (final item in json)
+        if (item is Map<String, dynamic>)
+          LocalCardMapper.toCard(LocalCardModel.fromStoredJson(item))
+        else
+          throw const CorruptedDataException(
+            detail: '端末のマスターデータにカードでない要素があります',
+          ),
+    ];
   }
 
   Future<File> _resolveFile() => _file ??= _prepare();

@@ -6,6 +6,7 @@ import '../datasource/failure_recorder.dart';
 import '../datasource/master_data_local_data_source.dart';
 import '../mapper/domain_exception_mapper.dart';
 import '../mapper/firestore_master_mapper.dart';
+import '../model/firestore_master_models.dart';
 
 class MasterDataRepositoryImpl implements MasterDataRepository {
   MasterDataRepositoryImpl(
@@ -36,16 +37,20 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
         final prefectures = <String, ManholeCardPrefecture>{};
         for (final doc in snapshots[1].docs) {
           final prefecture = FirestoreMasterMapper.toPrefecture(
-            doc.data(),
-            path: doc.reference.path,
+            FirestorePrefectureModel.fromDocument(
+              doc.data(),
+              path: doc.reference.path,
+            ),
           );
           prefectures[prefecture.id] = prefecture;
         }
         final volumes = <String, ManholeCardVolume>{};
         for (final doc in snapshots[2].docs) {
           final volume = FirestoreMasterMapper.toVolume(
-            doc.data(),
-            path: doc.reference.path,
+            FirestoreVolumeModel.fromDocument(
+              doc.data(),
+              path: doc.reference.path,
+            ),
           );
           volumes[volume.id] = volume;
         }
@@ -53,8 +58,10 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
             .docs
             .map(
               (doc) => FirestoreMasterMapper.toCard(
-                doc.data(),
-                path: doc.reference.path,
+                FirestoreCardModel.fromDocument(
+                  doc.data(),
+                  path: doc.reference.path,
+                ),
                 prefectures: prefectures,
                 volumes: volumes,
               ),

@@ -62,14 +62,15 @@ fvm flutter pub run flutter_native_splash:create
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装。組み立て（どの実装をどの部品で作るか）は持たず、実装クラスを公開するだけ
-   - `repository/` - Repository の実装。データソースから取り、mapper でエンティティにして返す。失敗は `FailureRecorder.guard` で種類に変換・記録して返す
+   - `repository/` - Repository の実装。データソースから取り、model を経て mapper でエンティティにして返す。失敗は `FailureRecorder.guard` で種類に変換・記録して返す
    - `datasource/` - 外界と話すクラス。Firestore・Firebase Auth・Analytics・Messaging・SharedPreferences は SDK のインスタンスをそのまま使い、中身があるもの・static な API だけを包む
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
      - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）
      - `CardImageCacheManager` / `ImageFallback` / `ImageLoadMonitor`: カード画像の取得。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
      - `LocationDataSource`: 位置情報（geolocator の static な API の包み）
      - `FailureRecorder` / `UncaughtErrorObserver`: Crashlytics への記録
-   - `mapper/` - Firestore・JSON とエンティティの変換（`toCard`・`toJsonString` など、出力するもので名前を付ける）と、外部の例外と失敗の種類の変換（`DomainExceptionMapper`）
+   - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば `CorruptedDataException` にする（`decodeModel`）。エンティティは JSON を知らない
+   - `mapper/` - model とエンティティの変換（`toCard`・`toModel` など、出力するもので名前を付ける）と、外部の例外と失敗の種類の変換（`DomainExceptionMapper`）
 
 3. **app** (`packages/app/`) - 画面
    - `router/` - go_router のルート定義、画面遷移の窓口 `NavigationService` とその go_router による実装、下タブの `ShellScaffold`
@@ -158,6 +159,7 @@ domain のファイルを消した後（freezed をやめて生成ファイル�
 
 生成されるファイル：
 - `*.freezed.dart` - Freezedイミュータブルクラス（gitignore 済み）
+- `*.g.dart` - data の model の JSON 変換（json_serializable、gitignore 済み）。json_serializable の生成コードが Dart 3.8 の書き方を使うため、data だけ SDK の下限を 3.8 にしている
 - `packages/app/lib/src/gen/*.gen.dart` - flutter_gen のアセット・色の定義（git 管理）
 
 ## ワークツリーでの動作確認

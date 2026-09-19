@@ -4,7 +4,8 @@ import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import '../datasource/failure_recorder.dart';
 import '../mapper/domain_exception_mapper.dart';
-import '../mapper/search_condition_json_mapper.dart';
+import '../mapper/search_condition_mapper.dart';
+import '../model/search_condition_model.dart';
 
 class SearchConditionRepositoryImpl implements SearchConditionRepository {
   SearchConditionRepositoryImpl(
@@ -25,14 +26,14 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
   @override
   Future<Result<SearchCondition>> get() {
     return _failureRecorder.guard(
-      () async => SearchConditionJsonMapper.fromJsonString(_source.getValue()),
+      () async => _toSearchCondition(_source.getValue()),
       convert: DomainExceptionMapper.fromLocalStorage,
     );
   }
 
   @override
   Stream<SearchCondition> getStream() {
-    return _source.map(SearchConditionJsonMapper.fromJsonString);
+    return _source.map(_toSearchCondition);
   }
 
   @override
@@ -43,13 +44,19 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
       () async {
         final saved = await _preferences.setString(
           _key,
-          SearchConditionJsonMapper.toJsonString(searchCondition),
+          SearchConditionMapper.toModel(searchCondition).toJsonString(),
         );
         if (!saved) {
           throw const PersistenceException(detail: '検索条件を保存できませんでした');
         }
       },
       convert: DomainExceptionMapper.fromLocalStorage,
+    );
+  }
+
+  static SearchCondition _toSearchCondition(String source) {
+    return SearchConditionMapper.toSearchCondition(
+      SearchConditionModel.fromJsonString(source),
     );
   }
 
