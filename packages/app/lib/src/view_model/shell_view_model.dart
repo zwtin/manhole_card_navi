@@ -44,10 +44,7 @@ class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
 
   Future<void> _sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'bottom_tab_view',
-      },
+      event: const AnalyticsEvent.screenView(screenName: 'bottom_tab_view'),
     );
   }
 

@@ -38,10 +38,9 @@ class CheckMasterUpdateViewModel
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'check_master_update_view',
-      },
+      event: const AnalyticsEvent.screenView(
+        screenName: 'check_master_update_view',
+      ),
     );
   }
 

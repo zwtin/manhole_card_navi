@@ -108,11 +108,10 @@ class DetailViewModel
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'detail_view',
-        'card_id': arg,
-      },
+      event: AnalyticsEvent.screenView(
+        screenName: 'detail_view',
+        parameters: {'card_id': arg},
+      ),
     );
   }
 }

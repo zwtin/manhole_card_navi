@@ -79,17 +79,16 @@ class CheckAppUpdateViewModel
         );
         continue;
       }
-      await _analyticsUseCase.sendOpen();
+      await _analyticsUseCase.send(event: const AnalyticsEvent.appOpen());
       return;
     }
   }
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'check_app_update_view',
-      },
+      event: const AnalyticsEvent.screenView(
+        screenName: 'check_app_update_view',
+      ),
     );
   }
 

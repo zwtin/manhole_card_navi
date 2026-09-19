@@ -109,11 +109,10 @@ class ManholeCardListViewModel
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'manhole_card_list_view',
-        'active_filter_count': _searchCondition.activeFilterCount,
-      },
+      event: AnalyticsEvent.screenView(
+        screenName: 'manhole_card_list_view',
+        parameters: {'active_filter_count': _searchCondition.activeFilterCount},
+      ),
     );
   }
 

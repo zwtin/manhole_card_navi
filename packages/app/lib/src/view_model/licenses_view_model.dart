@@ -42,10 +42,7 @@ class LicensesViewModel extends AutoDisposeAsyncNotifier<LicensesViewData> {
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'license_view',
-      },
+      event: const AnalyticsEvent.screenView(screenName: 'license_view'),
     );
   }
 }

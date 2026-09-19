@@ -12,6 +12,5 @@ final analyticsRepositoryProvider = Provider<AnalyticsRepository>(
 );
 
 abstract class AnalyticsRepository {
-  Future<Result<void>> sendAppOpen();
-  Future<Result<void>> sendEvent({required AnalyticsEvent analyticsEvent});
+  Future<Result<void>> send({required AnalyticsEvent event});
 }

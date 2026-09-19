@@ -50,10 +50,9 @@ class CheckTermsOfServiceAgreeViewModel
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'check_terms_of_service_agree_view',
-      },
+      event: const AnalyticsEvent.screenView(
+        screenName: 'check_terms_of_service_agree_view',
+      ),
     );
   }
 

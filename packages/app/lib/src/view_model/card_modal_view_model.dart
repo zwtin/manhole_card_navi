@@ -143,11 +143,10 @@ class CardModalViewModel
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'card_modal_view',
-        'card_id': arg.cardId,
-      },
+      event: AnalyticsEvent.screenView(
+        screenName: 'card_modal_view',
+        parameters: {'card_id': arg.cardId},
+      ),
     );
   }
 }

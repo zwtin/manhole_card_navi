@@ -170,12 +170,13 @@ class ManholeCardMapViewModel
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'manhole_card_map_view',
-        'coordinate_type': state.coordinateType.name,
-        'active_filter_count': state.activeFilterCount,
-      },
+      event: AnalyticsEvent.screenView(
+        screenName: 'manhole_card_map_view',
+        parameters: {
+          'coordinate_type': state.coordinateType.name,
+          'active_filter_count': state.activeFilterCount,
+        },
+      ),
     );
   }
 

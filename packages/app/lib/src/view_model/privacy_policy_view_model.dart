@@ -38,10 +38,7 @@ class PrivacyPolicyViewModel extends AutoDisposeAsyncNotifier<String> {
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'privacy_policy_view',
-      },
+      event: const AnalyticsEvent.screenView(screenName: 'privacy_policy_view'),
     );
   }
 }

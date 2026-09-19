@@ -18,11 +18,10 @@ class ImageDetailViewModel extends AutoDisposeFamilyNotifier<void, String> {
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'image_detail_view',
-        'card_id': arg,
-      },
+      event: AnalyticsEvent.screenView(
+        screenName: 'image_detail_view',
+        parameters: {'card_id': arg},
+      ),
     );
   }
 }

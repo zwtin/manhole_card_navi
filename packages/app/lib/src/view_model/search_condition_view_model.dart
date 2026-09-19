@@ -153,10 +153,9 @@ class SearchConditionViewModel
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
-      name: 'screen_pv',
-      parameters: {
-        'screen_name': 'search_condition_view',
-      },
+      event: const AnalyticsEvent.screenView(
+        screenName: 'search_condition_view',
+      ),
     );
   }
 

@@ -24,16 +24,8 @@ class AnalyticsUseCase {
 
   final _logger = Logger();
 
-  Future<Result<void>> send({
-    required String name,
-    Map<String, Object>? parameters,
-  }) async {
-    final event = AnalyticsEvent(name: name, parameters: parameters);
-    return _analyticsRepository.sendEvent(analyticsEvent: event);
-  }
-
-  Future<Result<void>> sendOpen() async {
-    return _analyticsRepository.sendAppOpen();
+  Future<Result<void>> send({required AnalyticsEvent event}) {
+    return _analyticsRepository.send(event: event);
   }
 
   void dispose() {
