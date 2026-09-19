@@ -4,19 +4,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../model/local_card_model.dart';
-import '../model/malformed_data_exception.dart';
+import 'package:data/src/model/local_card_model.dart';
+import 'package:data/src/model/malformed_data_exception.dart';
 
-/// 端末に取り込んだマスターデータ（カード一式）を、1 つの JSON ファイルで持つ。
-///
-/// 読むときは全件をまとめて読み、メモリに持っておく（一覧・マップはどのみち全件を
-/// 使う）。書くときは一時ファイルに書いてから名前を変えて置き換えるので、途中で
-/// 失敗しても前のデータが残る。
-///
-/// ファイルの形を変えたら [_formatVersion] を上げる。ファイル名にバージョンが入るので、
-/// 古い形のファイルは読まれず「まだ取り込んでいない」扱いになり、マスターデータを
-/// 取り直す。古い形のファイルは消す。
-///
 /// 読み込んだカードをメモリに持つので、アプリ全体で 1 つだけ作る。
 class MasterDataLocalDataSource {
   MasterDataLocalDataSource({
@@ -25,8 +15,6 @@ class MasterDataLocalDataSource {
   })  : _directory = directory,
         _cleanUp = cleanUp;
 
-  /// Application Support にファイルを置く。最初に使うときに、以前マスターデータを
-  /// 入れていた Realm のファイルを消す。
   factory MasterDataLocalDataSource.inApplicationSupport() {
     return MasterDataLocalDataSource(
       directory: getApplicationSupportDirectory,
@@ -34,6 +22,8 @@ class MasterDataLocalDataSource {
     );
   }
 
+  /// ファイルの形を変えたら上げる。古い形のファイルは読まずに消すので、取り込んで
+  /// いない扱いになって取り直す。
   static const _formatVersion = 1;
   static const _fileName = 'master_data_v$_formatVersion.json';
   static final _oldFileName = RegExp(r'^master_data_v\d+\.json(\.tmp)?$');
@@ -44,10 +34,8 @@ class MasterDataLocalDataSource {
   Future<File>? _file;
   List<LocalCardModel>? _cards;
 
-  /// 取り込んだカード一式。まだ取り込んでいなければ null。
-  ///
-  /// ファイルが壊れていれば消して [MalformedDataException] を投げる。消しておくと、
-  /// 次の起動時の確認で「取り込んでいない」とわかり、取り直す。
+  /// まだ取り込んでいなければ null。壊れたファイルは消すので、次の起動時の確認で
+  /// 取り込んでいない扱いになって取り直す。
   Future<List<LocalCardModel>?> readAll() async {
     final cached = _cards;
     if (cached != null) {
@@ -59,7 +47,7 @@ class MasterDataLocalDataSource {
     }
     final source = await file.readAsString();
     try {
-      // 2MB ほどあるので、変換は別の Isolate で行う。
+      // 1〜2 MB あるので、別の Isolate で変換する。
       final cards = await compute(_decode, source);
       return _cards = List.unmodifiable(cards);
     } on MalformedDataException {
@@ -68,17 +56,16 @@ class MasterDataLocalDataSource {
     }
   }
 
-  /// カード一式を [cards] で丸ごと入れ替える。
   Future<void> writeAll(List<LocalCardModel> cards) async {
     final file = await _resolveFile();
     final source = await compute(_encode, cards);
+    // 途中で失敗しても前のファイルが残るよう、別のファイルに書いてから置き換える。
     final temporary = File('${file.path}.tmp');
     await temporary.writeAsString(source, flush: true);
     await temporary.rename(file.path);
     _cards = List.unmodifiable(cards);
   }
 
-  /// 端末にカード一式があるか。
   Future<bool> exists() async {
     if (_cards != null) {
       return true;
@@ -131,11 +118,8 @@ class MasterDataLocalDataSource {
   }
 }
 
-/// 以前マスターデータを入れていた Realm のファイルを消す。
-///
-/// realm は iOS では Documents、Android では files ディレクトリ（Application Support と
-/// 同じ場所）に `default.realm` と付随するファイルを置いていた。消せなくても動作には
-/// 関わらないので、失敗は無視する。
+/// 以前マスターデータを入れていた Realm のファイルを消す。Realm は iOS では
+/// Documents、Android では files（Application Support と同じ場所）に置いていた。
 Future<void> _deleteRealmFiles() async {
   for (final getDirectory in [
     getApplicationDocumentsDirectory,
@@ -153,7 +137,7 @@ Future<void> _deleteRealmFiles() async {
         }
       }
     } on FileSystemException {
-      // 残っても害はない。
+      // 残っても動作には関わらない。
     }
   }
 }

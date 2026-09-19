@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 
-import '../datasource/failure_recorder.dart';
-import '../datasource/master_data_local_data_source.dart';
-import '../mapper/domain_exception_mapper.dart';
-import '../mapper/firestore_master_mapper.dart';
-import '../model/firestore_master_models.dart';
-import '../model/local_card_model.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/master_data_local_data_source.dart';
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:data/src/mapper/firestore_master_mapper.dart';
+import 'package:data/src/model/firestore_master_models.dart';
+import 'package:data/src/model/local_card_model.dart';
+import 'package:domain/domain.dart';
 
 class MasterDataRepositoryImpl implements MasterDataRepository {
   MasterDataRepositoryImpl(
@@ -39,10 +39,7 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
     );
   }
 
-  /// サーバーから [version] のカードを取り、端末に保存する形にする。
   Future<List<LocalCardModel>> _fetch(MasterVersion version) async {
-    // サーバーではカード・都道府県・弾を別のコレクションに持っている。カードは
-    // 都道府県・弾の ID しか持たないため、3 つを取ってここで名前を引き当てる。
     final master = _firestore.collection('master').doc(version.value);
     final snapshots = await Future.wait([
       master.collection('cards').get(),
@@ -74,7 +71,7 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
         ),
     ];
     if (cards.isEmpty) {
-      // 取り込むと一覧もマップも空になるので、壊れたデータとして扱う。
+      // 取り込むと一覧もマップも空になる。
       throw CorruptedDataException(
         detail: '${master.path}/cards にカードがありません',
       );

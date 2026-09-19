@@ -1,9 +1,10 @@
 import 'dart:io';
 
+import 'package:flutter_test/flutter_test.dart';
+
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/model/local_card_model.dart';
 import 'package:data/src/model/malformed_data_exception.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 import '../fixtures.dart';
 

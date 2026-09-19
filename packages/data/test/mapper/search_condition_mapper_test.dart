@@ -1,7 +1,8 @@
+import 'package:flutter_test/flutter_test.dart';
+
 import 'package:data/src/mapper/search_condition_mapper.dart';
 import 'package:data/src/model/search_condition_model.dart';
 import 'package:domain/domain.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 SearchCondition _read(String source) {
   return SearchConditionMapper.toSearchCondition(

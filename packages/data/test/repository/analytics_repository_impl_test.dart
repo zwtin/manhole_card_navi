@@ -1,9 +1,10 @@
-import 'package:data/src/datasource/failure_recorder.dart';
-import 'package:data/src/repository/analytics_repository_impl.dart';
-import 'package:domain/domain.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/repository/analytics_repository_impl.dart';
+import 'package:domain/domain.dart';
 
 import '../datasource/crashlytics_mock.dart';
 

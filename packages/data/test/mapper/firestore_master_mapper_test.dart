@@ -1,8 +1,9 @@
+import 'package:flutter_test/flutter_test.dart';
+
 import 'package:data/src/mapper/firestore_master_mapper.dart';
 import 'package:data/src/model/distribution_state_model.dart';
 import 'package:data/src/model/firestore_master_models.dart';
 import 'package:data/src/model/local_card_model.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 import '../model/firestore_master_models_test.dart' show cardDocument;
 

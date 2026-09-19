@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-/// Firestore の座標（GeoPoint）。
 class GeoPointConverter implements JsonConverter<GeoPoint, Object?> {
   const GeoPointConverter();
 
@@ -18,7 +17,6 @@ class GeoPointConverter implements JsonConverter<GeoPoint, Object?> {
   Object? toJson(GeoPoint object) => object;
 }
 
-/// Firestore の座標（GeoPoint）の一覧。座標でない要素は読み飛ばす。
 class GeoPointListConverter implements JsonConverter<List<GeoPoint>, Object?> {
   const GeoPointListConverter();
 
@@ -34,7 +32,6 @@ class GeoPointListConverter implements JsonConverter<List<GeoPoint>, Object?> {
   Object? toJson(List<GeoPoint> object) => object;
 }
 
-/// `2026/01/01` の形の日付。
 class SlashDateConverter implements JsonConverter<DateTime, String> {
   const SlashDateConverter();
 

@@ -1,9 +1,9 @@
-import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import '../datasource/failure_recorder.dart';
-import '../mapper/domain_exception_mapper.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:domain/domain.dart';
 
 class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   AlreadyGetCardRepositoryImpl(
@@ -11,7 +11,6 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
     this._failureRecorder,
   );
 
-  /// 取得済みカードの ID の一覧を保存する SharedPreferences のキー。
   static const _key = 'already_get_cards';
 
   final _logger = Logger();

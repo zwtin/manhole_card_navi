@@ -1,12 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'distribution_state_model.dart';
-import 'json_decoding.dart';
-import 'malformed_data_exception.dart';
+import 'package:data/src/model/distribution_state_model.dart';
+import 'package:data/src/model/json_decoding.dart';
 
 part 'local_card_model.g.dart';
 
-/// 端末に保存するカード（MasterDataLocalDataSource の JSON ファイルの 1 件）。
 @JsonSerializable(checked: true, explicitToJson: true)
 class LocalCardModel {
   const LocalCardModel({
@@ -25,7 +23,6 @@ class LocalCardModel {
     required this.volume,
   });
 
-  /// 形が想定と違えば [MalformedDataException] を投げる。
   factory LocalCardModel.fromStoredJson(Map<String, dynamic> json) {
     return decodeModel(json, _$LocalCardModelFromJson, source: '端末のマスターデータ');
   }
@@ -63,7 +60,6 @@ class LocalCoordinateModel {
   final double longitude;
 }
 
-/// 都道府県・弾（ID と名前）。
 @JsonSerializable(checked: true)
 class LocalNamedModel {
   const LocalNamedModel({required this.id, required this.name});

@@ -1,11 +1,8 @@
-import '../model/firestore_master_models.dart';
-import '../model/local_card_model.dart';
+import 'package:data/src/model/firestore_master_models.dart';
+import 'package:data/src/model/local_card_model.dart';
 
-/// Firestore の `master/{バージョン}` 配下のドキュメント（model）を、端末に保存する
-/// カード（model）にする。
 abstract final class FirestoreMasterMapper {
-  /// 都道府県・弾の名前を [prefectures] / [volumes]（ID から名前を引く表）から
-  /// 引き当てる。
+  /// [prefectures] と [volumes] は、ID から名前を引く表。
   static LocalCardModel toLocalCard(
     FirestoreCardModel model, {
     required Map<String, String> prefectures,
@@ -21,7 +18,7 @@ abstract final class FirestoreMasterMapper {
       publicationDate: model.publicationDate,
       distributionState: model.distributionState,
       image: model.imageUrl,
-      // image_sub_url（代替配信元）を持たない世代の master もあるため、無ければ空文字。
+      // image_sub_url を持たない世代の master もある。
       imageSub: model.imageSubUrl ?? '',
       distributionPlaceHtml: model.distributionPlaceHtml,
       distributionTimeHtml: model.distributionTimeHtml,
@@ -33,8 +30,8 @@ abstract final class FirestoreMasterMapper {
             longitude: point.longitude,
           ),
       ],
-      // prefectures に無い都道府県 ID のカードは名前を空にし、国の機関・全国組織の
-      // カードと同じ扱いにする（Prefecture.isNationwide）。
+      // 表にない都道府県は、名前を空にして全国のカードと同じ扱いにする
+      // （Prefecture.isNationwide）。
       prefecture: LocalNamedModel(
         id: model.prefectureId,
         name: prefectures[model.prefectureId] ?? '',

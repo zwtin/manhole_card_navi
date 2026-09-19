@@ -1,9 +1,7 @@
+import 'package:data/src/mapper/distribution_state_mapper.dart';
+import 'package:data/src/model/search_condition_model.dart';
 import 'package:domain/domain.dart';
 
-import '../model/search_condition_model.dart';
-import 'distribution_state_mapper.dart';
-
-/// 端末に保存する検索条件（model）とエンティティの変換。
 abstract final class SearchConditionMapper {
   static SearchConditionModel toModel(SearchCondition condition) {
     return SearchConditionModel(

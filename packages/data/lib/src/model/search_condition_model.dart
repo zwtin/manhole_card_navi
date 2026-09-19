@@ -2,14 +2,12 @@ import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
 
-import 'distribution_state_model.dart';
+import 'package:data/src/model/distribution_state_model.dart';
 
 part 'search_condition_model.g.dart';
 
-/// 端末に保存する検索条件（SharedPreferences の `search_condition` の JSON）。
-///
-/// 以前のバージョンのアプリが保存したものも読むので、知らない値・欠けた項目は
-/// 既定値にする（読めない値で落とさない）。
+/// 以前のバージョンのアプリが保存したものも読むので、知らない値・欠けた項目・
+/// 壊れた JSON は既定値にする。
 @JsonSerializable(explicitToJson: true)
 class SearchConditionModel {
   const SearchConditionModel({required this.common, required this.map});
@@ -17,7 +15,6 @@ class SearchConditionModel {
   factory SearchConditionModel.fromJson(Map<String, dynamic> json) =>
       _$SearchConditionModelFromJson(json);
 
-  /// 保存した JSON 文字列から作る。未保存（空文字）・壊れた JSON なら初期状態。
   factory SearchConditionModel.fromJsonString(String source) {
     if (source.isEmpty) {
       return SearchConditionModel.initial();
@@ -28,9 +25,9 @@ class SearchConditionModel {
         return SearchConditionModel.fromJson(json);
       }
     } on FormatException {
-      // 壊れた JSON。初期状態で続ける。
+      // 初期状態で続ける。
     } on TypeError {
-      // 項目の型が違う（以前のバージョンの形など）。初期状態で続ける。
+      // 初期状態で続ける。
     }
     return SearchConditionModel.initial();
   }
@@ -109,24 +106,19 @@ class MapSearchConditionModel {
   final CoordinateTypeModel coordinateType;
 }
 
-/// 取得済みかどうかによる絞り込み（`common.displayFilter`）。
-///
-/// 値の名前がそのまま保存される文字列になる。変えると保存済みの値が読めなくなる。
+/// 値の名前が保存する文字列そのもの。変えると保存済みの値が読めなくなる。
 enum DisplayFilterModel {
   all,
   acquired,
   unacquired,
 }
 
-/// マップに表示する座標の種別（`map.coordinateType`）。
-///
-/// 値の名前がそのまま保存される文字列になる。変えると保存済みの値が読めなくなる。
+/// 値の名前が保存する文字列そのもの。変えると保存済みの値が読めなくなる。
 enum CoordinateTypeModel {
   distribution,
   position,
 }
 
-/// 文字列の集合。文字列でない要素は読み飛ばす。
 class _StringSetConverter implements JsonConverter<Set<String>, Object?> {
   const _StringSetConverter();
 
@@ -139,7 +131,6 @@ class _StringSetConverter implements JsonConverter<Set<String>, Object?> {
   Object? toJson(Set<String> object) => object.toList();
 }
 
-/// 配布状態の集合。知らない値は読み飛ばす。
 class _DistributionStateSetConverter
     implements JsonConverter<Set<DistributionStateModel>, Object?> {
   const _DistributionStateSetConverter();

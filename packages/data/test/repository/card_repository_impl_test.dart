@@ -1,14 +1,15 @@
 import 'dart:io';
 
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
 import 'package:data/src/datasource/card_image_cache_manager.dart';
 import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:data/src/datasource/image_fallback.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/repository/card_repository_impl.dart';
 import 'package:domain/domain.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../datasource/crashlytics_mock.dart';
 import '../fixtures.dart';
@@ -67,7 +68,6 @@ void main() {
   });
 
   group('fetchImage', () {
-    /// 画像の取得に [response] を返すようにする。
     void stubImage(Stream<FileResponse> Function() response) {
       when(
         () => imageCacheManager.getImageFile(

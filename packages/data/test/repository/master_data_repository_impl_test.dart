@@ -1,18 +1,19 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
 import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/repository/master_data_repository_impl.dart';
 import 'package:domain/domain.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../datasource/crashlytics_mock.dart';
 import '../fixtures.dart';
 import '../model/firestore_master_models_test.dart' show cardDocument;
 
-// Firestore の型は実装を禁じる印（sealed）が付いているが、テストのために差し替える。
+// Firestore の型は sealed だが、テストのために差し替える。
 // ignore_for_file: subtype_of_sealed_class
 
 class MockFirestore extends Mock implements FirebaseFirestore {}
@@ -38,7 +39,6 @@ void main() {
   late MockDocument master;
   late MasterDataRepositoryImpl repository;
 
-  /// `master/0006/{name}` のコレクションが [documents] を返すようにする。
   void stubCollection(String name, List<Map<String, dynamic>> documents) {
     final collection = MockCollection();
     final snapshot = MockQuerySnapshot();

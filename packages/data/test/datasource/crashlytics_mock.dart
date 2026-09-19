@@ -3,7 +3,6 @@ import 'package:mocktail/mocktail.dart';
 
 class MockFirebaseCrashlytics extends Mock implements FirebaseCrashlytics {}
 
-/// [crashlytics] の recordError が呼ばれても何もしないようにする。
 void stubRecordError(MockFirebaseCrashlytics crashlytics) {
   registerFallbackValue(StackTrace.empty);
   registerFallbackValue(<Object>[]);
@@ -19,7 +18,6 @@ void stubRecordError(MockFirebaseCrashlytics crashlytics) {
   ).thenAnswer((_) async {});
 }
 
-/// recordError に渡された例外・スタック・fatal を、呼ばれた順に返す。
 List<({Object? error, StackTrace? stackTrace, bool fatal})> recordedErrors(
   MockFirebaseCrashlytics crashlytics,
 ) {

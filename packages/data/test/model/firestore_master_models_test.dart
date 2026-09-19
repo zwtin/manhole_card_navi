@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_test/flutter_test.dart';
+
 import 'package:data/src/model/distribution_state_model.dart';
 import 'package:data/src/model/firestore_master_models.dart';
 import 'package:data/src/model/malformed_data_exception.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 const _path = 'master/0006/cards/27-226-B001';
 

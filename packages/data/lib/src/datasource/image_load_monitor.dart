@@ -4,35 +4,23 @@ import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-/// カード画像の取得失敗を計測して Analytics に送る。
-///
-/// 画像の取得はマスターデータの更新とは独立していて（マスター更新は Firestore →
-/// Realm の保存までで、画像は表示時に個別に取得する）、失敗しても画面上は
-/// 「出ない」だけで、これまでどこにも記録が残らなかった。配信元やネットワークの
-/// 問題を数で把握できるようにするために入れている。
-///
-/// **イベント数の上限について**: 遮断されている端末では1セッションで数百〜数千枚が
-/// 失敗しうる。Analytics に全部送るとイベント数を食い潰すため、送信は
-/// [_maxEventsPerSession] 件までに絞る。件数そのものは [failureCount] に積み続け、
-/// 各イベントに `failure_count`（その時点の累計）を載せるので、上限に達した後でも
-/// 「そのセッションで何件失敗したか」は最後のイベントから読み取れる。
+/// 送るのは 1 セッション [_maxEventsPerSession] 件まで。遮断されている端末では
+/// 数百〜数千枚が失敗し、Analytics のイベント数を食い潰すため。各イベントに
+/// その時点の累計（`failure_count`）を載せるので、上限の後もセッションの失敗数は
+/// 最後のイベントから読める。
 class ImageLoadMonitor {
   ImageLoadMonitor._();
 
-  /// 1セッションあたりの Analytics 送信上限。
   static const int _maxEventsPerSession = 20;
 
   static int _sentEventCount = 0;
 
-  /// このセッションで発生した画像取得の失敗回数（主系・代替を問わず最終的に失敗した数）。
+  /// 代わりの配信元でも取れなかった数。
   static int failureCount = 0;
 
-  /// このセッションでフォールバックによって救済できた回数。
   static int fallbackSuccessCount = 0;
 
-  /// 主系の取得に失敗したときに呼ぶ。
-  ///
-  /// [recovered] が true なら代替配信元から取得できた（＝ユーザーには画像が表示された）。
+  /// 主系で取れなかったときに呼ぶ。
   static void recordFailure({
     required String url,
     required Object error,
@@ -63,15 +51,13 @@ class ImageLoadMonitor {
               'fallback_success_count': fallbackSuccessCount,
             },
           )
-          // 計測が本体の動作を止めないよう、送信失敗は無視する。
+          // 送れなくても本体の動作は止めない。
           .onError((_, __) {}),
     );
   }
 
-  /// 失敗の種類をラベル化する。Analytics 上で内訳を見るために使う。
-  ///
-  /// 遮断は方式によって別々のエラーになる（平文を返す割り込み＝ handshake_intercepted、
-  /// DNS で潰す＝ dns、パケットを捨てる＝ timeout）ので、まとめずに区別して数える。
+  /// 遮断の方式によってエラーが違う（平文を返して割り込む＝ handshake_intercepted、
+  /// DNS で潰す＝ dns、パケットを捨てる＝ timeout）ので、まとめずに分けて数える。
   static String classify(Object error) {
     if (error is HttpExceptionWithStatus) {
       return 'status';
@@ -82,7 +68,7 @@ class ImageLoadMonitor {
 
     final text = error.toString();
     if (error is HandshakeException) {
-      // 443 への応答が TLS レコードですらない＝経路上の装置が平文を返している。
+      // 443 への応答が TLS ですらない＝経路上の装置が平文を返している。
       return text.contains('WRONG_VERSION_NUMBER')
           ? 'handshake_intercepted'
           : 'handshake';

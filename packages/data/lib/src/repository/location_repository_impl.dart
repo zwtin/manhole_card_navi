@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:domain/domain.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
-import '../datasource/failure_recorder.dart';
-import '../datasource/location_data_source.dart';
-import '../mapper/domain_exception_mapper.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/location_data_source.dart';
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:domain/domain.dart';
 
 class LocationRepositoryImpl implements LocationRepository {
   LocationRepositoryImpl(
@@ -54,7 +54,7 @@ class LocationRepositoryImpl implements LocationRepository {
             longitude: position.longitude,
           );
         } on LocationServiceDisabledException {
-          // 端末の位置情報がオフ。利用者が選んだ状態なので失敗にしない。
+          // 利用者が選んだ状態なので失敗にしない。
           return null;
         } on PermissionDeniedException {
           return null;
@@ -66,7 +66,6 @@ class LocationRepositoryImpl implements LocationRepository {
     );
   }
 
-  /// 使用中のみ・常に のどちらでも許可とみなす。
   static bool _isGranted(LocationPermission permission) {
     return permission == LocationPermission.whileInUse ||
         permission == LocationPermission.always;

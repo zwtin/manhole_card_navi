@@ -1,10 +1,10 @@
-import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import '../datasource/failure_recorder.dart';
-import '../datasource/remote_config_data_source.dart';
-import '../mapper/domain_exception_mapper.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/remote_config_data_source.dart';
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:domain/domain.dart';
 
 class MasterVersionRepositoryImpl implements MasterVersionRepository {
   MasterVersionRepositoryImpl(
@@ -13,10 +13,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
     this._failureRecorder,
   );
 
-  /// 使うべきバージョンを配信する Remote Config のキー。
   static const _inquiredVersionKey = 'inquired_master_version';
-
-  /// 取り込み済みのバージョンを保存する SharedPreferences のキー。
   static const _currentVersionKey = 'current_master_version';
 
   final _logger = Logger();

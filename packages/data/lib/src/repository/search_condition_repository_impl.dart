@@ -1,11 +1,11 @@
-import 'package:domain/domain.dart';
 import 'package:logger/logger.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import '../datasource/failure_recorder.dart';
-import '../mapper/domain_exception_mapper.dart';
-import '../mapper/search_condition_mapper.dart';
-import '../model/search_condition_model.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:data/src/mapper/search_condition_mapper.dart';
+import 'package:data/src/model/search_condition_model.dart';
+import 'package:domain/domain.dart';
 
 class SearchConditionRepositoryImpl implements SearchConditionRepository {
   SearchConditionRepositoryImpl(
@@ -13,7 +13,6 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
     this._failureRecorder,
   );
 
-  /// 検索条件を保存する SharedPreferences のキー。
   static const _key = 'search_condition';
 
   final _logger = Logger();

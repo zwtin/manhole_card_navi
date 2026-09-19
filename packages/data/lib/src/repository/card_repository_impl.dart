@@ -1,21 +1,17 @@
 import 'dart:typed_data';
 
-import 'package:domain/domain.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:logger/logger.dart';
 
-import '../datasource/card_image_cache_manager.dart';
-import '../datasource/failure_recorder.dart';
-import '../datasource/image_fallback.dart';
-import '../datasource/master_data_local_data_source.dart';
-import '../mapper/domain_exception_mapper.dart';
-import '../mapper/local_card_mapper.dart';
-import '../model/local_card_model.dart';
+import 'package:data/src/datasource/card_image_cache_manager.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/image_fallback.dart';
+import 'package:data/src/datasource/master_data_local_data_source.dart';
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:data/src/mapper/local_card_mapper.dart';
+import 'package:data/src/model/local_card_model.dart';
+import 'package:domain/domain.dart';
 
-/// 端末に取り込んだカードと、その画像。
-///
-/// カードは端末の JSON ファイル（[MasterDataLocalDataSource]）から、画像は配信元から
-/// 取って端末に保存したもの（[CardImageCacheManager]）から読む。
 class CardRepositoryImpl implements CardRepository {
   CardRepositoryImpl(
     this._masterData,
@@ -48,12 +44,8 @@ class CardRepositoryImpl implements CardRepository {
     );
   }
 
-  /// 画像の取得の失敗は、ほかと違い FailureRecorder で記録しない。画像の失敗は
-  /// ImageLoadMonitor（Analytics）と、表示側の FlutterError（Crashlytics の非重大）で
-  /// 記録している。遮断されている端末では画像の失敗が大量に出るので、ここでも記録
-  /// すると二重になるうえ、ほかの失敗の記録が埋もれる。
-  ///
-  /// 取った画像はすべて端末に保存する（一覧・詳細・マップのマーカーで使い回す）。
+  /// 画像の取得の失敗は FailureRecorder で記録しない。ImageLoadMonitor と表示側の
+  /// FlutterError で記録済みで、遮断されている端末では大量に出てほかの失敗が埋もれる。
   @override
   Future<Result<Uint8List>> fetchImage({
     required String cardId,
@@ -75,9 +67,8 @@ class CardRepositoryImpl implements CardRepository {
       );
     }
     try {
-      // 端末に保存済みなら、期限が切れていても先にそれが流れてくる（取り直しは
-      // その後ろで行われ、失敗しても保存済みの画像は出せる）。最初の 1 件だけ使う。
-      // R2 で取れなければ代わりの配信元（Hosting）から取る（ImageFallback）。
+      // 保存済みなら期限切れでも先に流れてくる（取り直しはその後ろで行われる）ので、
+      // 最初の 1 件だけ使う。取り直せなくても保存済みの画像は出せる。
       final response = await _imageCacheManager
           .getImageFile(
             card.image,

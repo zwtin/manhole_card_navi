@@ -2,7 +2,6 @@ import 'package:data/src/model/distribution_state_model.dart';
 import 'package:data/src/model/local_card_model.dart';
 import 'package:domain/domain.dart';
 
-/// テスト用のカード。
 ManholeCard card({
   String id = '27-226-B001',
   List<Coordinate> distributionPoints = const [
@@ -24,7 +23,7 @@ ManholeCard card({
   );
 }
 
-/// テスト用の、端末に保存するカード。画像の URL のほかは [card] と同じ値。
+/// 画像の URL のほかは [card] と同じ値。
 LocalCardModel localCard({
   String id = '27-226-B001',
   String? image,

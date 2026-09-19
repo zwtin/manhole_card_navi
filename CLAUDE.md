@@ -141,9 +141,9 @@ fvm flutter pub run flutter_native_splash:create
 - データモデル用のFreezed
 
 ## コードの書き方
-domain はこの形にそろえてある。data・app はまだそろえていない。
+domain と data はこの形にそろえてある。app はまだそろえていない。
 
-- import は相対パスにせず `package:` の形で書く。`dart:`・外部のパッケージ・このアプリのパッケージ（`package:domain/` など）の順にまとめ、まとまりの間に空行を入れる。domain は lint（`always_use_package_imports`）で相対パスを禁じている
+- import は相対パスにせず `package:` の形で書く。`dart:`・外部のパッケージ・このアプリのパッケージ（`package:domain/` など）の順にまとめ、まとまりの間に空行を入れる。domain と data は lint（`always_use_package_imports`）で相対パスを禁じている。テストの中でテスト用のファイルを読むときだけは相対パスで、最後のまとまりにする
 - コメントは、コードを読んでもわからないこと（そうしている理由・型や名前に表れない約束・名前だけでは意味の取れないもの）だけを書く。コードを言い直すコメントや、設計の方針（このファイルに書く）はコードに書かない。コメントとコードを二重に管理しないため
 
 ## 環境設定

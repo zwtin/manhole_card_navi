@@ -1,9 +1,9 @@
-import 'package:domain/domain.dart';
 import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
 import 'package:logger/logger.dart';
 
-import '../datasource/failure_recorder.dart';
-import '../mapper/domain_exception_mapper.dart';
+import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:domain/domain.dart';
 
 class AppBadgeRepositoryImpl implements AppBadgeRepository {
   AppBadgeRepositoryImpl(

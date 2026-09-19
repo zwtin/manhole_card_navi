@@ -1,9 +1,7 @@
+import 'package:data/src/mapper/distribution_state_mapper.dart';
+import 'package:data/src/model/local_card_model.dart';
 import 'package:domain/domain.dart';
 
-import '../model/local_card_model.dart';
-import 'distribution_state_mapper.dart';
-
-/// 端末に保存するカード（model）をエンティティにする。
 abstract final class LocalCardMapper {
   static ManholeCard toCard(LocalCardModel model) {
     return ManholeCard(

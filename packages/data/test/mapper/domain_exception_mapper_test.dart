@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:data/src/mapper/domain_exception_mapper.dart';
-import 'package:data/src/model/malformed_data_exception.dart';
-import 'package:domain/domain.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:data/src/model/malformed_data_exception.dart';
+import 'package:domain/domain.dart';
 
 void main() {
   final stackTrace = StackTrace.current;
