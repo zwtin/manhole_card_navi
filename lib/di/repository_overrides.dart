@@ -29,7 +29,10 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
       ),
     ),
     appBadgeRepositoryProvider.overrideWith(
-      (_) => AppBadgeRepositoryImpl(failureRecorder),
+      (_) => AppBadgeRepositoryImpl(
+        const AppBadgeDataSource(),
+        failureRecorder,
+      ),
     ),
     appInfoRepositoryProvider.overrideWith(
       (_) => AppInfoRepositoryImpl(

@@ -32,6 +32,7 @@ class MasterDataLocalDataSource {
   final Future<void> Function()? _cleanUp;
 
   Future<File>? _file;
+  Future<List<LocalCardModel>?>? _reading;
   List<LocalCardModel>? _cards;
 
   /// まだ取り込んでいなければ null。壊れたファイルは消すので、次の起動時の確認で
@@ -41,6 +42,11 @@ class MasterDataLocalDataSource {
     if (cached != null) {
       return cached;
     }
+    // 読み込みと変換は重いので、同時に呼ばれても 1 回で済ませる。
+    return _reading ??= _read().whenComplete(() => _reading = null);
+  }
+
+  Future<List<LocalCardModel>?> _read() async {
     final file = await _resolveFile();
     if (!await file.exists()) {
       return null;

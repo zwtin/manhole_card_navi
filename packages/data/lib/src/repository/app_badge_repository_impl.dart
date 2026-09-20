@@ -1,14 +1,15 @@
-import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
-
-import 'package:data/src/repository/failure_recorder.dart';
+import 'package:data/src/datasource/app_badge_data_source.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:data/src/repository/failure_recorder.dart';
 import 'package:domain/domain.dart';
 
 class AppBadgeRepositoryImpl implements AppBadgeRepository {
   AppBadgeRepositoryImpl(
+    this._appBadge,
     this._failureRecorder,
   );
 
+  final AppBadgeDataSource _appBadge;
   final FailureRecorder _failureRecorder;
 
   @override
@@ -16,7 +17,7 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
     required int count,
   }) {
     return _failureRecorder.guard(
-      () => FlutterAppBadgeControl.updateBadgeCount(count),
+      () => _appBadge.updateCount(count),
       convert: DomainExceptionMapper.fromPlatform,
     );
   }
@@ -24,7 +25,7 @@ class AppBadgeRepositoryImpl implements AppBadgeRepository {
   @override
   Future<Result<void>> remove() {
     return _failureRecorder.guard(
-      FlutterAppBadgeControl.removeBadge,
+      _appBadge.remove,
       convert: DomainExceptionMapper.fromPlatform,
     );
   }

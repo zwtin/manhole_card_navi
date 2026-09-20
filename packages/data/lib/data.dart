@@ -1,3 +1,4 @@
+export 'package:data/src/datasource/app_badge_data_source.dart';
 export 'package:data/src/datasource/card_image_data_source.dart';
 export 'package:data/src/datasource/crashlytics_data_source.dart';
 export 'package:data/src/datasource/location_data_source.dart';

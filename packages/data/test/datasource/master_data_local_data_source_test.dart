@@ -49,6 +49,15 @@ void main() {
     expect(fileNames(), ['master_data_v1.json']);
   });
 
+  test('同時に読んでも、読み込みと変換は 1 回で済ませる', () async {
+    await store().writeAll([localCard()]);
+    final target = store();
+
+    final results = await Future.wait([target.readAll(), target.readAll()]);
+
+    expect(identical(results[0], results[1]), isTrue);
+  });
+
   test('入れ替えると、前のカードは残らない', () async {
     final target = store();
     await target.writeAll([localCard(id: 'A')]);
