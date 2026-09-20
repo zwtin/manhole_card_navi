@@ -6,7 +6,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:data/src/datasource/image_load_monitor.dart';
+import 'package:data/src/datasource/card_image/image_load_monitor.dart';
 
 class MockFirebaseAnalytics extends Mock implements FirebaseAnalytics {}
 

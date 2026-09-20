@@ -4,9 +4,9 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:data/src/datasource/card_image_cache_manager.dart';
+import 'package:data/src/datasource/card_image/card_image_cache_manager.dart';
 import 'package:data/src/datasource/card_image_data_source.dart';
-import 'package:data/src/datasource/image_fallback.dart';
+import 'package:data/src/datasource/card_image/image_fallback.dart';
 
 class MockCardImageCacheManager extends Mock
     implements CardImageCacheManager {}

@@ -3,10 +3,10 @@ import 'dart:typed_data';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-import 'package:data/src/datasource/card_image_cache_manager.dart';
-import 'package:data/src/datasource/fallback_file_service.dart';
-import 'package:data/src/datasource/image_fallback.dart';
-import 'package:data/src/datasource/image_load_monitor.dart';
+import 'package:data/src/datasource/card_image/card_image_cache_manager.dart';
+import 'package:data/src/datasource/card_image/fallback_file_service.dart';
+import 'package:data/src/datasource/card_image/image_fallback.dart';
+import 'package:data/src/datasource/card_image/image_load_monitor.dart';
 
 /// カード画像の取得。
 class CardImageDataSource {

@@ -5,9 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 
-import 'package:data/src/datasource/fallback_file_service.dart';
-import 'package:data/src/datasource/image_fallback.dart';
-import 'package:data/src/datasource/image_load_monitor.dart';
+import 'package:data/src/datasource/card_image/fallback_file_service.dart';
+import 'package:data/src/datasource/card_image/image_fallback.dart';
+import 'package:data/src/datasource/card_image/image_load_monitor.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
 

@@ -4,8 +4,8 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 
-import 'package:data/src/datasource/image_fallback.dart';
-import 'package:data/src/datasource/image_load_monitor.dart';
+import 'package:data/src/datasource/card_image/image_fallback.dart';
+import 'package:data/src/datasource/card_image/image_load_monitor.dart';
 
 /// 主系で取れなければ、代わりの配信元（[ImageFallback]）から取り直す。
 class FallbackFileService extends FileService {
