@@ -42,7 +42,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
     cardRepositoryProvider.overrideWith(
       (_) => CardRepositoryImpl(
         infrastructure.masterData,
-        CardImageCacheManager(),
+        infrastructure.cardImage,
         failureRecorder,
       ),
     ),

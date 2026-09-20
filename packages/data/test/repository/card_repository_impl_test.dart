@@ -1,12 +1,11 @@
 import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:data/src/datasource/card_image_cache_manager.dart';
+import 'package:data/src/datasource/card_image_data_source.dart';
 import 'package:data/src/datasource/failure_recorder.dart';
-import 'package:data/src/datasource/image_fallback.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/repository/card_repository_impl.dart';
 import 'package:domain/domain.dart';
@@ -14,25 +13,24 @@ import 'package:domain/domain.dart';
 import '../datasource/crashlytics_mock.dart';
 import '../fixtures.dart';
 
-class MockCardImageCacheManager extends Mock
-    implements CardImageCacheManager {}
+class MockCardImageDataSource extends Mock implements CardImageDataSource {}
 
 void main() {
   late Directory directory;
   late MasterDataLocalDataSource store;
-  late MockCardImageCacheManager imageCacheManager;
+  late MockCardImageDataSource cardImage;
   late MockFirebaseCrashlytics crashlytics;
   late CardRepositoryImpl repository;
 
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('card_repository');
     store = MasterDataLocalDataSource(directory: () async => directory);
-    imageCacheManager = MockCardImageCacheManager();
+    cardImage = MockCardImageDataSource();
     crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     repository = CardRepositoryImpl(
       store,
-      imageCacheManager,
+      cardImage,
       FailureRecorder(crashlytics: crashlytics),
     );
   });
@@ -68,17 +66,17 @@ void main() {
   });
 
   group('fetchImage', () {
-    void stubImage(Stream<FileResponse> Function() response) {
+    void stubImage(Future<Uint8List> Function() response) {
       when(
-        () => imageCacheManager.getImageFile(
-          any(),
-          headers: any(named: 'headers'),
+        () => cardImage.fetch(
+          url: any(named: 'url'),
+          subUrl: any(named: 'subUrl'),
           maxWidth: any(named: 'maxWidth'),
         ),
       ).thenAnswer((_) => response());
     }
 
-    test('カードの画像の URL と代わりの配信元で取り、保存したデータを返す', () async {
+    test('カードの画像の URL と代わりの配信元を渡して取る', () async {
       await store.writeAll([
         localCard(
           id: 'A',
@@ -86,21 +84,15 @@ void main() {
           imageSub: 'https://sub/A.jpg',
         ),
       ]);
-      final file = await MemoryCacheSystem().createFile('A.jpg');
-      await file.writeAsBytes([1, 2, 3]);
-      stubImage(
-        () => Stream.value(
-          FileInfo(file, FileSource.Cache, DateTime(2026), 'https://r2/A.jpg'),
-        ),
-      );
+      stubImage(() async => Uint8List.fromList([1, 2, 3]));
 
       final result = await repository.fetchImage(cardId: 'A', maxWidth: 520);
 
       expect((result as Success<List<int>>).value, [1, 2, 3]);
       verify(
-        () => imageCacheManager.getImageFile(
-          'https://r2/A.jpg',
-          headers: ImageFallback.headers('https://sub/A.jpg'),
+        () => cardImage.fetch(
+          url: 'https://r2/A.jpg',
+          subUrl: 'https://sub/A.jpg',
           maxWidth: 520,
         ),
       ).called(1);
@@ -113,9 +105,9 @@ void main() {
 
       expect((result as Failure).exception, isA<NotFoundException>());
       verifyNever(
-        () => imageCacheManager.getImageFile(
-          any(),
-          headers: any(named: 'headers'),
+        () => cardImage.fetch(
+          url: any(named: 'url'),
+          subUrl: any(named: 'subUrl'),
           maxWidth: any(named: 'maxWidth'),
         ),
       );
@@ -124,9 +116,7 @@ void main() {
     test('画像の取得の失敗は、種類に変換して返すが記録しない', () async {
       await store.writeAll([localCard(id: 'A')]);
       stubImage(
-        () => Stream.error(
-          const HandshakeException('WRONG_VERSION_NUMBER'),
-        ),
+        () async => throw const HandshakeException('WRONG_VERSION_NUMBER'),
       );
 
       final result = await repository.fetchImage(cardId: 'A');

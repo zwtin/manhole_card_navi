@@ -1,10 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-import 'package:data/src/datasource/card_image_cache_manager.dart';
+import 'package:data/src/datasource/card_image_data_source.dart';
 import 'package:data/src/datasource/failure_recorder.dart';
-import 'package:data/src/datasource/image_fallback.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:data/src/mapper/local_card_mapper.dart';
@@ -14,12 +12,12 @@ import 'package:domain/domain.dart';
 class CardRepositoryImpl implements CardRepository {
   CardRepositoryImpl(
     this._masterData,
-    this._imageCacheManager,
+    this._cardImage,
     this._failureRecorder,
   );
 
   final MasterDataLocalDataSource _masterData;
-  final CardImageCacheManager _imageCacheManager;
+  final CardImageDataSource _cardImage;
   final FailureRecorder _failureRecorder;
 
   @override
@@ -60,17 +58,13 @@ class CardRepositoryImpl implements CardRepository {
         card = value;
     }
     try {
-      // 保存済みなら期限切れでも先に流れてくる（取り直しはその後ろで行われる）ので、
-      // 最初の 1 件だけ使う。取り直せなくても保存済みの画像は出せる。
-      final response = await _imageCacheManager
-          .getImageFile(
-            card.image,
-            headers: ImageFallback.headers(card.imageSub),
-            maxWidth: maxWidth,
-          )
-          .firstWhere((response) => response is FileInfo);
-      final file = (response as FileInfo).file;
-      return Result.success(await file.readAsBytes());
+      return Result.success(
+        await _cardImage.fetch(
+          url: card.image,
+          subUrl: card.imageSub,
+          maxWidth: maxWidth,
+        ),
+      );
     } on Exception catch (error, stackTrace) {
       return Result.failure(
         DomainExceptionMapper.fromHttp(error, stackTrace),

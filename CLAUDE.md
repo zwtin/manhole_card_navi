@@ -66,7 +66,7 @@ fvm flutter pub run flutter_native_splash:create
    - `datasource/` - 外界と話すクラス。Firestore・Firebase Auth・Analytics・Messaging・SharedPreferences は SDK のインスタンスをそのまま使い、中身があるもの・static な API だけを包む。返すのは model（か SDK の型）で、エンティティにはしない。domain を知らず、形の違うデータは data の中だけの `MalformedDataException` で知らせる（domain の失敗の種類にするのは Repository）
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
      - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）
-     - `CardImageCacheManager` / `ImageFallback` / `ImageLoadMonitor`: カード画像の取得（`CardRepositoryImpl.fetchImage` が使う）。端末への保存、R2 で取れなければ Hosting から取る切り替え、失敗の計測（Analytics）
+     - `CardImageDataSource`: カード画像の取得。端末への保存（`CardImageCacheManager`）、R2 で取れなければ Hosting から取り直す切り替え（`FallbackFileService`・`ImageFallback`）、失敗の計測（`ImageLoadMonitor`、Analytics）は、この中に閉じる
      - `LocationDataSource`: 位置情報（geolocator の static な API の包み）
      - `FailureRecorder` / `UncaughtErrorObserver`: Crashlytics への記録。domain の失敗の種類を見て記録するかを決めるので、この 2 つだけは domain を知っている
    - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば `MalformedDataException` にする（`decodeModel`）。保存する値の enum も model が持ち、値の名前を保存する文字列にそろえる（domain の名前を変えても保存済みの値は変わらない）。エンティティは JSON を知らない

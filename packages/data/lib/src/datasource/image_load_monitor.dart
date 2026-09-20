@@ -9,19 +9,21 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 /// その時点の累計（`failure_count`）を載せるので、上限の後もセッションの失敗数は
 /// 最後のイベントから読める。
 class ImageLoadMonitor {
-  ImageLoadMonitor._();
+  ImageLoadMonitor(this._analytics);
 
   static const int _maxEventsPerSession = 20;
 
-  static int _sentEventCount = 0;
+  final FirebaseAnalytics _analytics;
+
+  int _sentEventCount = 0;
 
   /// 代わりの配信元でも取れなかった数。
-  static int failureCount = 0;
+  int failureCount = 0;
 
-  static int fallbackSuccessCount = 0;
+  int fallbackSuccessCount = 0;
 
   /// 主系で取れなかったときに呼ぶ。
-  static void recordFailure({
+  void recordFailure({
     required String url,
     required Object error,
     required bool recovered,
@@ -38,11 +40,11 @@ class ImageLoadMonitor {
     _sentEventCount++;
 
     unawaited(
-      FirebaseAnalytics.instance
+      _analytics
           .logEvent(
             name: 'image_load_failed',
             parameters: <String, Object>{
-              'error_type': classify(error),
+              'error_type': _classify(error),
               'status_code':
                   error is HttpExceptionWithStatus ? error.statusCode : 0,
               'host': Uri.tryParse(url)?.host ?? '',
@@ -58,7 +60,7 @@ class ImageLoadMonitor {
 
   /// 遮断の方式によってエラーが違う（平文を返して割り込む＝ handshake_intercepted、
   /// DNS で潰す＝ dns、パケットを捨てる＝ timeout）ので、まとめずに分けて数える。
-  static String classify(Object error) {
+  static String _classify(Object error) {
     if (error is HttpExceptionWithStatus) {
       return 'status';
     }

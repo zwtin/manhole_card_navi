@@ -1,5 +1,4 @@
-export 'package:data/src/datasource/card_image_cache_manager.dart'
-    show CardImageCacheManager;
+export 'package:data/src/datasource/card_image_data_source.dart';
 export 'package:data/src/datasource/failure_recorder.dart';
 export 'package:data/src/datasource/location_data_source.dart';
 export 'package:data/src/datasource/master_data_local_data_source.dart';
