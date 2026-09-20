@@ -33,10 +33,11 @@ fvm flutter build ios --dart-define-from-file=dart_defines/production.env
 # コード解析（ルートで実行すると packages/ 配下もまとめて解析する）
 fvm flutter analyze
 
-# テストの実行（パッケージごと）
+# テストの実行（パッケージごと。ルートにもある）
 (cd packages/domain && fvm dart test)  # domain は Flutter に依存しないので dart で回せる
 (cd packages/data && fvm flutter test)
 (cd packages/app && fvm flutter test)
+fvm flutter test                       # ルート（lib/ の組み立て・記録）
 
 # コード生成（パッケージごと。依存される側から順に）
 for package in packages/domain packages/data packages/app; do
@@ -69,7 +70,6 @@ fvm flutter pub run flutter_native_splash:create
      - `CardImageDataSource`: カード画像の取得。端末への保存（`CardImageCacheManager`）、R2 で取れなければ Hosting から取り直す切り替え（`FallbackFileService`・`ImageFallback`）、失敗の計測（`ImageLoadMonitor`、Analytics）は、この中に閉じる
      - `LocationDataSource`: 位置情報（geolocator の static な API の包み）
      - `CrashlyticsDataSource`: Crashlytics への記録（非重大・クラッシュ・利用者の ID）
-     - `UncaughtErrorObserver`: provider の生成中のバグをクラッシュとして記録する。domain の失敗の種類を見るので、datasource でここだけは domain を知っている
    - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば `MalformedDataException` にする（`decodeModel`）。保存する値の enum も model が持ち、値の名前を保存する文字列にそろえる（domain の名前を変えても保存済みの値は変わらない）。エンティティは JSON を知らない
    - `mapper/` - model とエンティティ・model どうしの変換（`toCard`・`toModel`・`toLocalCard` など、出力するもので名前を付ける）と、外部の例外・`MalformedDataException` と失敗の種類の変換（`DomainExceptionMapper`）
 
@@ -84,6 +84,7 @@ fvm flutter pub run flutter_native_splash:create
 4. **ルート** (`lib/`) - アプリを組み立てる場所（Composition Root）。`main.dart` で Firebase を初期化し、`di/` で data の実装を domain の provider に当てはめる
    - `di/infrastructure.dart` - data の Repository が共有する部品（SharedPreferences・PackageInfo・Remote Config・JSON ファイル・記録）を起動時に 1 回だけ作る `Infrastructure`
    - `di/repository_overrides.dart` - domain の Repository の provider に data の実装を当てはめる override の一覧
+   - `uncaught_error_observer.dart` - provider の生成中のバグをクラッシュとして記録する `ProviderObserver`。`main.dart` の Zone・`FlutterError.onError` と合わせて、クラッシュの記録はルートに集める
 
 ### 依存性注入
 - Repository の provider は domain で `throw UnimplementedError` として宣言し、ルートの `lib/di/repository_overrides.dart` が data の実装に差し替える。どの実装を、どの部品で作るかを知っているのはルートだけ。app の中で閉じる `NavigationService` は、app で実装を返す provider を宣言する
@@ -111,7 +112,7 @@ fvm flutter pub run flutter_native_splash:create
 - Crashlytics を知っているのは data と `main.dart` だけ。app と domain は記録に関わらない
 - data の Repository は、失敗をすべて `FailureRecorder`（ふつうは `guard`）を通して返し、そこで非重大として記録する。通信できない・タイムアウト（`UnavailableException`）は、時間をおけば直り調べても直せないので記録しない
 - 例外はカード画像（`CardRepositoryImpl.fetchImage`）の取得の失敗で、`FailureRecorder` を通さない。画像の失敗は `ImageLoadMonitor`（Analytics）と、下の `FlutterError` 経由の非重大で記録している
-- 扱われなかったバグはクラッシュ（fatal）として記録する。`main.dart` の Zone と `FlutterError.onError`、provider の生成中に起きたものは data の `UncaughtErrorObserver` が拾う。provider の中の失敗は Riverpod が受け止めるため Zone には届かない
+- 扱われなかったバグはクラッシュ（fatal）として記録する。`main.dart` の Zone と `FlutterError.onError`、provider の生成中に起きたものはルートの `UncaughtErrorObserver` が拾う。provider の中の失敗は Riverpod が受け止めるため Zone には届かない
 - 画像の読み込み失敗（`library` が `image resource service`）はバグではないので、`FlutterError.onError` でも非重大のまま記録する。画像が出ない問い合わせの調査はこの非重大の記録で行う。`CardImageProvider` は、ここに残るよう変換前の例外（`HandshakeException` など）を投げる
 
 ### 状態管理（app）

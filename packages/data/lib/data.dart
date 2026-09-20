@@ -3,7 +3,6 @@ export 'package:data/src/datasource/crashlytics_data_source.dart';
 export 'package:data/src/datasource/location_data_source.dart';
 export 'package:data/src/datasource/master_data_local_data_source.dart';
 export 'package:data/src/datasource/remote_config_data_source.dart';
-export 'package:data/src/datasource/uncaught_error_observer.dart';
 export 'package:data/src/repository/already_get_card_repository_impl.dart';
 export 'package:data/src/repository/failure_recorder.dart';
 export 'package:data/src/repository/analytics_repository_impl.dart';

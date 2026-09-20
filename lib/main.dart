@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:app/app.dart';
-import 'package:data/data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import 'debug_proxy.dart';
 import 'di/infrastructure.dart';
 import 'di/repository_overrides.dart';
 import 'firebase_options.dart';
+import 'uncaught_error_observer.dart';
 
 FutureOr<void> main() async {
   runZonedGuarded<Future<void>>(
@@ -38,7 +38,7 @@ FutureOr<void> main() async {
       final infrastructure = await Infrastructure.initialize();
       runApp(
         ProviderScope(
-          observers: [UncaughtErrorObserver()],
+          observers: [UncaughtErrorObserver(infrastructure.crashlytics)],
           overrides: repositoryOverrides(infrastructure),
           child: const App(),
         ),
