@@ -1,14 +1,11 @@
-import 'dart:async';
-
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-
 import 'package:domain/domain.dart';
 
-class FailureRecorder {
-  FailureRecorder({FirebaseCrashlytics? crashlytics})
-      : _crashlytics = crashlytics;
+import 'package:data/src/datasource/crashlytics_data_source.dart';
 
-  final FirebaseCrashlytics? _crashlytics;
+class FailureRecorder {
+  FailureRecorder(this._crashlytics);
+
+  final CrashlyticsDataSource _crashlytics;
 
   Future<Result<T>> guard<T>(
     Future<T> Function() body, {
@@ -24,14 +21,9 @@ class FailureRecorder {
 
   Result<T> failure<T>(DomainException exception, [StackTrace? stackTrace]) {
     if (_needsInvestigation(exception)) {
-      unawaited(
-        (_crashlytics ?? FirebaseCrashlytics.instance)
-            .recordError(
-              exception,
-              exception.stackTrace ?? stackTrace ?? StackTrace.current,
-            )
-            // 記録の失敗で本体の動作を止めない。
-            .onError((_, __) {}),
+      _crashlytics.recordNonFatal(
+        exception,
+        exception.stackTrace ?? stackTrace ?? StackTrace.current,
       );
     }
     return Result.failure(exception);

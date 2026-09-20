@@ -1,8 +1,8 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
-import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/repository/failure_recorder.dart';
+import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
@@ -16,7 +16,7 @@ class UserRepositoryImpl implements UserRepository {
 
   final FirebaseAuth _auth;
   final FirebaseAnalytics _analytics;
-  final FirebaseCrashlytics _crashlytics;
+  final CrashlyticsDataSource _crashlytics;
   final FailureRecorder _failureRecorder;
 
   @override
@@ -39,7 +39,7 @@ class UserRepositoryImpl implements UserRepository {
   Future<void> _setUserId(String uid) async {
     try {
       await _analytics.setUserId(id: uid);
-      await _crashlytics.setUserIdentifier(uid);
+      await _crashlytics.setUserId(uid);
     } on Exception catch (error, stackTrace) {
       _failureRecorder.failure<void>(
         DomainExceptionMapper.fromPlatform(error, stackTrace),

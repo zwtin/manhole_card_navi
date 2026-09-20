@@ -2,7 +2,8 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/crashlytics_data_source.dart';
+import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/repository/analytics_repository_impl.dart';
 import 'package:domain/domain.dart';
 
@@ -27,7 +28,7 @@ void main() {
     ).thenAnswer((_) async {});
     repository = AnalyticsRepositoryImpl(
       analytics,
-      FailureRecorder(crashlytics: crashlytics),
+      FailureRecorder(CrashlyticsDataSource(crashlytics)),
     );
   });
 

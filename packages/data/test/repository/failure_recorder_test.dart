@@ -1,10 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/crashlytics_data_source.dart';
+import 'package:data/src/repository/failure_recorder.dart';
 import 'package:domain/domain.dart';
 
-import 'crashlytics_mock.dart';
+import '../datasource/crashlytics_mock.dart';
 
 void main() {
   late MockFirebaseCrashlytics crashlytics;
@@ -13,7 +14,7 @@ void main() {
   setUp(() {
     crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
-    recorder = FailureRecorder(crashlytics: crashlytics);
+    recorder = FailureRecorder(CrashlyticsDataSource(crashlytics));
   });
 
   test('調べる必要のある失敗は、非重大として記録してから返す', () {

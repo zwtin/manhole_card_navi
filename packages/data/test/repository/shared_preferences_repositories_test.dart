@@ -3,7 +3,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/crashlytics_data_source.dart';
+import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/datasource/remote_config_data_source.dart';
 import 'package:data/src/repository/already_get_card_repository_impl.dart';
 import 'package:data/src/repository/master_version_repository_impl.dart';
@@ -29,7 +30,7 @@ void main() {
     await preferences.clear();
     final crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
-    failureRecorder = FailureRecorder(crashlytics: crashlytics);
+    failureRecorder = FailureRecorder(CrashlyticsDataSource(crashlytics));
   });
 
   group('AlreadyGetCardRepositoryImpl', () {

@@ -1,17 +1,17 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 
-import 'package:data/src/datasource/failure_recorder.dart';
-import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:data/src/model/malformed_data_exception.dart';
 
 class RemoteConfigDataSource {
   RemoteConfigDataSource(
-    this._remoteConfig,
-    this._failureRecorder,
-  );
+    this._remoteConfig, {
+    required Duration minimumFetchInterval,
+  }) : _minimumFetchInterval = minimumFetchInterval;
 
   final FirebaseRemoteConfig _remoteConfig;
-  final FailureRecorder _failureRecorder;
+
+  /// 前に取ってからこの時間は取り直さない。
+  final Duration _minimumFetchInterval;
 
   /// 取れなくても止まらず、前回取った値で続ける。前回の値もなければ [readString] で
   /// 読むときに取り直す。
@@ -21,19 +21,13 @@ class RemoteConfigDataSource {
         RemoteConfigSettings(
           // 既定の 60 秒だと、電波が弱いときにスプラッシュ画面のまま待たせる。
           fetchTimeout: const Duration(seconds: 10),
-          // 開発では、Remote Config を変えたらすぐ確かめられるように毎回取り直す。
-          minimumFetchInterval:
-              const String.fromEnvironment('flavor') == 'development'
-                  ? Duration.zero
-                  : const Duration(hours: 12),
+          minimumFetchInterval: _minimumFetchInterval,
         ),
       );
       await _remoteConfig.fetchAndActivate();
-    } on Exception catch (error, stackTrace) {
-      _failureRecorder.failure<void>(
-        DomainExceptionMapper.fromRemoteConfig(error, stackTrace),
-        stackTrace,
-      );
+    } on Exception catch (_) {
+      // 記録もしない。値が要るときに readString が取り直し、そこでも取れなければ
+      // Repository が失敗として記録する。
     }
   }
 

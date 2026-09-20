@@ -5,7 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:data/src/datasource/card_image_data_source.dart';
-import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/crashlytics_data_source.dart';
+import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/repository/card_repository_impl.dart';
 import 'package:domain/domain.dart';
@@ -31,7 +32,7 @@ void main() {
     repository = CardRepositoryImpl(
       store,
       cardImage,
-      FailureRecorder(crashlytics: crashlytics),
+      FailureRecorder(CrashlyticsDataSource(crashlytics)),
     );
   });
 

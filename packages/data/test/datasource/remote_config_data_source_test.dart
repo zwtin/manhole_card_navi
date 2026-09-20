@@ -4,26 +4,20 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:data/src/datasource/failure_recorder.dart';
 import 'package:data/src/datasource/remote_config_data_source.dart';
 import 'package:data/src/model/malformed_data_exception.dart';
-
-import 'crashlytics_mock.dart';
 
 class MockFirebaseRemoteConfig extends Mock implements FirebaseRemoteConfig {}
 
 void main() {
   late MockFirebaseRemoteConfig remoteConfig;
-  late MockFirebaseCrashlytics crashlytics;
   late RemoteConfigDataSource reader;
 
   setUp(() {
     remoteConfig = MockFirebaseRemoteConfig();
-    crashlytics = MockFirebaseCrashlytics();
-    stubRecordError(crashlytics);
     reader = RemoteConfigDataSource(
       remoteConfig,
-      FailureRecorder(crashlytics: crashlytics),
+      minimumFetchInterval: const Duration(hours: 12),
     );
     when(() => remoteConfig.fetchAndActivate()).thenAnswer((_) async => true);
   });
@@ -68,33 +62,23 @@ void main() {
           .thenAnswer((_) async {});
     });
 
-    test('待ち時間を 10 秒にしてから取得する', () async {
+    test('待ち時間を 10 秒、取り直さない時間を渡されたものにして取得する', () async {
       await reader.activate();
 
       final settings = verify(
         () => remoteConfig.setConfigSettings(captureAny()),
       ).captured.single as RemoteConfigSettings;
       expect(settings.fetchTimeout, const Duration(seconds: 10));
+      expect(settings.minimumFetchInterval, const Duration(hours: 12));
       verify(() => remoteConfig.fetchAndActivate()).called(1);
     });
 
-    test('通信できなくても止まらず、記録もしない', () async {
+    test('取得に失敗しても止まらない', () async {
       when(() => remoteConfig.fetchAndActivate()).thenThrow(
         FirebaseException(plugin: 'firebase_remote_config', code: 'internal'),
       );
 
-      await reader.activate();
-
-      verifyNever(
-        () => crashlytics.recordError(
-          any(),
-          any(),
-          reason: any(named: 'reason'),
-          information: any(named: 'information'),
-          printDetails: any(named: 'printDetails'),
-          fatal: any(named: 'fatal'),
-        ),
-      );
+      await expectLater(reader.activate(), completes);
     });
   });
 }

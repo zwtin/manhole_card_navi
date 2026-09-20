@@ -4,7 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/crashlytics_data_source.dart';
+import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/repository/master_data_repository_impl.dart';
 import 'package:domain/domain.dart';
@@ -65,7 +66,7 @@ void main() {
     repository = MasterDataRepositoryImpl(
       firestore,
       store,
-      FailureRecorder(crashlytics: crashlytics),
+      FailureRecorder(CrashlyticsDataSource(crashlytics)),
     );
   });
 

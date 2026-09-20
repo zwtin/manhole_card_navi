@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 
 import 'package:data/src/datasource/card_image_data_source.dart';
-import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:data/src/mapper/local_card_mapper.dart';

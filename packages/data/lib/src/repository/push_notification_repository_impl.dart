@@ -1,6 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 

@@ -1,6 +1,6 @@
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:data/src/mapper/search_condition_mapper.dart';
 import 'package:data/src/model/search_condition_model.dart';

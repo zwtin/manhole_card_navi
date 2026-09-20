@@ -3,7 +3,6 @@ import 'package:data/data.dart';
 import 'package:domain/domain.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -95,7 +94,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
       (_) => UserRepositoryImpl(
         FirebaseAuth.instance,
         FirebaseAnalytics.instance,
-        FirebaseCrashlytics.instance,
+        infrastructure.crashlytics,
         failureRecorder,
       ),
     ),
