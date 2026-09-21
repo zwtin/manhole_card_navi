@@ -149,7 +149,7 @@ void main() {
       expect(sent.single.parameters['error_type'], 'socket');
     });
 
-    test('どちらでも取れなければ、両方を計測・記録して失敗を返す', () async {
+    test('どちらでも取れなければ、両方を計測して失敗を返す。記録はしない', () async {
       await storeCard();
       stubDownload(url, () async => throw const SocketException('だめ'));
       stubDownload(
@@ -167,10 +167,8 @@ void main() {
         sent.map((event) => event.parameters['error_type']),
         ['socket', 'handshake_intercepted'],
       );
-      expect(
-        recordedErrors(crashlytics).map((recorded) => recorded.error),
-        [isA<SocketException>(), isA<HandshakeException>()],
-      );
+      // 遮断された端末で大量に出て、非重大の枠をほかの失敗から奪うため。
+      verifyNotRecorded(crashlytics);
     });
 
     test('ない ID は、データがない失敗として返す', () async {

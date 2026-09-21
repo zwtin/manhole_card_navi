@@ -23,9 +23,7 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
     try {
       final version = AppVersion.tryParse(_packageInfo.version);
       if (version == null) {
-        throw CorruptedDataException(
-          detail: 'アプリのバージョン "${_packageInfo.version}" が読めません',
-        );
+        throw const CorruptedDataException(detail: 'アプリのバージョンが読めません');
       }
       return Result.success(
         AppInfo(
@@ -46,9 +44,8 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
       // コンソールで入力したときに紛れ込む前後の空白・改行は許す。
       final version = AppVersion.tryParse(value.trim());
       if (version == null) {
-        throw CorruptedDataException(
-          detail: 'Remote Config の $_inquiredVersionKey "$value" が'
-              'バージョンの形ではありません',
+        throw const CorruptedDataException(
+          detail: 'Remote Config の $_inquiredVersionKey がバージョンの形ではありません',
         );
       }
       return Result.success(version);

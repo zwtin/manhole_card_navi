@@ -67,8 +67,8 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
     ];
     if (cards.isEmpty) {
       // 取り込むと一覧もマップも空になる。
-      throw CorruptedDataException(
-        detail: '${master.path}/cards にカードがありません',
+      throw const CorruptedDataException(
+        detail: 'サーバーのマスターデータにカードがありません',
       );
     }
     return cards;

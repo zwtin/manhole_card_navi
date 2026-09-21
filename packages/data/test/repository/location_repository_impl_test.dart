@@ -43,19 +43,6 @@ void main() {
     );
   });
 
-  void verifyNotRecorded() {
-    verifyNever(
-      () => crashlytics.recordError(
-        any(),
-        any(),
-        reason: any(named: 'reason'),
-        information: any(named: 'information'),
-        printDetails: any(named: 'printDetails'),
-        fatal: any(named: 'fatal'),
-      ),
-    );
-  }
-
   group('requestPermission', () {
     test('端末の位置情報がオフなら、許可を求めずに false', () async {
       when(() => platform.isLocationServiceEnabled())
@@ -105,7 +92,7 @@ void main() {
 
         expect((result as Success<Coordinate?>).value, isNull);
       }
-      verifyNotRecorded();
+      verifyNotRecorded(crashlytics);
     });
 
     test('タイムアウトは応答が遅すぎる失敗にし、元の例外を記録する', () async {

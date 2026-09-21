@@ -51,6 +51,10 @@ class CardRepositoryImpl implements CardRepository {
   /// 端末に保存済みならそれを返し、なければ配信元から取って保存する。主系
   /// （Cloudflare R2）で取れなければ、代わりの配信元（Firebase Hosting）から取る。
   /// 一部のネットワークが主系のドメインを遮断するため。
+  ///
+  /// 取得の失敗だけは Crashlytics に記録せず、Analytics の image_load_failed で
+  /// 数える。遮断された端末では画面 1 つで何十件も出て、非重大の 1 セッション
+  /// 8 件の枠を使い切り、ほかの失敗が押し出されてしまうため。
   @override
   Future<Result<Uint8List>> fetchImage({required String cardId}) async {
     final LocalCardModel card;
@@ -71,8 +75,7 @@ class CardRepositoryImpl implements CardRepository {
     for (final url in [card.image, card.imageSub]) {
       try {
         return Result.success(await _cardImage.download(url));
-      } on Exception catch (error, stackTrace) {
-        _crashlytics.recordNonFatal(error, stackTrace);
+      } on Exception catch (error) {
         _send(AnalyticsEventMapper.toImageLoadFailed(url: url, error: error));
         failure = error;
       }
@@ -93,7 +96,7 @@ class CardRepositoryImpl implements CardRepository {
   Future<LocalCardModel> _find(String id) async {
     final card = (await _readAll()).where((card) => card.id == id);
     if (card.isEmpty) {
-      throw NotFoundException(detail: 'ID が $id のカードが端末にありません');
+      throw const NotFoundException(detail: 'そのカードが端末にありません');
     }
     return card.first;
   }
