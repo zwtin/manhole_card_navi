@@ -1,8 +1,8 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:data/src/datasource/analytics_data_source.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/repository/user_repository_impl.dart';
@@ -12,7 +12,7 @@ import '../datasource/crashlytics_mock.dart';
 
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
 
-class MockFirebaseAnalytics extends Mock implements FirebaseAnalytics {}
+class MockAnalyticsDataSource extends Mock implements AnalyticsDataSource {}
 
 class MockUser extends Mock implements User {}
 
@@ -20,16 +20,16 @@ class MockUserCredential extends Mock implements UserCredential {}
 
 void main() {
   late MockFirebaseAuth auth;
-  late MockFirebaseAnalytics analytics;
+  late MockAnalyticsDataSource analytics;
   late MockFirebaseCrashlytics crashlytics;
   late UserRepositoryImpl repository;
 
   setUp(() {
     auth = MockFirebaseAuth();
-    analytics = MockFirebaseAnalytics();
+    analytics = MockAnalyticsDataSource();
     crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
-    when(() => analytics.setUserId(id: any(named: 'id')))
+    when(() => analytics.setUserId(any()))
         .thenAnswer((_) async {});
     when(() => crashlytics.setUserIdentifier(any())).thenAnswer((_) async {});
     repository = UserRepositoryImpl(
@@ -54,7 +54,7 @@ void main() {
 
     expect(result, isA<Success<void>>());
     verifyNever(() => auth.signInAnonymously());
-    verify(() => analytics.setUserId(id: 'uid-1')).called(1);
+    verify(() => analytics.setUserId('uid-1')).called(1);
     verify(() => crashlytics.setUserIdentifier('uid-1')).called(1);
   });
 
@@ -68,7 +68,7 @@ void main() {
     final result = await repository.signIn();
 
     expect(result, isA<Success<void>>());
-    verify(() => analytics.setUserId(id: 'uid-2')).called(1);
+    verify(() => analytics.setUserId('uid-2')).called(1);
   });
 
   test('通信できずに登録できなければ、通信できない失敗にする', () async {
@@ -80,13 +80,13 @@ void main() {
     final result = await repository.signIn();
 
     expect((result as Failure<void>).exception, isA<OfflineException>());
-    verifyNever(() => analytics.setUserId(id: any(named: 'id')));
+    verifyNever(() => analytics.setUserId(any()));
   });
 
   test('利用者の ID を付けられなくても、登録はできたことにする', () async {
     final current = user('uid-3');
     when(() => auth.currentUser).thenReturn(current);
-    when(() => analytics.setUserId(id: any(named: 'id')))
+    when(() => analytics.setUserId(any()))
         .thenThrow(Exception('送れない'));
 
     final result = await repository.signIn();

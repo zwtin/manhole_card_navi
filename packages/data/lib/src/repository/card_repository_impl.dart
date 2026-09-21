@@ -1,26 +1,27 @@
+import 'dart:async';
 import 'dart:typed_data';
 
-
+import 'package:data/src/datasource/analytics_data_source.dart';
 import 'package:data/src/datasource/card_image_data_source.dart';
-import 'package:data/src/datasource/image_load_monitor.dart';
-import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
+import 'package:data/src/mapper/analytics_event_mapper.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:data/src/mapper/local_card_mapper.dart';
 import 'package:data/src/model/local_card_model.dart';
+import 'package:data/src/repository/failure_recorder.dart';
 import 'package:domain/domain.dart';
 
 class CardRepositoryImpl implements CardRepository {
   CardRepositoryImpl(
     this._masterData,
     this._cardImage,
-    this._imageLoadMonitor,
+    this._analytics,
     this._failureRecorder,
   );
 
   final MasterDataLocalDataSource _masterData;
   final CardImageDataSource _cardImage;
-  final ImageLoadMonitor _imageLoadMonitor;
+  final AnalyticsDataSource _analytics;
   final FailureRecorder _failureRecorder;
 
   @override
@@ -73,7 +74,19 @@ class CardRepositoryImpl implements CardRepository {
       try {
         return Result.success(await _cardImage.download(url));
       } on Exception catch (error, stackTrace) {
-        _imageLoadMonitor.recordFailure(url: url, error: error);
+        // 計測を待たず、送れなくても画像の取得は続ける。
+        unawaited(
+          _analytics
+              .send(
+                AnalyticsEventMapper.toModel(
+                  AnalyticsEventMapper.toImageLoadFailed(
+                    url: url,
+                    error: error,
+                  ),
+                ),
+              )
+              .onError((_, __) {}),
+        );
         failure = DomainExceptionMapper.fromHttp(error, stackTrace);
       }
     }

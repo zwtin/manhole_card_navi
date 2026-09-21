@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data/data.dart';
 import 'package:domain/domain.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -23,10 +22,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
       ),
     ),
     analyticsRepositoryProvider.overrideWith(
-      (_) => AnalyticsRepositoryImpl(
-        FirebaseAnalytics.instance,
-        failureRecorder,
-      ),
+      (_) => AnalyticsRepositoryImpl(infrastructure.analytics, failureRecorder),
     ),
     appBadgeRepositoryProvider.overrideWith(
       (_) => AppBadgeRepositoryImpl(
@@ -45,7 +41,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
       (_) => CardRepositoryImpl(
         infrastructure.masterData,
         infrastructure.cardImage,
-        infrastructure.imageLoadMonitor,
+        infrastructure.analytics,
         failureRecorder,
       ),
     ),
@@ -97,7 +93,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
     userRepositoryProvider.overrideWith(
       (_) => UserRepositoryImpl(
         FirebaseAuth.instance,
-        FirebaseAnalytics.instance,
+        infrastructure.analytics,
         infrastructure.crashlytics,
         failureRecorder,
       ),

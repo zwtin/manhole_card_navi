@@ -1,9 +1,9 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:data/src/repository/failure_recorder.dart';
+import 'package:data/src/datasource/analytics_data_source.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
+import 'package:data/src/repository/failure_recorder.dart';
 import 'package:domain/domain.dart';
 
 class UserRepositoryImpl implements UserRepository {
@@ -15,7 +15,7 @@ class UserRepositoryImpl implements UserRepository {
   );
 
   final FirebaseAuth _auth;
-  final FirebaseAnalytics _analytics;
+  final AnalyticsDataSource _analytics;
   final CrashlyticsDataSource _crashlytics;
   final FailureRecorder _failureRecorder;
 
@@ -38,7 +38,7 @@ class UserRepositoryImpl implements UserRepository {
   /// ID を付けられなくてもアプリは使えるので、失敗は記録するだけで止めない。
   Future<void> _setUserId(String uid) async {
     try {
-      await _analytics.setUserId(id: uid);
+      await _analytics.setUserId(uid);
       await _crashlytics.setUserId(uid);
     } on Exception catch (error, stackTrace) {
       _failureRecorder.failure<void>(

@@ -5,7 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:data/src/datasource/card_image_data_source.dart';
-import 'package:data/src/datasource/image_load_monitor.dart';
+import 'package:data/src/datasource/analytics_data_source.dart';
+import 'package:data/src/model/analytics_event_model.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
@@ -17,27 +18,34 @@ import '../fixtures.dart';
 
 class MockCardImageDataSource extends Mock implements CardImageDataSource {}
 
-class MockImageLoadMonitor extends Mock implements ImageLoadMonitor {}
+class MockAnalyticsDataSource extends Mock implements AnalyticsDataSource {}
 
 void main() {
   late Directory directory;
   late MasterDataLocalDataSource store;
   late MockCardImageDataSource cardImage;
-  late MockImageLoadMonitor imageLoadMonitor;
+  late MockAnalyticsDataSource analytics;
   late MockFirebaseCrashlytics crashlytics;
   late CardRepositoryImpl repository;
+
+  setUpAll(() {
+    registerFallbackValue(
+      const AnalyticsEventModel(name: '', parameters: {}),
+    );
+  });
 
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('card_repository');
     store = MasterDataLocalDataSource(directory: () async => directory);
     cardImage = MockCardImageDataSource();
-    imageLoadMonitor = MockImageLoadMonitor();
+    analytics = MockAnalyticsDataSource();
+    when(() => analytics.send(any())).thenAnswer((_) async {});
     crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     repository = CardRepositoryImpl(
       store,
       cardImage,
-      imageLoadMonitor,
+      analytics,
       FailureRecorder(CrashlyticsDataSource(crashlytics)),
     );
   });
@@ -124,12 +132,7 @@ void main() {
 
       expect((result as Success<List<int>>).value, [6]);
       verifyNever(() => cardImage.download(subUrl));
-      verifyNever(
-        () => imageLoadMonitor.recordFailure(
-          url: any(named: 'url'),
-          error: any(named: 'error'),
-        ),
-      );
+      verifyNever(() => analytics.send(any()));
     });
 
     test('主系で取れなければ代わりの配信元から取り、主系の失敗を計測する', () async {
@@ -140,12 +143,11 @@ void main() {
       final result = await repository.fetchImage(cardId: 'A');
 
       expect((result as Success<List<int>>).value, [7]);
-      verify(
-        () => imageLoadMonitor.recordFailure(
-          url: url,
-          error: any(named: 'error', that: isA<SocketException>()),
-        ),
-      ).called(1);
+      final sent = verify(() => analytics.send(captureAny())).captured
+          .cast<AnalyticsEventModel>();
+      expect(sent.single.name, 'image_load_failed');
+      expect(sent.single.parameters['host'], 'r2');
+      expect(sent.single.parameters['error_type'], 'socket');
     });
 
     test('どちらでも取れなければ、両方を計測して失敗を返す', () async {
@@ -159,12 +161,13 @@ void main() {
       final result = await repository.fetchImage(cardId: 'A');
 
       expect((result as Failure).exception, isA<OfflineException>());
-      verify(
-        () => imageLoadMonitor.recordFailure(
-          url: any(named: 'url'),
-          error: any(named: 'error'),
-        ),
-      ).called(2);
+      final sent = verify(() => analytics.send(captureAny())).captured
+          .cast<AnalyticsEventModel>();
+      expect(sent.map((event) => event.parameters['host']), ['r2', 'sub']);
+      expect(
+        sent.map((event) => event.parameters['error_type']),
+        ['socket', 'handshake_intercepted'],
+      );
       verifyNever(
         () => crashlytics.recordError(
           any(),

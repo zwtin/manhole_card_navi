@@ -69,7 +69,7 @@ fvm flutter pub run flutter_native_splash:create
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
      - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）。取り直さない時間は環境で変わるので、ルートから渡す
      - `CardImageDataSource`: カード画像を、端末のキャッシュから読む／URL から取って保存する
-     - `ImageLoadMonitor`: カード画像の取得に失敗したことを Analytics に送る
+     - `AnalyticsDataSource`: アプリのイベントを Analytics に送る。イベント名とパラメータへの置き換えは `AnalyticsEventMapper`
      - `LocationDataSource` / `AppBadgeDataSource`: 位置情報・アプリのバッジ（static な API の包み）
      - `CrashlyticsDataSource`: Crashlytics への記録（非重大・クラッシュ・利用者の ID）
    - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば `MalformedDataException` にする（`decodeModel`）。保存する値の enum も model が持ち、値の名前を保存する文字列にそろえる（domain の名前を変えても保存済みの値は変わらない）。エンティティは JSON を知らない
@@ -113,7 +113,7 @@ fvm flutter pub run flutter_native_splash:create
 ### 失敗とバグの記録（Crashlytics）
 - Crashlytics を知っているのは data と `main.dart` だけ。app と domain は記録に関わらない
 - data の Repository は、失敗をすべて `FailureRecorder`（ふつうは `guard`）を通して返し、そこで非重大として記録する。通信できない・タイムアウト（`UnavailableException`）は、時間をおけば直り調べても直せないので記録しない
-- 例外はカード画像（`CardRepositoryImpl.fetchImage`）の取得の失敗で、`FailureRecorder` を通さない。画像の失敗は `ImageLoadMonitor`（Analytics）と、下の `FlutterError` 経由の非重大で記録している
+- 例外はカード画像（`CardRepositoryImpl.fetchImage`）の取得の失敗で、`FailureRecorder` を通さない。画像の失敗は Analytics の `image_load_failed`（`AnalyticsEvent.imageLoadFailed`）と、下の `FlutterError` 経由の非重大で記録している
 - 扱われなかったバグはクラッシュ（fatal）として記録する。`main.dart` の Zone と `FlutterError.onError`、provider の生成中に起きたものはルートの `UncaughtErrorObserver` が拾う。provider の中の失敗は Riverpod が受け止めるため Zone には届かない
 - 画像の読み込み失敗（`library` が `image resource service`）はバグではないので、`FlutterError.onError` でも非重大のまま記録する。画像が出ない問い合わせの調査はこの非重大の記録で行う。`CardImageProvider` は、ここに残るよう変換前の例外（`HandshakeException` など）を投げる
 

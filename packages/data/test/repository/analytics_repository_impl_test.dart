@@ -1,44 +1,40 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:data/src/datasource/analytics_data_source.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
+import 'package:data/src/model/analytics_event_model.dart';
 import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/repository/analytics_repository_impl.dart';
 import 'package:domain/domain.dart';
 
 import '../datasource/crashlytics_mock.dart';
 
-class MockFirebaseAnalytics extends Mock implements FirebaseAnalytics {}
+class MockAnalyticsDataSource extends Mock implements AnalyticsDataSource {}
 
 void main() {
-  late MockFirebaseAnalytics analytics;
+  late MockAnalyticsDataSource analytics;
+  late MockFirebaseCrashlytics crashlytics;
   late AnalyticsRepositoryImpl repository;
 
+  setUpAll(() {
+    registerFallbackValue(
+      const AnalyticsEventModel(name: '', parameters: {}),
+    );
+  });
+
   setUp(() {
-    analytics = MockFirebaseAnalytics();
-    final crashlytics = MockFirebaseCrashlytics();
+    analytics = MockAnalyticsDataSource();
+    crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
-    when(() => analytics.logAppOpen()).thenAnswer((_) async {});
-    when(
-      () => analytics.logEvent(
-        name: any(named: 'name'),
-        parameters: any(named: 'parameters'),
-      ),
-    ).thenAnswer((_) async {});
+    when(() => analytics.send(any())).thenAnswer((_) async {});
     repository = AnalyticsRepositoryImpl(
       analytics,
       FailureRecorder(CrashlyticsDataSource(crashlytics)),
     );
   });
 
-  test('アプリを開いたら app_open を送る', () async {
-    await repository.send(event: const AnalyticsEvent.appOpen());
-
-    verify(() => analytics.logAppOpen()).called(1);
-  });
-
-  test('画面の表示は、画面の名前と補足を screen_pv で送る', () async {
+  test('イベントを Analytics に送る形にして渡す', () async {
     await repository.send(
       event: const AnalyticsEvent.screenView(
         screenName: 'detail_view',
@@ -46,11 +42,24 @@ void main() {
       ),
     );
 
-    verify(
-      () => analytics.logEvent(
-        name: 'screen_pv',
-        parameters: {'screen_name': 'detail_view', 'card_id': '27-226-B001'},
-      ),
-    ).called(1);
+    final sent = verify(() => analytics.send(captureAny()))
+        .captured
+        .single as AnalyticsEventModel;
+    expect(sent.name, 'screen_pv');
+    expect(sent.parameters, {
+      'screen_name': 'detail_view',
+      'card_id': '27-226-B001',
+    });
+  });
+
+  test('送れなければ、不明な失敗として返して記録する', () async {
+    when(() => analytics.send(any())).thenThrow(Exception('だめ'));
+
+    final result = await repository.send(
+      event: const AnalyticsEvent.appOpen(),
+    );
+
+    expect((result as Failure<void>).exception, isA<UnknownException>());
+    expect(recordedErrors(crashlytics).single.error, isA<UnknownException>());
   });
 }

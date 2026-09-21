@@ -1,7 +1,7 @@
+export 'package:data/src/datasource/analytics_data_source.dart';
 export 'package:data/src/datasource/app_badge_data_source.dart';
 export 'package:data/src/datasource/card_image_data_source.dart';
 export 'package:data/src/datasource/crashlytics_data_source.dart';
-export 'package:data/src/datasource/image_load_monitor.dart';
 export 'package:data/src/datasource/location_data_source.dart';
 export 'package:data/src/datasource/master_data_local_data_source.dart';
 export 'package:data/src/datasource/remote_config_data_source.dart';
