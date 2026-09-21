@@ -1,8 +1,7 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
-import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/analytics_data_source.dart';
+import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
@@ -11,40 +10,35 @@ class UserRepositoryImpl implements UserRepository {
     this._auth,
     this._analytics,
     this._crashlytics,
-    this._failureRecorder,
   );
 
   final FirebaseAuth _auth;
-  final FirebaseAnalytics _analytics;
-  final FirebaseCrashlytics _crashlytics;
-  final FailureRecorder _failureRecorder;
+  final AnalyticsDataSource _analytics;
+  final CrashlyticsDataSource _crashlytics;
 
   @override
-  Future<Result<void>> signIn() {
-    return _failureRecorder.guard(
-      () async {
-        // 匿名の利用者は端末に残るので、2 回目以降はオフラインでも済む。
-        final user =
-            _auth.currentUser ?? (await _auth.signInAnonymously()).user;
-        if (user == null) {
-          throw const UnknownException(detail: '匿名ログインしたのに利用者がいません');
-        }
-        await _setUserId(user.uid);
-      },
-      convert: DomainExceptionMapper.fromAuth,
-    );
+  Future<Result<void>> signIn() async {
+    try {
+      // 匿名の利用者は端末に残るので、2 回目以降はオフラインでも済む。
+      final user = _auth.currentUser ?? (await _auth.signInAnonymously()).user;
+      if (user == null) {
+        throw const UnknownException(detail: '匿名ログインしたのに利用者がいません');
+      }
+      await _setUserId(user.uid);
+      return const Result.success(null);
+    } on Exception catch (error, stackTrace) {
+      _crashlytics.recordNonFatal(error, stackTrace);
+      return Result.failure(DomainExceptionMapper.from(error));
+    }
   }
 
   /// ID を付けられなくてもアプリは使えるので、失敗は記録するだけで止めない。
   Future<void> _setUserId(String uid) async {
     try {
-      await _analytics.setUserId(id: uid);
-      await _crashlytics.setUserIdentifier(uid);
+      await _analytics.setUserId(uid);
+      await _crashlytics.setUserId(uid);
     } on Exception catch (error, stackTrace) {
-      _failureRecorder.failure<void>(
-        DomainExceptionMapper.fromPlatform(error, stackTrace),
-        stackTrace,
-      );
+      _crashlytics.recordNonFatal(error, stackTrace);
     }
   }
 }

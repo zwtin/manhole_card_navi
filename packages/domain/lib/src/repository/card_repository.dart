@@ -16,8 +16,5 @@ abstract class CardRepository {
   Future<Result<List<ManholeCard>>> fetchAll();
 
   /// エンコードされたままの画像（JPEG など）。
-  Future<Result<Uint8List>> fetchImage({
-    required String cardId,
-    int? maxWidth,
-  });
+  Future<Result<Uint8List>> fetchImage({required String cardId});
 }

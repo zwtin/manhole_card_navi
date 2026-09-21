@@ -40,16 +40,3 @@ List<({Object? error, StackTrace? stackTrace, bool fatal})> recordedErrors(
       ),
   ];
 }
-
-void verifyNotRecorded(MockFirebaseCrashlytics crashlytics) {
-  verifyNever(
-    () => crashlytics.recordError(
-      any(),
-      any(),
-      reason: any(named: 'reason'),
-      information: any(named: 'information'),
-      printDetails: any(named: 'printDetails'),
-      fatal: any(named: 'fatal'),
-    ),
-  );
-}

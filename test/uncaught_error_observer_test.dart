@@ -4,6 +4,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:data/data.dart';
 import 'package:domain/domain.dart';
+import 'package:manhole_card_navi/uncaught_error_observer.dart';
 
 import 'crashlytics_mock.dart';
 
@@ -27,7 +28,7 @@ void main() {
     crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     container = ProviderContainer(
-      observers: [UncaughtErrorObserver(crashlytics: crashlytics)],
+      observers: [UncaughtErrorObserver(CrashlyticsDataSource(crashlytics))],
     );
   });
 

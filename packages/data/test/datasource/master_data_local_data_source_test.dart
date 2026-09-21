@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/model/local_card_model.dart';
-import 'package:data/src/model/malformed_data_exception.dart';
 
 import '../fixtures.dart';
 
@@ -49,6 +48,15 @@ void main() {
     expect(fileNames(), ['master_data_v1.json']);
   });
 
+  test('同時に読んでも、読み込みと変換は 1 回で済ませる', () async {
+    await store().writeAll([localCard()]);
+    final target = store();
+
+    final results = await Future.wait([target.readAll(), target.readAll()]);
+
+    expect(identical(results[0], results[1]), isTrue);
+  });
+
   test('入れ替えると、前のカードは残らない', () async {
     final target = store();
     await target.writeAll([localCard(id: 'A')]);
@@ -72,7 +80,7 @@ void main() {
 
     await expectLater(
       store().readAll(),
-      throwsA(isA<MalformedDataException>()),
+      throwsA(isA<FormatException>()),
     );
     expect(await store().exists(), isFalse);
   });

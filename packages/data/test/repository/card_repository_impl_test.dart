@@ -1,12 +1,13 @@
 import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:data/src/datasource/card_image_cache_manager.dart';
-import 'package:data/src/datasource/failure_recorder.dart';
-import 'package:data/src/datasource/image_fallback.dart';
+import 'package:data/src/datasource/card_image_data_source.dart';
+import 'package:data/src/datasource/analytics_data_source.dart';
+import 'package:data/src/model/analytics_event_model.dart';
+import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/repository/card_repository_impl.dart';
 import 'package:domain/domain.dart';
@@ -14,26 +15,37 @@ import 'package:domain/domain.dart';
 import '../datasource/crashlytics_mock.dart';
 import '../fixtures.dart';
 
-class MockCardImageCacheManager extends Mock
-    implements CardImageCacheManager {}
+class MockCardImageDataSource extends Mock implements CardImageDataSource {}
+
+class MockAnalyticsDataSource extends Mock implements AnalyticsDataSource {}
 
 void main() {
   late Directory directory;
   late MasterDataLocalDataSource store;
-  late MockCardImageCacheManager imageCacheManager;
+  late MockCardImageDataSource cardImage;
+  late MockAnalyticsDataSource analytics;
   late MockFirebaseCrashlytics crashlytics;
   late CardRepositoryImpl repository;
+
+  setUpAll(() {
+    registerFallbackValue(
+      const AnalyticsEventModel(name: '', parameters: {}),
+    );
+  });
 
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('card_repository');
     store = MasterDataLocalDataSource(directory: () async => directory);
-    imageCacheManager = MockCardImageCacheManager();
+    cardImage = MockCardImageDataSource();
+    analytics = MockAnalyticsDataSource();
+    when(() => analytics.send(any())).thenAnswer((_) async {});
     crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     repository = CardRepositoryImpl(
       store,
-      imageCacheManager,
-      FailureRecorder(crashlytics: crashlytics),
+      cardImage,
+      analytics,
+      CrashlyticsDataSource(crashlytics),
     );
   });
 
@@ -68,80 +80,104 @@ void main() {
   });
 
   group('fetchImage', () {
-    void stubImage(Stream<FileResponse> Function() response) {
-      when(
-        () => imageCacheManager.getImageFile(
-          any(),
-          headers: any(named: 'headers'),
-          maxWidth: any(named: 'maxWidth'),
-        ),
-      ).thenAnswer((_) => response());
+    const url = 'https://r2/A.jpg';
+    const subUrl = 'https://sub/A.jpg';
+
+    /// [url] のカードを 1 枚だけ端末に持たせる。
+    Future<void> storeCard() {
+      return store.writeAll([localCard(id: 'A', image: url, imageSub: subUrl)]);
     }
 
-    test('カードの画像の URL と代わりの配信元で取り、保存したデータを返す', () async {
-      await store.writeAll([
-        localCard(
-          id: 'A',
-          image: 'https://r2/A.jpg',
-          imageSub: 'https://sub/A.jpg',
-        ),
-      ]);
-      final file = await MemoryCacheSystem().createFile('A.jpg');
-      await file.writeAsBytes([1, 2, 3]);
-      stubImage(
-        () => Stream.value(
-          FileInfo(file, FileSource.Cache, DateTime(2026), 'https://r2/A.jpg'),
-        ),
+    void stubCache(String target, List<int>? bytes) {
+      when(() => cardImage.readCache(target)).thenAnswer(
+        (_) async => bytes == null ? null : Uint8List.fromList(bytes),
       );
+    }
 
-      final result = await repository.fetchImage(cardId: 'A', maxWidth: 520);
+    void stubDownload(String target, Future<Uint8List> Function() response) {
+      when(() => cardImage.download(target)).thenAnswer((_) => response());
+    }
+
+    setUp(() {
+      stubCache(url, null);
+      stubCache(subUrl, null);
+    });
+
+    test('端末に保存済みならそれを返し、取りにいかない', () async {
+      await storeCard();
+      stubCache(url, [1, 2, 3]);
+
+      final result = await repository.fetchImage(cardId: 'A');
 
       expect((result as Success<List<int>>).value, [1, 2, 3]);
-      verify(
-        () => imageCacheManager.getImageFile(
-          'https://r2/A.jpg',
-          headers: ImageFallback.headers('https://sub/A.jpg'),
-          maxWidth: 520,
-        ),
-      ).called(1);
+      verifyNever(() => cardImage.download(any()));
     });
 
-    test('ない ID は、データがない失敗として返す', () async {
-      await store.writeAll([localCard(id: 'A')]);
+    test('主系が保存されていなくても、代わりの配信元のものがあれば使う', () async {
+      await storeCard();
+      stubCache(subUrl, [4, 5]);
 
-      final result = await repository.fetchImage(cardId: 'Z');
+      final result = await repository.fetchImage(cardId: 'A');
 
-      expect((result as Failure).exception, isA<NotFoundException>());
-      verifyNever(
-        () => imageCacheManager.getImageFile(
-          any(),
-          headers: any(named: 'headers'),
-          maxWidth: any(named: 'maxWidth'),
-        ),
-      );
+      expect((result as Success<List<int>>).value, [4, 5]);
+      verifyNever(() => cardImage.download(any()));
     });
 
-    test('画像の取得の失敗は、種類に変換して返すが記録しない', () async {
-      await store.writeAll([localCard(id: 'A')]);
-      stubImage(
-        () => Stream.error(
-          const HandshakeException('WRONG_VERSION_NUMBER'),
-        ),
+    test('保存されていなければ、主系から取って返す', () async {
+      await storeCard();
+      stubDownload(url, () async => Uint8List.fromList([6]));
+
+      final result = await repository.fetchImage(cardId: 'A');
+
+      expect((result as Success<List<int>>).value, [6]);
+      verifyNever(() => cardImage.download(subUrl));
+      verifyNever(() => analytics.send(any()));
+    });
+
+    test('主系で取れなければ代わりの配信元から取り、主系の失敗を計測する', () async {
+      await storeCard();
+      stubDownload(url, () async => throw const SocketException('だめ'));
+      stubDownload(subUrl, () async => Uint8List.fromList([7]));
+
+      final result = await repository.fetchImage(cardId: 'A');
+
+      expect((result as Success<List<int>>).value, [7]);
+      final sent = verify(() => analytics.send(captureAny())).captured
+          .cast<AnalyticsEventModel>();
+      expect(sent.single.name, 'image_load_failed');
+      expect(sent.single.parameters['host'], 'r2');
+      expect(sent.single.parameters['runtime_type'], 'SocketException');
+    });
+
+    test('どちらでも取れなければ、両方を計測して失敗を返す。記録はしない', () async {
+      await storeCard();
+      stubDownload(url, () async => throw const SocketException('だめ'));
+      stubDownload(
+        subUrl,
+        () async => throw const HandshakeException('WRONG_VERSION_NUMBER'),
       );
 
       final result = await repository.fetchImage(cardId: 'A');
 
       expect((result as Failure).exception, isA<OfflineException>());
-      verifyNever(
-        () => crashlytics.recordError(
-          any(),
-          any(),
-          reason: any(named: 'reason'),
-          information: any(named: 'information'),
-          printDetails: any(named: 'printDetails'),
-          fatal: any(named: 'fatal'),
-        ),
+      final sent = verify(() => analytics.send(captureAny())).captured
+          .cast<AnalyticsEventModel>();
+      expect(sent.map((event) => event.parameters['host']), ['r2', 'sub']);
+      expect(
+        sent.map((event) => event.parameters['runtime_type']),
+        ['SocketException', 'HandshakeException'],
       );
+      // 遮断された端末で大量に出て、非重大の枠をほかの失敗から奪うため。
+      verifyNotRecorded(crashlytics);
+    });
+
+    test('ない ID は、データがない失敗として返す', () async {
+      await storeCard();
+
+      final result = await repository.fetchImage(cardId: 'Z');
+
+      expect((result as Failure).exception, isA<NotFoundException>());
+      verifyNever(() => cardImage.readCache(any()));
     });
   });
 }

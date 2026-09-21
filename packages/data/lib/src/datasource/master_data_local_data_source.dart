@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:data/src/model/local_card_model.dart';
-import 'package:data/src/model/malformed_data_exception.dart';
 
 /// 読み込んだカードをメモリに持つので、アプリ全体で 1 つだけ作る。
 class MasterDataLocalDataSource {
@@ -32,6 +32,7 @@ class MasterDataLocalDataSource {
   final Future<void> Function()? _cleanUp;
 
   Future<File>? _file;
+  Future<List<LocalCardModel>?>? _reading;
   List<LocalCardModel>? _cards;
 
   /// まだ取り込んでいなければ null。壊れたファイルは消すので、次の起動時の確認で
@@ -41,6 +42,11 @@ class MasterDataLocalDataSource {
     if (cached != null) {
       return cached;
     }
+    // 読み込みと変換は重いので、同時に呼ばれても 1 回で済ませる。
+    return _reading ??= _read().whenComplete(() => _reading = null);
+  }
+
+  Future<List<LocalCardModel>?> _read() async {
     final file = await _resolveFile();
     if (!await file.exists()) {
       return null;
@@ -50,7 +56,10 @@ class MasterDataLocalDataSource {
       // 1〜2 MB あるので、別の Isolate で変換する。
       final cards = await compute(_decode, source);
       return _cards = List.unmodifiable(cards);
-    } on MalformedDataException {
+    } on FormatException {
+      await file.delete();
+      rethrow;
+    } on CheckedFromJsonException {
       await file.delete();
       rethrow;
     }
@@ -78,27 +87,16 @@ class MasterDataLocalDataSource {
   }
 
   static List<LocalCardModel> _decode(String source) {
-    final Object? json;
-    try {
-      json = jsonDecode(source);
-    } on FormatException catch (error, stackTrace) {
-      throw MalformedDataException(
-        '端末のマスターデータが JSON として読めません',
-        cause: error,
-        stackTrace: stackTrace,
-      );
-    }
+    final json = jsonDecode(source);
     if (json is! List<dynamic>) {
-      throw const MalformedDataException('端末のマスターデータがカードの一覧ではありません');
+      throw const FormatException('端末のマスターデータがカードの一覧ではありません');
     }
     return [
       for (final item in json)
         if (item is Map<String, dynamic>)
-          LocalCardModel.fromStoredJson(item)
+          LocalCardModel.fromJson(item)
         else
-          throw const MalformedDataException(
-            '端末のマスターデータにカードでない要素があります',
-          ),
+          throw const FormatException('端末のマスターデータにカードでない要素があります'),
     ];
   }
 

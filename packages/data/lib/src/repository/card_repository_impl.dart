@@ -1,11 +1,11 @@
+import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-
-import 'package:data/src/datasource/card_image_cache_manager.dart';
-import 'package:data/src/datasource/failure_recorder.dart';
-import 'package:data/src/datasource/image_fallback.dart';
+import 'package:data/src/datasource/analytics_data_source.dart';
+import 'package:data/src/datasource/card_image_data_source.dart';
+import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
+import 'package:data/src/mapper/analytics_event_mapper.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:data/src/mapper/local_card_mapper.dart';
 import 'package:data/src/model/local_card_model.dart';
@@ -14,74 +14,89 @@ import 'package:domain/domain.dart';
 class CardRepositoryImpl implements CardRepository {
   CardRepositoryImpl(
     this._masterData,
-    this._imageCacheManager,
-    this._failureRecorder,
+    this._cardImage,
+    this._analytics,
+    this._crashlytics,
   );
 
   final MasterDataLocalDataSource _masterData;
-  final CardImageCacheManager _imageCacheManager;
-  final FailureRecorder _failureRecorder;
+  final CardImageDataSource _cardImage;
+  final AnalyticsDataSource _analytics;
+  final CrashlyticsDataSource _crashlytics;
 
   @override
   Future<Result<ManholeCard>> get({
     required String id,
-  }) {
-    return _failureRecorder.guard(
-      () async => LocalCardMapper.toCard(await _find(id)),
-      convert: DomainExceptionMapper.fromLocalStorage,
-    );
-  }
-
-  @override
-  Future<Result<List<ManholeCard>>> fetchAll() {
-    return _failureRecorder.guard(
-      () async => [
-        for (final card in await _readAll()) LocalCardMapper.toCard(card),
-      ],
-      convert: DomainExceptionMapper.fromLocalStorage,
-    );
-  }
-
-  /// 画像の取得の失敗は FailureRecorder で記録しない。ImageLoadMonitor と表示側の
-  /// FlutterError で記録済みで、遮断されている端末では大量に出てほかの失敗が埋もれる。
-  @override
-  Future<Result<Uint8List>> fetchImage({
-    required String cardId,
-    int? maxWidth,
   }) async {
-    final LocalCardModel card;
-    switch (await _failureRecorder.guard(
-      () => _find(cardId),
-      convert: DomainExceptionMapper.fromLocalStorage,
-    )) {
-      case Failure(:final exception):
-        return Result.failure(exception);
-      case Success(:final value):
-        card = value;
-    }
     try {
-      // 保存済みなら期限切れでも先に流れてくる（取り直しはその後ろで行われる）ので、
-      // 最初の 1 件だけ使う。取り直せなくても保存済みの画像は出せる。
-      final response = await _imageCacheManager
-          .getImageFile(
-            card.image,
-            headers: ImageFallback.headers(card.imageSub),
-            maxWidth: maxWidth,
-          )
-          .firstWhere((response) => response is FileInfo);
-      final file = (response as FileInfo).file;
-      return Result.success(await file.readAsBytes());
+      return Result.success(LocalCardMapper.toCard(await _find(id)));
     } on Exception catch (error, stackTrace) {
-      return Result.failure(
-        DomainExceptionMapper.fromHttp(error, stackTrace),
-      );
+      _crashlytics.recordNonFatal(error, stackTrace);
+      return Result.failure(DomainExceptionMapper.from(error));
     }
+  }
+
+  @override
+  Future<Result<List<ManholeCard>>> fetchAll() async {
+    try {
+      return Result.success([
+        for (final card in await _readAll()) LocalCardMapper.toCard(card),
+      ]);
+    } on Exception catch (error, stackTrace) {
+      _crashlytics.recordNonFatal(error, stackTrace);
+      return Result.failure(DomainExceptionMapper.from(error));
+    }
+  }
+
+  /// 端末に保存済みならそれを返し、なければ配信元から取って保存する。主系
+  /// （Cloudflare R2）で取れなければ、代わりの配信元（Firebase Hosting）から取る。
+  /// 一部のネットワークが主系のドメインを遮断するため。
+  ///
+  /// 取得の失敗だけは Crashlytics に記録せず、Analytics の image_load_failed で
+  /// 数える。遮断された端末では画面 1 つで何十件も出て、非重大の 1 セッション
+  /// 8 件の枠を使い切り、ほかの失敗が押し出されてしまうため。
+  @override
+  Future<Result<Uint8List>> fetchImage({required String cardId}) async {
+    final LocalCardModel card;
+    final Uint8List? cached;
+    try {
+      card = await _find(cardId);
+      cached = await _cardImage.readCache(card.image) ??
+          await _cardImage.readCache(card.imageSub);
+    } on Exception catch (error, stackTrace) {
+      _crashlytics.recordNonFatal(error, stackTrace);
+      return Result.failure(DomainExceptionMapper.from(error));
+    }
+    if (cached != null) {
+      return Result.success(cached);
+    }
+
+    late Exception failure;
+    for (final url in [card.image, card.imageSub]) {
+      try {
+        return Result.success(await _cardImage.download(url));
+      } on Exception catch (error) {
+        _send(AnalyticsEventMapper.toImageLoadFailed(url: url, error: error));
+        failure = error;
+      }
+    }
+    return Result.failure(DomainExceptionMapper.from(failure));
+  }
+
+  /// 計測を待たず、送れなくても画像の取得は続ける。
+  void _send(AnalyticsEvent event) {
+    unawaited(
+      // Error はバグなので捨てずに流し、根でクラッシュとして記録させる。
+      _analytics.send(AnalyticsEventMapper.toModel(event)).onError<Exception>(
+            _crashlytics.recordNonFatal,
+          ),
+    );
   }
 
   Future<LocalCardModel> _find(String id) async {
     final card = (await _readAll()).where((card) => card.id == id);
     if (card.isEmpty) {
-      throw NotFoundException(detail: 'ID が $id のカードが端末にありません');
+      throw const NotFoundException(detail: 'そのカードが端末にありません');
     }
     return card.first;
   }

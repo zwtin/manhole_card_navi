@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data/data.dart';
 import 'package:domain/domain.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -15,88 +13,88 @@ import 'infrastructure.dart';
 /// どの実装を、どの部品（[Infrastructure] と Firebase の各インスタンス）で作るかを
 /// 決めるのは、アプリの中でここだけ。
 List<Override> repositoryOverrides(Infrastructure infrastructure) {
-  final failureRecorder = infrastructure.failureRecorder;
+  final crashlytics = infrastructure.crashlytics;
   return [
     alreadyGetCardRepositoryProvider.overrideWith(
       (_) => AlreadyGetCardRepositoryImpl(
         infrastructure.preferences,
-        failureRecorder,
+        crashlytics,
       ),
     ),
     analyticsRepositoryProvider.overrideWith(
-      (_) => AnalyticsRepositoryImpl(
-        FirebaseAnalytics.instance,
-        failureRecorder,
-      ),
+      (_) => AnalyticsRepositoryImpl(infrastructure.analytics, crashlytics),
     ),
     appBadgeRepositoryProvider.overrideWith(
-      (_) => AppBadgeRepositoryImpl(failureRecorder),
+      (_) => AppBadgeRepositoryImpl(
+        const AppBadgeDataSource(),
+        crashlytics,
+      ),
     ),
     appInfoRepositoryProvider.overrideWith(
       (_) => AppInfoRepositoryImpl(
         infrastructure.packageInfo,
         infrastructure.remoteConfig,
-        failureRecorder,
+        crashlytics,
       ),
     ),
     cardRepositoryProvider.overrideWith(
       (_) => CardRepositoryImpl(
         infrastructure.masterData,
-        CardImageCacheManager(),
-        failureRecorder,
+        infrastructure.cardImage,
+        infrastructure.analytics,
+        crashlytics,
       ),
     ),
     locationRepositoryProvider.overrideWith(
       (_) => LocationRepositoryImpl(
         const LocationDataSource(),
-        failureRecorder,
+        crashlytics,
       ),
     ),
     masterDataRepositoryProvider.overrideWith(
       (_) => MasterDataRepositoryImpl(
         FirebaseFirestore.instance,
         infrastructure.masterData,
-        failureRecorder,
+        crashlytics,
       ),
     ),
     masterVersionRepositoryProvider.overrideWith(
       (_) => MasterVersionRepositoryImpl(
         infrastructure.preferences,
         infrastructure.remoteConfig,
-        failureRecorder,
+        crashlytics,
       ),
     ),
     privacyPolicyRepositoryProvider.overrideWith(
       (_) => PrivacyPolicyRepositoryImpl(
         infrastructure.remoteConfig,
-        failureRecorder,
+        crashlytics,
       ),
     ),
     pushNotificationRepositoryProvider.overrideWith(
       (_) => PushNotificationRepositoryImpl(
         FirebaseMessaging.instance,
-        failureRecorder,
+        crashlytics,
       ),
     ),
     searchConditionRepositoryProvider.overrideWith(
       (_) => SearchConditionRepositoryImpl(
         infrastructure.preferences,
-        failureRecorder,
+        crashlytics,
       ),
     ),
     termsOfServiceRepositoryProvider.overrideWith(
       (_) => TermsOfServiceRepositoryImpl(
         infrastructure.preferences,
         infrastructure.remoteConfig,
-        failureRecorder,
+        crashlytics,
       ),
     ),
     userRepositoryProvider.overrideWith(
       (_) => UserRepositoryImpl(
         FirebaseAuth.instance,
-        FirebaseAnalytics.instance,
-        FirebaseCrashlytics.instance,
-        failureRecorder,
+        infrastructure.analytics,
+        crashlytics,
       ),
     ),
   ];

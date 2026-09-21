@@ -1,6 +1,6 @@
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-import 'package:data/src/datasource/failure_recorder.dart';
+import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/datasource/remote_config_data_source.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
@@ -9,7 +9,7 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
   MasterVersionRepositoryImpl(
     this._preferences,
     this._remoteConfig,
-    this._failureRecorder,
+    this._crashlytics,
   );
 
   static const _inquiredVersionKey = 'inquired_master_version';
@@ -17,44 +17,46 @@ class MasterVersionRepositoryImpl implements MasterVersionRepository {
 
   final StreamingSharedPreferences _preferences;
   final RemoteConfigDataSource _remoteConfig;
-  final FailureRecorder _failureRecorder;
+  final CrashlyticsDataSource _crashlytics;
 
   @override
-  Future<Result<MasterVersion>> getInquiredVersion() {
-    return _failureRecorder.guard(
-      () async => MasterVersion(
-        value: await _remoteConfig.readString(_inquiredVersionKey),
-      ),
-      convert: DomainExceptionMapper.fromRemoteConfig,
-    );
+  Future<Result<MasterVersion>> getInquiredVersion() async {
+    try {
+      return Result.success(
+        MasterVersion(value: await _remoteConfig.readString(_inquiredVersionKey)),
+      );
+    } on Exception catch (error, stackTrace) {
+      _crashlytics.recordNonFatal(error, stackTrace);
+      return Result.failure(DomainExceptionMapper.from(error));
+    }
   }
 
   @override
-  Future<Result<MasterVersion?>> getCurrentVersion() {
-    return _failureRecorder.guard(
-      () async {
-        final value = _preferences
-            .getString(_currentVersionKey, defaultValue: '')
-            .getValue();
-        return value.isEmpty ? null : MasterVersion(value: value);
-      },
-      convert: DomainExceptionMapper.fromLocalStorage,
-    );
+  Future<Result<MasterVersion?>> getCurrentVersion() async {
+    try {
+      final value =
+          _preferences.getString(_currentVersionKey, defaultValue: '').getValue();
+      return Result.success(value.isEmpty ? null : MasterVersion(value: value));
+    } on Exception catch (error, stackTrace) {
+      _crashlytics.recordNonFatal(error, stackTrace);
+      return Result.failure(DomainExceptionMapper.from(error));
+    }
   }
 
   @override
   Future<Result<void>> setCurrentVersion({
     required MasterVersion version,
-  }) {
-    return _failureRecorder.guard(
-      () async {
-        if (!await _preferences.setString(_currentVersionKey, version.value)) {
-          throw const PersistenceException(
-            detail: '取り込み済みのマスターデータのバージョンを保存できませんでした',
-          );
-        }
-      },
-      convert: DomainExceptionMapper.fromLocalStorage,
-    );
+  }) async {
+    try {
+      if (!await _preferences.setString(_currentVersionKey, version.value)) {
+        throw const PersistenceException(
+          detail: '取り込み済みのマスターデータのバージョンを保存できませんでした',
+        );
+      }
+      return const Result.success(null);
+    } on Exception catch (error, stackTrace) {
+      _crashlytics.recordNonFatal(error, stackTrace);
+      return Result.failure(DomainExceptionMapper.from(error));
+    }
   }
 }
