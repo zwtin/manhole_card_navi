@@ -146,7 +146,7 @@ void main() {
           .cast<AnalyticsEventModel>();
       expect(sent.single.name, 'image_load_failed');
       expect(sent.single.parameters['host'], 'r2');
-      expect(sent.single.parameters['error_type'], 'socket');
+      expect(sent.single.parameters['runtime_type'], 'SocketException');
     });
 
     test('どちらでも取れなければ、両方を計測して失敗を返す。記録はしない', () async {
@@ -164,8 +164,8 @@ void main() {
           .cast<AnalyticsEventModel>();
       expect(sent.map((event) => event.parameters['host']), ['r2', 'sub']);
       expect(
-        sent.map((event) => event.parameters['error_type']),
-        ['socket', 'handshake_intercepted'],
+        sent.map((event) => event.parameters['runtime_type']),
+        ['SocketException', 'HandshakeException'],
       );
       // 遮断された端末で大量に出て、非重大の枠をほかの失敗から奪うため。
       verifyNotRecorded(crashlytics);

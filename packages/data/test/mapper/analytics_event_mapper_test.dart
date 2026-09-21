@@ -35,14 +35,16 @@ void main() {
       final model = AnalyticsEventMapper.toModel(
         const AnalyticsEvent.imageLoadFailed(
           host: 'r2.example.com',
-          errorType: 'dns',
+          errorRuntimeType: 'SocketException',
+          osError: 'nodename nor servname provided',
           statusCode: 0,
         ),
       );
 
       expect(model.name, 'image_load_failed');
       expect(model.parameters, {
-        'error_type': 'dns',
+        'runtime_type': 'SocketException',
+        'os_error': 'nodename nor servname provided',
         'status_code': 0,
         'host': 'r2.example.com',
       });
@@ -58,31 +60,63 @@ void main() {
 
       expect(event.host, 'r2.example.com');
       expect(event.statusCode, 503);
-      expect(event.errorType, 'status');
+      expect(event.errorRuntimeType, 'HttpExceptionWithStatus');
+      expect(event.osError, isEmpty);
     });
 
-    test('遮断の方式ごとに、失敗の種類を分ける', () {
-      final errors = <Object, String>{
-        const HandshakeException('WRONG_VERSION_NUMBER'):
-            'handshake_intercepted',
-        const HandshakeException('CERTIFICATE_VERIFY_FAILED'): 'handshake',
-        const SocketException('Failed host lookup'): 'dns',
-        TimeoutException('だめ'): 'timeout',
-        const SocketException('Connection timed out'): 'timeout',
-        const SocketException('Connection reset by peer'): 'reset',
-        const SocketException('Connection refused'): 'refused',
-        const SocketException('だめ'): 'socket',
-        StateError('だめ'): 'other',
+    test('失敗の種類は例外の型名で送る', () {
+      final types = <Object, String>{
+        const HandshakeException('だめ'): 'HandshakeException',
+        const SocketException('だめ'): 'SocketException',
+        TimeoutException('だめ'): 'TimeoutException',
+        StateError('だめ'): 'StateError',
       };
 
-      for (final entry in errors.entries) {
+      for (final entry in types.entries) {
         final event = AnalyticsEventMapper.toImageLoadFailed(
           url: 'https://r2/A.jpg',
           error: entry.key,
         ) as ImageLoadFailed;
 
-        expect(event.errorType, entry.value, reason: '${entry.key}');
+        expect(event.errorRuntimeType, entry.value, reason: '${entry.key}');
       }
+    });
+
+    test('遮断の方式は、OS が返したエラーで見分ける', () {
+      final osErrors = <Object, String>{
+        // 443 への応答が TLS ですらない＝経路上の装置が平文を返している。
+        const HandshakeException(
+          'Handshake error in client',
+          OSError('WRONG_VERSION_NUMBER(tls_record.cc:242)'),
+        ): 'WRONG_VERSION_NUMBER(tls_record.cc:242)',
+        const SocketException(
+          'Failed host lookup',
+          osError: OSError('nodename nor servname provided'),
+        ): 'nodename nor servname provided',
+      };
+
+      for (final entry in osErrors.entries) {
+        final event = AnalyticsEventMapper.toImageLoadFailed(
+          url: 'https://r2/A.jpg',
+          error: entry.key,
+        ) as ImageLoadFailed;
+
+        expect(event.osError, entry.value, reason: '${entry.key}');
+      }
+    });
+
+    test('OS のエラーがなければ空。長すぎるものは Analytics の上限で切る', () {
+      final none = AnalyticsEventMapper.toImageLoadFailed(
+        url: 'https://r2/A.jpg',
+        error: TimeoutException('だめ'),
+      ) as ImageLoadFailed;
+      expect(none.osError, isEmpty);
+
+      final long = AnalyticsEventMapper.toImageLoadFailed(
+        url: 'https://r2/A.jpg',
+        error: SocketException('だめ', osError: OSError('x' * 200)),
+      ) as ImageLoadFailed;
+      expect(long.osError.length, 100);
     });
   });
 }

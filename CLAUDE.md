@@ -122,7 +122,7 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 - Crashlytics を知っているのは data と `main.dart` だけ。app と domain は記録に関わらない
 - data で捕まえるのは Repository だけ（`on Exception`）。Error は捕まえないので根まで流れる。`UncaughtErrorObserver` が `DomainException` を飛ばすのは、Repository で記録済みだから
 - **非重大は 1 セッション 8 件まで**で、超えると古いものから消える（iOS SDK の `maxCustomExceptions` の既定値。サーバー設定 `max_custom_exception_events` で変えられる）。大量に出る事象を入れると、ほかの失敗が押し出される
-- 画像の取得の失敗（`CardRepositoryImpl.fetchImage` のダウンロード）だけは Crashlytics に記録せず、Analytics の `image_load_failed`（`AnalyticsEvent.imageLoadFailed`）で配信元・失敗の種類・状態コードを数える。遮断された端末では画面 1 つで何十件も出て 8 件の枠を使い切るため。同じカードの「端末にない」「キャッシュが読めない」は画像の配信とは別の話なので記録する。`FlutterError.onError` が `library` の `image resource service` を記録しないのも同じ理由
+- 画像の取得の失敗（`CardRepositoryImpl.fetchImage` のダウンロード）だけは Crashlytics に記録せず、Analytics の `image_load_failed`（`AnalyticsEvent.imageLoadFailed`）で数える。失敗の種類にこちらで名前を付けず、例外の型名（`runtime_type`）と OS が返したエラー（`os_error`。`WRONG_VERSION_NUMBER` なら経路上の装置が平文を返している、`nodename nor servname provided` なら DNS で潰されている）をそのまま送る。遮断された端末では画面 1 つで何十件も出て 8 件の枠を使い切るため。同じカードの「端末にない」「キャッシュが読めない」は画像の配信とは別の話なので記録する。`FlutterError.onError` が `library` の `image resource service` を記録しないのも同じ理由
 - Crashlytics のグルーピングはスタックトレースだけでなく**例外のメッセージも見る**。Flutter の記録は例外の名前が `FlutterError` 固定で、`toString()` の文字列がメッセージになる（`reason` を渡すとそこに連結される）。**投げる `DomainException` の `detail` に可変の値を入れない**。同じ失敗が値ごとに別の issue に分かれてしまう。値を残したいときは `recordError` の `information` に渡す（ログ行になるだけで、グルーピングには影響しない）
 - `CrashlyticsDataSource` の記録の失敗だけは Error も含めて捨てる。投げ直すと Zone から同じ記録を呼び直して堂々巡りになる
 
