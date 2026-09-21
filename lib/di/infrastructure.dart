@@ -11,7 +11,6 @@ class Infrastructure {
     required this.preferences,
     required this.packageInfo,
     required this.crashlytics,
-    required this.failureRecorder,
     required this.remoteConfig,
     required this.masterData,
     required this.cardImage,
@@ -22,7 +21,6 @@ class Infrastructure {
   ///
   /// 通信できなくても止まらない。Remote Config は取れなければ前回の値で続ける。
   static Future<Infrastructure> initialize() async {
-    final crashlytics = CrashlyticsDataSource(FirebaseCrashlytics.instance);
     final remoteConfig = RemoteConfigDataSource(
       FirebaseRemoteConfig.instance,
       // 開発では、Remote Config を変えたらすぐ確かめられるように毎回取り直す。
@@ -32,8 +30,7 @@ class Infrastructure {
     return Infrastructure._(
       preferences: await StreamingSharedPreferences.instance,
       packageInfo: await PackageInfo.fromPlatform(),
-      crashlytics: crashlytics,
-      failureRecorder: FailureRecorder(crashlytics),
+      crashlytics: CrashlyticsDataSource(FirebaseCrashlytics.instance),
       remoteConfig: remoteConfig,
       masterData: MasterDataLocalDataSource.inApplicationSupport(),
       cardImage: CardImageDataSource.withDeviceCache(),
@@ -48,7 +45,6 @@ class Infrastructure {
   final StreamingSharedPreferences preferences;
   final PackageInfo packageInfo;
   final CrashlyticsDataSource crashlytics;
-  final FailureRecorder failureRecorder;
   final RemoteConfigDataSource remoteConfig;
 
   /// 読み込んだカードをメモリに持つので、Repository どうしで同じものを使う。

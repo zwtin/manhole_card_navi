@@ -2,152 +2,139 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:json_annotation/json_annotation.dart';
 
 import 'package:data/src/mapper/domain_exception_mapper.dart';
-import 'package:data/src/model/malformed_data_exception.dart';
 import 'package:domain/domain.dart';
 
 void main() {
-  final stackTrace = StackTrace.current;
+  test('失敗の種類はそのまま通す', () {
+    const exception = NotFoundException(detail: 'ない');
 
-  FirebaseException firestoreError(String code) {
-    return FirebaseException(plugin: 'cloud_firestore', code: code);
-  }
-
-  group('fromFirestore', () {
-    test('unavailable は通信できない失敗にし、元の例外を残す', () {
-      final error = firestoreError('unavailable');
-
-      final exception = DomainExceptionMapper.fromFirestore(
-        error,
-        stackTrace,
-      );
-
-      expect(exception, isA<OfflineException>());
-      expect(exception.cause, same(error));
-      expect(exception.stackTrace, same(stackTrace));
-    });
-
-    test('deadline-exceeded とタイムアウトは、応答が遅すぎる失敗にする', () {
-      expect(
-        DomainExceptionMapper.fromFirestore(
-          firestoreError('deadline-exceeded'),
-          stackTrace,
-        ),
-        isA<TimedOutException>(),
-      );
-      expect(
-        DomainExceptionMapper.fromFirestore(
-          TimeoutException('timeout'),
-          stackTrace,
-        ),
-        isA<TimedOutException>(),
-      );
-    });
-
-    test('それ以外は不明な失敗にする', () {
-      expect(
-        DomainExceptionMapper.fromFirestore(
-          firestoreError('permission-denied'),
-          stackTrace,
-        ),
-        isA<UnknownException>(),
-      );
-    });
+    expect(DomainExceptionMapper.from(exception), same(exception));
   });
 
-  test('DataSource・model の形の違いは、どこから読んだものでも壊れたデータにする', () {
-    final cause = Exception('decode');
-    final causeStackTrace = StackTrace.current;
-    final error = MalformedDataException(
-      'master/0006/cards/A の name が読めません',
-      cause: cause,
-      stackTrace: causeStackTrace,
-    );
-
-    for (final convert in [
-      DomainExceptionMapper.fromFirestore,
-      DomainExceptionMapper.fromRemoteConfig,
-      DomainExceptionMapper.fromLocalStorage,
-      DomainExceptionMapper.fromPlatform,
-    ]) {
-      final exception = convert(error, stackTrace);
-
-      expect(exception, isA<CorruptedDataException>());
-      expect(exception.detail, 'master/0006/cards/A の name が読めません');
-      expect(exception.cause, same(cause));
-      expect(exception.stackTrace, same(causeStackTrace));
-    }
-  });
-
-  test('端末の DB などの失敗は、保存できない失敗にする', () {
+  test('形の違いは、どこから読んだものでも壊れたデータにする', () {
     expect(
-      DomainExceptionMapper.fromLocalStorage(Exception('io'), stackTrace),
-      isA<PersistenceException>(),
+      DomainExceptionMapper.from(
+        CheckedFromJsonException({}, 'name', 'FirestoreCardModel', '型が違います'),
+      ),
+      isA<CorruptedDataException>(),
+    );
+    expect(
+      DomainExceptionMapper.from(const FormatException('JSON として読めません')),
+      isA<CorruptedDataException>(),
     );
   });
 
-  group('fromHttp', () {
+  test('タイムアウトは、応答が遅すぎる失敗にする', () {
+    expect(
+      DomainExceptionMapper.from(TimeoutException('timeout')),
+      isA<TimedOutException>(),
+    );
+  });
+
+  group('Firebase', () {
+    test('Firestore の unavailable は通信できない失敗、deadline-exceeded は遅すぎる失敗', () {
+      expect(
+        DomainExceptionMapper.from(
+          FirebaseException(plugin: 'cloud_firestore', code: 'unavailable'),
+        ),
+        isA<OfflineException>(),
+      );
+      expect(
+        DomainExceptionMapper.from(
+          FirebaseException(
+            plugin: 'cloud_firestore',
+            code: 'deadline-exceeded',
+          ),
+        ),
+        isA<TimedOutException>(),
+      );
+    });
+
+    test('Auth の通信の失敗は、通信できない失敗にする', () {
+      expect(
+        DomainExceptionMapper.from(
+          FirebaseAuthException(code: 'network-request-failed'),
+        ),
+        isA<OfflineException>(),
+      );
+    });
+
+    test('Remote Config は、取れない原因がほぼ通信なので通信できない失敗にする', () {
+      expect(
+        DomainExceptionMapper.from(
+          FirebaseException(
+            plugin: 'firebase_remote_config',
+            code: 'internal',
+          ),
+        ),
+        isA<OfflineException>(),
+      );
+    });
+
+    test('それ以外のコードは、不明な失敗にする', () {
+      final exception = DomainExceptionMapper.from(
+        FirebaseException(
+          plugin: 'cloud_firestore',
+          code: 'permission-denied',
+        ),
+      );
+
+      expect(exception, isA<UnknownException>());
+      expect(exception.detail, 'cloud_firestore/permission-denied');
+    });
+  });
+
+  group('通信', () {
     test('経路上で割り込まれた・接続できない失敗は、通信できない失敗にする', () {
       for (final error in <Exception>[
         const HandshakeException('WRONG_VERSION_NUMBER(tls_record.cc:127)'),
         const SocketException('Failed host lookup'),
         http.ClientException('Connection closed'),
       ]) {
-        final exception = DomainExceptionMapper.fromHttp(error, stackTrace);
-
-        expect(exception, isA<OfflineException>(), reason: '$error');
-        expect(exception.cause, same(error));
+        expect(
+          DomainExceptionMapper.from(error),
+          isA<OfflineException>(),
+          reason: '$error',
+        );
       }
-    });
-
-    test('タイムアウトは、応答が遅すぎる失敗にする', () {
-      expect(
-        DomainExceptionMapper.fromHttp(TimeoutException(''), stackTrace),
-        isA<TimedOutException>(),
-      );
     });
 
     test('404 はデータがない失敗、それ以外のステータスは不明な失敗にする', () {
       expect(
-        DomainExceptionMapper.fromHttp(
+        DomainExceptionMapper.from(
           const HttpExceptionWithStatus(404, 'Not Found'),
-          stackTrace,
         ),
         isA<NotFoundException>(),
       );
       expect(
-        DomainExceptionMapper.fromHttp(
+        DomainExceptionMapper.from(
           const HttpExceptionWithStatus(503, 'Service Unavailable'),
-          stackTrace,
         ),
         isA<UnknownException>(),
       );
     });
   });
 
-  group('fromAuth', () {
-    test('通信の失敗は、通信できない失敗にする', () {
-      expect(
-        DomainExceptionMapper.fromAuth(
-          FirebaseAuthException(code: 'network-request-failed'),
-          stackTrace,
-        ),
-        isA<OfflineException>(),
-      );
-    });
+  test('ファイルを読み書きできない失敗は、保存できない失敗にする', () {
+    expect(
+      DomainExceptionMapper.from(
+        const FileSystemException('書き込めません', '/master_data_v1.json'),
+      ),
+      isA<PersistenceException>(),
+    );
+  });
 
-    test('それ以外は、不明な失敗にする', () {
-      expect(
-        DomainExceptionMapper.fromAuth(
-          FirebaseAuthException(code: 'operation-not-allowed'),
-          stackTrace,
-        ),
-        isA<UnknownException>(),
-      );
-    });
+  test('知らない例外は、不明な失敗にする', () {
+    expect(
+      DomainExceptionMapper.from(Exception('なにか')),
+      isA<UnknownException>(),
+    );
   });
 }

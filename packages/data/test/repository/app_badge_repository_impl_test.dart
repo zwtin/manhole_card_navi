@@ -4,7 +4,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:data/src/datasource/app_badge_data_source.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/repository/app_badge_repository_impl.dart';
-import 'package:data/src/repository/failure_recorder.dart';
 import 'package:domain/domain.dart';
 
 import '../datasource/crashlytics_mock.dart';
@@ -22,7 +21,7 @@ void main() {
     stubRecordError(crashlytics);
     repository = AppBadgeRepositoryImpl(
       appBadge,
-      FailureRecorder(CrashlyticsDataSource(crashlytics)),
+      CrashlyticsDataSource(crashlytics),
     );
   });
 
@@ -33,12 +32,13 @@ void main() {
     verify(() => appBadge.updateCount(3)).called(1);
   });
 
-  test('バッジを消せないときは、不明な失敗として返して記録する', () async {
-    when(appBadge.remove).thenThrow(Exception('だめ'));
+  test('バッジを消せないときは、不明な失敗として返し、元の例外を記録する', () async {
+    final thrown = Exception('だめ');
+    when(appBadge.remove).thenThrow(thrown);
 
     final result = await repository.remove();
 
     expect((result as Failure<void>).exception, isA<UnknownException>());
-    expect(recordedErrors(crashlytics).single.error, isA<UnknownException>());
+    expect(recordedErrors(crashlytics).single.error, same(thrown));
   });
 }

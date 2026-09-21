@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:data/src/datasource/remote_config_data_source.dart';
-import 'package:data/src/model/malformed_data_exception.dart';
 
 class MockFirebaseRemoteConfig extends Mock implements FirebaseRemoteConfig {}
 
@@ -43,7 +42,7 @@ void main() {
 
     await expectLater(
       reader.readString('key'),
-      throwsA(isA<MalformedDataException>()),
+      throwsA(isA<FormatException>()),
     );
   });
 

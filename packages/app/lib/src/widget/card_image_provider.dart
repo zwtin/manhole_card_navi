@@ -56,13 +56,9 @@ class CardImageProvider extends ImageProvider<CardImageProvider> {
         scheduleMicrotask(() {
           PaintingBinding.instance.imageCache.evict(key);
         });
-        // 読み込めなかった画像は Flutter の画像の仕組みを通して FlutterError に
-        // 報告され、Crashlytics の非重大に残る。画像が出ない問い合わせの調査で
-        // 元の例外（WRONG_VERSION_NUMBER など）を見るため、変換前の例外を投げる。
-        Error.throwWithStackTrace(
-          exception.cause ?? exception,
-          exception.stackTrace ?? StackTrace.current,
-        );
+        // Flutter の画像の仕組みに失敗を伝えて errorBuilder を動かす。取得の
+        // 失敗は data が記録済みなので、FlutterError では記録しない。
+        throw exception;
       case Success(:final value):
         return decode(await ui.ImmutableBuffer.fromUint8List(value));
     }

@@ -3,9 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:data/src/model/distribution_state_model.dart';
 import 'package:data/src/model/firestore_master_models.dart';
-import 'package:data/src/model/malformed_data_exception.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-const _path = 'master/0006/cards/27-226-B001';
 
 Map<String, dynamic> cardDocument() {
   return {
@@ -27,7 +26,7 @@ Map<String, dynamic> cardDocument() {
 
 void main() {
   FirestoreCardModel decode(Map<String, dynamic> data) {
-    return FirestoreCardModel.fromDocument(data, path: _path);
+    return FirestoreCardModel.fromDocument(data);
   }
 
   test('カードのドキュメントを読む', () {
@@ -45,15 +44,17 @@ void main() {
     ]);
   });
 
-  test('必須の項目が欠けていれば、どのドキュメントのどの項目かを添えて壊れたデータにする', () {
+  test('必須の項目が欠けていれば、どの項目かを添えて読めなかったことを知らせる', () {
     expect(
       () => decode(cardDocument()..remove('name')),
       throwsA(
-        isA<MalformedDataException>().having(
-          (exception) => exception.message,
-          'message',
-          contains('$_path の name'),
-        ),
+        isA<CheckedFromJsonException>()
+            .having((exception) => exception.key, 'key', 'name')
+            .having(
+              (exception) => exception.className,
+              'className',
+              'FirestoreCardModel',
+            ),
       ),
     );
   });
@@ -67,26 +68,20 @@ void main() {
     }.entries) {
       expect(
         () => decode(cardDocument()..[entry.key] = entry.value),
-        throwsA(isA<MalformedDataException>()),
+        throwsA(isA<CheckedFromJsonException>()),
         reason: entry.key,
       );
     }
   });
 
-  test('都道府県・弾のドキュメントも、欠けていれば壊れたデータにする', () {
+  test('都道府県・弾のドキュメントも、欠けていれば読めなかったことを知らせる', () {
     expect(
-      FirestorePrefectureModel.fromDocument(
-        {'id': '27', 'name': '大阪府'},
-        path: 'master/0006/prefectures/27',
-      ).name,
+      FirestorePrefectureModel.fromDocument({'id': '27', 'name': '大阪府'}).name,
       '大阪府',
     );
     expect(
-      () => FirestoreVolumeModel.fromDocument(
-        {'id': '0000'},
-        path: 'master/0006/volumes/0000',
-      ),
-      throwsA(isA<MalformedDataException>()),
+      () => FirestoreVolumeModel.fromDocument({'id': '0000'}),
+      throwsA(isA<CheckedFromJsonException>()),
     );
   });
 }

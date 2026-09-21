@@ -3,7 +3,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:data/src/datasource/crashlytics_data_source.dart';
-import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/datasource/remote_config_data_source.dart';
 import 'package:data/src/repository/app_info_repository_impl.dart';
 import 'package:domain/domain.dart';
@@ -28,7 +27,7 @@ void main() {
             buildNumber: '1',
           ),
           remoteConfig,
-          FailureRecorder(CrashlyticsDataSource(crashlytics)),
+          CrashlyticsDataSource(crashlytics),
         );
   });
 

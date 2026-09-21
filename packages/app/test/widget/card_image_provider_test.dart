@@ -58,20 +58,16 @@ void main() {
     ).called(1);
   });
 
-  testWidgets('取れなかったときは、変換前の例外を報告する', (tester) async {
-    const cause = HandshakeException('WRONG_VERSION_NUMBER(tls_record.cc:127)');
-    stubFetch(
-      Result.failure(
-        OfflineException(cause: cause, stackTrace: StackTrace.current),
-      ),
-    );
+  testWidgets('取れなかったときは、失敗をそのまま報告する', (tester) async {
+    const exception = OfflineException(detail: '取れませんでした');
+    stubFetch(const Result.failure(exception));
 
     final loaded = await load(
       tester,
       CardImageProvider(useCase: useCase, cardId: 'B'),
     );
 
-    expect(loaded, same(cause));
+    expect(loaded, same(exception));
   });
 
   test('同じカードなら、同じ画像として扱う', () {

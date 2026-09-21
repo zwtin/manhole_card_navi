@@ -10,7 +10,6 @@ export 'package:data/src/repository/analytics_repository_impl.dart';
 export 'package:data/src/repository/app_badge_repository_impl.dart';
 export 'package:data/src/repository/app_info_repository_impl.dart';
 export 'package:data/src/repository/card_repository_impl.dart';
-export 'package:data/src/repository/failure_recorder.dart';
 export 'package:data/src/repository/location_repository_impl.dart';
 export 'package:data/src/repository/master_data_repository_impl.dart';
 export 'package:data/src/repository/master_version_repository_impl.dart';

@@ -8,7 +8,6 @@ import 'package:data/src/datasource/card_image_data_source.dart';
 import 'package:data/src/datasource/analytics_data_source.dart';
 import 'package:data/src/model/analytics_event_model.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
-import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/repository/card_repository_impl.dart';
 import 'package:domain/domain.dart';
@@ -46,7 +45,7 @@ void main() {
       store,
       cardImage,
       analytics,
-      FailureRecorder(CrashlyticsDataSource(crashlytics)),
+      CrashlyticsDataSource(crashlytics),
     );
   });
 
@@ -150,7 +149,7 @@ void main() {
       expect(sent.single.parameters['error_type'], 'socket');
     });
 
-    test('どちらでも取れなければ、両方を計測して失敗を返す', () async {
+    test('どちらでも取れなければ、両方を計測・記録して失敗を返す', () async {
       await storeCard();
       stubDownload(url, () async => throw const SocketException('だめ'));
       stubDownload(
@@ -168,15 +167,9 @@ void main() {
         sent.map((event) => event.parameters['error_type']),
         ['socket', 'handshake_intercepted'],
       );
-      verifyNever(
-        () => crashlytics.recordError(
-          any(),
-          any(),
-          reason: any(named: 'reason'),
-          information: any(named: 'information'),
-          printDetails: any(named: 'printDetails'),
-          fatal: any(named: 'fatal'),
-        ),
+      expect(
+        recordedErrors(crashlytics).map((recorded) => recorded.error),
+        [isA<SocketException>(), isA<HandshakeException>()],
       );
     });
 

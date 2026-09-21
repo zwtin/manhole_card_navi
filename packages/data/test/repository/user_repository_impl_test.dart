@@ -4,7 +4,6 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:data/src/datasource/analytics_data_source.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
-import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/repository/user_repository_impl.dart';
 import 'package:domain/domain.dart';
 
@@ -36,7 +35,6 @@ void main() {
       auth,
       analytics,
       CrashlyticsDataSource(crashlytics),
-      FailureRecorder(CrashlyticsDataSource(crashlytics)),
     );
   });
 
@@ -86,12 +84,12 @@ void main() {
   test('利用者の ID を付けられなくても、登録はできたことにする', () async {
     final current = user('uid-3');
     when(() => auth.currentUser).thenReturn(current);
-    when(() => analytics.setUserId(any()))
-        .thenThrow(Exception('送れない'));
+    final thrown = Exception('送れない');
+    when(() => analytics.setUserId(any())).thenThrow(thrown);
 
     final result = await repository.signIn();
 
     expect(result, isA<Success<void>>());
-    expect(recordedErrors(crashlytics).single.error, isA<UnknownException>());
+    expect(recordedErrors(crashlytics).single.error, same(thrown));
   });
 }

@@ -1,7 +1,5 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 
-import 'package:data/src/model/malformed_data_exception.dart';
-
 class RemoteConfigDataSource {
   RemoteConfigDataSource(
     this._remoteConfig, {
@@ -40,7 +38,7 @@ class RemoteConfigDataSource {
       value = _remoteConfig.getString(key);
     }
     if (value.isEmpty) {
-      throw MalformedDataException('Remote Config の $key が空です');
+      throw FormatException('Remote Config の $key が空です');
     }
     return value;
   }

@@ -5,7 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:data/src/datasource/crashlytics_data_source.dart';
-import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/datasource/location_data_source.dart';
 import 'package:data/src/repository/location_repository_impl.dart';
 import 'package:domain/domain.dart';
@@ -40,7 +39,7 @@ void main() {
     stubRecordError(crashlytics);
     repository = LocationRepositoryImpl(
       platform,
-      FailureRecorder(CrashlyticsDataSource(crashlytics)),
+      CrashlyticsDataSource(crashlytics),
     );
   });
 
@@ -109,9 +108,9 @@ void main() {
       verifyNotRecorded();
     });
 
-    test('タイムアウトは応答が遅すぎる失敗にし、記録しない', () async {
-      when(() => platform.getCurrentPosition())
-          .thenThrow(TimeoutException('遅い'));
+    test('タイムアウトは応答が遅すぎる失敗にし、元の例外を記録する', () async {
+      final thrown = TimeoutException('遅い');
+      when(() => platform.getCurrentPosition()).thenThrow(thrown);
 
       final result = await repository.getCurrentLocation();
 
@@ -119,7 +118,7 @@ void main() {
         (result as Failure<Coordinate?>).exception,
         isA<TimedOutException>(),
       );
-      verifyNotRecorded();
+      expect(recordedErrors(crashlytics).single.error, same(thrown));
     });
   });
 }

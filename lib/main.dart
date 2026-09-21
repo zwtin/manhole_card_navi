@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:app/app.dart';
+import 'package:data/data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -22,17 +24,19 @@ FutureOr<void> main() async {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
+      final crashlytics = CrashlyticsDataSource(FirebaseCrashlytics.instance);
 
-      // 扱われなかった Error や例外はバグなので、Crashlytics でクラッシュとして集計
-      // する。ただし画像の読み込み失敗（通信できない・経路上のフィルタに遮断される
-      // など）はバグではないので、これまでどおり非重大として記録する。画像が出ない
-      // 問い合わせは、非重大に残るこの記録で原因を調べる。
+      // 誰も扱わなかったものはバグなので、クラッシュとして記録する。画像の読み込み
+      // 失敗だけは、data が取得に失敗した時点で記録済みなので二重に記録しない。
       FlutterError.onError = (details) {
         if (details.library == 'image resource service') {
-          FirebaseCrashlytics.instance.recordFlutterError(details);
-        } else {
-          FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+          return;
         }
+        crashlytics.recordFlutter(details);
+      };
+      PlatformDispatcher.instance.onError = (error, stack) {
+        crashlytics.recordFatal(error, stack);
+        return true;
       };
 
       final infrastructure = await Infrastructure.initialize();
@@ -51,11 +55,8 @@ FutureOr<void> main() async {
       debugPrint('Uncaught zone error: $error');
       debugPrintStack(stackTrace: stack);
       try {
-        FirebaseCrashlytics.instance.recordError(
-          error,
-          stack,
-          fatal: true,
-        );
+        CrashlyticsDataSource(FirebaseCrashlytics.instance)
+            .recordFatal(error, stack);
       } catch (e) {
         debugPrint('Crashlytics へ記録できませんでした: $e');
       }

@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import 'package:data/src/datasource/crashlytics_data_source.dart';
-import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/datasource/remote_config_data_source.dart';
 import 'package:data/src/repository/already_get_card_repository_impl.dart';
 import 'package:data/src/repository/master_version_repository_impl.dart';
@@ -18,7 +17,7 @@ class MockRemoteConfigReader extends Mock implements RemoteConfigDataSource {}
 
 void main() {
   late StreamingSharedPreferences preferences;
-  late FailureRecorder failureRecorder;
+  late CrashlyticsDataSource crashlyticsDataSource;
 
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -30,14 +29,14 @@ void main() {
     await preferences.clear();
     final crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
-    failureRecorder = FailureRecorder(CrashlyticsDataSource(crashlytics));
+    crashlyticsDataSource = CrashlyticsDataSource(crashlytics);
   });
 
   group('AlreadyGetCardRepositoryImpl', () {
     late AlreadyGetCardRepositoryImpl repository;
 
     setUp(() {
-      repository = AlreadyGetCardRepositoryImpl(preferences, failureRecorder);
+      repository = AlreadyGetCardRepositoryImpl(preferences, crashlyticsDataSource);
     });
 
     test('取得済みにした ID を読める。同じ ID を 2 回保存しても 1 つ', () async {
@@ -73,7 +72,7 @@ void main() {
     test('保存した検索条件を読める。保存前は絞り込みなし', () async {
       final repository = SearchConditionRepositoryImpl(
         preferences,
-        failureRecorder,
+        crashlyticsDataSource,
       );
       expect(await repository.watch().first, SearchCondition.initial());
 
@@ -94,7 +93,7 @@ void main() {
       final repository = TermsOfServiceRepositoryImpl(
         preferences,
         MockRemoteConfigReader(),
-        failureRecorder,
+        crashlyticsDataSource,
       );
       expect(
         (await repository.getAgreedVersion() as Success<TermsOfServiceVersion?>)
@@ -119,7 +118,7 @@ void main() {
       final repository = MasterVersionRepositoryImpl(
         preferences,
         MockRemoteConfigReader(),
-        failureRecorder,
+        crashlyticsDataSource,
       );
       expect(
         (await repository.getCurrentVersion() as Success<MasterVersion?>).value,

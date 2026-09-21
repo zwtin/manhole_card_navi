@@ -1,7 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:data/src/model/distribution_state_model.dart';
-import 'package:data/src/model/json_decoding.dart';
 
 part 'local_card_model.g.dart';
 
@@ -22,10 +21,6 @@ class LocalCardModel {
     required this.prefecture,
     required this.volume,
   });
-
-  factory LocalCardModel.fromStoredJson(Map<String, dynamic> json) {
-    return decodeModel(json, _$LocalCardModelFromJson, source: '端末のマスターデータ');
-  }
 
   factory LocalCardModel.fromJson(Map<String, dynamic> json) =>
       _$LocalCardModelFromJson(json);

@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:data/src/model/distribution_state_model.dart';
-import 'package:data/src/model/firestore_converters.dart';
-import 'package:data/src/model/json_decoding.dart';
 
 part 'firestore_master_models.g.dart';
 
@@ -29,22 +28,18 @@ class FirestoreCardModel {
     required this.volumeId,
   });
 
-  factory FirestoreCardModel.fromDocument(
-    Map<String, dynamic> data, {
-    required String path,
-  }) {
-    return decodeModel(data, _$FirestoreCardModelFromJson, source: path);
-  }
+  factory FirestoreCardModel.fromDocument(Map<String, dynamic> data) =>
+      _$FirestoreCardModelFromJson(data);
 
   final String id;
 
   /// 蓋（マンホール）の位置。
-  @GeoPointConverter()
+  @_GeoPointConverter()
   final GeoPoint location;
 
   final String name;
 
-  @SlashDateConverter()
+  @_SlashDateConverter()
   final DateTime publicationDate;
 
   final DistributionStateModel distributionState;
@@ -57,7 +52,7 @@ class FirestoreCardModel {
   final String distributionTimeHtml;
   final String stockHtml;
 
-  @GeoPointListConverter()
+  @_GeoPointListConverter()
   final List<GeoPoint> distributionPoints;
 
   final String prefectureId;
@@ -68,12 +63,8 @@ class FirestoreCardModel {
 class FirestorePrefectureModel {
   const FirestorePrefectureModel({required this.id, required this.name});
 
-  factory FirestorePrefectureModel.fromDocument(
-    Map<String, dynamic> data, {
-    required String path,
-  }) {
-    return decodeModel(data, _$FirestorePrefectureModelFromJson, source: path);
-  }
+  factory FirestorePrefectureModel.fromDocument(Map<String, dynamic> data) =>
+      _$FirestorePrefectureModelFromJson(data);
 
   final String id;
   final String name;
@@ -83,13 +74,49 @@ class FirestorePrefectureModel {
 class FirestoreVolumeModel {
   const FirestoreVolumeModel({required this.id, required this.name});
 
-  factory FirestoreVolumeModel.fromDocument(
-    Map<String, dynamic> data, {
-    required String path,
-  }) {
-    return decodeModel(data, _$FirestoreVolumeModelFromJson, source: path);
-  }
+  factory FirestoreVolumeModel.fromDocument(Map<String, dynamic> data) =>
+      _$FirestoreVolumeModelFromJson(data);
 
   final String id;
   final String name;
+}
+
+class _GeoPointConverter implements JsonConverter<GeoPoint, Object?> {
+  const _GeoPointConverter();
+
+  @override
+  GeoPoint fromJson(Object? json) {
+    if (json is GeoPoint) {
+      return json;
+    }
+    throw FormatException('座標（GeoPoint）ではありません（${json.runtimeType}）');
+  }
+
+  @override
+  Object? toJson(GeoPoint object) => object;
+}
+
+class _GeoPointListConverter implements JsonConverter<List<GeoPoint>, Object?> {
+  const _GeoPointListConverter();
+
+  @override
+  List<GeoPoint> fromJson(Object? json) {
+    if (json is List<dynamic>) {
+      return json.whereType<GeoPoint>().toList();
+    }
+    throw FormatException('座標の一覧ではありません（${json.runtimeType}）');
+  }
+
+  @override
+  Object? toJson(List<GeoPoint> object) => object;
+}
+
+class _SlashDateConverter implements JsonConverter<DateTime, String> {
+  const _SlashDateConverter();
+
+  @override
+  DateTime fromJson(String json) => DateFormat('yyyy/MM/dd').parse(json);
+
+  @override
+  String toJson(DateTime object) => DateFormat('yyyy/MM/dd').format(object);
 }

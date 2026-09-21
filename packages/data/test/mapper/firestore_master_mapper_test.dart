@@ -9,7 +9,7 @@ import '../model/firestore_master_models_test.dart' show cardDocument;
 
 LocalCardModel _toLocalCard(Map<String, dynamic> data) {
   return FirestoreMasterMapper.toLocalCard(
-    FirestoreCardModel.fromDocument(data, path: 'master/0006/cards/27-226-B001'),
+    FirestoreCardModel.fromDocument(data),
     prefectures: const {'27': '大阪府'},
     volumes: const {'0000': '第1弾'},
   );

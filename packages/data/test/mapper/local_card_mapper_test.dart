@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:data/src/mapper/local_card_mapper.dart';
 import 'package:data/src/model/local_card_model.dart';
-import 'package:data/src/model/malformed_data_exception.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:domain/domain.dart';
 
 import '../fixtures.dart';
@@ -16,12 +16,12 @@ void main() {
 
   test('保存したカードを読み戻して、エンティティにできる', () {
     expect(
-      LocalCardMapper.toCard(LocalCardModel.fromStoredJson(stored(localCard()))),
+      LocalCardMapper.toCard(LocalCardModel.fromJson(stored(localCard()))),
       card(),
     );
     expect(
       LocalCardMapper.toCard(
-        LocalCardModel.fromStoredJson(
+        LocalCardModel.fromJson(
           stored(localCard(id: '00-101-A001', distributionPoints: const [])),
         ),
       ),
@@ -33,7 +33,7 @@ void main() {
     final json = stored(localCard())
       ..['position'] = {'latitude': 35, 'longitude': 139};
 
-    final read = LocalCardMapper.toCard(LocalCardModel.fromStoredJson(json));
+    final read = LocalCardMapper.toCard(LocalCardModel.fromJson(json));
 
     expect(read.position, const Coordinate(latitude: 35, longitude: 139));
   });
@@ -50,8 +50,8 @@ void main() {
       broken('prefecture', null),
     ]) {
       expect(
-        () => LocalCardModel.fromStoredJson(json),
-        throwsA(isA<MalformedDataException>()),
+        () => LocalCardModel.fromJson(json),
+        throwsA(isA<CheckedFromJsonException>()),
         reason: '$json',
       );
     }
