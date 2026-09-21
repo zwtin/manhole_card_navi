@@ -45,6 +45,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
       (_) => CardRepositoryImpl(
         infrastructure.masterData,
         infrastructure.cardImage,
+        infrastructure.imageLoadMonitor,
         failureRecorder,
       ),
     ),

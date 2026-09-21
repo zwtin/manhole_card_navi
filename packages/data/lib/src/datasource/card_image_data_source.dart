@@ -1,45 +1,56 @@
+import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:http/io_client.dart';
 
-import 'package:data/src/datasource/card_image/card_image_cache_manager.dart';
-import 'package:data/src/datasource/card_image/fallback_file_service.dart';
-import 'package:data/src/datasource/card_image/image_fallback.dart';
-import 'package:data/src/datasource/card_image/image_load_monitor.dart';
-
-/// カード画像の取得。
+/// カード画像を、端末のキャッシュから読む／配信元から取って保存する。
 class CardImageDataSource {
-  CardImageDataSource(this._cacheManager);
+  CardImageDataSource(this._cache);
 
-  /// 端末に保存して使い回す形で作る。キャッシュはアプリ全体で 1 つなので、これも
+  /// 端末に保存する形で作る。同じキーのキャッシュを 2 つ作らないよう、アプリ全体で
   /// 1 つだけ作る。
-  factory CardImageDataSource.withDeviceCache(FirebaseAnalytics analytics) {
+  factory CardImageDataSource.withDeviceCache() {
     return CardImageDataSource(
-      CardImageCacheManager(
-        FallbackFileService(monitor: ImageLoadMonitor(analytics)),
+      CacheManager(
+        Config(
+          // 以前使っていた cached_network_image と同じキー。変えると既存の端末の
+          // キャッシュがすべて無効になり、全員が画像を取り直すので変えない。
+          _cacheKey,
+          // カードは全部で 1300 枚ほど。どの端末でも全部を持てるようにする。
+          maxNrOfCacheObjects: 2000,
+          fileService: HttpFileService(httpClient: _createClient()),
+        ),
       ),
     );
   }
 
-  final ImageCacheManager _cacheManager;
+  static const String _cacheKey = 'libCachedImageData';
 
-  /// [url] の画像のデータ。[subUrl] は、[url] から取れなかったときに使う代わりの
-  /// 配信元。[maxWidth] を渡すと、その幅に縮小したものを返す。
-  Future<Uint8List> fetch({
-    required String url,
-    required String subUrl,
-    int? maxWidth,
-  }) async {
-    // 保存済みなら期限切れでも先に流れてくる（取り直しはその後ろで行われる）ので、
-    // 最初の 1 件だけ使う。取り直せなくても保存済みの画像は出せる。
-    final response = await _cacheManager
-        .getImageFile(
-          url,
-          headers: ImageFallback.headers(subUrl),
-          maxWidth: maxWidth,
-        )
-        .firstWhere((response) => response is FileInfo);
-    return (response as FileInfo).file.readAsBytes();
+  /// 取得をあきらめるまでの時間。dart:io の既定では OS のタイムアウト（Darwin で
+  /// 約 75 秒）まで待ち、遮断されている端末で次の配信元に移るのが遅れる。
+  static const Duration _timeout = Duration(seconds: 12);
+
+  final BaseCacheManager _cache;
+
+  static IOClient _createClient() {
+    final httpClient = HttpClient()
+      ..connectionTimeout = const Duration(seconds: 8)
+      // 既定は無制限。モバイル回線で TLS のハンドシェイクを同時に投げすぎると
+      // ETIMEDOUT になるので、キャッシュ層の同時取得数（既定 10）に合わせる。
+      ..maxConnectionsPerHost = 10;
+    return IOClient(httpClient);
+  }
+
+  /// 端末に保存済みの画像。なければ null。
+  Future<Uint8List?> readCache(String url) async {
+    final cached = await _cache.getFileFromCache(url);
+    return cached?.file.readAsBytes();
+  }
+
+  /// [url] から取って端末に保存し、その画像を返す。
+  Future<Uint8List> download(String url) async {
+    final downloaded = await _cache.downloadFile(url).timeout(_timeout);
+    return downloaded.file.readAsBytes();
   }
 }

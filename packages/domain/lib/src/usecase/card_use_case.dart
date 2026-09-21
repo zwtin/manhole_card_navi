@@ -27,10 +27,7 @@ class CardUseCase {
     return _cardRepository.fetchAll();
   }
 
-  Future<Result<Uint8List>> fetchImage({
-    required String cardId,
-    int? maxWidth,
-  }) {
-    return _cardRepository.fetchImage(cardId: cardId, maxWidth: maxWidth);
+  Future<Result<Uint8List>> fetchImage({required String cardId}) {
+    return _cardRepository.fetchImage(cardId: cardId);
   }
 }

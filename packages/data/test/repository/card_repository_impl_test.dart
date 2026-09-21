@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:data/src/datasource/card_image_data_source.dart';
+import 'package:data/src/datasource/image_load_monitor.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/repository/failure_recorder.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
@@ -16,10 +17,13 @@ import '../fixtures.dart';
 
 class MockCardImageDataSource extends Mock implements CardImageDataSource {}
 
+class MockImageLoadMonitor extends Mock implements ImageLoadMonitor {}
+
 void main() {
   late Directory directory;
   late MasterDataLocalDataSource store;
   late MockCardImageDataSource cardImage;
+  late MockImageLoadMonitor imageLoadMonitor;
   late MockFirebaseCrashlytics crashlytics;
   late CardRepositoryImpl repository;
 
@@ -27,11 +31,13 @@ void main() {
     directory = await Directory.systemTemp.createTemp('card_repository');
     store = MasterDataLocalDataSource(directory: () async => directory);
     cardImage = MockCardImageDataSource();
+    imageLoadMonitor = MockImageLoadMonitor();
     crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     repository = CardRepositoryImpl(
       store,
       cardImage,
+      imageLoadMonitor,
       FailureRecorder(CrashlyticsDataSource(crashlytics)),
     );
   });
@@ -67,62 +73,98 @@ void main() {
   });
 
   group('fetchImage', () {
-    void stubImage(Future<Uint8List> Function() response) {
-      when(
-        () => cardImage.fetch(
-          url: any(named: 'url'),
-          subUrl: any(named: 'subUrl'),
-          maxWidth: any(named: 'maxWidth'),
-        ),
-      ).thenAnswer((_) => response());
+    const url = 'https://r2/A.jpg';
+    const subUrl = 'https://sub/A.jpg';
+
+    /// [url] のカードを 1 枚だけ端末に持たせる。
+    Future<void> storeCard() {
+      return store.writeAll([localCard(id: 'A', image: url, imageSub: subUrl)]);
     }
 
-    test('カードの画像の URL と代わりの配信元を渡して取る', () async {
-      await store.writeAll([
-        localCard(
-          id: 'A',
-          image: 'https://r2/A.jpg',
-          imageSub: 'https://sub/A.jpg',
-        ),
-      ]);
-      stubImage(() async => Uint8List.fromList([1, 2, 3]));
+    void stubCache(String target, List<int>? bytes) {
+      when(() => cardImage.readCache(target)).thenAnswer(
+        (_) async => bytes == null ? null : Uint8List.fromList(bytes),
+      );
+    }
 
-      final result = await repository.fetchImage(cardId: 'A', maxWidth: 520);
+    void stubDownload(String target, Future<Uint8List> Function() response) {
+      when(() => cardImage.download(target)).thenAnswer((_) => response());
+    }
 
-      expect((result as Success<List<int>>).value, [1, 2, 3]);
-      verify(
-        () => cardImage.fetch(
-          url: 'https://r2/A.jpg',
-          subUrl: 'https://sub/A.jpg',
-          maxWidth: 520,
-        ),
-      ).called(1);
+    setUp(() {
+      stubCache(url, null);
+      stubCache(subUrl, null);
     });
 
-    test('ない ID は、データがない失敗として返す', () async {
-      await store.writeAll([localCard(id: 'A')]);
+    test('端末に保存済みならそれを返し、取りにいかない', () async {
+      await storeCard();
+      stubCache(url, [1, 2, 3]);
 
-      final result = await repository.fetchImage(cardId: 'Z');
+      final result = await repository.fetchImage(cardId: 'A');
 
-      expect((result as Failure).exception, isA<NotFoundException>());
+      expect((result as Success<List<int>>).value, [1, 2, 3]);
+      verifyNever(() => cardImage.download(any()));
+    });
+
+    test('主系が保存されていなくても、代わりの配信元のものがあれば使う', () async {
+      await storeCard();
+      stubCache(subUrl, [4, 5]);
+
+      final result = await repository.fetchImage(cardId: 'A');
+
+      expect((result as Success<List<int>>).value, [4, 5]);
+      verifyNever(() => cardImage.download(any()));
+    });
+
+    test('保存されていなければ、主系から取って返す', () async {
+      await storeCard();
+      stubDownload(url, () async => Uint8List.fromList([6]));
+
+      final result = await repository.fetchImage(cardId: 'A');
+
+      expect((result as Success<List<int>>).value, [6]);
+      verifyNever(() => cardImage.download(subUrl));
       verifyNever(
-        () => cardImage.fetch(
+        () => imageLoadMonitor.recordFailure(
           url: any(named: 'url'),
-          subUrl: any(named: 'subUrl'),
-          maxWidth: any(named: 'maxWidth'),
+          error: any(named: 'error'),
         ),
       );
     });
 
-    test('画像の取得の失敗は、種類に変換して返すが記録しない', () async {
-      await store.writeAll([localCard(id: 'A')]);
-      stubImage(
+    test('主系で取れなければ代わりの配信元から取り、主系の失敗を計測する', () async {
+      await storeCard();
+      stubDownload(url, () async => throw const SocketException('だめ'));
+      stubDownload(subUrl, () async => Uint8List.fromList([7]));
+
+      final result = await repository.fetchImage(cardId: 'A');
+
+      expect((result as Success<List<int>>).value, [7]);
+      verify(
+        () => imageLoadMonitor.recordFailure(
+          url: url,
+          error: any(named: 'error', that: isA<SocketException>()),
+        ),
+      ).called(1);
+    });
+
+    test('どちらでも取れなければ、両方を計測して失敗を返す', () async {
+      await storeCard();
+      stubDownload(url, () async => throw const SocketException('だめ'));
+      stubDownload(
+        subUrl,
         () async => throw const HandshakeException('WRONG_VERSION_NUMBER'),
       );
 
       final result = await repository.fetchImage(cardId: 'A');
 
       expect((result as Failure).exception, isA<OfflineException>());
+      verify(
+        () => imageLoadMonitor.recordFailure(
+          url: any(named: 'url'),
+          error: any(named: 'error'),
+        ),
+      ).called(2);
       verifyNever(
         () => crashlytics.recordError(
           any(),
@@ -133,6 +175,15 @@ void main() {
           fatal: any(named: 'fatal'),
         ),
       );
+    });
+
+    test('ない ID は、データがない失敗として返す', () async {
+      await storeCard();
+
+      final result = await repository.fetchImage(cardId: 'Z');
+
+      expect((result as Failure).exception, isA<NotFoundException>());
+      verifyNever(() => cardImage.readCache(any()));
     });
   });
 }

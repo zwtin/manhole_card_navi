@@ -108,7 +108,6 @@ class ManholeCardListPage extends HookConsumerWidget {
                                   cardId: cardViewData.id,
                                   alreadyGet: cardViewData.alreadyGet,
                                   memCacheWidth: 260,
-                                  maxWidthDiskCache: 520,
                                 ),
                               ),
                               const SizedBox(

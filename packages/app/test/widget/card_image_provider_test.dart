@@ -26,10 +26,7 @@ void main() {
 
   void stubFetch(Result<Uint8List> result) {
     when(
-      () => useCase.fetchImage(
-        cardId: any(named: 'cardId'),
-        maxWidth: any(named: 'maxWidth'),
-      ),
+      () => useCase.fetchImage(cardId: any(named: 'cardId')),
     ).thenAnswer((_) async => result);
   }
 
@@ -52,12 +49,12 @@ void main() {
 
     final loaded = await load(
       tester,
-      CardImageProvider(useCase: useCase, cardId: 'A', maxWidth: 520),
+      CardImageProvider(useCase: useCase, cardId: 'A'),
     );
 
     expect((loaded! as ImageInfo).image.width, 1);
     verify(
-      () => useCase.fetchImage(cardId: 'A', maxWidth: 520),
+      () => useCase.fetchImage(cardId: 'A'),
     ).called(1);
   });
 
@@ -77,16 +74,12 @@ void main() {
     expect(loaded, same(cause));
   });
 
-  test('カードと保存する幅が同じなら、同じ画像として扱う', () {
+  test('同じカードなら、同じ画像として扱う', () {
     final a = CardImageProvider(useCase: useCase, cardId: 'A');
     final b = CardImageProvider(useCase: MockCardUseCase(), cardId: 'A');
 
     expect(a, b);
     expect(a.hashCode, b.hashCode);
     expect(a, isNot(CardImageProvider(useCase: useCase, cardId: 'B')));
-    expect(
-      a,
-      isNot(CardImageProvider(useCase: useCase, cardId: 'A', maxWidth: 520)),
-    );
   });
 }

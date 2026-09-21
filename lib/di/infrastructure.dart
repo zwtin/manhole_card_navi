@@ -15,6 +15,7 @@ class Infrastructure {
     required this.remoteConfig,
     required this.masterData,
     required this.cardImage,
+    required this.imageLoadMonitor,
   });
 
   /// 部品を作り、使える状態にする。Firebase の初期化の後に呼ぶ。
@@ -35,7 +36,8 @@ class Infrastructure {
       failureRecorder: FailureRecorder(crashlytics),
       remoteConfig: remoteConfig,
       masterData: MasterDataLocalDataSource.inApplicationSupport(),
-      cardImage: CardImageDataSource.withDeviceCache(FirebaseAnalytics.instance),
+      cardImage: CardImageDataSource.withDeviceCache(),
+      imageLoadMonitor: ImageLoadMonitor(FirebaseAnalytics.instance),
     );
   }
 
@@ -53,4 +55,5 @@ class Infrastructure {
   final MasterDataLocalDataSource masterData;
 
   final CardImageDataSource cardImage;
+  final ImageLoadMonitor imageLoadMonitor;
 }

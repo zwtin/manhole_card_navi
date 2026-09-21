@@ -63,11 +63,13 @@ fvm flutter pub run flutter_native_splash:create
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装。組み立て（どの実装をどの部品で作るか）は持たず、実装クラスを公開するだけ
-   - `repository/` - Repository の実装。DataSource から model を受け取り、mapper でエンティティにして返す。失敗は `FailureRecorder.guard` で種類に変換・記録して返す。その `FailureRecorder`（どの失敗を記録するかを決める）も、実装が共有する部品としてここに置く
+   - `repository/` - Repository の実装だけを置く。DataSource から model を受け取り、mapper でエンティティにして返す。複数の DataSource の組み合わせもここで行う。失敗は `FailureRecorder.guard` で種類に変換・記録して返す
    - `datasource/` - 外界と話すクラス。Firestore・Firebase Auth・Analytics・Messaging・SharedPreferences は SDK のインスタンスをそのまま使い、中身があるもの・static な API だけを包む。返すのは model（か SDK の型）で、エンティティにはしない。domain を知らず、形の違うデータは data の中だけの `MalformedDataException` で知らせる（domain の失敗の種類にするのは Repository）
+     - **DataSource は 1 つの外界だけを相手にし、単体で独立させる。** DataSource の中に別の DataSource やサービスを持たない。複数の外界を組み合わせる（片方でだめならもう片方、取れたら計測する など）のは Repository の役目
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
      - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）。取り直さない時間は環境で変わるので、ルートから渡す
-     - `CardImageDataSource`: カード画像の取得。端末への保存、R2 で取れなければ Hosting から取り直す切り替え、失敗の計測（Analytics）は、この中に閉じる。使う部品は `datasource/card_image/` にまとめてある
+     - `CardImageDataSource`: カード画像を、端末のキャッシュから読む／URL から取って保存する
+     - `ImageLoadMonitor`: カード画像の取得に失敗したことを Analytics に送る
      - `LocationDataSource` / `AppBadgeDataSource`: 位置情報・アプリのバッジ（static な API の包み）
      - `CrashlyticsDataSource`: Crashlytics への記録（非重大・クラッシュ・利用者の ID）
    - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば `MalformedDataException` にする（`decodeModel`）。保存する値の enum も model が持ち、値の名前を保存する文字列にそろえる（domain の名前を変えても保存済みの値は変わらない）。エンティティは JSON を知らない

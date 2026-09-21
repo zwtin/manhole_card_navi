@@ -6,7 +6,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:data/src/datasource/card_image/image_load_monitor.dart';
+import 'package:data/src/datasource/image_load_monitor.dart';
 
 class MockFirebaseAnalytics extends Mock implements FirebaseAnalytics {}
 
@@ -35,11 +35,10 @@ void main() {
     ).captured.cast<Map<String, Object>>();
   }
 
-  test('失敗の種類・配信元・救えたかどうかを送る', () async {
+  test('どの配信元で、どう失敗したかを送る', () async {
     monitor.recordFailure(
       url: 'https://r2.example.com/A.jpg',
       error: const HandshakeException('WRONG_VERSION_NUMBER(tls_record.cc)'),
-      recovered: true,
     );
     await pumpEventQueue();
 
@@ -47,10 +46,19 @@ void main() {
       'error_type': 'handshake_intercepted',
       'status_code': 0,
       'host': 'r2.example.com',
-      'recovered': 1,
-      'failure_count': 0,
-      'fallback_success_count': 1,
     });
+  });
+
+  test('失敗した数だけ送る', () async {
+    for (var count = 0; count < 25; count++) {
+      monitor.recordFailure(
+        url: 'https://r2.example.com/A.jpg',
+        error: const SocketException('だめ'),
+      );
+    }
+    await pumpEventQueue();
+
+    expect(sentEvents().length, 25);
   });
 
   test('遮断の方式ごとに、失敗の種類を分ける', () async {
@@ -67,41 +75,21 @@ void main() {
       StateError('だめ'): 'other',
     };
     for (final error in errors.keys) {
-      monitor.recordFailure(url: 'https://r2/A.jpg', error: error, recovered: false);
+      monitor.recordFailure(url: 'https://r2/A.jpg', error: error);
     }
     await pumpEventQueue();
 
-    expect(
-      sentEvents().map((event) => event['error_type']),
-      errors.values,
-    );
+    expect(sentEvents().map((event) => event['error_type']), errors.values);
   });
 
   test('状態の異常は、その状態も送る', () async {
     monitor.recordFailure(
       url: 'https://r2/A.jpg',
       error: HttpExceptionWithStatus(503, 'だめ'),
-      recovered: false,
     );
     await pumpEventQueue();
 
     expect(sentEvents().single['status_code'], 503);
-  });
-
-  test('送るのは 20 件までだが、数はその後も積む', () async {
-    for (var count = 0; count < 25; count++) {
-      monitor.recordFailure(
-        url: 'https://r2/A.jpg',
-        error: const SocketException('だめ'),
-        recovered: false,
-      );
-    }
-    await pumpEventQueue();
-
-    final events = sentEvents();
-    expect(events.length, 20);
-    expect(events.last['failure_count'], 20);
-    expect(monitor.failureCount, 25);
   });
 
   test('送信に失敗しても、呼んだ側には伝わらない', () async {
@@ -115,10 +103,9 @@ void main() {
     monitor.recordFailure(
       url: 'https://r2/A.jpg',
       error: const SocketException('だめ'),
-      recovered: false,
     );
     await pumpEventQueue();
 
-    expect(monitor.failureCount, 1);
+    expect(sentEvents(), hasLength(1));
   });
 }

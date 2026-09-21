@@ -4,41 +4,16 @@ import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-/// 送るのは 1 セッション [_maxEventsPerSession] 件まで。遮断されている端末では
-/// 数百〜数千枚が失敗し、Analytics のイベント数を食い潰すため。各イベントに
-/// その時点の累計（`failure_count`）を載せるので、上限の後もセッションの失敗数は
-/// 最後のイベントから読める。
+/// カード画像の取得に失敗したことを Analytics に送る。
+///
+/// 1 件ずつ送る。どの配信元（[url] のホスト）で、どう失敗したかが分かればよく、
+/// 利用者ごとの件数は Analytics 側で数える。
 class ImageLoadMonitor {
   ImageLoadMonitor(this._analytics);
 
-  static const int _maxEventsPerSession = 20;
-
   final FirebaseAnalytics _analytics;
 
-  int _sentEventCount = 0;
-
-  /// 代わりの配信元でも取れなかった数。
-  int failureCount = 0;
-
-  int fallbackSuccessCount = 0;
-
-  /// 主系で取れなかったときに呼ぶ。
-  void recordFailure({
-    required String url,
-    required Object error,
-    required bool recovered,
-  }) {
-    if (recovered) {
-      fallbackSuccessCount++;
-    } else {
-      failureCount++;
-    }
-
-    if (_sentEventCount >= _maxEventsPerSession) {
-      return;
-    }
-    _sentEventCount++;
-
+  void recordFailure({required String url, required Object error}) {
     unawaited(
       _analytics
           .logEvent(
@@ -48,9 +23,6 @@ class ImageLoadMonitor {
               'status_code':
                   error is HttpExceptionWithStatus ? error.statusCode : 0,
               'host': Uri.tryParse(url)?.host ?? '',
-              'recovered': recovered ? 1 : 0,
-              'failure_count': failureCount,
-              'fallback_success_count': fallbackSuccessCount,
             },
           )
           // 送れなくても本体の動作は止めない。

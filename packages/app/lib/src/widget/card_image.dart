@@ -9,14 +9,12 @@ import 'card_image_provider.dart';
 /// [cardId] のカードの画像を出す。未所持（[alreadyGet] が false）の場合は実行時に
 /// 彩度 0 のカラーフィルターを掛けてグレースケール表示する。
 ///
-/// [memCacheWidth] は表示するときの幅、[maxWidthDiskCache] は端末に縮小して保存する
-/// 幅。指定すると原寸デコードを避けられる。
+/// [memCacheWidth] は表示するときの幅。指定すると原寸デコードを避けられる。
 class CardImage extends ConsumerWidget {
   const CardImage({
     required this.cardId,
     required this.alreadyGet,
     this.memCacheWidth,
-    this.maxWidthDiskCache,
     this.fit,
     super.key,
   });
@@ -24,7 +22,6 @@ class CardImage extends ConsumerWidget {
   final String cardId;
   final bool alreadyGet;
   final int? memCacheWidth;
-  final int? maxWidthDiskCache;
   final BoxFit? fit;
 
   /// 彩度 0（グレースケール化）のカラーマトリクス。
@@ -80,7 +77,6 @@ class CardImage extends ConsumerWidget {
         CardImageProvider(
           useCase: ref.watch(cardUseCaseProvider),
           cardId: cardId,
-          maxWidth: maxWidthDiskCache,
         ),
       ),
       fit: fit,
