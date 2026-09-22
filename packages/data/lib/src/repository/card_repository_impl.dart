@@ -52,9 +52,8 @@ class CardRepositoryImpl implements CardRepository {
   /// （Cloudflare R2）で取れなければ、代わりの配信元（Firebase Hosting）から取る。
   /// 一部のネットワークが主系のドメインを遮断するため。
   ///
-  /// 取得の失敗だけは Crashlytics に記録せず、Analytics の image_load_failed で
-  /// 数える。遮断された端末では画面 1 つで何十件も出て、非重大の 1 セッション
-  /// 8 件の枠を使い切り、ほかの失敗が押し出されてしまうため。
+  /// 取得の失敗は Crashlytics に記録しない。非重大の 1 セッション 8 件の枠を
+  /// 使い切り、ほかの失敗が押し出されるため。
   @override
   Future<Result<Uint8List>> fetchImage({required String cardId}) async {
     final LocalCardModel card;

@@ -1,7 +1,3 @@
-/// data が公開するのは、Composition Root（ルートの `lib/`）が組み立てに使う部品
-/// だけ。アプリ全体に向けた API ではない。app は data に依存しない。
-library;
-
 export 'package:data/src/datasource/analytics_data_source.dart';
 export 'package:data/src/datasource/app_badge_data_source.dart';
 export 'package:data/src/datasource/auth_data_source.dart';

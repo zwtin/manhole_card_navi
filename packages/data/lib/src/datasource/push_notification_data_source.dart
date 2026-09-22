@@ -1,6 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-/// プッシュ通知。許可されたかどうかは使わないので返さない。
+/// 許可されたかどうかは使わないので返さない。
 class PushNotificationDataSource {
   PushNotificationDataSource(this._messaging);
 

@@ -11,9 +11,9 @@ sealed class AnalyticsEvent with _$AnalyticsEvent {
     @Default(<String, Object>{}) Map<String, Object> parameters,
   }) = ScreenView;
 
-  /// カード画像を取れなかった。[host] は取ろうとした配信元、[errorRuntimeType] は
-  /// 例外の型名、[osError] は OS が返したエラー（`WRONG_VERSION_NUMBER` など。
-  /// なければ空）、[statusCode] は応答があった場合の状態。
+  /// [host] は取ろうとした配信元、[osError] は OS が返したエラー
+  /// （`WRONG_VERSION_NUMBER` など。なければ空）、[statusCode] は応答があった
+  /// 場合の状態（応答がなければ 0）。
   const factory AnalyticsEvent.imageLoadFailed({
     required String host,
     required String errorRuntimeType,

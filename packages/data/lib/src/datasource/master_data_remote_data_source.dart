@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:data/src/model/firestore_master_models.dart';
 
-/// サーバー（Firestore）が配信するマスターデータ。
 class MasterDataRemoteDataSource {
   MasterDataRemoteDataSource(this._firestore);
 

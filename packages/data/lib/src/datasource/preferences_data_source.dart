@@ -1,9 +1,5 @@
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-/// 端末に保存する、利用者の設定・取得済みカード。
-///
-/// 書き込みは、保存できたかどうかを bool で返す（SharedPreferences がそう返す）。
-/// それを失敗として扱うかは Repository が決める。
 class PreferencesDataSource {
   PreferencesDataSource(this._preferences);
 
