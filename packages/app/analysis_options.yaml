@@ -9,12 +9,6 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
-# デザインシステムを守らせる lint。`fvm flutter analyze` では動かないので、
-# `fvm dart run custom_lint` で確認する。
-analyzer:
-  plugins:
-    - custom_lint
-
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`

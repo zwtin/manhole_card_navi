@@ -1,0 +1,32 @@
+# コミット・プッシュのたびに走らせる検査。導入は `brew install lefthook` の後に
+# `lefthook install`（git worktree ごとに 1 回）。
+#
+# 変更時の注意: `env -u GIT_DIR` は git worktree 対策。worktree からコミットすると
+# git がフックに GIT_DIR を渡し、fvm がそれを継承して自分のキャッシュを見失い
+# exit 255 で落ちる。通常の checkout では渡らないので、付けても no-op。
+# lefthook の `env:` では代用できない（unset ではなく空文字になり、fvm が
+# ミラーを無効と判断して作り直す）。fvm を呼ぶコマンドには必ず付ける。
+
+pre-commit:
+  # formatter を最後に動かすため、並列にしない。
+  parallel: false
+  commands:
+    fix:
+      glob: "*.dart"
+      run: env -u GIT_DIR fvm dart fix --apply {staged_files}
+      stage_fixed: true
+    format:
+      glob: "*.dart"
+      run: env -u GIT_DIR fvm dart format {staged_files}
+      stage_fixed: true
+    design-system:
+      glob: "packages/app/lib/**/*.dart"
+      run: ./scripts/check_design_system.sh {staged_files}
+
+pre-push:
+  parallel: false
+  commands:
+    analyze:
+      run: env -u GIT_DIR fvm flutter analyze
+    test:
+      run: ./scripts/run_tests.sh

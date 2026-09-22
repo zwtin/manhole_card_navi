@@ -33,8 +33,8 @@ fvm flutter build ios --dart-define-from-file=dart_defines/production.env
 # コード解析（ルートで実行すると packages/ 配下もまとめて解析する）
 fvm flutter analyze
 
-# デザインシステムの lint（flutter analyze では動かない）
-(cd packages/app && fvm dart run custom_lint)
+# デザインシステムの検査（flutter analyze では見つからない）
+./scripts/check_design_system.sh
 
 # テストの実行（パッケージごと。ルートにもある）
 (cd packages/domain && fvm dart test)  # domain は Flutter に依存しないので dart で回せる
@@ -53,6 +53,16 @@ fvm flutter pub run flutter_launcher_icons -f flutter_launcher_icons-production.
 # ネイティブスプラッシュ画面の生成
 fvm flutter pub run flutter_native_splash:create
 ```
+
+## コミットとプッシュ
+lefthook がフックで検査を走らせる。導入は `brew install lefthook` の後、**git worktree ごとに** `lefthook install`。
+
+- コミット時: `dart fix --apply` → `dart format` → デザインシステムの検査（いずれも staged なファイルだけ）
+- プッシュ時: `fvm flutter analyze` と全パッケージのテスト（`scripts/run_tests.sh`）
+
+**`git commit --no-verify` や `git push --no-verify` は使わない。** 検査を飛ばすと、壊れたものがそのまま乗る。直せない事情があるなら、フックを飛ばすのではなく `// ignore:` に理由を書く。
+
+`lefthook.yml` の `env -u GIT_DIR` は git worktree 対策で、外してはいけない。worktree からコミットすると git がフックに `GIT_DIR` を渡し、fvm がそれを継承して自分のキャッシュを見失い `exit 255` で落ちる。lefthook の `env:` では代用できない（unset ではなく空文字になり、fvm がミラーを作り直す）。
 
 ## アーキテクチャ
 
@@ -87,13 +97,11 @@ fvm flutter pub run flutter_native_splash:create
    - `view_model/` - 画面ごとの ViewModel
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
    - `widget/` / `mapper/` / `theme/` - 共通部品・変換・テーマ
-   - **見た目はデザインシステムから選ぶ。** 文字は `AppText`（`widget/app_text.dart`）の名前付きコンストラクタ、色は `Theme` か `AppColors`（`theme/app_colors.dart`、`ThemeExtension`）から引く。色の値そのものは `assets/colors/colors.xml` に名前を付けてから使う。画面で `Text`・`TextStyle`・`Color` を直接作らない（`packages/app_lint` の lint が止める）。使っていない見た目も、そろえるために `AppText` に残す
+   - **見た目はデザインシステムから選ぶ。** 文字は `AppText`（`widget/app_text.dart`）の名前付きコンストラクタ、色は `Theme` か `AppColors`（`theme/app_colors.dart`、`ThemeExtension`）から引く。色の値そのものは `assets/colors/colors.xml` に名前を付けてから使う。画面で `Text`・`TextStyle`・`Color` を直接作らない（`scripts/check_design_system.sh` が止める。動かせない事情があるところは、その行の直前に `// ignore: <ルール名>` と理由を書く）。使っていない見た目も、そろえるために `AppText` に残す
    - `mapper/` は純粋な変換だけを置く。通信・保存・キャッシュを持たせない。マップのマーカーなら、ピンの選び方（`MapMarkersViewDataMapper`）と 1 枚の合成（`MarkerIconMapper`）が mapper で、画像を取る・並べる段取りは ViewModel の役目
    - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 
-4. **app_lint** (`packages/app_lint/`) - デザインシステムを守らせる custom_lint のプラグイン。`use_app_text` / `use_text_theme` / `use_color_token` の 3 つ。見た目を定義しているファイル（`app_text.dart`・`app_colors.dart`・`app_theme.dart`）だけは対象外。動かせない事情があるところは `// ignore: <ルール名>` と理由を書く
-
-5. **ルート** (`lib/`) - アプリを組み立てる場所（Composition Root）。`main.dart` で Firebase を初期化し、`di/` で data の実装を domain の provider に当てはめる
+4. **ルート** (`lib/`) - アプリを組み立てる場所（Composition Root）。`main.dart` で Firebase を初期化し、`di/` で data の実装を domain の provider に当てはめる
    - `di/infrastructure.dart` - data の Repository が共有する部品（SharedPreferences・PackageInfo・Remote Config・JSON ファイル・記録）を起動時に 1 回だけ作る `Infrastructure`
    - `di/repository_overrides.dart` - domain の Repository の provider に data の実装を当てはめる override の一覧
    - `uncaught_error_observer.dart` - provider の生成中のバグをクラッシュとして記録する `ProviderObserver`。`main.dart` の Zone・`FlutterError.onError` と合わせて、クラッシュの記録はルートに集める
