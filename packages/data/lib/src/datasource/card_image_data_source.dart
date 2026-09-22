@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/io_client.dart';
+import 'package:path_provider/path_provider.dart';
 
 class CardImageDataSource {
   CardImageDataSource(this._cache);
@@ -49,5 +50,28 @@ class CardImageDataSource {
   Future<Uint8List> download(String url) async {
     final downloaded = await _cache.downloadFile(url).timeout(_timeout);
     return downloaded.file.readAsBytes();
+  }
+
+  /// 前の世代が、合成済みのマーカー画像を保存していたキャッシュを消す。もう作らない
+  /// のに、1 件 50 KB ほど × 最大 2000 件が端末に残り続けるため。
+  ///
+  /// flutter_cache_manager は画像を一時ディレクトリに、索引を Application Support
+  /// の .db に置くので、両方を消す。
+  static Future<void> deleteMarkerIconCache() async {
+    const key = 'markerIconCache';
+    try {
+      final images = Directory('${(await getTemporaryDirectory()).path}/$key');
+      if (await images.exists()) {
+        await images.delete(recursive: true);
+      }
+      final index = File(
+        '${(await getApplicationSupportDirectory()).path}/$key.db',
+      );
+      if (await index.exists()) {
+        await index.delete();
+      }
+    } on FileSystemException {
+      // 残っても動作には関わらない。次の起動でまた試す。
+    }
   }
 }
