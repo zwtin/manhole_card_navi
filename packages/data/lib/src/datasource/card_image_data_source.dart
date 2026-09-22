@@ -4,12 +4,10 @@ import 'dart:typed_data';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/io_client.dart';
 
-/// カード画像を、端末のキャッシュから読む／配信元から取って保存する。
 class CardImageDataSource {
   CardImageDataSource(this._cache);
 
-  /// 端末に保存する形で作る。同じキーのキャッシュを 2 つ作らないよう、アプリ全体で
-  /// 1 つだけ作る。
+  /// 同じキーのキャッシュを 2 つ作らないよう、アプリ全体で 1 つだけ作る。
   factory CardImageDataSource.withDeviceCache() {
     return CardImageDataSource(
       CacheManager(
@@ -42,13 +40,12 @@ class CardImageDataSource {
     return IOClient(httpClient);
   }
 
-  /// 端末に保存済みの画像。なければ null。
   Future<Uint8List?> readCache(String url) async {
     final cached = await _cache.getFileFromCache(url);
     return cached?.file.readAsBytes();
   }
 
-  /// [url] から取って端末に保存し、その画像を返す。
+  /// 取った画像は端末に保存する。
   Future<Uint8List> download(String url) async {
     final downloaded = await _cache.downloadFile(url).timeout(_timeout);
     return downloaded.file.readAsBytes();

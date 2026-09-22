@@ -63,14 +63,17 @@ fvm flutter pub run flutter_native_splash:create
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装。組み立て（どの実装をどの部品で作るか）は持たず、実装クラスを公開するだけ
-   - `repository/` - Repository の実装だけを置く。DataSource から model を受け取り、mapper でエンティティにして返す。複数の DataSource の組み合わせもここで行う。例外を捕まえるのは data の中でここだけで、捕まえたら記録し、`DomainExceptionMapper.from` で種類に変換して `Result` に包む
-   - `datasource/` - 外界と話すクラス。Firestore・Firebase Auth・Analytics・Messaging・SharedPreferences は SDK のインスタンスをそのまま使い、中身があるもの・static な API だけを包む。返すのは model（か SDK の型）で、エンティティにはしない。domain を知らないので、失敗は package が定義した例外（`CheckedFromJsonException`・`FormatException` など）のまま投げる。失敗の種類にするのは Repository
+   - `repository/` - Repository の実装だけを置く。**外界に触るのは DataSource 経由だけで、SDK を直接持たない。** DataSource から model を受け取り、mapper でエンティティにして返す。複数の DataSource の組み合わせもここで行う。例外を捕まえるのは data の中でここだけで、捕まえたら記録し、`DomainExceptionMapper.from` で種類に変換して `Result` に包む
+   - `datasource/` - 外界と話すクラス。**Repository は DataSource としか話さない**ので、外界は素通しでも必ずここで包む（包むか判断しないで済むようにするため）。返すのは model か素の値で、SDK の型もエンティティも外に出さない。domain を知らないので、失敗は package が定義した例外（`CheckedFromJsonException`・`FormatException` など）のまま投げる。失敗の種類にするのは Repository
      - **DataSource は 1 つの外界だけを相手にし、単体で独立させる。** DataSource の中に別の DataSource やサービスを持たない。複数の外界を組み合わせる（片方でだめならもう片方、取れたら計測する など）のは Repository の役目
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
      - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）。取り直さない時間は環境で変わるので、ルートから渡す
      - `CardImageDataSource`: カード画像を、端末のキャッシュから読む／URL から取って保存する
      - `AnalyticsDataSource`: アプリのイベントを Analytics に送る。イベント名とパラメータへの置き換えは `AnalyticsEventMapper`
-     - `LocationDataSource` / `AppBadgeDataSource`: 位置情報・アプリのバッジ（static な API の包み）
+     - `MasterDataRemoteDataSource`: サーバー（Firestore）が配信するマスターデータ
+     - `PreferencesDataSource`: 端末に保存する利用者の設定・取得済みカード（SharedPreferences）。書き込みは保存できたかを bool で返し、失敗として扱うかは Repository が決める
+     - `AuthDataSource`: 匿名ログイン。返すのは利用者の ID だけ
+     - `PushNotificationDataSource` / `PackageInfoDataSource` / `LocationDataSource` / `AppBadgeDataSource`: 通知の許可・アプリ自身の情報・位置情報・アプリのバッジ
      - `CrashlyticsDataSource`: Crashlytics への記録。アプリの中で Crashlytics を触るのはここだけ
    - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。model 以外は置かない。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば生成コードが `CheckedFromJsonException` を投げる。保存する値の enum も model が持ち、値の名前を保存する文字列にそろえる（domain の名前を変えても保存済みの値は変わらない）。エンティティは JSON を知らない
    - `mapper/` - model とエンティティ・model どうしの変換（`toCard`・`toModel`・`toLocalCard` など、出力するもので名前を付ける）と、外の例外から失敗の種類への変換（`DomainExceptionMapper.from`）。model が形を保証しているので、mapper は詰め替えるだけで例外を投げない

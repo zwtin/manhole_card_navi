@@ -1,6 +1,5 @@
-import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
-
 import 'package:data/src/datasource/crashlytics_data_source.dart';
+import 'package:data/src/datasource/preferences_data_source.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:data/src/mapper/search_condition_mapper.dart';
 import 'package:data/src/model/search_condition_model.dart';
@@ -14,15 +13,12 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
 
   static const _key = 'search_condition';
 
-  final StreamingSharedPreferences _preferences;
+  final PreferencesDataSource _preferences;
   final CrashlyticsDataSource _crashlytics;
-
-  Preference<String> get _source =>
-      _preferences.getString(_key, defaultValue: '');
 
   @override
   Stream<SearchCondition> watch() {
-    return _source.map(_toSearchCondition);
+    return _preferences.watchString(_key).map(_toSearchCondition);
   }
 
   @override
@@ -30,7 +26,7 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
     required SearchCondition searchCondition,
   }) async {
     try {
-      final saved = await _preferences.setString(
+      final saved = await _preferences.writeString(
         _key,
         SearchConditionMapper.toModel(searchCondition).toJsonString(),
       );

@@ -9,9 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:domain/domain.dart';
 
 abstract final class DomainExceptionMapper {
-  /// 外から飛んできた例外を、失敗の種類にする。元の例外は Crashlytics に記録
-  /// されるので、ここでは表示と対応を決めるのに要るものだけを残す。
-  ///
   /// 判定は上から順に当たるので、狭い型を先に置く（`HttpExceptionWithStatus` と
   /// `FileSystemException` は `IOException` の一種）。
   static DomainException from(Object error) {

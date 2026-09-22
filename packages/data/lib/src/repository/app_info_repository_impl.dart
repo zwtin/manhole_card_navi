@@ -1,6 +1,5 @@
-import 'package:package_info_plus/package_info_plus.dart';
-
 import 'package:data/src/datasource/crashlytics_data_source.dart';
+import 'package:data/src/datasource/package_info_data_source.dart';
 import 'package:data/src/datasource/remote_config_data_source.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
@@ -14,7 +13,7 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
 
   static const _inquiredVersionKey = 'inquired_app_version';
 
-  final PackageInfo _packageInfo;
+  final PackageInfoDataSource _packageInfo;
   final RemoteConfigDataSource _remoteConfig;
   final CrashlyticsDataSource _crashlytics;
 

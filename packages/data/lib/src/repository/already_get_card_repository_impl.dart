@@ -1,6 +1,5 @@
-import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
-
 import 'package:data/src/datasource/crashlytics_data_source.dart';
+import 'package:data/src/datasource/preferences_data_source.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
@@ -12,15 +11,12 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
 
   static const _key = 'already_get_cards';
 
-  final StreamingSharedPreferences _preferences;
+  final PreferencesDataSource _preferences;
   final CrashlyticsDataSource _crashlytics;
-
-  Preference<List<String>> get _cardIds =>
-      _preferences.getStringList(_key, defaultValue: []);
 
   @override
   Stream<Set<String>> watch() {
-    return _cardIds.map((cardIds) => cardIds.toSet());
+    return _preferences.watchStringList(_key).map((ids) => ids.toSet());
   }
 
   @override
@@ -28,7 +24,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
     required String cardId,
   }) async {
     try {
-      await _write({..._cardIds.getValue(), cardId});
+      await _write({..._preferences.readStringList(_key), cardId});
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {
       _crashlytics.recordNonFatal(error, stackTrace);
@@ -41,7 +37,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
     required String cardId,
   }) async {
     try {
-      await _write(_cardIds.getValue().toSet()..remove(cardId));
+      await _write(_preferences.readStringList(_key).toSet()..remove(cardId));
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {
       _crashlytics.recordNonFatal(error, stackTrace);
@@ -50,7 +46,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   }
 
   Future<void> _write(Set<String> cardIds) async {
-    if (!await _preferences.setStringList(_key, cardIds.toList())) {
+    if (!await _preferences.writeStringList(_key, cardIds.toList())) {
       throw const PersistenceException(detail: '取得済みカードを保存できませんでした');
     }
   }

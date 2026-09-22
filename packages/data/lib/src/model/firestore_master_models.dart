@@ -120,3 +120,16 @@ class _SlashDateConverter implements JsonConverter<DateTime, String> {
   @override
   String toJson(DateTime object) => DateFormat('yyyy/MM/dd').format(object);
 }
+
+/// `master/{version}` の配下をまとめて読んだもの。
+class FirestoreMasterModel {
+  const FirestoreMasterModel({
+    required this.cards,
+    required this.prefectures,
+    required this.volumes,
+  });
+
+  final List<FirestoreCardModel> cards;
+  final List<FirestorePrefectureModel> prefectures;
+  final List<FirestoreVolumeModel> volumes;
+}
