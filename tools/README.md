@@ -121,7 +121,7 @@ Cloud Storage（egress 課金）→ Firebase Hosting → R2 と移してきた�
 SNI を見て平文を返す装置が割り込んでいる）。新規取得ドメインでカテゴリ未分類のため既定で
 遮断する製品があるのに対し、`*.web.app` は Google のドメインで許可リストに入っている。
 影響は該当世代の約 0.6% だが、その端末では全画像が出ない。
-アプリ側のフォールバックは `lib/app/service/image_fallback.dart`。
+アプリ側のフォールバックは `packages/app/lib/src/service/image_fallback.dart`。
 
 - master データには**配信 URL をフルで**持たせる。アプリはその値をそのまま画像 URL として
   使う（旧アプリのようにアプリ側でベース URL を組み立てない）。
