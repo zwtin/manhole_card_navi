@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="lightPrimary">#86B6F6</color>
-    <color name="lightSecondary">#176B87</color>
-    <color name="lightAttention">#e74c3c</color>
     <color name="lightPositiveText">#000000</color>
     <color name="lightIcon">#666666</color>
     <color name="lightBorder">#AAAAAA</color>
@@ -16,8 +14,6 @@
     <color name="lightCardShadow">#14000000</color>
 
     <color name="darkPrimary">#86B6F6</color>
-    <color name="darkSecondary">#176B87</color>
-    <color name="darkAttention">#e74c3c</color>
     <color name="darkPositiveText">#FFFFFF</color>
     <color name="darkIcon">#CCCCCC</color>
     <color name="darkBorder">#999999</color>
@@ -30,8 +26,4 @@
     <color name="darkBadgeBackground">#16333B</color>
     <color name="darkCardLine">#2E2E2E</color>
 
-    <color name="distributing">#2ecc71</color>
-    <color name="stopped">#e74c3c</color>
-    <color name="notClear">#f1c40f</color>
-    <color name="unknown">#999999</color>
 </resources>

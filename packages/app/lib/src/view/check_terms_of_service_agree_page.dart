@@ -4,7 +4,6 @@ import 'package:loading_overlay/loading_overlay.dart';
 
 import '../gen/assets.gen.dart';
 import '../router/use_screen_view.dart';
-import '../theme/app_colors.dart';
 import '../view_model/check_terms_of_service_agree_view_model.dart';
 import '../widget/custom_check_box.dart';
 import '../widget/app_text.dart';
@@ -24,14 +23,14 @@ class CheckTermsOfServiceAgreePage extends HookConsumerWidget {
 
     return LoadingOverlay(
       isLoading: state.isLoading,
-      color: context.appColors.screenBackground,
+      color: Theme.of(context).colorScheme.surface,
       child: Scaffold(
         appBar: AppBar(
           title: const AppText.titleLarge('同意確認', fontWeight: FontWeight.bold),
         ),
         body: Stack(
           children: [
-            Container(color: context.appColors.screenBackground),
+            Container(color: Theme.of(context).colorScheme.surface),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SafeArea(
@@ -81,7 +80,10 @@ class CheckTermsOfServiceAgreePage extends HookConsumerWidget {
                         onPressed: viewModel.onTapAgreeButton,
                         child: AppText.titleMedium(
                           'はじめる',
-                          color: Theme.of(context).colorScheme.surface,
+                          color:
+                              Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerLowest,
                         ),
                       ),
                     ),

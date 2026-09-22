@@ -42,8 +42,8 @@ class App extends ConsumerWidget {
             return true;
         }
       },
-      theme: AppTheme.light(Theme.of(context)),
-      darkTheme: AppTheme.dark(Theme.of(context)),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
       routerConfig: router,
     );

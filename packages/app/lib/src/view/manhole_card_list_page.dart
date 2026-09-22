@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../router/use_screen_view.dart';
-import '../theme/app_colors.dart';
 import '../view_model/manhole_card_list_view_model.dart';
 import '../widget/card_image.dart';
 import '../widget/app_text.dart';
@@ -39,7 +38,7 @@ class ManholeCardListPage extends HookConsumerWidget {
       ),
       body: Stack(
         children: [
-          Container(color: context.appColors.screenBackground),
+          Container(color: Theme.of(context).colorScheme.surface),
           if (state == null)
             const Center(child: CircularProgressIndicator())
           else if (state.prefectures.isEmpty)

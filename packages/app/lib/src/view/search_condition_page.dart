@@ -29,7 +29,7 @@ class SearchConditionPage extends HookConsumerWidget {
     useScreenView(ref, viewModel.sendScreenView);
 
     return Scaffold(
-      backgroundColor: context.appColors.screenBackground,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       // ==== 固定: ナビゲーションバー ====
       appBar: AppBar(
         leading: IconButton(
@@ -139,7 +139,7 @@ class SearchConditionPage extends HookConsumerWidget {
       ),
       // ==== 固定: 「この条件で表示」ボタン ====
       bottomNavigationBar: Container(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
@@ -148,7 +148,8 @@ class SearchConditionPage extends HookConsumerWidget {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
-                  foregroundColor: Theme.of(context).colorScheme.surface,
+                  foregroundColor:
+                      Theme.of(context).colorScheme.surfaceContainerLowest,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -159,7 +160,7 @@ class SearchConditionPage extends HookConsumerWidget {
                 child: AppText.titleMedium(
                   'この条件で表示',
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.surface,
+                  color: Theme.of(context).colorScheme.surfaceContainerLowest,
                 ),
               ),
             ),
@@ -198,7 +199,7 @@ class _SectionCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(16),
         border: line == null ? null : Border.all(color: line),
         boxShadow:
@@ -235,13 +236,17 @@ class _SectionCard extends StatelessWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: context.appColors.badgeBackground,
+                          color:
+                              Theme.of(context).colorScheme.secondaryContainer,
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: AppText.labelSmall(
                           pill!,
                           fontWeight: FontWeight.bold,
-                          color: context.appColors.badgeText,
+                          color:
+                              Theme.of(
+                                context,
+                              ).colorScheme.onSecondaryContainer,
                         ),
                       ),
                     ],
@@ -285,7 +290,7 @@ class _QuickActions extends StatelessWidget {
           onPressed: onSelectAll,
           child: AppText.titleSmall('すべて', color: _subColor(context)),
         ),
-        AppText.titleSmall('|', color: context.appColors.chipBorder),
+        AppText.titleSmall('|', color: Theme.of(context).colorScheme.outline),
         TextButton(
           style: style,
           onPressed: onClear,
@@ -321,7 +326,7 @@ class _Segmented<T extends Object> extends StatelessWidget {
       // チップと揃うため、背景は透明にして外側の DecoratedBox で描画する。
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: context.appColors.segmentTrack,
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(12),
         ),
         child: CupertinoSlidingSegmentedControl<T>(
@@ -339,7 +344,8 @@ class _Segmented<T extends Object> extends StatelessWidget {
               option.$2: _SegmentLabel(
                 label: option.$1,
                 selected: option.$2 == value,
-                selectedColor: Theme.of(context).colorScheme.surface,
+                selectedColor:
+                    Theme.of(context).colorScheme.surfaceContainerLowest,
                 unselectedColor: _subColor(context),
               ),
           },
@@ -428,7 +434,7 @@ class _FilterChip extends StatelessWidget {
       fontWeight: FontWeight.w600,
       color:
           selected
-              ? Theme.of(context).colorScheme.surface
+              ? Theme.of(context).colorScheme.surfaceContainerLowest
               : Theme.of(context).textTheme.titleMedium?.color,
     );
 
@@ -441,13 +447,13 @@ class _FilterChip extends StatelessWidget {
           color:
               selected
                   ? Theme.of(context).primaryColor
-                  : Theme.of(context).colorScheme.surface,
+                  : Theme.of(context).colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color:
                 selected
                     ? Theme.of(context).primaryColor
-                    : context.appColors.chipBorder,
+                    : Theme.of(context).colorScheme.outline,
           ),
         ),
         // ON 状態（チェック＋テキスト）の幅を常に確保しておき、ON/OFF を切り替えても
@@ -480,7 +486,7 @@ class _FilterChip extends StatelessWidget {
           Icon(
             Icons.check,
             size: 16,
-            color: Theme.of(context).colorScheme.surface,
+            color: Theme.of(context).colorScheme.surfaceContainerLowest,
           ),
           const SizedBox(width: 4),
         ],

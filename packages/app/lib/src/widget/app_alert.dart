@@ -34,11 +34,15 @@ Future<bool> showAppAlert(
     DialogButton(
       onPressed: () => navigator.pop(true),
       color: theme.primaryColor,
-      highlightColor: theme.colorScheme.surface.withValues(alpha: 0.3),
-      splashColor: theme.colorScheme.surface.withValues(alpha: 0.3),
+      highlightColor: theme.colorScheme.surfaceContainerLowest.withValues(
+        alpha: 0.3,
+      ),
+      splashColor: theme.colorScheme.surfaceContainerLowest.withValues(
+        alpha: 0.3,
+      ),
       child: AppText.titleMedium(
         okButtonTitle,
-        color: theme.colorScheme.surface,
+        color: theme.colorScheme.surfaceContainerLowest,
       ),
     ),
   ];
@@ -49,7 +53,7 @@ Future<bool> showAppAlert(
         title: title,
         desc: message,
         style: AlertStyle(
-          backgroundColor: theme.colorScheme.surface,
+          backgroundColor: theme.colorScheme.surfaceContainerLowest,
           alertBorder: RoundedRectangleBorder(
             side: BorderSide(color: theme.dividerColor),
             borderRadius: BorderRadius.circular(16),

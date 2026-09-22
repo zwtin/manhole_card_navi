@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../router/use_screen_view.dart';
-import '../theme/app_colors.dart';
 import '../view_data/setting_view_data.dart';
 import '../view_model/setting_view_model.dart';
 import '../widget/app_text.dart';
@@ -26,7 +25,7 @@ class SettingPage extends HookConsumerWidget {
       ),
       body: Stack(
         children: [
-          Container(color: context.appColors.screenBackground),
+          Container(color: Theme.of(context).colorScheme.surface),
           SingleChildScrollView(
             child: SafeArea(
               child: Padding(

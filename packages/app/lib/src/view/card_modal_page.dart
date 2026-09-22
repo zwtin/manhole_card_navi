@@ -126,7 +126,10 @@ class CardModalPage extends HookConsumerWidget {
                         },
                         child: AppText.titleMedium(
                           '別アプリで開く',
-                          color: Theme.of(context).colorScheme.surface,
+                          color:
+                              Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerLowest,
                         ),
                       ),
                     ),

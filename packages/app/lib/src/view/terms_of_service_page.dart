@@ -3,7 +3,6 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../router/use_screen_view.dart';
-import '../theme/app_colors.dart';
 import '../view_model/terms_of_service_view_model.dart';
 import '../widget/app_text.dart';
 
@@ -24,7 +23,7 @@ class TermsOfServicePage extends HookConsumerWidget {
       ),
       body: Stack(
         children: [
-          Container(color: context.appColors.screenBackground),
+          Container(color: Theme.of(context).colorScheme.surface),
           SingleChildScrollView(
             padding: EdgeInsets.only(
               left: MediaQuery.of(context).padding.left,

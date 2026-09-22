@@ -4,7 +4,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
 import '../router/use_screen_view.dart';
-import '../theme/app_colors.dart';
 import '../view_model/check_app_update_view_model.dart';
 
 /// 起動時にアプリの強制アップデートが必要か確認する画面。
@@ -26,9 +25,9 @@ class CheckAppUpdatePage extends HookConsumerWidget {
 
     return LoadingOverlay(
       isLoading: state.isLoading,
-      color: context.appColors.screenBackground,
+      color: Theme.of(context).colorScheme.surface,
       child: Scaffold(
-        body: Container(color: context.appColors.screenBackground),
+        body: Container(color: Theme.of(context).colorScheme.surface),
       ),
     );
   }

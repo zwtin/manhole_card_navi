@@ -12,9 +12,6 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/material.dart';
 
 abstract final class ColorName {
-  /// Color: #e74c3c
-  static const Color darkAttention = Color(0xFFE74C3C);
-
   /// Color: #16333B
   static const Color darkBadgeBackground = Color(0xFF16333B);
 
@@ -48,17 +45,8 @@ abstract final class ColorName {
   /// Color: #333333
   static const Color darkScreenBackground = Color(0xFF333333);
 
-  /// Color: #176B87
-  static const Color darkSecondary = Color(0xFF176B87);
-
   /// Color: #3A3A3A
   static const Color darkSegmentTrack = Color(0xFF3A3A3A);
-
-  /// Color: #2ecc71
-  static const Color distributing = Color(0xFF2ECC71);
-
-  /// Color: #e74c3c
-  static const Color lightAttention = Color(0xFFE74C3C);
 
   /// Color: #E4EFF2
   static const Color lightBadgeBackground = Color(0xFFE4EFF2);
@@ -93,18 +81,6 @@ abstract final class ColorName {
   /// Color: #EEEEEE
   static const Color lightScreenBackground = Color(0xFFEEEEEE);
 
-  /// Color: #176B87
-  static const Color lightSecondary = Color(0xFF176B87);
-
   /// Color: #E6E6E6
   static const Color lightSegmentTrack = Color(0xFFE6E6E6);
-
-  /// Color: #f1c40f
-  static const Color notClear = Color(0xFFF1C40F);
-
-  /// Color: #e74c3c
-  static const Color stopped = Color(0xFFE74C3C);
-
-  /// Color: #999999
-  static const Color unknown = Color(0xFF999999);
 }

@@ -5,7 +5,6 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:uuid/uuid.dart';
 
 import '../router/use_screen_view.dart';
-import '../theme/app_colors.dart';
 import '../view_model/detail_view_model.dart';
 import '../widget/card_image.dart';
 import '../widget/card_image_provider.dart';
@@ -31,9 +30,9 @@ class DetailPage extends HookConsumerWidget {
       ),
       body: Stack(
         children: [
-          Container(color: context.appColors.screenBackground),
+          Container(color: Theme.of(context).colorScheme.surface),
           LoadingOverlay(
-            color: context.appColors.screenBackground,
+            color: Theme.of(context).colorScheme.surface,
             isLoading: card == null,
             child:
                 card == null
@@ -160,9 +159,9 @@ class DetailPage extends HookConsumerWidget {
                                           child: AppText.titleMedium(
                                             'マップで見る',
                                             color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.surface,
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .surfaceContainerLowest,
                                           ),
                                         ),
                                       ),
@@ -186,9 +185,9 @@ class DetailPage extends HookConsumerWidget {
                                           child: AppText.titleMedium(
                                             card.alreadyGetActionButtonTitle,
                                             color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.surface,
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .surfaceContainerLowest,
                                           ),
                                         ),
                                       ),

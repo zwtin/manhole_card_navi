@@ -4,7 +4,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../router/use_screen_view.dart';
-import '../theme/app_colors.dart';
 import '../view_model/manhole_card_map_view_model.dart';
 import '../widget/app_text.dart';
 
@@ -55,7 +54,7 @@ class ManholeCardMapPage extends HookConsumerWidget {
           }
           return Stack(
             children: [
-              Container(color: context.appColors.screenBackground),
+              Container(color: Theme.of(context).colorScheme.surface),
               Column(
                 children: [
                   Flexible(
@@ -100,7 +99,7 @@ class ManholeCardMapPage extends HookConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: viewModel.onTapCurrentLocationButton,
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
         foregroundColor: Theme.of(context).iconTheme.color,
         shape: CircleBorder(
           side: BorderSide(

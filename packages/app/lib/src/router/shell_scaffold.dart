@@ -14,10 +14,7 @@ import '../view_model/shell_view_model.dart';
 /// - 表示中のタブを再タップしたら、そのタブを先頭まで戻す
 /// - カードを取得済みにしたら、クラッカーのアニメーションを重ねて流す
 class ShellScaffold extends HookConsumerWidget {
-  const ShellScaffold({
-    super.key,
-    required this.navigationShell,
-  });
+  const ShellScaffold({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
@@ -32,41 +29,35 @@ class ShellScaffold extends HookConsumerWidget {
     tabController.index = navigationShell.currentIndex;
     final animationController = useAnimationController();
 
-    useEffect(
-      () {
-        void onStatusChanged(AnimationStatus status) {
-          if (status == AnimationStatus.completed) {
-            animationController.reset();
-          }
+    useEffect(() {
+      void onStatusChanged(AnimationStatus status) {
+        if (status == AnimationStatus.completed) {
+          animationController.reset();
         }
+      }
 
-        animationController.addStatusListener(onStatusChanged);
-        return () => animationController.removeStatusListener(onStatusChanged);
-      },
-      [animationController],
-    );
+      animationController.addStatusListener(onStatusChanged);
+      return () => animationController.removeStatusListener(onStatusChanged);
+    }, [animationController]);
 
-    useEffect(
-      () {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await ref.read(shellViewModelProvider.notifier).onLoad();
-        });
-        return null;
-      },
-      const [],
-    );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await ref.read(shellViewModelProvider.notifier).onLoad();
+      });
+      return null;
+    }, const []);
 
-    ref.listen(
-      shellViewModelProvider.select((state) => state.partyCount),
-      (previous, next) {
-        if (previous == null ||
-            next <= previous ||
-            animationController.isAnimating) {
-          return;
-        }
-        animationController.forward(from: 0);
-      },
-    );
+    ref.listen(shellViewModelProvider.select((state) => state.partyCount), (
+      previous,
+      next,
+    ) {
+      if (previous == null ||
+          next <= previous ||
+          animationController.isAnimating) {
+        return;
+      }
+      animationController.forward(from: 0);
+    });
 
     return PopScope(
       // タブのルートで戻る操作をしたときの挙動をここで決める。タブ内に積んだ画面が
@@ -86,7 +77,7 @@ class ShellScaffold extends HookConsumerWidget {
       child: Scaffold(
         bottomNavigationBar: ConvexAppBar(
           color: Theme.of(context).iconTheme.color,
-          backgroundColor: Theme.of(context).colorScheme.surface,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
           activeColor: Theme.of(context).primaryColor,
           controller: tabController,
           initialActiveIndex: navigationShell.currentIndex,
@@ -98,18 +89,9 @@ class ShellScaffold extends HookConsumerWidget {
             );
           },
           items: const [
-            TabItem<IconData>(
-              icon: Icons.map_outlined,
-              title: 'マップ',
-            ),
-            TabItem<IconData>(
-              icon: Icons.list_alt,
-              title: 'リスト',
-            ),
-            TabItem<IconData>(
-              icon: Icons.settings,
-              title: '設定',
-            ),
+            TabItem<IconData>(icon: Icons.map_outlined, title: 'マップ'),
+            TabItem<IconData>(icon: Icons.list_alt, title: 'リスト'),
+            TabItem<IconData>(icon: Icons.settings, title: '設定'),
           ],
         ),
         body: Stack(
@@ -117,13 +99,15 @@ class ShellScaffold extends HookConsumerWidget {
             navigationShell,
             LayoutBuilder(
               builder: (context, constraints) {
-                final bodyHeight = constraints.maxHeight -
+                final bodyHeight =
+                    constraints.maxHeight -
                     kToolbarHeight -
                     MediaQuery.of(context).padding.top;
                 return Stack(
                   children: [
                     Positioned(
-                      right: -(bodyHeight - MediaQuery.of(context).size.width) /
+                      right:
+                          -(bodyHeight - MediaQuery.of(context).size.width) /
                           2.0,
                       bottom: 0.0,
                       child: IgnorePointer(
