@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-import 'custom_text.dart';
+import 'app_text.dart';
 
 /// アプリ共通のアラートを表示する。OK が押されたら true、キャンセルなら false。
 ///
@@ -29,7 +29,7 @@ Future<bool> showAppAlert(
             width: 2,
           ),
         ),
-        child: TitleMediumText(
+        child: AppText.titleMedium(
           cancelButtonTitle,
           color: theme.primaryColor,
         ),
@@ -39,7 +39,7 @@ Future<bool> showAppAlert(
       color: theme.primaryColor,
       highlightColor: theme.colorScheme.surface.withOpacity(0.3),
       splashColor: theme.colorScheme.surface.withOpacity(0.3),
-      child: TitleMediumText(
+      child: AppText.titleMedium(
         okButtonTitle,
         color: theme.colorScheme.surface,
       ),
@@ -63,18 +63,9 @@ Future<bool> showAppAlert(
       isOverlayTapDismiss: false,
       overlayColor: Colors.black54,
       alertElevation: 0,
-      titleStyle: theme.textTheme.titleLarge ??
-          const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w500,
-            fontStyle: FontStyle.normal,
-          ),
-      descStyle: theme.textTheme.titleMedium ??
-          const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w500,
-            fontStyle: FontStyle.normal,
-          ),
+      // ThemeData は型スケールを必ず埋めるので、null にはならない。
+      titleStyle: theme.textTheme.titleLarge!,
+      descStyle: theme.textTheme.titleMedium!,
     ),
     buttons: buttons,
     onWillPopActive: true,

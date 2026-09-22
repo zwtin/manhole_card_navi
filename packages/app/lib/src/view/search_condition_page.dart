@@ -5,8 +5,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../router/use_screen_view.dart';
 import '../view_data/search_condition_view_data.dart';
+import '../theme/app_colors.dart';
 import '../view_model/search_condition_view_model.dart';
-import '../widget/custom_text.dart';
+import '../widget/app_text.dart';
 
 /// 検索条件画面。
 ///
@@ -25,7 +26,6 @@ class SearchConditionPage extends HookConsumerWidget {
     final state = ref.watch(searchConditionViewModelProvider).valueOrNull ??
         SearchConditionViewData(draft: SearchCondition.initial());
     final viewModel = ref.read(searchConditionViewModelProvider.notifier);
-    final palette = _Palette.of(context);
 
     useScreenView(ref, viewModel.sendScreenView);
 
@@ -38,7 +38,7 @@ class SearchConditionPage extends HookConsumerWidget {
           tooltip: '閉じる',
           onPressed: viewModel.onClose,
         ),
-        title: const TitleLargeText(
+        title: const AppText.titleLarge(
           '検索条件',
           fontWeight: FontWeight.bold,
         ),
@@ -51,12 +51,12 @@ class SearchConditionPage extends HookConsumerWidget {
               ),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              foregroundColor: palette.sub,
+              foregroundColor: _subColor(context),
             ),
             onPressed: viewModel.clearAllFilters,
-            child: TitleMediumText(
+            child: AppText.titleMedium(
               'リセット',
-              color: palette.sub,
+              color: _subColor(context),
             ),
           ),
           const SizedBox(width: 8),
@@ -68,11 +68,9 @@ class SearchConditionPage extends HookConsumerWidget {
         children: [
           // ---- 表示（取得状態）: 単一選択 ----
           _SectionCard(
-            palette: palette,
             title: '表示',
             child: _Segmented<AlreadyGetFilter>(
-              palette: palette,
-              value: state.alreadyGetFilter,
+                value: state.alreadyGetFilter,
               options: const [
                 ('すべて', AlreadyGetFilter.all),
                 ('取得済みのみ', AlreadyGetFilter.alreadyGet),
@@ -84,11 +82,9 @@ class SearchConditionPage extends HookConsumerWidget {
 
           // ---- 弾数: 複数選択（空＝すべて表示） ----
           _SectionCard(
-            palette: palette,
             title: '弾数',
             actions: _QuickActions(
-              palette: palette,
-              onSelectAll: viewModel.selectAllVolumes,
+                onSelectAll: viewModel.selectAllVolumes,
               onClear: viewModel.clearVolumes,
             ),
             child: Wrap(
@@ -97,8 +93,7 @@ class SearchConditionPage extends HookConsumerWidget {
               children: state.volumeOptions
                   .map(
                     (option) => _FilterChip(
-                      palette: palette,
-                      label: option.name,
+                                label: option.name,
                       selected: state.isVolumeSelected(option.id),
                       onTap: () => viewModel.toggleVolume(option.id),
                     ),
@@ -109,11 +104,9 @@ class SearchConditionPage extends HookConsumerWidget {
 
           // ---- 配布状態: 複数選択（空＝すべて表示） ----
           _SectionCard(
-            palette: palette,
             title: '配布状態',
             actions: _QuickActions(
-              palette: palette,
-              onSelectAll: viewModel.selectAllDistributionStates,
+                onSelectAll: viewModel.selectAllDistributionStates,
               onClear: viewModel.clearDistributionStates,
             ),
             child: Wrap(
@@ -122,8 +115,7 @@ class SearchConditionPage extends HookConsumerWidget {
               children: SearchConditionViewModel.distributionStateOptions
                   .map(
                     (option) => _FilterChip(
-                      palette: palette,
-                      label: option.name,
+                                label: option.name,
                       selected: state.isDistributionStateSelected(option.state),
                       onTap: () =>
                           viewModel.toggleDistributionState(option.state),
@@ -135,12 +127,10 @@ class SearchConditionPage extends HookConsumerWidget {
 
           // ---- マップ表示（マップ画面にのみ適用）: 単一選択 ----
           _SectionCard(
-            palette: palette,
             title: 'マップ表示',
             pill: 'マップのみ',
             child: _Segmented<MapCoordinateType>(
-              palette: palette,
-              value: state.coordinateType,
+                value: state.coordinateType,
               options: const [
                 ('配布場所', MapCoordinateType.distribution),
                 ('蓋', MapCoordinateType.position),
@@ -161,8 +151,8 @@ class SearchConditionPage extends HookConsumerWidget {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: palette.primary,
-                  foregroundColor: palette.onPrimary,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Theme.of(context).colorScheme.surface,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -170,13 +160,10 @@ class SearchConditionPage extends HookConsumerWidget {
                   ),
                 ),
                 onPressed: viewModel.onApply,
-                child: Text(
+                child: AppText.titleMedium(
                   'この条件で表示',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: palette.onPrimary,
-                  ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
               ),
             ),
@@ -187,106 +174,44 @@ class SearchConditionPage extends HookConsumerWidget {
   }
 }
 
-/// 画面配色。アプリのテーマ色（`ColorName` 由来）を `Theme` から取得し、
-/// ライト/ダークで自動的に切り替える。
-class _Palette {
-  const _Palette({
-    required this.dark,
-    required this.primary,
-    required this.onPrimary,
-    required this.card,
-    required this.sub,
-    required this.track,
-    required this.chipBorder,
-    required this.cardLine,
-    required this.pillColor,
-    required this.pillBg,
-  });
-
-  final bool dark;
-
-  /// 選択状態の塗り色（テーマの primary = #86B6F6）。
-  final Color primary;
-
-  /// primary 上の文字色（テーマの surface = ライト白 / ダーク濃色）。
-  final Color onPrimary;
-
-  /// セクションカードの背景（テーマの surface）。
-  final Color card;
-
-  /// 補助テキスト・テキストボタンの色（テーマの icon 色）。
-  final Color sub;
-
-  /// セグメントコントロールのトラック色。
-  final Color track;
-
-  /// 未選択チップの枠線色。
-  final Color chipBorder;
-
-  /// ダーク時のカード枠線色。
-  final Color cardLine;
-
-  /// 「マップのみ」バッジの文字色（セカンダリ系）。
-  final Color pillColor;
-
-  /// 「マップのみ」バッジの背景色。
-  final Color pillBg;
-
-  factory _Palette.of(BuildContext context) {
-    final theme = Theme.of(context);
-    // このアプリの darkTheme は brightness を light のまま色だけ差し替えているため、
-    // theme.brightness ではダーク判定できない。実際に効いている surface 色
-    // （ダークテーマでは暗色 #222222）の明るさで判定する。
-    final dark = theme.colorScheme.surface.computeLuminance() < 0.5;
-    return _Palette(
-      dark: dark,
-      primary: theme.primaryColor,
-      onPrimary: theme.colorScheme.surface,
-      card: theme.colorScheme.surface,
-      sub: theme.iconTheme.color ?? (dark ? Colors.white70 : Colors.black54),
-      track: dark ? const Color(0xFF3A3A3A) : const Color(0xFFE6E6E6),
-      chipBorder: dark ? const Color(0xFF555555) : const Color(0xFFC9C9C9),
-      cardLine: const Color(0xFF2E2E2E),
-      pillColor: dark ? const Color(0xFF8ECFE4) : const Color(0xFF176B87),
-      pillBg: dark ? const Color(0xFF16333B) : const Color(0xFFE4EFF2),
-    );
-  }
+/// 補助テキスト・テキストボタンの色。
+Color _subColor(BuildContext context) {
+  final theme = Theme.of(context);
+  return theme.iconTheme.color ?? theme.colorScheme.onSurface;
 }
 
 /// セクションカード。見出し・任意のバッジ／補助テキスト／右上クイックアクションを持つ。
 class _SectionCard extends StatelessWidget {
   const _SectionCard({
-    required this.palette,
     required this.title,
     required this.child,
     this.pill,
-    this.helpText,
     this.actions,
   });
 
-  final _Palette palette;
   final String title;
   final Widget child;
   final String? pill;
-  final String? helpText;
   final Widget? actions;
 
   @override
   Widget build(BuildContext context) {
+    final line = context.appColors.cardLine;
+    final shadow = context.appColors.cardShadow;
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: palette.card,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: palette.dark ? Border.all(color: palette.cardLine) : null,
-        boxShadow: palette.dark
+        border: line == null ? null : Border.all(color: line),
+        boxShadow: shadow == null
             ? null
-            : const [
+            : [
                 BoxShadow(
-                  color: Color(0x14000000),
+                  color: shadow,
                   blurRadius: 3,
-                  offset: Offset(0, 1),
+                  offset: const Offset(0, 1),
                 ),
               ],
       ),
@@ -300,7 +225,7 @@ class _SectionCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Flexible(
-                      child: TitleMediumText(
+                      child: AppText.titleMedium(
                         title,
                         fontWeight: FontWeight.bold,
                       ),
@@ -313,16 +238,13 @@ class _SectionCard extends StatelessWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: palette.pillBg,
+                          color: context.appColors.badgeBackground,
                           borderRadius: BorderRadius.circular(999),
                         ),
-                        child: Text(
+                        child: AppText.labelSmall(
                           pill!,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: palette.pillColor,
-                          ),
+                          fontWeight: FontWeight.bold,
+                          color: context.appColors.badgeText,
                         ),
                       ),
                     ],
@@ -332,14 +254,6 @@ class _SectionCard extends StatelessWidget {
               if (actions != null) actions!,
             ],
           ),
-          if (helpText != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: BodySmallText(
-                helpText!,
-                color: palette.sub,
-              ),
-            ),
           const SizedBox(height: 12),
           child,
         ],
@@ -351,12 +265,10 @@ class _SectionCard extends StatelessWidget {
 /// 右上の「すべて / クリア」クイックアクション。
 class _QuickActions extends StatelessWidget {
   const _QuickActions({
-    required this.palette,
     required this.onSelectAll,
     required this.onClear,
   });
 
-  final _Palette palette;
   final void Function() onSelectAll;
   final void Function() onClear;
 
@@ -369,7 +281,7 @@ class _QuickActions extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       minimumSize: Size.zero,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      foregroundColor: palette.sub,
+      foregroundColor: _subColor(context),
     );
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -377,13 +289,13 @@ class _QuickActions extends StatelessWidget {
         TextButton(
           style: style,
           onPressed: onSelectAll,
-          child: TitleSmallText('すべて', color: palette.sub),
+          child: AppText.titleSmall('すべて', color: _subColor(context)),
         ),
-        Text('|', style: TextStyle(color: palette.chipBorder)),
+        AppText.titleSmall('|', color: context.appColors.chipBorder),
         TextButton(
           style: style,
           onPressed: onClear,
-          child: TitleSmallText('クリア', color: palette.sub),
+          child: AppText.titleSmall('クリア', color: _subColor(context)),
         ),
       ],
     );
@@ -397,13 +309,11 @@ class _QuickActions extends StatelessWidget {
 /// スライドアニメーションを得る。
 class _Segmented<T extends Object> extends StatelessWidget {
   const _Segmented({
-    required this.palette,
     required this.options,
     required this.value,
     required this.onChanged,
   });
 
-  final _Palette palette;
   final List<(String, T)> options;
   final T value;
   final ValueChanged<T> onChanged;
@@ -417,13 +327,13 @@ class _Segmented<T extends Object> extends StatelessWidget {
       // チップと揃うため、背景は透明にして外側の DecoratedBox で描画する。
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: palette.track,
+          color: context.appColors.segmentTrack,
           borderRadius: BorderRadius.circular(12),
         ),
         child: CupertinoSlidingSegmentedControl<T>(
           groupValue: value,
           backgroundColor: Colors.transparent,
-          thumbColor: palette.primary,
+          thumbColor: Theme.of(context).primaryColor,
           padding: const EdgeInsets.all(4),
           onValueChanged: (newValue) {
             if (newValue != null) {
@@ -435,8 +345,8 @@ class _Segmented<T extends Object> extends StatelessWidget {
               option.$2: _SegmentLabel(
                 label: option.$1,
                 selected: option.$2 == value,
-                selectedColor: palette.onPrimary,
-                unselectedColor: palette.sub,
+                selectedColor: Theme.of(context).colorScheme.surface,
+                unselectedColor: _subColor(context),
               ),
           },
         ),
@@ -488,13 +398,17 @@ class _SegmentLabel extends StatelessWidget {
       duration: const Duration(milliseconds: 150),
       curve: Curves.easeInOut,
       textAlign: TextAlign.center,
-      style: inheritedStyle.copyWith(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: highlighted ? selectedColor : unselectedColor,
-      ),
+      style: inheritedStyle
+          .merge(Theme.of(context).textTheme.labelLarge)
+          .copyWith(
+            fontWeight: FontWeight.w600,
+            color: highlighted ? selectedColor : unselectedColor,
+          ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 9),
+        // AnimatedDefaultTextStyle が動かしている見た目を受け継ぐ必要があるので、
+        // ここだけは AppText（自分で style を決める）を使えない。
+        // ignore: use_app_text
         child: Text(
           label,
           textAlign: TextAlign.center,
@@ -507,28 +421,23 @@ class _SegmentLabel extends StatelessWidget {
 /// 複数選択用のフィルタチップ。選択中は塗り＋チェック、未選択は枠線のみ。
 class _FilterChip extends StatelessWidget {
   const _FilterChip({
-    required this.palette,
     required this.label,
     required this.selected,
     required this.onTap,
   });
 
-  final _Palette palette;
   final String label;
   final bool selected;
   final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
-    final labelWidget = Text(
+    final labelWidget = AppText.bodyMedium(
       label,
-      style: TextStyle(
-        fontSize: 13.5,
-        fontWeight: FontWeight.w600,
-        color: selected
-            ? palette.onPrimary
-            : Theme.of(context).textTheme.titleMedium?.color,
-      ),
+      fontWeight: FontWeight.w600,
+      color: selected
+          ? Theme.of(context).colorScheme.surface
+          : Theme.of(context).textTheme.titleMedium?.color,
     );
 
     return GestureDetector(
@@ -537,10 +446,14 @@ class _FilterChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
-          color: selected ? palette.primary : palette.card,
+          color: selected
+              ? Theme.of(context).primaryColor
+              : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: selected ? palette.primary : palette.chipBorder,
+            color: selected
+                ? Theme.of(context).primaryColor
+                : context.appColors.chipBorder,
           ),
         ),
         // ON 状態（チェック＋テキスト）の幅を常に確保しておき、ON/OFF を切り替えても
@@ -552,21 +465,29 @@ class _FilterChip extends StatelessWidget {
             // 幅を固定するための不可視サイザー。常に ON 状態の内容を占有させる。
             Opacity(
               opacity: 0,
-              child: _content(labelWidget, withCheck: true),
+              child: _content(context, labelWidget, withCheck: true),
             ),
-            _content(labelWidget, withCheck: selected),
+            _content(context, labelWidget, withCheck: selected),
           ],
         ),
       ),
     );
   }
 
-  Widget _content(Widget labelWidget, {required bool withCheck}) {
+  Widget _content(
+    BuildContext context,
+    Widget labelWidget, {
+    required bool withCheck,
+  }) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (withCheck) ...[
-          Icon(Icons.check, size: 16, color: palette.onPrimary),
+          Icon(
+            Icons.check,
+            size: 16,
+            color: Theme.of(context).colorScheme.surface,
+          ),
           const SizedBox(width: 4),
         ],
         labelWidget,

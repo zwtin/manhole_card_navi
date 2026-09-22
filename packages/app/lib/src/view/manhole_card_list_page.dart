@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../router/use_screen_view.dart';
 import '../view_model/manhole_card_list_view_model.dart';
 import '../widget/card_image.dart';
-import '../widget/custom_text.dart';
+import '../widget/app_text.dart';
 
 /// リストタブ。都道府県ごとにカードを折りたたんで表示する。
 class ManholeCardListPage extends HookConsumerWidget {
@@ -20,7 +20,7 @@ class ManholeCardListPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: TitleLargeText(
+        title: AppText.titleLarge(
           state?.navigationTitle ?? 'リスト',
           fontWeight: FontWeight.bold,
         ),
@@ -52,7 +52,7 @@ class ManholeCardListPage extends HookConsumerWidget {
                   child: SizedBox(
                     height: 250,
                     child: Center(
-                      child: BodyMediumText(
+                      child: AppText.bodyMedium(
                         '表示できるデータがありません',
                       ),
                     ),
@@ -117,19 +117,19 @@ class ManholeCardListPage extends HookConsumerWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    TitleMediumText(
+                                    AppText.titleMedium(
                                       cardViewData.name,
                                       fontWeight: FontWeight.bold,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    BodyMediumText(
+                                    AppText.bodyMedium(
                                       cardViewData.id,
                                     ),
                                     const Spacer(),
-                                    BodyMediumText(
+                                    AppText.bodyMedium(
                                       cardViewData.volume,
                                     ),
-                                    BodyMediumText(
+                                    AppText.bodyMedium(
                                       cardViewData.publicationDate,
                                     ),
                                   ],
@@ -150,9 +150,9 @@ class ManholeCardListPage extends HookConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: TitleMediumText(prefectureViewData.name),
+                        child: AppText.titleMedium(prefectureViewData.name),
                       ),
-                      TitleMediumText(
+                      AppText.titleMedium(
                         '${prefectureViewData.alreadyGetCount}/${prefectureViewData.totalCount}',
                       ),
                     ],

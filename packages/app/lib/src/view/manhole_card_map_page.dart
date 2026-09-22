@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../router/use_screen_view.dart';
 import '../view_model/manhole_card_map_view_model.dart';
-import '../widget/custom_text.dart';
+import '../widget/app_text.dart';
 
 /// マップタブ。
 class ManholeCardMapPage extends HookConsumerWidget {
@@ -29,7 +29,7 @@ class ManholeCardMapPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: TitleLargeText(
+        title: AppText.titleLarge(
           state.navigationTitle,
           fontWeight: FontWeight.bold,
         ),

@@ -5,7 +5,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import '../gen/assets.gen.dart';
 import '../router/use_screen_view.dart';
 import '../view_model/custom_introduction_view_model.dart';
-import '../widget/custom_text.dart';
+import '../widget/app_text.dart';
 
 /// アプリの使い方。初回起動時のチュートリアルと、設定の「アプリの使い方」で使う。
 class CustomIntroductionPage extends HookConsumerWidget {
@@ -25,7 +25,7 @@ class CustomIntroductionPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const TitleLargeText('アプリの使い方', fontWeight: FontWeight.bold),
+        title: const AppText.titleLarge('アプリの使い方', fontWeight: FontWeight.bold),
       ),
       body: Container(
         color: Theme.of(context).colorScheme.background,
@@ -33,29 +33,29 @@ class CustomIntroductionPage extends HookConsumerWidget {
           child: IntroductionScreen(
             pages: [
               PageViewModel(
-                titleWidget: const TitleLargeText(
+                titleWidget: const AppText.titleLarge(
                   'ようこそ！',
                   fontWeight: FontWeight.bold,
                 ),
-                bodyWidget: const TitleMediumText('マンホールカード集めをもっと楽しもう！'),
+                bodyWidget: const AppText.titleMedium('マンホールカード集めをもっと楽しもう！'),
                 image: Assets.images.tutorials.tutorial1.image(),
               ),
               PageViewModel(
-                titleWidget: const TitleLargeText(
+                titleWidget: const AppText.titleLarge(
                   '近所のマンホールを探そう！',
                   fontWeight: FontWeight.bold,
                 ),
-                bodyWidget: const TitleMediumText(
+                bodyWidget: const AppText.titleMedium(
                   '枠の色でカードが配布中かわかります。\n\n緑色: 配布中\n赤色: 配布停止\n黄色: 不明',
                 ),
                 image: Assets.images.tutorials.tutorial2.image(),
               ),
               PageViewModel(
-                titleWidget: const TitleLargeText(
+                titleWidget: const AppText.titleLarge(
                   '取得済みカードをチェック！',
                   fontWeight: FontWeight.bold,
                 ),
-                bodyWidget: const TitleMediumText(
+                bodyWidget: const AppText.titleMedium(
                   'カードの色で取得済みかわかります。\n\nカラー: 取得済み\nグレー: 未取得',
                 ),
                 image: Assets.images.tutorials.tutorial3.image(),
@@ -67,7 +67,7 @@ class CustomIntroductionPage extends HookConsumerWidget {
             done: const Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TitleMediumText('OK!'),
+                AppText.titleMedium('OK!'),
                 SizedBox(width: 8),
                 Icon(Icons.check),
               ],
@@ -76,7 +76,7 @@ class CustomIntroductionPage extends HookConsumerWidget {
             next: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const TitleMediumText('次へ'),
+                const AppText.titleMedium('次へ'),
                 const SizedBox(width: 4),
                 Transform.scale(
                   scale: 0.75,
@@ -92,7 +92,7 @@ class CustomIntroductionPage extends HookConsumerWidget {
                   child: const Icon(Icons.arrow_back_ios),
                 ),
                 const SizedBox(width: 4),
-                const TitleMediumText('前へ'),
+                const AppText.titleMedium('前へ'),
               ],
             ),
             globalBackgroundColor: Theme.of(context).colorScheme.background,

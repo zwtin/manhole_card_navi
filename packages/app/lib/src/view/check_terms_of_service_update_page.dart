@@ -7,7 +7,7 @@ import '../gen/assets.gen.dart';
 import '../router/use_screen_view.dart';
 import '../view_model/check_terms_of_service_update_view_model.dart';
 import '../widget/custom_check_box.dart';
-import '../widget/custom_text.dart';
+import '../widget/app_text.dart';
 
 /// 起動時に利用規約の更新を確認し、更新されていれば再同意を求める画面。
 class CheckTermsOfServiceUpdatePage extends HookConsumerWidget {
@@ -37,7 +37,7 @@ class CheckTermsOfServiceUpdatePage extends HookConsumerWidget {
       child: state.inquireUpdate
           ? Scaffold(
               appBar: AppBar(
-                title: const TitleLargeText(
+                title: const AppText.titleLarge(
                   '同意確認',
                   fontWeight: FontWeight.bold,
                 ),
@@ -54,7 +54,7 @@ class CheckTermsOfServiceUpdatePage extends HookConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const TitleMediumText(
+                          const AppText.titleMedium(
                             '利用規約とプライバシーポリシーが更新されました。\nアプリを使うためには、再度利用規約とプライバシーポリシーに同意する必要があります。',
                           ),
                           const Spacer(flex: 1),
@@ -77,20 +77,20 @@ class CheckTermsOfServiceUpdatePage extends HookConsumerWidget {
                                       TextButton(
                                         onPressed:
                                             viewModel.onTapTermsOfService,
-                                        child: const TitleMediumLinkText(
+                                        child: const AppText.titleMediumLink(
                                           '利用規約',
                                         ),
                                       ),
-                                      const TitleMediumText('と'),
+                                      const AppText.titleMedium('と'),
                                       TextButton(
                                         onPressed: viewModel.onTapPrivacyPolicy,
-                                        child: const TitleMediumLinkText(
+                                        child: const AppText.titleMediumLink(
                                           'プライバシーポリシー',
                                         ),
                                       ),
                                     ],
                                   ),
-                                  const TitleMediumText('に同意する'),
+                                  const AppText.titleMedium('に同意する'),
                                 ],
                               ),
                             ],
@@ -100,7 +100,7 @@ class CheckTermsOfServiceUpdatePage extends HookConsumerWidget {
                             height: 48,
                             child: ElevatedButton(
                               onPressed: viewModel.onTapAgreeButton,
-                              child: TitleMediumText(
+                              child: AppText.titleMedium(
                                 'はじめる',
                                 color: Theme.of(context).colorScheme.surface,
                               ),

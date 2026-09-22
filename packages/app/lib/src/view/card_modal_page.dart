@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../router/use_screen_view.dart';
 import '../view_model/card_modal_view_model.dart';
 import '../view_model/manhole_card_map_view_model.dart';
-import '../widget/custom_text.dart';
+import '../widget/app_text.dart';
 import '../widget/html_content.dart';
 
 /// マップタブでピンをタップしたときに出るカードのモーダル。
@@ -59,10 +59,10 @@ class CardModalPage extends HookConsumerWidget {
                               children: [
                                 const SizedBox(
                                   width: 120,
-                                  child: BodyLargeText('名前'),
+                                  child: AppText.bodyLarge('名前'),
                                 ),
                                 Flexible(
-                                  child: BodyLargeText(state.card.name),
+                                  child: AppText.bodyLarge(state.card.name),
                                 ),
                               ],
                             ),
@@ -80,7 +80,7 @@ class CardModalPage extends HookConsumerWidget {
                                 children: [
                                   const SizedBox(
                                     width: 120,
-                                    child: BodyLargeText('配布場所'),
+                                    child: AppText.bodyLarge('配布場所'),
                                   ),
                                   Flexible(
                                     child: HtmlContent(
@@ -97,7 +97,7 @@ class CardModalPage extends HookConsumerWidget {
                               children: [
                                 const SizedBox(
                                   width: 120,
-                                  child: BodyLargeText('在庫状況'),
+                                  child: AppText.bodyLarge('在庫状況'),
                                 ),
                                 Flexible(
                                   child: HtmlContent(state.card.stockHtml),
@@ -123,7 +123,7 @@ class CardModalPage extends HookConsumerWidget {
                           await _showSelectMapModal(context, viewModel);
                         }
                       },
-                      child: TitleMediumText(
+                      child: AppText.titleMedium(
                         '別アプリで開く',
                         color: Theme.of(context).colorScheme.surface,
                       ),
@@ -140,7 +140,7 @@ class CardModalPage extends HookConsumerWidget {
                             child: SizedBox(
                               height: 48,
                               child: Center(
-                                child: TitleMediumText(
+                                child: AppText.titleMedium(
                                   '詳細を見る',
                                   color: Theme.of(context).primaryColor,
                                 ),
@@ -157,7 +157,7 @@ class CardModalPage extends HookConsumerWidget {
                             child: SizedBox(
                               height: 48,
                               child: Center(
-                                child: TitleMediumText(
+                                child: AppText.titleMedium(
                                   state.alreadyGetActionButtonTitle,
                                   color: Theme.of(context).primaryColor,
                                 ),
@@ -191,7 +191,7 @@ class CardModalPage extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  title: const TitleMediumText('Apple Map で開く'),
+                  title: const AppText.titleMedium('Apple Map で開く'),
                   tileColor: Colors.transparent,
                   onTap: () async {
                     Navigator.of(modalContext).pop();
@@ -199,7 +199,7 @@ class CardModalPage extends HookConsumerWidget {
                   },
                 ),
                 ListTile(
-                  title: const TitleMediumText('Google Map で開く'),
+                  title: const AppText.titleMedium('Google Map で開く'),
                   tileColor: Colors.transparent,
                   onTap: () async {
                     Navigator.of(modalContext).pop();

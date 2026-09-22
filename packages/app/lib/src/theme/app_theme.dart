@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../gen/colors.gen.dart';
+import 'app_colors.dart';
 
 /// ページ遷移アニメーション。Android は Flutter 3.43 までの既定である
 /// [ZoomPageTransitionsBuilder] に固定する。
@@ -37,6 +38,7 @@ abstract final class AppTheme {
       positiveText: ColorName.lightPositiveText,
       icon: ColorName.lightIcon,
       border: ColorName.lightBorder,
+      colors: AppColors.light,
     );
   }
 
@@ -49,6 +51,7 @@ abstract final class AppTheme {
       positiveText: ColorName.darkPositiveText,
       icon: ColorName.darkIcon,
       border: ColorName.darkBorder,
+      colors: AppColors.dark,
     );
   }
 
@@ -60,9 +63,11 @@ abstract final class AppTheme {
     required Color positiveText,
     required Color icon,
     required Color border,
+    required AppColors colors,
   }) {
     final textTheme = base.textTheme;
     return base.copyWith(
+      extensions: [colors],
       appBarTheme: base.appBarTheme.copyWith(
         color: contentsBackground,
         elevation: 0,

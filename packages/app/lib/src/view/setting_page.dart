@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../router/use_screen_view.dart';
 import '../view_data/setting_view_data.dart';
 import '../view_model/setting_view_model.dart';
-import '../widget/custom_text.dart';
+import '../widget/app_text.dart';
 
 /// 設定タブ。
 class SettingPage extends HookConsumerWidget {
@@ -20,7 +20,7 @@ class SettingPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const TitleLargeText('設定', fontWeight: FontWeight.bold),
+        title: const AppText.titleLarge('設定', fontWeight: FontWeight.bold),
       ),
       body: Stack(
         children: [
@@ -43,7 +43,7 @@ class SettingPage extends HookConsumerWidget {
                         child: Column(
                           children: [
                             ListTile(
-                              title: const TitleMediumText('アプリの使い方'),
+                              title: const AppText.titleMedium('アプリの使い方'),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 color: Theme.of(context).iconTheme.color,
@@ -73,7 +73,7 @@ class SettingPage extends HookConsumerWidget {
                         child: Column(
                           children: [
                             ListTile(
-                              title: const TitleMediumText('改善要望・不具合報告'),
+                              title: const AppText.titleMedium('改善要望・不具合報告'),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 color: Theme.of(context).iconTheme.color,
@@ -103,7 +103,7 @@ class SettingPage extends HookConsumerWidget {
                         child: Column(
                           children: [
                             ListTile(
-                              title: const TitleMediumText('利用規約'),
+                              title: const AppText.titleMedium('利用規約'),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 color: Theme.of(context).iconTheme.color,
@@ -120,7 +120,7 @@ class SettingPage extends HookConsumerWidget {
                               height: 1,
                             ),
                             ListTile(
-                              title: const TitleMediumText('プライバシーポリシー'),
+                              title: const AppText.titleMedium('プライバシーポリシー'),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 color: Theme.of(context).iconTheme.color,
@@ -132,7 +132,7 @@ class SettingPage extends HookConsumerWidget {
                               height: 1,
                             ),
                             ListTile(
-                              title: const TitleMediumText('ライセンス'),
+                              title: const AppText.titleMedium('ライセンス'),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 color: Theme.of(context).iconTheme.color,
@@ -149,8 +149,8 @@ class SettingPage extends HookConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    TitleMediumText(state.appName),
-                    TitleMediumText('バージョン ${state.appVersion}'),
+                    AppText.titleMedium(state.appName),
+                    AppText.titleMedium('バージョン ${state.appVersion}'),
                   ],
                 ),
               ),

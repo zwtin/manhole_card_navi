@@ -8,7 +8,7 @@ import '../router/use_screen_view.dart';
 import '../view_model/detail_view_model.dart';
 import '../widget/card_image.dart';
 import '../widget/card_image_provider.dart';
-import '../widget/custom_text.dart';
+import '../widget/app_text.dart';
 import '../widget/html_content.dart';
 
 /// カード詳細。リストタブと、マップタブのモーダルから開く。
@@ -29,7 +29,7 @@ class DetailPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const TitleLargeText(
+        title: const AppText.titleLarge(
           '詳細',
           fontWeight: FontWeight.bold,
         ),
@@ -106,19 +106,19 @@ class DetailPage extends HookConsumerWidget {
                               ),
                               _DetailRow(
                                 label: '名前',
-                                child: BodyLargeText(card.name),
+                                child: AppText.bodyLarge(card.name),
                               ),
                               _DetailRow(
                                 label: '都道府県',
-                                child: BodyLargeText(card.prefecture),
+                                child: AppText.bodyLarge(card.prefecture),
                               ),
                               _DetailRow(
                                 label: '弾数',
-                                child: BodyLargeText(card.volume),
+                                child: AppText.bodyLarge(card.volume),
                               ),
                               _DetailRow(
                                 label: '発行年月日',
-                                child: BodyLargeText(card.publicationDate),
+                                child: AppText.bodyLarge(card.publicationDate),
                               ),
                               if (card.distributionPlaceHtml.isNotEmpty)
                                 _DetailRow(
@@ -163,7 +163,7 @@ class DetailPage extends HookConsumerWidget {
                                     child: SizedBox(
                                       height: 48,
                                       child: Center(
-                                        child: TitleMediumText(
+                                        child: AppText.titleMedium(
                                           'マップで見る',
                                           color: Theme.of(context)
                                               .colorScheme
@@ -183,7 +183,7 @@ class DetailPage extends HookConsumerWidget {
                                     child: SizedBox(
                                       height: 48,
                                       child: Center(
-                                        child: TitleMediumText(
+                                        child: AppText.titleMedium(
                                           card.alreadyGetActionButtonTitle,
                                           color: Theme.of(context)
                                               .colorScheme
@@ -229,7 +229,7 @@ class _DetailRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 120,
-            child: BodyLargeText(label),
+            child: AppText.bodyLarge(label),
           ),
           Flexible(child: child),
         ],

@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../router/use_screen_view.dart';
 import '../view_model/privacy_policy_view_model.dart';
-import '../widget/custom_text.dart';
+import '../widget/app_text.dart';
 
 /// プライバシーポリシー。起動時の同意画面と設定タブの両方から開く。
 class PrivacyPolicyPage extends HookConsumerWidget {
@@ -19,7 +19,7 @@ class PrivacyPolicyPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const TitleLargeText(
+        title: const AppText.titleLarge(
           'プライバシーポリシー',
           fontWeight: FontWeight.bold,
         ),
