@@ -1,15 +1,18 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:domain/domain.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../mapper/map_markers_view_data_mapper.dart';
+import '../mapper/marker_icon_mapper.dart';
 import '../router/app_router.dart';
 import '../router/current_route.dart';
 import '../router/navigation_service.dart';
-import '../service/marker_icon_builder.dart';
 import '../view_data/manhole_card_map_view_data.dart';
+import '../view_data/map_marker_view_data.dart';
+import '../view_data/map_markers_view_data.dart';
 import 'shell_view_model.dart';
 
 final manholeCardMapViewModelProvider = NotifierProvider.autoDispose<
@@ -77,7 +80,7 @@ class ManholeCardMapViewModel
   Future<void> onLoad() async {
     // 枠 PNG のデコードを先行させ、最初のマーカー合成の待ちを減らす。
     // 初期化フローを塞がないよう await しない。
-    unawaited(MarkerIconBuilder.preloadFrames());
+    unawaited(MarkerIconMapper.preloadFrames());
     await _loadSearchCondition();
     await _fetchCards();
     await _reloadMarkerViewData();
@@ -256,7 +259,7 @@ class ManholeCardMapViewModel
     final cards = (result as Success<List<ManholeCard>>).value;
     _pins = {
       for (final coordinateType in MapCoordinateType.values)
-        coordinateType: MapMarkersViewDataMapper.pinsOf(cards, coordinateType),
+        coordinateType: MapMarkersViewDataMapper.toPins(cards, coordinateType),
     };
   }
 
@@ -264,28 +267,10 @@ class ManholeCardMapViewModel
     final subscription = _alreadyGetCardUseCase.watch().listen((
       cardIds,
     ) async {
-      final generation = ++_markerGeneration;
-      final newViewData = await MapMarkersViewDataMapper.convertToViewData(
-        pins: _currentPins,
-        alreadyGetCardIds: cardIds,
-        centerCoordinate: _position,
-        searchCondition: _searchCondition.common,
-        cardUseCase: _cardUseCase,
-        onPartial: (partial) {
-          // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
-          if (generation != _markerGeneration) {
-            return;
-          }
-          state = state.copyWith(markers: partial);
-        },
-      );
-      // 空結果でも最新世代なら反映する（近傍にマーカーが無い領域へ移動した
-      // ときに古いマーカーを消すため）。
-      if (generation == _markerGeneration) {
-        state = state.copyWith(markers: newViewData);
-      }
-
       _alreadyGetCardIds = cardIds;
+      // 取得済みが変わるとアイコンの見た目も変わるので、必ず作り直す。
+      _lastReloadKey = null;
+      await _reloadMarkerViewData();
     });
     ref.onDispose(subscription.cancel);
   }
@@ -313,24 +298,57 @@ class ManholeCardMapViewModel
     _lastReloadKey = reloadKey;
 
     final generation = ++_markerGeneration;
-    final newViewData = await MapMarkersViewDataMapper.convertToViewData(
+    final pins = MapMarkersViewDataMapper.selectNearest(
       pins: _currentPins,
-      alreadyGetCardIds: _alreadyGetCardIds,
-      centerCoordinate: _position,
       searchCondition: _searchCondition.common,
-      cardUseCase: _cardUseCase,
-      onPartial: (partial) {
-        // 生成中に新しい再読み込みが始まっていたら古い結果は破棄する。
-        if (generation != _markerGeneration) {
+      alreadyGetCardIds: _alreadyGetCardIds,
+      center: Coordinate(
+        latitude: _position.latitude,
+        longitude: _position.longitude,
+      ),
+    );
+
+    // できたものから順に地図へ反映する。30 枚そろうまで待つと、地図がしばらく
+    // ピンのないまま残る。
+    final markers = <MapMarkerViewData>[];
+    await Future.wait(
+      pins.map((pin) async {
+        final icon = await _buildIcon(pin);
+        // 生成中に新しい再読み込みが始まっていたら、古い世代の結果は捨てる。
+        if (icon == null || generation != _markerGeneration) {
           return;
         }
-        state = state.copyWith(markers: partial);
-      },
+        markers.add(MapMarkersViewDataMapper.toMarker(pin: pin, icon: icon));
+        state = state.copyWith(
+          markers: MapMarkersViewData(list: List.of(markers)),
+        );
+      }),
     );
-    // 空結果でも最新世代なら反映する（近傍にマーカーが無い領域へ移動したときに
-    // 古いマーカーを消すため）。
+    // 1 枚もできなくても最新世代なら反映する（近傍にマーカーが無い領域へ移動した
+    // ときに古いマーカーを消すため）。
     if (generation == _markerGeneration) {
-      state = state.copyWith(markers: newViewData);
+      state = state.copyWith(markers: MapMarkersViewData(list: markers));
+    }
+  }
+
+  /// 取れなかった・合成できなかったカードは、そのピンを立てない。
+  Future<Uint8List?> _buildIcon(CardPin pin) async {
+    final Uint8List original;
+    switch (await _cardUseCase.fetchImage(cardId: pin.card.id)) {
+      case Failure():
+        return null;
+      case Success(:final value):
+        original = value;
+    }
+    try {
+      return await MarkerIconMapper.toIcon(
+        originalBytes: original,
+        distributionState: pin.card.distributionState,
+        alreadyGet: _alreadyGetCardIds.contains(pin.card.id),
+      );
+    } on Exception {
+      // 壊れた画像はデコードできない。Error はバグなので捨てずに流す。
+      return null;
     }
   }
 

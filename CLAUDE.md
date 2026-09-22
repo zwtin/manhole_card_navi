@@ -83,7 +83,8 @@ fvm flutter pub run flutter_native_splash:create
    - `view/` - 画面（`*_page.dart`）
    - `view_model/` - 画面ごとの ViewModel
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
-   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティから表示用データへの変換・マーカー画像の合成・テーマ
+   - `widget/` / `mapper/` / `theme/` - 共通部品・変換・テーマ
+   - `mapper/` は純粋な変換だけを置く。通信・保存・キャッシュを持たせない。マップのマーカーなら、ピンの選び方（`MapMarkersViewDataMapper`）と 1 枚の合成（`MarkerIconMapper`）が mapper で、画像を取る・並べる段取りは ViewModel の役目
    - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 
 4. **ルート** (`lib/`) - アプリを組み立てる場所（Composition Root）。`main.dart` で Firebase を初期化し、`di/` で data の実装を domain の provider に当てはめる

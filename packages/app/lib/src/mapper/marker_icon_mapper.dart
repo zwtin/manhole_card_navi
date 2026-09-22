@@ -7,15 +7,8 @@ import 'package:flutter/services.dart';
 
 import '../widget/card_image.dart';
 
-/// 地図マーカーのアイコン画像（吹き出し枠 + 原本画像の合成結果）を生成する。
-///
-/// 原本画像（カラー）を実行時に縮小し、頒布状況に応じた枠 PNG（吹き出し型）へ
-/// 重ねてラスタライズする。未所持カードは彩度 0 のグレースケールで描画する。
-///
-/// 枠 PNG は `assets/images/markers/` に配置された 200x300 の吹き出し画像。
-/// 一度読み込んだ枠 PNG とデコード済みの合成結果はメモリにキャッシュする。
-class MarkerIconBuilder {
-  MarkerIconBuilder._();
+/// カード画像を、地図マーカーのアイコン（吹き出し枠との合成結果）にする。
+abstract final class MarkerIconMapper {
 
   /// マーカーアイコンの出力サイズ（論理ピクセル基準の実ピクセル）。
   /// 枠 PNG のアスペクト比 200:300 に合わせる。
@@ -26,15 +19,6 @@ class MarkerIconBuilder {
   /// 下部のピン部分には重ねない。値は _iconWidth/_iconHeight に対する割合。
   static const double _imageInsetRatio = 0.05;
   static const double _imageBottomRatio = 0.10;
-
-  /// 枠と画像のレイアウト（サイズ・余白）を変えたら手動で上げるバージョン番号。
-  /// 上げると旧レイアウトで合成したキャッシュとは別エントリになり、
-  /// 再インストールなしで新しいレイアウトが反映される。
-  static const int _layoutVersion = 1;
-
-  /// アイコンのサイズ・レイアウトを表すキャッシュ識別子。これが変わると
-  /// 旧レイアウトで合成した古いキャッシュとは別エントリになる。
-  static String get sizeKey => '${_iconWidth}x${_iconHeight}_v$_layoutVersion';
 
   /// 頒布状況に対応する枠 PNG のアセットパス。
   static String _framePath(DistributionState distributionState) {
@@ -94,11 +78,9 @@ class MarkerIconBuilder {
     return frame.image;
   }
 
-  /// 枠画像の上に原本画像を重ねて合成し、PNG バイト列を返す。
-  ///
-  /// [originalBytes] は原本画像のエンコード済みバイト列。
-  /// [alreadyGet] が false の場合はグレースケールで描画する。
-  static Future<Uint8List> build({
+  /// [originalBytes] は原本画像のエンコード済みバイト列。[alreadyGet] が false
+  /// なら、彩度 0 のグレースケールで描く。
+  static Future<Uint8List> toIcon({
     required Uint8List originalBytes,
     required DistributionState distributionState,
     required bool alreadyGet,
