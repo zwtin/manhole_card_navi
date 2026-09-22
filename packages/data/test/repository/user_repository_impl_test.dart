@@ -3,28 +3,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:data/src/datasource/analytics_data_source.dart';
+import 'package:data/src/datasource/auth_data_source.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/repository/user_repository_impl.dart';
 import 'package:domain/domain.dart';
 
 import '../datasource/crashlytics_mock.dart';
 
-class MockFirebaseAuth extends Mock implements FirebaseAuth {}
+class MockAuthDataSource extends Mock implements AuthDataSource {}
 
 class MockAnalyticsDataSource extends Mock implements AnalyticsDataSource {}
 
-class MockUser extends Mock implements User {}
-
-class MockUserCredential extends Mock implements UserCredential {}
-
 void main() {
-  late MockFirebaseAuth auth;
+  late MockAuthDataSource auth;
   late MockAnalyticsDataSource analytics;
   late MockFirebaseCrashlytics crashlytics;
   late UserRepositoryImpl repository;
 
   setUp(() {
-    auth = MockFirebaseAuth();
+    auth = MockAuthDataSource();
     analytics = MockAnalyticsDataSource();
     crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
@@ -38,30 +35,20 @@ void main() {
     );
   });
 
-  MockUser user(String uid) {
-    final user = MockUser();
-    when(() => user.uid).thenReturn(uid);
-    return user;
-  }
-
   test('登録済みなら通信せず、その利用者の ID を記録に付ける', () async {
-    final current = user('uid-1');
-    when(() => auth.currentUser).thenReturn(current);
+    when(() => auth.currentUserId).thenReturn('uid-1');
 
     final result = await repository.signIn();
 
     expect(result, isA<Success<void>>());
-    verifyNever(() => auth.signInAnonymously());
+    verifyNever(auth.signInAnonymously);
     verify(() => analytics.setUserId('uid-1')).called(1);
     verify(() => crashlytics.setUserIdentifier('uid-1')).called(1);
   });
 
   test('まだなら匿名で登録し、その利用者の ID を記録に付ける', () async {
-    final credential = MockUserCredential();
-    final created = user('uid-2');
-    when(() => credential.user).thenReturn(created);
-    when(() => auth.currentUser).thenReturn(null);
-    when(() => auth.signInAnonymously()).thenAnswer((_) async => credential);
+    when(() => auth.currentUserId).thenReturn(null);
+    when(auth.signInAnonymously).thenAnswer((_) async => 'uid-2');
 
     final result = await repository.signIn();
 
@@ -70,8 +57,8 @@ void main() {
   });
 
   test('通信できずに登録できなければ、通信できない失敗にする', () async {
-    when(() => auth.currentUser).thenReturn(null);
-    when(() => auth.signInAnonymously()).thenThrow(
+    when(() => auth.currentUserId).thenReturn(null);
+    when(auth.signInAnonymously).thenThrow(
       FirebaseAuthException(code: 'network-request-failed'),
     );
 
@@ -82,8 +69,7 @@ void main() {
   });
 
   test('利用者の ID を付けられなくても、登録はできたことにする', () async {
-    final current = user('uid-3');
-    when(() => auth.currentUser).thenReturn(current);
+    when(() => auth.currentUserId).thenReturn('uid-3');
     final thrown = Exception('送れない');
     when(() => analytics.setUserId(any())).thenThrow(thrown);
 

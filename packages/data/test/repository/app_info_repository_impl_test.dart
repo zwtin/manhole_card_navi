@@ -3,6 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:data/src/datasource/crashlytics_data_source.dart';
+import 'package:data/src/datasource/package_info_data_source.dart';
 import 'package:data/src/datasource/remote_config_data_source.dart';
 import 'package:data/src/repository/app_info_repository_impl.dart';
 import 'package:domain/domain.dart';
@@ -20,11 +21,13 @@ void main() {
     final crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     repository = (version) => AppInfoRepositoryImpl(
-          PackageInfo(
-            appName: 'マンホールカードナビ',
-            packageName: 'com.example',
-            version: version,
-            buildNumber: '1',
+          PackageInfoDataSource(
+            PackageInfo(
+              appName: 'マンホールカードナビ',
+              packageName: 'com.example',
+              version: version,
+              buildNumber: '1',
+            ),
           ),
           remoteConfig,
           CrashlyticsDataSource(crashlytics),

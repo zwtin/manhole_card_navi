@@ -1,9 +1,18 @@
+/// data が公開するのは、Composition Root（ルートの `lib/`）が組み立てに使う部品
+/// だけ。アプリ全体に向けた API ではない。app は data に依存しない。
+library;
+
 export 'package:data/src/datasource/analytics_data_source.dart';
 export 'package:data/src/datasource/app_badge_data_source.dart';
+export 'package:data/src/datasource/auth_data_source.dart';
 export 'package:data/src/datasource/card_image_data_source.dart';
 export 'package:data/src/datasource/crashlytics_data_source.dart';
 export 'package:data/src/datasource/location_data_source.dart';
 export 'package:data/src/datasource/master_data_local_data_source.dart';
+export 'package:data/src/datasource/master_data_remote_data_source.dart';
+export 'package:data/src/datasource/package_info_data_source.dart';
+export 'package:data/src/datasource/preferences_data_source.dart';
+export 'package:data/src/datasource/push_notification_data_source.dart';
 export 'package:data/src/datasource/remote_config_data_source.dart';
 export 'package:data/src/repository/already_get_card_repository_impl.dart';
 export 'package:data/src/repository/analytics_repository_impl.dart';

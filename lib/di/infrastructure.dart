@@ -1,20 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data/data.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
-/// data の Repository が共有して使う部品。起動時に 1 回だけ作る。
+/// data の Repository が共有して使う DataSource。起動時に 1 回だけ作る。
 class Infrastructure {
   Infrastructure._({
     required this.preferences,
     required this.packageInfo,
     required this.crashlytics,
     required this.remoteConfig,
-    required this.masterData,
+    required this.masterDataLocal,
+    required this.masterDataRemote,
     required this.cardImage,
     required this.analytics,
+    required this.auth,
+    required this.pushNotification,
   });
 
   /// 部品を作り、使える状態にする。Firebase の初期化の後に呼ぶ。
@@ -28,13 +34,18 @@ class Infrastructure {
     );
     await remoteConfig.activate();
     return Infrastructure._(
-      preferences: await StreamingSharedPreferences.instance,
-      packageInfo: await PackageInfo.fromPlatform(),
+      preferences: PreferencesDataSource(
+        await StreamingSharedPreferences.instance,
+      ),
+      packageInfo: PackageInfoDataSource(await PackageInfo.fromPlatform()),
       crashlytics: CrashlyticsDataSource(FirebaseCrashlytics.instance),
       remoteConfig: remoteConfig,
-      masterData: MasterDataLocalDataSource.inApplicationSupport(),
+      masterDataLocal: MasterDataLocalDataSource.inApplicationSupport(),
+      masterDataRemote: MasterDataRemoteDataSource(FirebaseFirestore.instance),
       cardImage: CardImageDataSource.withDeviceCache(),
       analytics: AnalyticsDataSource(FirebaseAnalytics.instance),
+      auth: AuthDataSource(FirebaseAuth.instance),
+      pushNotification: PushNotificationDataSource(FirebaseMessaging.instance),
     );
   }
 
@@ -42,14 +53,17 @@ class Infrastructure {
       String.fromEnvironment('flavor') == 'development';
   static const _fetchInterval = Duration(hours: 12);
 
-  final StreamingSharedPreferences preferences;
-  final PackageInfo packageInfo;
+  final PreferencesDataSource preferences;
+  final PackageInfoDataSource packageInfo;
   final CrashlyticsDataSource crashlytics;
   final RemoteConfigDataSource remoteConfig;
 
   /// 読み込んだカードをメモリに持つので、Repository どうしで同じものを使う。
-  final MasterDataLocalDataSource masterData;
+  final MasterDataLocalDataSource masterDataLocal;
 
+  final MasterDataRemoteDataSource masterDataRemote;
   final CardImageDataSource cardImage;
   final AnalyticsDataSource analytics;
+  final AuthDataSource auth;
+  final PushNotificationDataSource pushNotification;
 }

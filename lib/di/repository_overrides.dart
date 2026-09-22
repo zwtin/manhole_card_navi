@@ -1,8 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data/data.dart';
 import 'package:domain/domain.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'infrastructure.dart';
@@ -10,8 +7,7 @@ import 'infrastructure.dart';
 /// domain が宣言した Repository の provider を、data の実装に差し替える。
 /// main.dart の ProviderScope に渡す。
 ///
-/// どの実装を、どの部品（[Infrastructure] と Firebase の各インスタンス）で作るかを
-/// 決めるのは、アプリの中でここだけ。
+/// どの実装を、どの DataSource で作るかを決めるのは、アプリの中でここだけ。
 List<Override> repositoryOverrides(Infrastructure infrastructure) {
   final crashlytics = infrastructure.crashlytics;
   return [
@@ -39,7 +35,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
     ),
     cardRepositoryProvider.overrideWith(
       (_) => CardRepositoryImpl(
-        infrastructure.masterData,
+        infrastructure.masterDataLocal,
         infrastructure.cardImage,
         infrastructure.analytics,
         crashlytics,
@@ -53,8 +49,8 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
     ),
     masterDataRepositoryProvider.overrideWith(
       (_) => MasterDataRepositoryImpl(
-        FirebaseFirestore.instance,
-        infrastructure.masterData,
+        infrastructure.masterDataRemote,
+        infrastructure.masterDataLocal,
         crashlytics,
       ),
     ),
@@ -73,7 +69,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
     ),
     pushNotificationRepositoryProvider.overrideWith(
       (_) => PushNotificationRepositoryImpl(
-        FirebaseMessaging.instance,
+        infrastructure.pushNotification,
         crashlytics,
       ),
     ),
@@ -92,7 +88,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
     ),
     userRepositoryProvider.overrideWith(
       (_) => UserRepositoryImpl(
-        FirebaseAuth.instance,
+        infrastructure.auth,
         infrastructure.analytics,
         crashlytics,
       ),

@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 import 'package:data/src/datasource/crashlytics_data_source.dart';
+import 'package:data/src/datasource/preferences_data_source.dart';
 import 'package:data/src/datasource/remote_config_data_source.dart';
 import 'package:data/src/repository/already_get_card_repository_impl.dart';
 import 'package:data/src/repository/master_version_repository_impl.dart';
@@ -16,17 +17,19 @@ import '../datasource/crashlytics_mock.dart';
 class MockRemoteConfigReader extends Mock implements RemoteConfigDataSource {}
 
 void main() {
-  late StreamingSharedPreferences preferences;
+  late StreamingSharedPreferences store;
+  late PreferencesDataSource preferences;
   late CrashlyticsDataSource crashlyticsDataSource;
 
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
-    preferences = await StreamingSharedPreferences.instance;
+    store = await StreamingSharedPreferences.instance;
+    preferences = PreferencesDataSource(store);
   });
 
   setUp(() async {
-    await preferences.clear();
+    await store.clear();
     final crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     crashlyticsDataSource = CrashlyticsDataSource(crashlytics);
