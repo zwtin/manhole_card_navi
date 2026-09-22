@@ -97,7 +97,7 @@ class CustomIntroductionPage extends HookConsumerWidget {
             ),
             globalBackgroundColor: Theme.of(context).colorScheme.surface,
             dotsDecorator: DotsDecorator(
-              color: Theme.of(context).iconTheme.color ?? Colors.grey,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             animationDuration: 200,
             bodyPadding: const EdgeInsets.only(top: 16),

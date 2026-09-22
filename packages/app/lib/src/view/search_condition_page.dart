@@ -435,7 +435,7 @@ class _FilterChip extends StatelessWidget {
       color:
           selected
               ? Theme.of(context).colorScheme.surfaceContainerLowest
-              : Theme.of(context).textTheme.titleMedium?.color,
+              : Theme.of(context).colorScheme.onSurface,
     );
 
     return GestureDetector(

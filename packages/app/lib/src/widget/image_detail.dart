@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 
+import '../theme/app_colors.dart';
 import 'card_image.dart';
 import 'card_image_provider.dart';
 
@@ -87,7 +88,9 @@ class ImageDetailViewState extends ConsumerState<ImageDetail> {
       onHorizontalDragEnd:
           scaleState == PhotoViewScaleState.initial ? onVerticalDragEnd : null,
       child: Container(
-        color: Colors.black.withValues(alpha: photoViewOpacity),
+        color: Theme.of(
+          context,
+        ).colorScheme.scrim.withValues(alpha: photoViewOpacity),
         child: AnimatedContainer(
           duration: Duration(milliseconds: photoViewAnimationDurationMilliSec),
           transform: photoViewTransform,
@@ -137,7 +140,7 @@ class ImageDetailViewState extends ConsumerState<ImageDetail> {
       duration: const Duration(milliseconds: 200),
       opacity: barsOpacity,
       child: Container(
-        color: Colors.black.withValues(alpha: 0.4),
+        color: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.4),
         height: topBarHeight,
         child: Column(
           children: [
@@ -149,9 +152,9 @@ class ImageDetailViewState extends ConsumerState<ImageDetail> {
                 children: [
                   Container(width: 8),
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.close,
-                      color: Colors.white,
+                      color: context.appColors.onScrim,
                       size: 30,
                     ),
                     onPressed: () {

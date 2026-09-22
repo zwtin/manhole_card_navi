@@ -83,4 +83,7 @@ abstract final class ColorName {
 
   /// Color: #E6E6E6
   static const Color lightSegmentTrack = Color(0xFFE6E6E6);
+
+  /// Color: #FFFFFF
+  static const Color onScrim = Color(0xFFFFFFFF);
 }

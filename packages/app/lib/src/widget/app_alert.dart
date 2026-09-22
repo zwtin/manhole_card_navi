@@ -61,7 +61,7 @@ Future<bool> showAppAlert(
           animationType: AnimationType.grow,
           isCloseButton: false,
           isOverlayTapDismiss: false,
-          overlayColor: Colors.black54,
+          overlayColor: theme.colorScheme.scrim.withValues(alpha: 0.54),
           alertElevation: 0,
           // ThemeData は型スケールを必ず埋めるので、null にはならない。
           titleStyle: theme.textTheme.titleLarge!,

@@ -98,7 +98,7 @@ lefthook がフックで検査を走らせる。導入は `brew install lefthook
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
    - `widget/` / `mapper/` / `theme/` - 共通部品・変換・テーマ
    - **見た目はデザインシステムから選ぶ。** 文字は `AppText`（`widget/app_text.dart`）の名前付きコンストラクタ、色は `ColorScheme`（Material 3 の色の役割）から引く。役割に当てはまらない色だけ `AppColors`（`theme/app_colors.dart`、`ThemeExtension`）に置く。いまそこにあるのはリンク・カードの枠線・カードの影の 3 つだけ
-   - 面の重なりは `surface`（画面の地）と `surfaceContainerLowest`（カード・リストの面）で表す。Material 3 はこの 2 つを、明るいテーマでは面のほうを明るく、暗いテーマでは面のほうを暗くする向きで定義している。`ColorScheme.background` のように**役割を自分の意味で使い回すと、フレームワークの移行（`dart fix`）に踏まれる**色の値そのものは `assets/colors/colors.xml` に名前を付けてから使う。画面で `Text`・`TextStyle`・`Color` を直接作らない（`scripts/check_design_system.sh` が止める。動かせない事情があるところは、その行の直前に `// ignore: <ルール名>` と理由を書く）。使っていない見た目も、そろえるために `AppText` に残す
+   - 面の重なりは `surface`（画面の地）と `surfaceContainerLowest`（カード・リストの面）で表す。Material 3 はこの 2 つを、明るいテーマでは面のほうを明るく、暗いテーマでは面のほうを暗くする向きで定義している。`ColorScheme.background` のように**役割を自分の意味で使い回すと、フレームワークの移行（`dart fix`）に踏まれる**色の値そのものは `assets/colors/colors.xml` に名前を付けてから使う。画面で `Text`・`TextStyle`・`Color` を直接作らず、Material のパレット（`Colors.xxx`）も使わない（`scripts/check_design_system.sh` が止める。塗らないことを表す `Colors.transparent` だけは許す。動かせない事情があるところは、その行の直前に `// ignore: <ルール名>` と理由を書く）。使っていない見た目も、そろえるために `AppText` に残す
    - `mapper/` は純粋な変換だけを置く。通信・保存・キャッシュを持たせない。マップのマーカーなら、ピンの選び方（`MapMarkersViewDataMapper`）と 1 枚の合成（`MarkerIconMapper`）が mapper で、画像を取る・並べる段取りは ViewModel の役目
    - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 

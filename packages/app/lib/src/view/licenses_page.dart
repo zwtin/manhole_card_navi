@@ -20,8 +20,9 @@ class LicensesPage extends HookConsumerWidget {
     useScreenView(ref, viewModel.sendScreenView);
 
     return Theme(
+      // Flutter の LicensePage は行の色を listTileTheme から取る。アプリの
+      // 既定（カードの面）ではなく画面の地に合わせたいので、ここだけ差し替える。
       data: Theme.of(context).copyWith(
-        cardColor: Theme.of(context).colorScheme.surface,
         listTileTheme: Theme.of(context).listTileTheme.copyWith(
           tileColor: Theme.of(context).colorScheme.surface,
         ),

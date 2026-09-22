@@ -24,8 +24,9 @@ targets=$(printf '%s\n' "$targets" | grep -Ev "$exclude" | grep -v '\.g\.dart$' 
 
 found=0
 
+# check <ルール名> <探す正規表現> <出す文言> [見逃す正規表現]
 check() {
-  local rule=$1 pattern=$2 message=$3 file line text previous
+  local rule=$1 pattern=$2 message=$3 allow=${4:-} file line text previous
   for file in $targets; do
     [ -f "$file" ] || continue
     while IFS=: read -r line text; do
@@ -38,6 +39,9 @@ check() {
       case "$text" in
         *"ignore: $rule"*) continue ;;
       esac
+      if [ -n "$allow" ] && printf '%s' "$text" | grep -qE "$allow"; then
+        continue
+      fi
       echo "  $file:$line • $message • $rule"
       found=1
     done < <(grep -nE "$pattern" "$file")
@@ -50,6 +54,11 @@ check use_text_theme '(^|[^A-Za-z0-9_.])TextStyle\(' \
   'TextStyle を直接作らない。テーマの型スケールから選ぶ。'
 check use_color_token '(^|[^A-Za-z0-9_.])Color\(' \
   '色を直接作らない。colors.xml に名前を付けて、Theme か AppColors から引く。'
+# Colors.transparent は色ではなく「塗らない」なので許す。
+# Colors.transparent は色ではなく「塗らない」なので見逃す。
+check use_color_token '(^|[^A-Za-z0-9_.])Colors\.[a-z]' \
+  'Material のパレット（Colors.xxx）を使わない。Theme か AppColors から引く。' \
+  'Colors\.transparent'
 
 if [ "$found" -eq 1 ]; then
   echo ""

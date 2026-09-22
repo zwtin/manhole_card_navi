@@ -19,7 +19,7 @@ class CustomCheckBox extends StatelessWidget {
               height: 18,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Theme.of(context).iconTheme.color ?? Colors.grey,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   width: 2,
                 ),
               ),
@@ -27,7 +27,7 @@ class CustomCheckBox extends StatelessWidget {
           ),
         ),
         Checkbox(
-          checkColor: Theme.of(context).iconTheme.color ?? Colors.grey,
+          checkColor: Theme.of(context).colorScheme.onSurfaceVariant,
           fillColor: WidgetStateProperty.resolveWith((states) {
             return Colors.transparent;
           }),

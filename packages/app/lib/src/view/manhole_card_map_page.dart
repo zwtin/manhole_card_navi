@@ -100,10 +100,10 @@ class ManholeCardMapPage extends HookConsumerWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: viewModel.onTapCurrentLocationButton,
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-        foregroundColor: Theme.of(context).iconTheme.color,
+        foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
         shape: CircleBorder(
           side: BorderSide(
-            color: Theme.of(context).iconTheme.color ?? Colors.transparent,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             width: 2,
           ),
         ),
