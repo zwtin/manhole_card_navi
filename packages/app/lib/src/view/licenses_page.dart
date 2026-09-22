@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../gen/assets.gen.dart';
 import '../router/use_screen_view.dart';
+import '../theme/app_colors.dart';
 import '../view_data/licenses_view_data.dart';
 import '../view_model/licenses_view_model.dart';
 
@@ -12,7 +13,8 @@ class LicensesPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(licensesViewModelProvider).valueOrNull ??
+    final state =
+        ref.watch(licensesViewModelProvider).valueOrNull ??
         const LicensesViewData();
     final viewModel = ref.read(licensesViewModelProvider.notifier);
 
@@ -20,10 +22,10 @@ class LicensesPage extends HookConsumerWidget {
 
     return Theme(
       data: Theme.of(context).copyWith(
-        cardColor: Theme.of(context).colorScheme.background,
-        listTileTheme: Theme.of(context).listTileTheme.copyWith(
-              tileColor: Theme.of(context).colorScheme.background,
-            ),
+        cardColor: context.appColors.screenBackground,
+        listTileTheme: Theme.of(
+          context,
+        ).listTileTheme.copyWith(tileColor: context.appColors.screenBackground),
       ),
       child: LicensePage(
         applicationName: state.appName,

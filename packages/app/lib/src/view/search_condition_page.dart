@@ -16,21 +16,20 @@ import '../widget/app_text.dart';
 /// 表示する。編集内容はドラフトとして保持し、「この条件で表示」で端末保存され、
 /// Stream 経由で両画面へ反映される。
 class SearchConditionPage extends HookConsumerWidget {
-  const SearchConditionPage({
-    super.key,
-  });
+  const SearchConditionPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // 端末保存済みの条件はすぐ読めるので、読み込み中は初期状態で表示しておく。
-    final state = ref.watch(searchConditionViewModelProvider).valueOrNull ??
+    final state =
+        ref.watch(searchConditionViewModelProvider).valueOrNull ??
         SearchConditionViewData(draft: SearchCondition.initial());
     final viewModel = ref.read(searchConditionViewModelProvider.notifier);
 
     useScreenView(ref, viewModel.sendScreenView);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: context.appColors.screenBackground,
       // ==== 固定: ナビゲーションバー ====
       appBar: AppBar(
         leading: IconButton(
@@ -38,26 +37,17 @@ class SearchConditionPage extends HookConsumerWidget {
           tooltip: '閉じる',
           onPressed: viewModel.onClose,
         ),
-        title: const AppText.titleLarge(
-          '検索条件',
-          fontWeight: FontWeight.bold,
-        ),
+        title: const AppText.titleLarge('検索条件', fontWeight: FontWeight.bold),
         actions: [
           TextButton(
             style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               foregroundColor: _subColor(context),
             ),
             onPressed: viewModel.clearAllFilters,
-            child: AppText.titleMedium(
-              'リセット',
-              color: _subColor(context),
-            ),
+            child: AppText.titleMedium('リセット', color: _subColor(context)),
           ),
           const SizedBox(width: 8),
         ],
@@ -70,7 +60,7 @@ class SearchConditionPage extends HookConsumerWidget {
           _SectionCard(
             title: '表示',
             child: _Segmented<AlreadyGetFilter>(
-                value: state.alreadyGetFilter,
+              value: state.alreadyGetFilter,
               options: const [
                 ('すべて', AlreadyGetFilter.all),
                 ('取得済みのみ', AlreadyGetFilter.alreadyGet),
@@ -84,21 +74,22 @@ class SearchConditionPage extends HookConsumerWidget {
           _SectionCard(
             title: '弾数',
             actions: _QuickActions(
-                onSelectAll: viewModel.selectAllVolumes,
+              onSelectAll: viewModel.selectAllVolumes,
               onClear: viewModel.clearVolumes,
             ),
             child: Wrap(
               spacing: 9,
               runSpacing: 9,
-              children: state.volumeOptions
-                  .map(
-                    (option) => _FilterChip(
-                                label: option.name,
-                      selected: state.isVolumeSelected(option.id),
-                      onTap: () => viewModel.toggleVolume(option.id),
-                    ),
-                  )
-                  .toList(),
+              children:
+                  state.volumeOptions
+                      .map(
+                        (option) => _FilterChip(
+                          label: option.name,
+                          selected: state.isVolumeSelected(option.id),
+                          onTap: () => viewModel.toggleVolume(option.id),
+                        ),
+                      )
+                      .toList(),
             ),
           ),
 
@@ -106,22 +97,27 @@ class SearchConditionPage extends HookConsumerWidget {
           _SectionCard(
             title: '配布状態',
             actions: _QuickActions(
-                onSelectAll: viewModel.selectAllDistributionStates,
+              onSelectAll: viewModel.selectAllDistributionStates,
               onClear: viewModel.clearDistributionStates,
             ),
             child: Wrap(
               spacing: 9,
               runSpacing: 9,
-              children: SearchConditionViewModel.distributionStateOptions
-                  .map(
-                    (option) => _FilterChip(
-                                label: option.name,
-                      selected: state.isDistributionStateSelected(option.state),
-                      onTap: () =>
-                          viewModel.toggleDistributionState(option.state),
-                    ),
-                  )
-                  .toList(),
+              children:
+                  SearchConditionViewModel.distributionStateOptions
+                      .map(
+                        (option) => _FilterChip(
+                          label: option.name,
+                          selected: state.isDistributionStateSelected(
+                            option.state,
+                          ),
+                          onTap:
+                              () => viewModel.toggleDistributionState(
+                                option.state,
+                              ),
+                        ),
+                      )
+                      .toList(),
             ),
           ),
 
@@ -130,7 +126,7 @@ class SearchConditionPage extends HookConsumerWidget {
             title: 'マップ表示',
             pill: 'マップのみ',
             child: _Segmented<MapCoordinateType>(
-                value: state.coordinateType,
+              value: state.coordinateType,
               options: const [
                 ('配布場所', MapCoordinateType.distribution),
                 ('蓋', MapCoordinateType.position),
@@ -205,15 +201,16 @@ class _SectionCard extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: line == null ? null : Border.all(color: line),
-        boxShadow: shadow == null
-            ? null
-            : [
-                BoxShadow(
-                  color: shadow,
-                  blurRadius: 3,
-                  offset: const Offset(0, 1),
-                ),
-              ],
+        boxShadow:
+            shadow == null
+                ? null
+                : [
+                  BoxShadow(
+                    color: shadow,
+                    blurRadius: 3,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,10 +261,7 @@ class _SectionCard extends StatelessWidget {
 
 /// 右上の「すべて / クリア」クイックアクション。
 class _QuickActions extends StatelessWidget {
-  const _QuickActions({
-    required this.onSelectAll,
-    required this.onClear,
-  });
+  const _QuickActions({required this.onSelectAll, required this.onClear});
 
   final void Function() onSelectAll;
   final void Function() onClear;
@@ -409,10 +403,7 @@ class _SegmentLabel extends StatelessWidget {
         // AnimatedDefaultTextStyle が動かしている見た目を受け継ぐ必要があるので、
         // ここだけは AppText（自分で style を決める）を使えない。
         // ignore: use_app_text
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-        ),
+        child: Text(label, textAlign: TextAlign.center),
       ),
     );
   }
@@ -435,9 +426,10 @@ class _FilterChip extends StatelessWidget {
     final labelWidget = AppText.bodyMedium(
       label,
       fontWeight: FontWeight.w600,
-      color: selected
-          ? Theme.of(context).colorScheme.surface
-          : Theme.of(context).textTheme.titleMedium?.color,
+      color:
+          selected
+              ? Theme.of(context).colorScheme.surface
+              : Theme.of(context).textTheme.titleMedium?.color,
     );
 
     return GestureDetector(
@@ -446,14 +438,16 @@ class _FilterChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
-          color: selected
-              ? Theme.of(context).primaryColor
-              : Theme.of(context).colorScheme.surface,
+          color:
+              selected
+                  ? Theme.of(context).primaryColor
+                  : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: selected
-                ? Theme.of(context).primaryColor
-                : context.appColors.chipBorder,
+            color:
+                selected
+                    ? Theme.of(context).primaryColor
+                    : context.appColors.chipBorder,
           ),
         ),
         // ON 状態（チェック＋テキスト）の幅を常に確保しておき、ON/OFF を切り替えても

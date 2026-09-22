@@ -4,6 +4,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 
 import '../gen/assets.gen.dart';
 import '../router/use_screen_view.dart';
+import '../theme/app_colors.dart';
 import '../view_model/custom_introduction_view_model.dart';
 import '../widget/app_text.dart';
 
@@ -28,7 +29,7 @@ class CustomIntroductionPage extends HookConsumerWidget {
         title: const AppText.titleLarge('アプリの使い方', fontWeight: FontWeight.bold),
       ),
       body: Container(
-        color: Theme.of(context).colorScheme.background,
+        color: context.appColors.screenBackground,
         child: SafeArea(
           child: IntroductionScreen(
             pages: [
@@ -95,7 +96,7 @@ class CustomIntroductionPage extends HookConsumerWidget {
                 const AppText.titleMedium('前へ'),
               ],
             ),
-            globalBackgroundColor: Theme.of(context).colorScheme.background,
+            globalBackgroundColor: context.appColors.screenBackground,
             dotsDecorator: DotsDecorator(
               color: Theme.of(context).iconTheme.color ?? Colors.grey,
             ),

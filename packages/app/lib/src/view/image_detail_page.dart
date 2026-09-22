@@ -8,10 +8,7 @@ import '../widget/image_detail.dart';
 
 /// カード画像の拡大表示。
 class ImageDetailPage extends HookConsumerWidget {
-  const ImageDetailPage({
-    super.key,
-    required this.args,
-  });
+  const ImageDetailPage({super.key, required this.args});
 
   final ImageDetailArgs args;
 

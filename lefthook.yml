@@ -13,7 +13,7 @@ pre-commit:
   commands:
     fix:
       glob: "*.dart"
-      run: env -u GIT_DIR fvm dart fix --apply {staged_files}
+      run: ./scripts/dart_fix.sh {staged_files}
       stage_fixed: true
     format:
       glob: "*.dart"

@@ -21,13 +21,10 @@ Future<bool> showAppAlert(
       DialogButton(
         onPressed: () => navigator.pop(false),
         color: Colors.transparent,
-        highlightColor: theme.primaryColor.withOpacity(0.3),
-        splashColor: theme.primaryColor.withOpacity(0.3),
+        highlightColor: theme.primaryColor.withValues(alpha: 0.3),
+        splashColor: theme.primaryColor.withValues(alpha: 0.3),
         border: Border.fromBorderSide(
-          BorderSide(
-            color: theme.primaryColor,
-            width: 2,
-          ),
+          BorderSide(color: theme.primaryColor, width: 2),
         ),
         child: AppText.titleMedium(
           cancelButtonTitle,
@@ -37,8 +34,8 @@ Future<bool> showAppAlert(
     DialogButton(
       onPressed: () => navigator.pop(true),
       color: theme.primaryColor,
-      highlightColor: theme.colorScheme.surface.withOpacity(0.3),
-      splashColor: theme.colorScheme.surface.withOpacity(0.3),
+      highlightColor: theme.colorScheme.surface.withValues(alpha: 0.3),
+      splashColor: theme.colorScheme.surface.withValues(alpha: 0.3),
       child: AppText.titleMedium(
         okButtonTitle,
         color: theme.colorScheme.surface,
@@ -46,29 +43,28 @@ Future<bool> showAppAlert(
     ),
   ];
 
-  final result = await Alert(
-    context: context,
-    title: title,
-    desc: message,
-    style: AlertStyle(
-      backgroundColor: theme.colorScheme.surface,
-      alertBorder: RoundedRectangleBorder(
-        side: BorderSide(
-          color: theme.dividerColor,
+  final result =
+      await Alert(
+        context: context,
+        title: title,
+        desc: message,
+        style: AlertStyle(
+          backgroundColor: theme.colorScheme.surface,
+          alertBorder: RoundedRectangleBorder(
+            side: BorderSide(color: theme.dividerColor),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          animationType: AnimationType.grow,
+          isCloseButton: false,
+          isOverlayTapDismiss: false,
+          overlayColor: Colors.black54,
+          alertElevation: 0,
+          // ThemeData は型スケールを必ず埋めるので、null にはならない。
+          titleStyle: theme.textTheme.titleLarge!,
+          descStyle: theme.textTheme.titleMedium!,
         ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      animationType: AnimationType.grow,
-      isCloseButton: false,
-      isOverlayTapDismiss: false,
-      overlayColor: Colors.black54,
-      alertElevation: 0,
-      // ThemeData は型スケールを必ず埋めるので、null にはならない。
-      titleStyle: theme.textTheme.titleLarge!,
-      descStyle: theme.textTheme.titleMedium!,
-    ),
-    buttons: buttons,
-    onWillPopActive: true,
-  ).show();
+        buttons: buttons,
+        onWillPopActive: true,
+      ).show();
   return result ?? false;
 }

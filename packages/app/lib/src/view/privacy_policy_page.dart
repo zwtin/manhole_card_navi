@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../router/use_screen_view.dart';
+import '../theme/app_colors.dart';
 import '../view_model/privacy_policy_view_model.dart';
 import '../widget/app_text.dart';
 
@@ -26,9 +27,7 @@ class PrivacyPolicyPage extends HookConsumerWidget {
       ),
       body: Stack(
         children: [
-          Container(
-            color: Theme.of(context).colorScheme.background,
-          ),
+          Container(color: context.appColors.screenBackground),
           SingleChildScrollView(
             padding: EdgeInsets.only(
               left: MediaQuery.of(context).padding.left,
@@ -37,9 +36,7 @@ class PrivacyPolicyPage extends HookConsumerWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Html(
-                data: html,
-              ),
+              child: Html(data: html),
             ),
           ),
         ],

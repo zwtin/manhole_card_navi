@@ -59,36 +59,35 @@ class ImageDetailViewState extends ConsumerState<ImageDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          _buildImage(context),
-          _buildTopBar(context),
-        ],
-      ),
+      body: Stack(children: [_buildImage(context), _buildTopBar(context)]),
     );
   }
 
   Widget _buildImage(BuildContext context) {
     return GestureDetector(
       onTap: onTapPhotoView,
-      onVerticalDragStart: scaleState == PhotoViewScaleState.initial
-          ? onVerticalDragStart
-          : null,
-      onVerticalDragUpdate: scaleState == PhotoViewScaleState.initial
-          ? onVerticalDragUpdate
-          : null,
+      onVerticalDragStart:
+          scaleState == PhotoViewScaleState.initial
+              ? onVerticalDragStart
+              : null,
+      onVerticalDragUpdate:
+          scaleState == PhotoViewScaleState.initial
+              ? onVerticalDragUpdate
+              : null,
       onVerticalDragEnd:
           scaleState == PhotoViewScaleState.initial ? onVerticalDragEnd : null,
-      onHorizontalDragStart: scaleState == PhotoViewScaleState.initial
-          ? onVerticalDragStart
-          : null,
-      onHorizontalDragUpdate: scaleState == PhotoViewScaleState.initial
-          ? onVerticalDragUpdate
-          : null,
+      onHorizontalDragStart:
+          scaleState == PhotoViewScaleState.initial
+              ? onVerticalDragStart
+              : null,
+      onHorizontalDragUpdate:
+          scaleState == PhotoViewScaleState.initial
+              ? onVerticalDragUpdate
+              : null,
       onHorizontalDragEnd:
           scaleState == PhotoViewScaleState.initial ? onVerticalDragEnd : null,
       child: Container(
-        color: Colors.black.withOpacity(photoViewOpacity),
+        color: Colors.black.withValues(alpha: photoViewOpacity),
         child: AnimatedContainer(
           duration: Duration(milliseconds: photoViewAnimationDurationMilliSec),
           transform: photoViewTransform,
@@ -138,7 +137,7 @@ class ImageDetailViewState extends ConsumerState<ImageDetail> {
       duration: const Duration(milliseconds: 200),
       opacity: barsOpacity,
       child: Container(
-        color: Colors.black.withOpacity(0.4),
+        color: Colors.black.withValues(alpha: 0.4),
         height: topBarHeight,
         child: Column(
           children: [

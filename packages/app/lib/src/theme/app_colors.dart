@@ -14,6 +14,7 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.badgeText,
     required this.badgeBackground,
     required this.cardShadow,
+    required this.screenBackground,
   });
 
   static const light = AppColors(
@@ -24,6 +25,7 @@ class AppColors extends ThemeExtension<AppColors> {
     badgeText: ColorName.lightBadgeText,
     badgeBackground: ColorName.lightBadgeBackground,
     cardShadow: ColorName.lightCardShadow,
+    screenBackground: ColorName.lightScreenBackground,
   );
 
   static const dark = AppColors(
@@ -34,6 +36,7 @@ class AppColors extends ThemeExtension<AppColors> {
     badgeText: ColorName.darkBadgeText,
     badgeBackground: ColorName.darkBadgeBackground,
     cardShadow: null,
+    screenBackground: ColorName.darkScreenBackground,
   );
 
   /// 押せる文字。
@@ -54,6 +57,10 @@ class AppColors extends ThemeExtension<AppColors> {
   /// カードの影。枠線を引くテーマ（暗いほう）では落とさないので null。
   final Color? cardShadow;
 
+  /// 画面そのものの背景。中身（カード・リスト）の背景より 1 段暗い。
+  /// Material の `ColorScheme.background` は廃止されたので、こちらで持つ。
+  final Color screenBackground;
+
   @override
   AppColors copyWith({
     Color? link,
@@ -63,6 +70,7 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? badgeText,
     Color? badgeBackground,
     Color? cardShadow,
+    Color? screenBackground,
   }) {
     return AppColors(
       link: link ?? this.link,
@@ -72,6 +80,7 @@ class AppColors extends ThemeExtension<AppColors> {
       badgeText: badgeText ?? this.badgeText,
       badgeBackground: badgeBackground ?? this.badgeBackground,
       cardShadow: cardShadow ?? this.cardShadow,
+      screenBackground: screenBackground ?? this.screenBackground,
     );
   }
 
@@ -86,9 +95,10 @@ class AppColors extends ThemeExtension<AppColors> {
       chipBorder: Color.lerp(chipBorder, other.chipBorder, t)!,
       cardLine: Color.lerp(cardLine, other.cardLine, t),
       badgeText: Color.lerp(badgeText, other.badgeText, t)!,
-      badgeBackground:
-          Color.lerp(badgeBackground, other.badgeBackground, t)!,
+      badgeBackground: Color.lerp(badgeBackground, other.badgeBackground, t)!,
       cardShadow: Color.lerp(cardShadow, other.cardShadow, t),
+      screenBackground:
+          Color.lerp(screenBackground, other.screenBackground, t)!,
     );
   }
 }

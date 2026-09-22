@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../router/use_screen_view.dart';
+import '../theme/app_colors.dart';
 import '../view_model/manhole_card_map_view_model.dart';
 import '../widget/app_text.dart';
 
@@ -17,15 +18,12 @@ class ManholeCardMapPage extends HookConsumerWidget {
     final viewModel = ref.read(manholeCardMapViewModelProvider.notifier);
 
     useScreenView(ref, viewModel.sendScreenView);
-    useEffect(
-      () {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await viewModel.onLoad();
-        });
-        return null;
-      },
-      const [],
-    );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await viewModel.onLoad();
+      });
+      return null;
+    }, const []);
 
     return Scaffold(
       appBar: AppBar(
@@ -57,7 +55,7 @@ class ManholeCardMapPage extends HookConsumerWidget {
           }
           return Stack(
             children: [
-              Container(color: Theme.of(context).colorScheme.background),
+              Container(color: context.appColors.screenBackground),
               Column(
                 children: [
                   Flexible(
@@ -70,28 +68,24 @@ class ManholeCardMapPage extends HookConsumerWidget {
                       },
                       mapToolbarEnabled: false,
                       mapType: MapType.normal,
-                      minMaxZoomPreference: const MinMaxZoomPreference(
-                        5,
-                        17,
-                      ),
+                      minMaxZoomPreference: const MinMaxZoomPreference(5, 17),
                       rotateGesturesEnabled: false,
                       zoomControlsEnabled: false,
                       tiltGesturesEnabled: false,
                       myLocationEnabled: state.myLocationEnabled,
                       myLocationButtonEnabled: false,
-                      markers: state.markers.map((viewData) {
-                        return Marker(
-                          markerId: MarkerId(viewData.id),
-                          icon: BitmapDescriptor.fromBytes(
-                            viewData.icon,
-                          ),
-                          position: LatLng(
-                            viewData.latitude,
-                            viewData.longitude,
-                          ),
-                          onTap: () => viewModel.onTapMarker(viewData.id),
-                        );
-                      }).toSet(),
+                      markers:
+                          state.markers.map((viewData) {
+                            return Marker(
+                              markerId: MarkerId(viewData.id),
+                              icon: BitmapDescriptor.bytes(viewData.icon),
+                              position: LatLng(
+                                viewData.latitude,
+                                viewData.longitude,
+                              ),
+                              onTap: () => viewModel.onTapMarker(viewData.id),
+                            );
+                          }).toSet(),
                       onCameraMove: viewModel.onCameraMove,
                       onCameraIdle: viewModel.onCameraIdle,
                     ),

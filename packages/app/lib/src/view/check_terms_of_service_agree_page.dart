@@ -4,6 +4,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 
 import '../gen/assets.gen.dart';
 import '../router/use_screen_view.dart';
+import '../theme/app_colors.dart';
 import '../view_model/check_terms_of_service_agree_view_model.dart';
 import '../widget/custom_check_box.dart';
 import '../widget/app_text.dart';
@@ -23,17 +24,14 @@ class CheckTermsOfServiceAgreePage extends HookConsumerWidget {
 
     return LoadingOverlay(
       isLoading: state.isLoading,
-      color: Theme.of(context).colorScheme.background,
+      color: context.appColors.screenBackground,
       child: Scaffold(
         appBar: AppBar(
-          title: const AppText.titleLarge(
-            '同意確認',
-            fontWeight: FontWeight.bold,
-          ),
+          title: const AppText.titleLarge('同意確認', fontWeight: FontWeight.bold),
         ),
         body: Stack(
           children: [
-            Container(color: Theme.of(context).colorScheme.background),
+            Container(color: context.appColors.screenBackground),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SafeArea(
@@ -45,10 +43,7 @@ class CheckTermsOfServiceAgreePage extends HookConsumerWidget {
                       'アプリを使うためには、利用規約とプライバシーポリシーに同意する必要があります。',
                     ),
                     const Spacer(flex: 1),
-                    Assets.images.terms.terms.image(
-                      width: 300,
-                      height: 300,
-                    ),
+                    Assets.images.terms.terms.image(width: 300, height: 300),
                     const Spacer(flex: 2),
                     Row(
                       children: [

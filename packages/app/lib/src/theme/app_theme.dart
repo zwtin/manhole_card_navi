@@ -69,7 +69,7 @@ abstract final class AppTheme {
     return base.copyWith(
       extensions: [colors],
       appBarTheme: base.appBarTheme.copyWith(
-        color: contentsBackground,
+        backgroundColor: contentsBackground,
         elevation: 0,
         iconTheme: IconThemeData(color: icon),
         titleTextStyle: textTheme.titleLarge?.copyWith(
@@ -82,9 +82,7 @@ abstract final class AppTheme {
         displayMedium: textTheme.displayMedium?.copyWith(color: positiveText),
         displaySmall: textTheme.displaySmall?.copyWith(color: positiveText),
         headlineLarge: textTheme.headlineLarge?.copyWith(color: positiveText),
-        headlineMedium: textTheme.headlineMedium?.copyWith(
-          color: positiveText,
-        ),
+        headlineMedium: textTheme.headlineMedium?.copyWith(color: positiveText),
         headlineSmall: textTheme.headlineSmall?.copyWith(color: positiveText),
         titleLarge: textTheme.titleLarge?.copyWith(color: positiveText),
         titleMedium: textTheme.titleMedium?.copyWith(color: positiveText),
@@ -99,7 +97,6 @@ abstract final class AppTheme {
       primaryColor: primary,
       colorScheme: base.colorScheme.copyWith(
         primary: primary,
-        background: screenBackground,
         surface: contentsBackground,
       ),
       iconTheme: IconThemeData(color: icon),
@@ -123,8 +120,8 @@ abstract final class AppTheme {
         collapsedShape: const Border(),
       ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return icon;
           }
           return null;
