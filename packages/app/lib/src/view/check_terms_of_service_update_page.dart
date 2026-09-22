@@ -7,6 +7,7 @@ import '../gen/assets.gen.dart';
 import '../router/use_screen_view.dart';
 import '../view_model/check_terms_of_service_update_view_model.dart';
 import '../widget/custom_check_box.dart';
+import '../widget/app_bar_title.dart';
 import '../widget/app_text.dart';
 
 /// 起動時に利用規約の更新を確認し、更新されていれば再同意を求める画面。
@@ -34,12 +35,7 @@ class CheckTermsOfServiceUpdatePage extends HookConsumerWidget {
       child:
           state.inquireUpdate
               ? Scaffold(
-                appBar: AppBar(
-                  title: const AppText.titleLarge(
-                    '同意確認',
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                appBar: AppBar(title: const AppBarTitle('同意確認')),
                 body: Stack(
                   children: [
                     Container(color: Theme.of(context).colorScheme.surface),

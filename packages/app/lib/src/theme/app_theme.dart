@@ -101,7 +101,6 @@ abstract final class AppTheme {
     );
     // 文字色は onSurface から導かれるので、textTheme に色を配って回らなくてよい。
     final base = ThemeData(colorScheme: scheme, extensions: [colors]);
-    final textTheme = base.textTheme;
 
     return base.copyWith(
       // ThemeData は暗いテーマの primaryColor を colorScheme.surface にするので、
@@ -113,9 +112,6 @@ abstract final class AppTheme {
         backgroundColor: contentsBackground,
         elevation: 0,
         iconTheme: IconThemeData(color: icon),
-        titleTextStyle: textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-        ),
       ),
       cardColor: screenBackground,
       listTileTheme: base.listTileTheme.copyWith(
@@ -146,7 +142,6 @@ abstract final class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          textStyle: textTheme.titleLarge,
           backgroundColor: primary,
           foregroundColor: contentsBackground,
           elevation: 0.0,

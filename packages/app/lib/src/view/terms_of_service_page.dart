@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../router/use_screen_view.dart';
 import '../view_model/terms_of_service_view_model.dart';
-import '../widget/app_text.dart';
+import '../widget/app_bar_title.dart';
 
 /// 利用規約。起動時の同意画面と設定タブの両方から開く。
 class TermsOfServicePage extends HookConsumerWidget {
@@ -18,9 +18,7 @@ class TermsOfServicePage extends HookConsumerWidget {
     useScreenView(ref, viewModel.sendScreenView);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const AppText.titleLarge('利用規約', fontWeight: FontWeight.bold),
-      ),
+      appBar: AppBar(title: const AppBarTitle('利用規約')),
       body: Stack(
         children: [
           Container(color: Theme.of(context).colorScheme.surface),

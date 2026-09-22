@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../router/use_screen_view.dart';
 import '../view_data/setting_view_data.dart';
 import '../view_model/setting_view_model.dart';
+import '../widget/app_bar_title.dart';
 import '../widget/app_text.dart';
 
 /// 設定タブ。
@@ -20,9 +21,7 @@ class SettingPage extends HookConsumerWidget {
     useScreenView(ref, viewModel.sendScreenView);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const AppText.titleLarge('設定', fontWeight: FontWeight.bold),
-      ),
+      appBar: AppBar(title: const AppBarTitle('設定')),
       body: Stack(
         children: [
           Container(color: Theme.of(context).colorScheme.surface),

@@ -8,6 +8,7 @@ import '../router/use_screen_view.dart';
 import '../view_model/detail_view_model.dart';
 import '../widget/card_image.dart';
 import '../widget/card_image_provider.dart';
+import '../widget/app_bar_title.dart';
 import '../widget/app_text.dart';
 import '../widget/html_content.dart';
 
@@ -25,9 +26,7 @@ class DetailPage extends HookConsumerWidget {
     useScreenView(ref, viewModel.sendScreenView);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const AppText.titleLarge('詳細', fontWeight: FontWeight.bold),
-      ),
+      appBar: AppBar(title: const AppBarTitle('詳細')),
       body: Stack(
         children: [
           Container(color: Theme.of(context).colorScheme.surface),

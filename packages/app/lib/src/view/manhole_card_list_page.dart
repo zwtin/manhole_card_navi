@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../router/use_screen_view.dart';
 import '../view_model/manhole_card_list_view_model.dart';
 import '../widget/card_image.dart';
+import '../widget/app_bar_title.dart';
 import '../widget/app_text.dart';
 
 /// リストタブ。都道府県ごとにカードを折りたたんで表示する。
@@ -20,10 +21,7 @@ class ManholeCardListPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: AppText.titleLarge(
-          state?.navigationTitle ?? 'リスト',
-          fontWeight: FontWeight.bold,
-        ),
+        title: AppBarTitle(state?.navigationTitle ?? 'リスト'),
         actions: <Widget>[
           IconButton(
             tooltip: '検索条件',

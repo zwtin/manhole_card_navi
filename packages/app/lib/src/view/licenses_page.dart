@@ -5,6 +5,7 @@ import '../gen/assets.gen.dart';
 import '../router/use_screen_view.dart';
 import '../view_data/licenses_view_data.dart';
 import '../view_model/licenses_view_model.dart';
+import '../widget/app_bar_title.dart';
 
 /// ライセンス画面。Flutter 標準の [LicensePage] をアプリの配色で包む。
 class LicensesPage extends HookConsumerWidget {
@@ -23,6 +24,9 @@ class LicensesPage extends HookConsumerWidget {
       // Flutter の LicensePage は行の色を listTileTheme から取る。アプリの
       // 既定（カードの面）ではなく画面の地に合わせたいので、ここだけ差し替える。
       data: Theme.of(context).copyWith(
+        appBarTheme: Theme.of(
+          context,
+        ).appBarTheme.copyWith(titleTextStyle: AppBarTitle.styleOf(context)),
         listTileTheme: Theme.of(context).listTileTheme.copyWith(
           tileColor: Theme.of(context).colorScheme.surface,
         ),

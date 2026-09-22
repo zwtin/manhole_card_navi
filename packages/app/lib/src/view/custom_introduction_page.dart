@@ -5,6 +5,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import '../gen/assets.gen.dart';
 import '../router/use_screen_view.dart';
 import '../view_model/custom_introduction_view_model.dart';
+import '../widget/app_bar_title.dart';
 import '../widget/app_text.dart';
 
 /// アプリの使い方。初回起動時のチュートリアルと、設定の「アプリの使い方」で使う。
@@ -24,37 +25,26 @@ class CustomIntroductionPage extends HookConsumerWidget {
     useScreenView(ref, viewModel.sendScreenView);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const AppText.titleLarge('アプリの使い方', fontWeight: FontWeight.bold),
-      ),
+      appBar: AppBar(title: const AppBarTitle('アプリの使い方')),
       body: Container(
         color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: IntroductionScreen(
             pages: [
               PageViewModel(
-                titleWidget: const AppText.titleLarge(
-                  'ようこそ！',
-                  fontWeight: FontWeight.bold,
-                ),
+                titleWidget: const AppBarTitle('ようこそ！'),
                 bodyWidget: const AppText.titleMedium('マンホールカード集めをもっと楽しもう！'),
                 image: Assets.images.tutorials.tutorial1.image(),
               ),
               PageViewModel(
-                titleWidget: const AppText.titleLarge(
-                  '近所のマンホールを探そう！',
-                  fontWeight: FontWeight.bold,
-                ),
+                titleWidget: const AppBarTitle('近所のマンホールを探そう！'),
                 bodyWidget: const AppText.titleMedium(
                   '枠の色でカードが配布中かわかります。\n\n緑色: 配布中\n赤色: 配布停止\n黄色: 不明',
                 ),
                 image: Assets.images.tutorials.tutorial2.image(),
               ),
               PageViewModel(
-                titleWidget: const AppText.titleLarge(
-                  '取得済みカードをチェック！',
-                  fontWeight: FontWeight.bold,
-                ),
+                titleWidget: const AppBarTitle('取得済みカードをチェック！'),
                 bodyWidget: const AppText.titleMedium(
                   'カードの色で取得済みかわかります。\n\nカラー: 取得済み\nグレー: 未取得',
                 ),

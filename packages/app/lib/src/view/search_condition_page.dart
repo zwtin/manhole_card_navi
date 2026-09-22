@@ -7,6 +7,7 @@ import '../router/use_screen_view.dart';
 import '../view_data/search_condition_view_data.dart';
 import '../theme/app_colors.dart';
 import '../view_model/search_condition_view_model.dart';
+import '../widget/app_bar_title.dart';
 import '../widget/app_text.dart';
 
 /// 検索条件画面。
@@ -37,7 +38,7 @@ class SearchConditionPage extends HookConsumerWidget {
           tooltip: '閉じる',
           onPressed: viewModel.onClose,
         ),
-        title: const AppText.titleLarge('検索条件', fontWeight: FontWeight.bold),
+        title: const AppBarTitle('検索条件'),
         actions: [
           TextButton(
             style: TextButton.styleFrom(
