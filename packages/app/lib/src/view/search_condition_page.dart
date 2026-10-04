@@ -1,4 +1,3 @@
-import 'package:domain/domain.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -21,10 +20,7 @@ class SearchConditionPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 端末保存済みの条件はすぐ読めるので、読み込み中は初期状態で表示しておく。
-    final state =
-        ref.watch(searchConditionViewModelProvider).valueOrNull ??
-        SearchConditionViewData(draft: SearchCondition.initial());
+    final state = ref.watch(searchConditionViewModelProvider).valueOrNull;
     final viewModel = ref.read(searchConditionViewModelProvider.notifier);
 
     useScreenView(ref, viewModel.sendScreenView);
@@ -54,90 +50,60 @@ class SearchConditionPage extends HookConsumerWidget {
         ],
       ),
       // ==== スクロール: セクション群 ====
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
-        children: [
-          // ---- 表示（取得状態）: 単一選択 ----
-          _SectionCard(
-            title: '表示',
-            child: _Segmented<AlreadyGetFilter>(
-              value: state.alreadyGetFilter,
-              options: const [
-                ('すべて', AlreadyGetFilter.all),
-                ('取得済みのみ', AlreadyGetFilter.alreadyGet),
-                ('未取得のみ', AlreadyGetFilter.notAlreadyGet),
-              ],
-              onChanged: viewModel.setAlreadyGetFilter,
-            ),
-          ),
+      // 端末から読むだけで一瞬なので、読み込み中は何も出さない。
+      body:
+          state == null
+              ? null
+              : ListView(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+                children: [
+                  // ---- 表示（取得状態）: 単一選択 ----
+                  _SectionCard(
+                    title: '表示',
+                    child: _Segmented(
+                      options: state.alreadyGetFilters,
+                      onChanged: viewModel.selectAlreadyGetFilter,
+                    ),
+                  ),
 
-          // ---- 弾数: 複数選択（空＝すべて表示） ----
-          _SectionCard(
-            title: '弾数',
-            actions: _QuickActions(
-              onSelectAll: viewModel.selectAllVolumes,
-              onClear: viewModel.clearVolumes,
-            ),
-            child: Wrap(
-              spacing: 9,
-              runSpacing: 9,
-              children:
-                  state.volumeOptions
-                      .map(
-                        (option) => _FilterChip(
-                          label: option.name,
-                          selected: state.isVolumeSelected(option.id),
-                          onTap: () => viewModel.toggleVolume(option.id),
-                        ),
-                      )
-                      .toList(),
-            ),
-          ),
+                  // ---- 弾数: 複数選択（空＝すべて表示） ----
+                  _SectionCard(
+                    title: '弾数',
+                    actions: _QuickActions(
+                      onSelectAll: viewModel.selectAllVolumes,
+                      onClear: viewModel.clearVolumes,
+                    ),
+                    child: _FilterChips(
+                      options: state.volumes,
+                      onTap: viewModel.toggleVolume,
+                    ),
+                  ),
 
-          // ---- 配布状態: 複数選択（空＝すべて表示） ----
-          _SectionCard(
-            title: '配布状態',
-            actions: _QuickActions(
-              onSelectAll: viewModel.selectAllDistributionStates,
-              onClear: viewModel.clearDistributionStates,
-            ),
-            child: Wrap(
-              spacing: 9,
-              runSpacing: 9,
-              children:
-                  SearchConditionViewModel.distributionStateOptions
-                      .map(
-                        (option) => _FilterChip(
-                          label: option.name,
-                          selected: state.isDistributionStateSelected(
-                            option.state,
-                          ),
-                          onTap:
-                              () => viewModel.toggleDistributionState(
-                                option.state,
-                              ),
-                        ),
-                      )
-                      .toList(),
-            ),
-          ),
+                  // ---- 配布状態: 複数選択（空＝すべて表示） ----
+                  _SectionCard(
+                    title: '配布状態',
+                    actions: _QuickActions(
+                      onSelectAll: viewModel.selectAllDistributionStates,
+                      onClear: viewModel.clearDistributionStates,
+                    ),
+                    child: _FilterChips(
+                      options: state.distributionStates,
+                      onTap: viewModel.toggleDistributionState,
+                    ),
+                  ),
 
-          // ---- マップ表示（マップ画面にのみ適用）: 単一選択 ----
-          _SectionCard(
-            title: 'マップ表示',
-            pill: 'マップのみ',
-            child: _Segmented<MapCoordinateType>(
-              value: state.coordinateType,
-              options: const [
-                ('配布場所', MapCoordinateType.distribution),
-                ('蓋', MapCoordinateType.position),
-              ],
-              onChanged: viewModel.setCoordinateType,
-            ),
-          ),
-          const SizedBox(height: 8),
-        ],
-      ),
+                  // ---- マップ表示（マップ画面にのみ適用）: 単一選択 ----
+                  _SectionCard(
+                    title: 'マップ表示',
+                    pill: 'マップのみ',
+                    child: _Segmented(
+                      options: state.coordinateTypes,
+                      onChanged: viewModel.selectCoordinateType,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
       // ==== 固定: 「この条件で表示」ボタン ====
       bottomNavigationBar: Container(
         color: Theme.of(context).colorScheme.surfaceContainerLowest,
@@ -307,19 +273,17 @@ class _QuickActions extends StatelessWidget {
 /// 見た目はアプリの配色（トラック＝`track` / 選択中＝`primary`）に合わせつつ、
 /// 選択位置の移動やドラッグ操作は [CupertinoSlidingSegmentedControl] に任せて
 /// スライドアニメーションを得る。
-class _Segmented<T extends Object> extends StatelessWidget {
-  const _Segmented({
-    required this.options,
-    required this.value,
-    required this.onChanged,
-  });
+class _Segmented extends StatelessWidget {
+  const _Segmented({required this.options, required this.onChanged});
 
-  final List<(String, T)> options;
-  final T value;
-  final ValueChanged<T> onChanged;
+  final List<OptionViewData> options;
+
+  /// 押された選択肢が [options] の何番目か。
+  final ValueChanged<int> onChanged;
 
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = options.indexWhere((option) => option.selected);
     return SizedBox(
       // 幅いっぱいのタイトな制約を与えることで、各セグメントが均等幅になる。
       width: double.infinity,
@@ -330,21 +294,21 @@ class _Segmented<T extends Object> extends StatelessWidget {
           color: Theme.of(context).colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: CupertinoSlidingSegmentedControl<T>(
-          groupValue: value,
+        child: CupertinoSlidingSegmentedControl<int>(
+          groupValue: selectedIndex < 0 ? null : selectedIndex,
           backgroundColor: Colors.transparent,
           thumbColor: Theme.of(context).primaryColor,
           padding: const EdgeInsets.all(4),
-          onValueChanged: (newValue) {
-            if (newValue != null) {
-              onChanged(newValue);
+          onValueChanged: (index) {
+            if (index != null) {
+              onChanged(index);
             }
           },
           children: {
-            for (final option in options)
-              option.$2: _SegmentLabel(
-                label: option.$1,
-                selected: option.$2 == value,
+            for (final (index, option) in options.indexed)
+              index: _SegmentLabel(
+                label: option.label,
+                selected: option.selected,
                 selectedColor:
                     Theme.of(context).colorScheme.surfaceContainerLowest,
                 unselectedColor: _subColor(context),
@@ -412,6 +376,32 @@ class _SegmentLabel extends StatelessWidget {
         // ignore: use_app_text
         child: Text(label, textAlign: TextAlign.center),
       ),
+    );
+  }
+}
+
+/// 複数選択のフィルタチップを並べる。
+class _FilterChips extends StatelessWidget {
+  const _FilterChips({required this.options, required this.onTap});
+
+  final List<OptionViewData> options;
+
+  /// 押された選択肢が [options] の何番目か。
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 9,
+      runSpacing: 9,
+      children: [
+        for (final (index, option) in options.indexed)
+          _FilterChip(
+            label: option.label,
+            selected: option.selected,
+            onTap: () => onTap(index),
+          ),
+      ],
     );
   }
 }

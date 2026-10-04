@@ -33,8 +33,8 @@ fvm flutter build ios --dart-define-from-file=dart_defines/production.env
 # コード解析（ルートで実行すると packages/ 配下もまとめて解析する）
 fvm flutter analyze
 
-# デザインシステムの検査（flutter analyze では見つからない）
-./scripts/check_design_system.sh
+# app の約束（デザインシステム・View が domain を知らないこと）の検査。flutter analyze では見つからない
+./scripts/check_app_rules.sh
 
 # テストの実行（パッケージごと。ルートにもある）
 (cd packages/domain && fvm dart test)  # domain は Flutter に依存しないので dart で回せる
@@ -57,7 +57,7 @@ fvm flutter pub run flutter_native_splash:create
 ## コミットとプッシュ
 lefthook がフックで検査を走らせる。導入は `brew install lefthook` の後、**git worktree ごとに** `lefthook install`。
 
-- コミット時: `dart fix --apply` → `dart format` → デザインシステムの検査（いずれも staged なファイルだけ）
+- コミット時: `dart fix --apply` → `dart format` → app の約束の検査（いずれも staged なファイルだけ）
 - プッシュ時: `fvm flutter analyze` と全パッケージのテスト（`scripts/run_tests.sh`）
 
 **`git commit --no-verify` や `git push --no-verify` は使わない。** 検査を飛ばすと、壊れたものがそのまま乗る。直せない事情があるなら、フックを飛ばすのではなく `// ignore:` に理由を書く。
@@ -96,11 +96,13 @@ lefthook がフックで検査を走らせる。導入は `brew install lefthook
    - `view/` - 画面（`*_page.dart`）
    - `view_model/` - 画面ごとの ViewModel
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
+   - **View・ViewData・widget は domain を知らない。** ViewData は表示の形（文字・bool・数）だけを持ち、domain の値を表示名や並び順にするのは mapper。編集中の条件のように画面が domain の値を持ち続けるときは、ViewModel の private な変数に置く。選択肢は「表示名と選ばれているか」で渡し、押されたものは何番目かで ViewModel に返す（番号を値に戻す並びは mapper が持つ）。例外はカード画像の `card_image_provider.dart` だけ（状態管理の節）
    - `widget/` / `mapper/` / `theme/` - 共通部品・変換・テーマ
    - **見た目はデザインシステムから選ぶ。** 文字は `AppText`（`widget/app_text.dart`）の名前付きコンストラクタ、色は `ColorScheme`（Material 3 の色の役割）から引く。役割に当てはまらない色だけ `AppColors`（`theme/app_colors.dart`、`ThemeExtension`）に置く。いまそこにあるのはリンク・カードの枠線・カードの影の 3 つだけ
    - `AppBar` の見出しは `AppBarTitle`。画面ごとに大きさや太さを決めない
    - **`ThemeData` を組む時点の `textTheme` には大きさが入っていない**（言語に応じた字形と合わせるのは画面を描くとき）。`appBarTheme.titleTextStyle` のようなところに `textTheme` から作った style を焼き込むと、大きさのない style になって既定値に落ちる。テーマに焼き込まず、描画時に読むウィジェット側で決める
-   - 面の重なりは `surface`（画面の地）と `surfaceContainerLowest`（カード・リストの面）で表す。Material 3 はこの 2 つを、明るいテーマでは面のほうを明るく、暗いテーマでは面のほうを暗くする向きで定義している。`ColorScheme.background` のように**役割を自分の意味で使い回すと、フレームワークの移行（`dart fix`）に踏まれる**色の値そのものは `assets/colors/colors.xml` に名前を付けてから使う。画面で `Text`・`TextStyle`・`Color` を直接作らず、Material のパレット（`Colors.xxx`）も使わない（`scripts/check_design_system.sh` が止める。塗らないことを表す `Colors.transparent` だけは許す。動かせない事情があるところは、その行の直前に `// ignore: <ルール名>` と理由を書く）。使っていない見た目も、そろえるために `AppText` に残す
+   - 面の重なりは `surface`（画面の地）と `surfaceContainerLowest`（カード・リストの面）で表す。Material 3 はこの 2 つを、明るいテーマでは面のほうを明るく、暗いテーマでは面のほうを暗くする向きで定義している。`ColorScheme.background` のように**役割を自分の意味で使い回すと、フレームワークの移行（`dart fix`）に踏まれる**
+   - 色の値そのものは `assets/colors/colors.xml` に名前を付けてから使う。画面で `Text`・`TextStyle`・`Color` を直接作らず、Material のパレット（`Colors.xxx`）も使わない（`scripts/check_app_rules.sh` が止める。塗らないことを表す `Colors.transparent` だけは許す。動かせない事情があるところは、その行の直前に `// ignore: <ルール名>` と理由を書く）。使っていない見た目も、そろえるために `AppText` に残す
    - `mapper/` は純粋な変換だけを置く。通信・保存・キャッシュを持たせない。マップのマーカーなら、ピンの選び方（`MapMarkersViewDataMapper`）と 1 枚の合成（`MarkerIconMapper`）が mapper で、画像を取る・並べる段取りは ViewModel の役目
    - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 
@@ -152,7 +154,7 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 - 読み込むだけの画面は `AsyncNotifier`（`build()` で取得）、起動時チェックやマップのように読み込みに副作用を伴う画面は `Notifier` にして View の `useEffect` から `onLoad()` を呼ぶ
 - ViewModel は BuildContext を持たない。遷移・アラート・URL を開く操作は `NavigationService` 経由で行う
 - ViewModel が読み書きするのは UseCase だけで、Repository を直接呼ばない。処理のない読み取りも、Repository を素通しする UseCase のメソッドを通す
-- カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）がカードの ID で `CardUseCase.fetchImage` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない。画像の URL・代わりの配信元・端末に保存するかは data だけが知っていて、エンティティにも画像の URL は持たせない
+- カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）がカードの ID で `CardUseCase.fetchImage` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない。View と widget はカードの ID を `cardImageProvider` に渡して受け取るだけで、UseCase を知っているのは `card_image_provider.dart` だけ。画像の URL・代わりの配信元・端末に保存するかは data だけが知っていて、エンティティにも画像の URL は持たせない
 
 ### 画面遷移（app）
 - go_router の `StatefulShellRoute` で、マップ・リスト・設定のタブがそれぞれ独立した遷移スタックを持つ

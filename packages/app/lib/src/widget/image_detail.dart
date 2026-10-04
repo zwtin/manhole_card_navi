@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
@@ -104,10 +103,7 @@ class ImageDetailViewState extends ConsumerState<ImageDetail> {
     final photoView = PhotoView(
       backgroundDecoration: const BoxDecoration(color: Colors.transparent),
       // 詳細のサムネイル・先読みと同じ原寸の画像にし、デコード済みの画像を共有する。
-      imageProvider: CardImageProvider(
-        useCase: ref.watch(cardUseCaseProvider),
-        cardId: widget.cardId,
-      ),
+      imageProvider: ref.watch(cardImageProvider(widget.cardId)),
       heroAttributes: PhotoViewHeroAttributes(
         tag: widget.imageTag,
         transitionOnUserGestures: true,

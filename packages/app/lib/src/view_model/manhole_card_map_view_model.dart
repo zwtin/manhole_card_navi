@@ -5,6 +5,7 @@ import 'package:domain/domain.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../mapper/map_coordinate_type_name_mapper.dart';
 import '../mapper/map_markers_view_data_mapper.dart';
 import '../mapper/marker_icon_mapper.dart';
 import '../router/app_router.dart';
@@ -16,9 +17,9 @@ import '../view_data/map_markers_view_data.dart';
 import 'shell_view_model.dart';
 
 final manholeCardMapViewModelProvider = NotifierProvider.autoDispose<
-    ManholeCardMapViewModel, ManholeCardMapViewData>(
-  ManholeCardMapViewModel.new,
-);
+  ManholeCardMapViewModel,
+  ManholeCardMapViewData
+>(ManholeCardMapViewModel.new);
 
 /// マップタブの ViewModel。
 class ManholeCardMapViewModel
@@ -74,7 +75,9 @@ class ManholeCardMapViewModel
       locationPermissionRequestedProvider,
       (previous, next) => updateMyLocationEnabled(),
     );
-    return const ManholeCardMapViewData();
+    return ManholeCardMapViewData(
+      navigationTitle: MapCoordinateTypeNameMapper.mapTitleOf(_coordinateType),
+    );
   }
 
   Future<void> onLoad() async {
@@ -174,7 +177,7 @@ class ManholeCardMapViewModel
       event: AnalyticsEvent.screenView(
         screenName: 'manhole_card_map_view',
         parameters: {
-          'coordinate_type': state.coordinateType.name,
+          'coordinate_type': _coordinateType.name,
           'active_filter_count': state.activeFilterCount,
         },
       ),
@@ -209,7 +212,9 @@ class ManholeCardMapViewModel
       return;
     }
 
-    final latitude = double.tryParse(route.uri.queryParameters['latitude'] ?? '');
+    final latitude = double.tryParse(
+      route.uri.queryParameters['latitude'] ?? '',
+    );
     final longitude = double.tryParse(
       route.uri.queryParameters['longitude'] ?? '',
     );
@@ -238,7 +243,9 @@ class ManholeCardMapViewModel
   void _applySearchCondition(SearchCondition condition) {
     _searchCondition = condition;
     state = state.copyWith(
-      coordinateType: condition.map.coordinateType,
+      navigationTitle: MapCoordinateTypeNameMapper.mapTitleOf(
+        condition.map.coordinateType,
+      ),
       activeFilterCount: condition.activeFilterCount,
     );
   }
@@ -264,9 +271,7 @@ class ManholeCardMapViewModel
   }
 
   void _listenAlreadyGetCard() {
-    final subscription = _alreadyGetCardUseCase.watch().listen((
-      cardIds,
-    ) async {
+    final subscription = _alreadyGetCardUseCase.watch().listen((cardIds) async {
       _alreadyGetCardIds = cardIds;
       // 取得済みが変わるとアイコンの見た目も変わるので、必ず作り直す。
       _lastReloadKey = null;

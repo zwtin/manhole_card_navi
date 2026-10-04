@@ -1,4 +1,3 @@
-import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
@@ -55,12 +54,7 @@ class DetailPage extends HookConsumerWidget {
                                         // 先読みに失敗しても遷移は続行する。
                                         try {
                                           await precacheImage(
-                                            CardImageProvider(
-                                              useCase: ref.read(
-                                                cardUseCaseProvider,
-                                              ),
-                                              cardId: cardId,
-                                            ),
+                                            ref.read(cardImageProvider(cardId)),
                                             context,
                                           );
                                         } on Exception {

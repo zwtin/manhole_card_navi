@@ -1,4 +1,3 @@
-import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -74,10 +73,7 @@ class CardImage extends ConsumerWidget {
       image: ResizeImage.resizeIfNeeded(
         memCacheWidth,
         null,
-        CardImageProvider(
-          useCase: ref.watch(cardUseCaseProvider),
-          cardId: cardId,
-        ),
+        ref.watch(cardImageProvider(cardId)),
       ),
       fit: fit,
     );

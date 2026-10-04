@@ -4,6 +4,15 @@ import 'dart:ui' as ui;
 import 'package:domain/domain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+final cardImageProvider = Provider.autoDispose
+    .family<CardImageProvider, String>(
+      (ref, cardId) => CardImageProvider(
+        useCase: ref.watch(cardUseCaseProvider),
+        cardId: cardId,
+      ),
+    );
 
 /// カード画像を [CardUseCase.fetchImage] から受け取って表示する [ImageProvider]。
 ///
@@ -15,10 +24,7 @@ import 'package:flutter/painting.dart';
 /// 表示するときの縮小は [ResizeImage] で包んで行う。
 @immutable
 class CardImageProvider extends ImageProvider<CardImageProvider> {
-  const CardImageProvider({
-    required this.useCase,
-    required this.cardId,
-  });
+  const CardImageProvider({required this.useCase, required this.cardId});
 
   final CardUseCase useCase;
 
@@ -39,10 +45,11 @@ class CardImageProvider extends ImageProvider<CardImageProvider> {
       codec: _loadCodec(key, decode),
       scale: 1.0,
       debugLabel: key.cardId,
-      informationCollector: () => <DiagnosticsNode>[
-        DiagnosticsProperty<ImageProvider>('Image provider', this),
-        DiagnosticsProperty<CardImageProvider>('Image key', key),
-      ],
+      informationCollector:
+          () => <DiagnosticsNode>[
+            DiagnosticsProperty<ImageProvider>('Image provider', this),
+            DiagnosticsProperty<CardImageProvider>('Image key', key),
+          ],
     );
   }
 

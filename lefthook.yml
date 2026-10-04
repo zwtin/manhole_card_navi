@@ -19,9 +19,9 @@ pre-commit:
       glob: "*.dart"
       run: env -u GIT_DIR fvm dart format {staged_files}
       stage_fixed: true
-    design-system:
+    app-rules:
       glob: "packages/app/lib/**/*.dart"
-      run: ./scripts/check_design_system.sh {staged_files}
+      run: ./scripts/check_app_rules.sh {staged_files}
 
 pre-push:
   parallel: false
