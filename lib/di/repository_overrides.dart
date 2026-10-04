@@ -36,9 +36,14 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
         crashlytics,
       ),
     ),
-    locationRepositoryProvider.overrideWith(
-      (_) => LocationRepositoryImpl(const LocationDataSource(), crashlytics),
-    ),
+    locationRepositoryProvider.overrideWith((ref) {
+      final repository = LocationRepositoryImpl(
+        const LocationDataSource(),
+        crashlytics,
+      );
+      ref.onDispose(repository.dispose);
+      return repository;
+    }),
     masterDataRepositoryProvider.overrideWith(
       (_) => MasterDataRepositoryImpl(
         infrastructure.masterDataRemote,

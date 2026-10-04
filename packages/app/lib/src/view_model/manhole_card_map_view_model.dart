@@ -14,7 +14,6 @@ import '../router/navigation_service.dart';
 import '../view_data/manhole_card_map_view_data.dart';
 import '../view_data/map_marker_view_data.dart';
 import '../view_data/map_markers_view_data.dart';
-import 'shell_view_model.dart';
 
 final manholeCardMapViewModelProvider = NotifierProvider.autoDispose<
   ManholeCardMapViewModel,
@@ -71,10 +70,11 @@ class ManholeCardMapViewModel
     _searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
 
     ref.listen(currentRouteProvider, (previous, next) => _onRouteChanged(next));
-    ref.listen(
-      locationPermissionRequestedProvider,
-      (previous, next) => updateMyLocationEnabled(),
+    // 起動時に下タブが許可を求める。答えが出たら現在地の表示を切り替える。
+    final subscription = _locationUseCase.watchPermissionGranted().listen(
+      _setMyLocationEnabled,
     );
+    ref.onDispose(subscription.cancel);
     return ManholeCardMapViewData(
       navigationTitle: MapCoordinateTypeNameMapper.mapTitleOf(_coordinateType),
     );
@@ -109,10 +109,7 @@ class ManholeCardMapViewModel
 
   Future<void> updateMyLocationEnabled() async {
     final result = await _locationUseCase.isPermissionGranted();
-    state = state.copyWith(
-      myLocationEnabled: result is Success<bool> && result.value,
-    );
-    await _moveToCurrentLocation(false);
+    await _setMyLocationEnabled(result is Success<bool> && result.value);
   }
 
   Future<void> onTapCurrentLocationButton() async {
@@ -163,7 +160,7 @@ class ManholeCardMapViewModel
   /// 表示中の座標種別で、カードのピンの位置を返す。見つからなければ null。
   ///
   /// 配布場所マップでは 1 枚のカードに複数のピンがあるため、最初のピンを返す。
-  Future<LatLng?> findCardPosition(String cardId) async {
+  Future<LatLng?> _findCardPosition(String cardId) async {
     await _fetchCards();
     final pin = _currentPins.where((pin) => pin.card.id == cardId).firstOrNull;
     if (pin == null) {
@@ -212,20 +209,15 @@ class ManholeCardMapViewModel
       return;
     }
 
-    final latitude = double.tryParse(
-      route.uri.queryParameters['latitude'] ?? '',
-    );
-    final longitude = double.tryParse(
-      route.uri.queryParameters['longitude'] ?? '',
-    );
-    if (latitude != null && longitude != null) {
+    final pin = AppRoutePath.pinOf(route.uri);
+    if (pin != null) {
       // ピンをタップして開いたときは、ピンが見えている範囲の中央へ滑らかに動かす。
-      await _moveToLocation(LatLng(latitude, longitude), true);
+      await _moveToLocation(LatLng(pin.latitude, pin.longitude), true);
       return;
     }
 
     // カード詳細の「マップで見る」から開いたときは、カードの位置へすぐ動かす。
-    final position = await findCardPosition(cardId);
+    final position = await _findCardPosition(cardId);
     if (position == null) {
       await _navigationService.showAlert(
         title: 'エラー',
@@ -355,6 +347,11 @@ class ManholeCardMapViewModel
       // 壊れた画像はデコードできない。Error はバグなので捨てずに流す。
       return null;
     }
+  }
+
+  Future<void> _setMyLocationEnabled(bool enabled) async {
+    state = state.copyWith(myLocationEnabled: enabled);
+    await _moveToCurrentLocation(false);
   }
 
   /// 現在地へカメラを動かす。動かせなかったときは、その理由を返す。

@@ -5,9 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../view_data/shell_view_data.dart';
 
-/// 位置情報の利用許可を求め終えたか。マップが現在地の表示を切り替えるために見る。
-final locationPermissionRequestedProvider = StateProvider<bool>((ref) => false);
-
 final shellViewModelProvider =
     NotifierProvider.autoDispose<ShellViewModel, ShellViewData>(
       ShellViewModel.new,
@@ -38,7 +35,6 @@ class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
     await _listenAlreadyGetCard();
     await _pushNotificationUseCase.requestPermission();
     await _locationUseCase.requestPermission();
-    ref.read(locationPermissionRequestedProvider.notifier).state = true;
     await _appBadgeUseCase.remove();
   }
 

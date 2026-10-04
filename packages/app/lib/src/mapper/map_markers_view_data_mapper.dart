@@ -34,6 +34,15 @@ abstract final class MapMarkersViewDataMapper {
     }
   }
 
+  /// カードのピンのうち最初の 1 本。配布場所では、配布地点が 0 件のカードに
+  /// ピンはない。
+  static Coordinate? firstPinOf(
+    ManholeCard card,
+    MapCoordinateType coordinateType,
+  ) {
+    return toPins([card], coordinateType).firstOrNull?.coordinate;
+  }
+
   /// 絞り込んでから近傍を選ぶ。先に絞ることで、絞り込みの対象外のカードが
   /// 近傍の枠を消費しないようにする。
   static List<CardPin> selectNearest({

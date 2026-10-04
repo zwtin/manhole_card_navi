@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../router/app_router.dart';
 import '../router/use_screen_view.dart';
 import '../view_model/card_modal_view_model.dart';
 import '../view_model/manhole_card_map_view_model.dart';
@@ -11,22 +12,16 @@ import '../widget/html_content.dart';
 
 /// マップタブでピンをタップしたときに出るカードのモーダル。
 class CardModalPage extends HookConsumerWidget {
-  const CardModalPage({
-    super.key,
-    required this.cardId,
-    this.latitude,
-    this.longitude,
-  });
+  const CardModalPage({super.key, required this.cardId, this.pin});
 
   final String cardId;
 
   /// タップしたピンの座標。カード詳細の「マップで見る」から開いたときは null。
-  final double? latitude;
-  final double? longitude;
+  final PinCoordinate? pin;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final args = (cardId: cardId, latitude: latitude, longitude: longitude);
+    final args = (cardId: cardId, pin: pin);
     final state = ref.watch(cardModalViewModelProvider(args)).valueOrNull;
     final viewModel = ref.read(cardModalViewModelProvider(args).notifier);
     // ドラッグハンドル領域を含むモーダル全体の高さ。マップの表示エリアの 2/3。

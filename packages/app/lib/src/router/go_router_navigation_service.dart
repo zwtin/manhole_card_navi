@@ -79,10 +79,11 @@ class GoRouterNavigationService implements NavigationService {
     required double longitude,
   }) {
     _router.go(
-      Uri(
-        path: AppRoutePath.cardModal(cardId),
-        queryParameters: {'latitude': '$latitude', 'longitude': '$longitude'},
-      ).toString(),
+      AppRoutePath.cardModalWithPin(
+        cardId,
+        latitude: latitude,
+        longitude: longitude,
+      ),
     );
   }
 

@@ -17,6 +17,10 @@ class LocationUseCase {
     return _locationRepository.requestPermission();
   }
 
+  Stream<bool> watchPermissionGranted() {
+    return _locationRepository.watchPermissionGranted();
+  }
+
   Future<Result<bool>> isPermissionGranted() async {
     return _locationRepository.isPermissionGranted();
   }

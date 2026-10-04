@@ -12,6 +12,9 @@ abstract class LocationRepository {
   /// 拒否された・端末の位置情報がオフのときは false（失敗ではない）。
   Future<Result<bool>> requestPermission();
 
+  /// [requestPermission] の結果を流す。設定アプリで変えたものは流れない。
+  Stream<bool> watchPermissionGranted();
+
   /// 使用中のみ・常に のどちらの許可でも true。
   Future<Result<bool>> isPermissionGranted();
 

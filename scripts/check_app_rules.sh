@@ -3,6 +3,7 @@
 #
 # - 見た目はデザインシステムから選ぶ。画面で Text・TextStyle・Color を直接作らない
 # - View・ViewData・widget は domain を知らない。domain の値を表示の形にするのは mapper
+# - ViewModel は他の ViewModel を読まない。画面をまたぐ状態は UseCase の watch で共有する
 #
 # 動かせない事情があるところは、その行の直前に `// ignore: <ルール名>` と理由を書く。
 #
@@ -26,6 +27,7 @@ design_targets=$(printf '%s\n' "$all" \
 # カード画像は Flutter の画像の仕組みで読むため、ここだけは UseCase を知っている。
 view_targets=$(printf '%s\n' "$all" \
   | grep -E '/(view|view_data|widget)/' | grep -v 'card_image_provider\.dart')
+view_model_targets=$(printf '%s\n' "$all" | grep -E '/view_model/')
 
 found=0
 
@@ -66,6 +68,8 @@ check use_color_token "$design_targets" '(^|[^A-Za-z0-9_.])Colors\.[a-z]' \
   'Colors\.transparent'
 check no_domain_in_view "$view_targets" "^import 'package:domain/" \
   'View・ViewData・widget は domain を知らない。表示の形にするのは mapper で、ViewModel が ViewData にして渡す。'
+check independent_view_model "$view_model_targets" "^import '.*_view_model\.dart';" \
+  'ViewModel は他の ViewModel を読まない。画面をまたぐ状態は UseCase の watch で共有する。'
 
 if [ "$found" -eq 1 ]; then
   echo ""

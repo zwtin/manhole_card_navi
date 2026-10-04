@@ -20,6 +20,9 @@ import '../view/terms_of_service_page.dart';
 import 'modal_bottom_sheet_page.dart';
 import 'shell_scaffold.dart';
 
+/// マップのピンの座標。
+typedef PinCoordinate = ({double latitude, double longitude});
+
 /// 画面のパス。
 abstract final class AppRoutePath {
   // ── 起動時チェック（タブの外） ──
@@ -39,6 +42,32 @@ abstract final class AppRoutePath {
   static const map = '/map';
   static const cardModalPrefix = '/map/card/';
   static String cardModal(String cardId) => '$cardModalPrefix$cardId';
+
+  /// ピンをタップして開くモーダル。ピンの座標はクエリに載せ、[pinOf] で読む。
+  static String cardModalWithPin(
+    String cardId, {
+    required double latitude,
+    required double longitude,
+  }) {
+    return Uri(
+      path: cardModal(cardId),
+      queryParameters: {_latitude: '$latitude', _longitude: '$longitude'},
+    ).toString();
+  }
+
+  /// [cardModalWithPin] で開いたときのピンの座標。それ以外は null。
+  static PinCoordinate? pinOf(Uri uri) {
+    final latitude = double.tryParse(uri.queryParameters[_latitude] ?? '');
+    final longitude = double.tryParse(uri.queryParameters[_longitude] ?? '');
+    if (latitude == null || longitude == null) {
+      return null;
+    }
+    return (latitude: latitude, longitude: longitude);
+  }
+
+  static const _latitude = 'latitude';
+  static const _longitude = 'longitude';
+
   static String mapCardDetail(String cardId) => '${cardModal(cardId)}/detail';
 
   // ── リストタブ ──
@@ -196,12 +225,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                           key: state.pageKey,
                           child: CardModalPage(
                             cardId: state.pathParameters['cardId']!,
-                            latitude: double.tryParse(
-                              state.uri.queryParameters['latitude'] ?? '',
-                            ),
-                            longitude: double.tryParse(
-                              state.uri.queryParameters['longitude'] ?? '',
-                            ),
+                            pin: AppRoutePath.pinOf(state.uri),
                           ),
                         ),
                     routes: [

@@ -50,6 +50,23 @@ void main() {
     ]);
   });
 
+  test('カードのピンの位置は、その種類の最初のピン。配布地点がなければ null', () {
+    expect(
+      MapMarkersViewDataMapper.firstPinOf(
+        cards[0],
+        MapCoordinateType.distribution,
+      ),
+      const Coordinate(latitude: 35.69, longitude: 139.77),
+    );
+    expect(
+      MapMarkersViewDataMapper.firstPinOf(
+        cards[1],
+        MapCoordinateType.distribution,
+      ),
+      isNull,
+    );
+  });
+
   test('配布場所では、配布地点の数だけピンを立てる', () {
     final pins = MapMarkersViewDataMapper.toPins(
       cards,

@@ -13,21 +13,6 @@ import '../datasource/crashlytics_mock.dart';
 
 class MockLocationDataSource extends Mock implements LocationDataSource {}
 
-Position _position() {
-  return Position(
-    latitude: 35.68,
-    longitude: 139.76,
-    timestamp: DateTime(2026, 1, 1),
-    accuracy: 0,
-    altitude: 0,
-    altitudeAccuracy: 0,
-    heading: 0,
-    headingAccuracy: 0,
-    speed: 0,
-    speedAccuracy: 0,
-  );
-}
-
 void main() {
   late MockLocationDataSource platform;
   late MockFirebaseCrashlytics crashlytics;
@@ -55,20 +40,17 @@ void main() {
       verifyNever(() => platform.requestPermission());
     });
 
-    test('まだ決めていなければ許可を求め、使用中のみでも許可とみなす', () async {
+    test('求めた結果を、購読している画面にも流す', () async {
       when(
         () => platform.isLocationServiceEnabled(),
       ).thenAnswer((_) async => true);
-      when(
-        () => platform.checkPermission(),
-      ).thenAnswer((_) async => LocationPermission.denied);
-      when(
-        () => platform.requestPermission(),
-      ).thenAnswer((_) async => LocationPermission.whileInUse);
+      when(() => platform.requestPermission()).thenAnswer((_) async => true);
+      final granted = repository.watchPermissionGranted().first;
 
       final result = await repository.requestPermission();
 
       expect((result as Success<bool>).value, isTrue);
+      expect(await granted, isTrue);
     });
   });
 
@@ -76,7 +58,7 @@ void main() {
     test('現在地を座標で返す', () async {
       when(
         () => platform.getCurrentPosition(),
-      ).thenAnswer((_) async => _position());
+      ).thenAnswer((_) async => (latitude: 35.68, longitude: 139.76));
 
       final result = await repository.getCurrentLocation();
 
