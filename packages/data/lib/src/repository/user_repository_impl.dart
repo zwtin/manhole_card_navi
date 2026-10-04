@@ -5,11 +5,7 @@ import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
 class UserRepositoryImpl implements UserRepository {
-  UserRepositoryImpl(
-    this._auth,
-    this._analytics,
-    this._crashlytics,
-  );
+  UserRepositoryImpl(this._auth, this._analytics, this._crashlytics);
 
   final AuthDataSource _auth;
   final AnalyticsDataSource _analytics;

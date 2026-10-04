@@ -15,8 +15,8 @@ typedef CardModalArgs = ({String cardId, double? latitude, double? longitude});
 
 final cardModalViewModelProvider = AsyncNotifierProvider.autoDispose
     .family<CardModalViewModel, CardModalViewData, CardModalArgs>(
-  CardModalViewModel.new,
-);
+      CardModalViewModel.new,
+    );
 
 /// マップタブでピンをタップしたときに出るカードのモーダルの ViewModel。
 class CardModalViewModel
@@ -34,17 +34,13 @@ class CardModalViewModel
     _navigationService = ref.watch(navigationServiceProvider);
     final mapViewModel = ref.read(manholeCardMapViewModelProvider.notifier);
 
-    final subscription = _alreadyGetCardUseCase.watch().listen((
-      cardIds,
-    ) {
+    final subscription = _alreadyGetCardUseCase.watch().listen((cardIds) {
       final current = state.valueOrNull;
       if (current == null) {
         return;
       }
       state = AsyncData(
-        current.copyWith(
-          alreadyGet: cardIds.contains(arg.cardId),
-        ),
+        current.copyWith(alreadyGet: cardIds.contains(arg.cardId)),
       );
     });
     ref.onDispose(subscription.cancel);
@@ -63,10 +59,11 @@ class CardModalViewModel
 
     final latitude = arg.latitude;
     final longitude = arg.longitude;
-    final position = latitude != null && longitude != null
-        ? LatLng(latitude, longitude)
-        : await mapViewModel.findCardPosition(arg.cardId) ??
-            LatLng(card.position.latitude, card.position.longitude);
+    final position =
+        latitude != null && longitude != null
+            ? LatLng(latitude, longitude)
+            : await mapViewModel.findCardPosition(arg.cardId) ??
+                LatLng(card.position.latitude, card.position.longitude);
 
     final alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
     return CardModalViewData(

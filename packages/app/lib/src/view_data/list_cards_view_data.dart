@@ -6,9 +6,8 @@ part 'list_cards_view_data.freezed.dart';
 
 @freezed
 abstract class ListCardsViewData with _$ListCardsViewData {
-  const factory ListCardsViewData({
-    required List<ListCardViewData> list,
-  }) = _ListCardsViewData;
+  const factory ListCardsViewData({required List<ListCardViewData> list}) =
+      _ListCardsViewData;
   const ListCardsViewData._();
 
   Iterable<T> map<T>(T Function(ListCardViewData) toElement) {

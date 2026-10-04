@@ -81,10 +81,7 @@ class GoRouterNavigationService implements NavigationService {
     _router.go(
       Uri(
         path: AppRoutePath.cardModal(cardId),
-        queryParameters: {
-          'latitude': '$latitude',
-          'longitude': '$longitude',
-        },
+        queryParameters: {'latitude': '$latitude', 'longitude': '$longitude'},
       ).toString(),
     );
   }
@@ -182,9 +179,7 @@ class GoRouterNavigationService implements NavigationService {
     }
     await launchUrl(
       uri,
-      mode: external
-          ? LaunchMode.externalApplication
-          : LaunchMode.inAppWebView,
+      mode: external ? LaunchMode.externalApplication : LaunchMode.inAppWebView,
     );
   }
 }

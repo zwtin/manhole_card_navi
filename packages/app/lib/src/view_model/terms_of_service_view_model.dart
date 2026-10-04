@@ -8,8 +8,8 @@ import '../router/navigation_service.dart';
 /// 状態は利用規約の HTML。
 final termsOfServiceViewModelProvider =
     AsyncNotifierProvider.autoDispose<TermsOfServiceViewModel, String>(
-  TermsOfServiceViewModel.new,
-);
+      TermsOfServiceViewModel.new,
+    );
 
 /// 利用規約画面の ViewModel。
 class TermsOfServiceViewModel extends AutoDisposeAsyncNotifier<String> {

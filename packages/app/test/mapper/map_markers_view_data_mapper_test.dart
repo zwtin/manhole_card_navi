@@ -44,13 +44,10 @@ void main() {
       MapCoordinateType.position,
     );
 
-    expect(
-      pins.map((pin) => (pin.card.id, pin.coordinate)),
-      [
-        ('A', const Coordinate(latitude: 35.68, longitude: 139.76)),
-        ('B', const Coordinate(latitude: 35.68, longitude: 139.76)),
-      ],
-    );
+    expect(pins.map((pin) => (pin.card.id, pin.coordinate)), [
+      ('A', const Coordinate(latitude: 35.68, longitude: 139.76)),
+      ('B', const Coordinate(latitude: 35.68, longitude: 139.76)),
+    ]);
   });
 
   test('配布場所では、配布地点の数だけピンを立てる', () {
@@ -59,13 +56,10 @@ void main() {
       MapCoordinateType.distribution,
     );
 
-    expect(
-      pins.map((pin) => (pin.card.id, pin.coordinate)),
-      [
-        ('A', const Coordinate(latitude: 35.69, longitude: 139.77)),
-        ('A', const Coordinate(latitude: 35.70, longitude: 139.78)),
-      ],
-    );
+    expect(pins.map((pin) => (pin.card.id, pin.coordinate)), [
+      ('A', const Coordinate(latitude: 35.69, longitude: 139.77)),
+      ('A', const Coordinate(latitude: 35.70, longitude: 139.78)),
+    ]);
   });
 
   group('selectNearest', () {
@@ -76,18 +70,13 @@ void main() {
         _card(
           id: id,
           distributionPoints: const [],
-          position: Coordinate(
-            latitude: 35.0 + offset,
-            longitude: 135.0,
-          ),
+          position: Coordinate(latitude: 35.0 + offset, longitude: 135.0),
         ),
       );
     }
 
     test('中心に近い順に並べ、30 件までにする', () {
-      final pins = [
-        for (var i = 0; i < 40; i++) pinAt('$i', (40 - i) * 0.001),
-      ];
+      final pins = [for (var i = 0; i < 40; i++) pinAt('$i', (40 - i) * 0.001)];
 
       final selected = MapMarkersViewDataMapper.selectNearest(
         pins: pins,

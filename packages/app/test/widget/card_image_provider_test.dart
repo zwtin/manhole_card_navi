@@ -33,7 +33,9 @@ void main() {
   Future<Object?> load(WidgetTester tester, CardImageProvider provider) {
     return tester.runAsync(() {
       final completer = Completer<Object>();
-      provider.resolve(ImageConfiguration.empty).addListener(
+      provider
+          .resolve(ImageConfiguration.empty)
+          .addListener(
             ImageStreamListener(
               (info, _) => completer.complete(info),
               onError: (error, _) => completer.complete(error),
@@ -52,9 +54,7 @@ void main() {
     );
 
     expect((loaded! as ImageInfo).image.width, 1);
-    verify(
-      () => useCase.fetchImage(cardId: 'A'),
-    ).called(1);
+    verify(() => useCase.fetchImage(cardId: 'A')).called(1);
   });
 
   testWidgets('取れなかったときは、失敗をそのまま報告する', (tester) async {

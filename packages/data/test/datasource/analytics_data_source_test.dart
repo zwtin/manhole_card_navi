@@ -40,8 +40,9 @@ void main() {
   });
 
   test('利用者の ID を渡す', () async {
-    when(() => analytics.setUserId(id: any(named: 'id')))
-        .thenAnswer((_) async {});
+    when(
+      () => analytics.setUserId(id: any(named: 'id')),
+    ).thenAnswer((_) async {});
 
     await dataSource.setUserId('user');
 

@@ -39,7 +39,10 @@ void main() {
     late AlreadyGetCardRepositoryImpl repository;
 
     setUp(() {
-      repository = AlreadyGetCardRepositoryImpl(preferences, crashlyticsDataSource);
+      repository = AlreadyGetCardRepositoryImpl(
+        preferences,
+        crashlyticsDataSource,
+      );
     });
 
     test('取得済みにした ID を読める。同じ ID を 2 回保存しても 1 つ', () async {

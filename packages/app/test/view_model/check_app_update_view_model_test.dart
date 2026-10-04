@@ -37,10 +37,12 @@ void main() {
         userUseCaseProvider.overrideWithValue(userUseCase),
       ],
     );
-    when(() => userUseCase.signIn())
-        .thenAnswer((_) async => const Result.success(null));
-    when(() => analyticsUseCase.send(event: const AnalyticsEvent.appOpen()))
-        .thenAnswer((_) async => const Result.success(null));
+    when(
+      () => userUseCase.signIn(),
+    ).thenAnswer((_) async => const Result.success(null));
+    when(
+      () => analyticsUseCase.send(event: const AnalyticsEvent.appOpen()),
+    ).thenAnswer((_) async => const Result.success(null));
     // autoDispose の ViewModel がテスト中に破棄されないよう購読しておく。
     container.listen(checkAppUpdateViewModelProvider, (_, __) {});
     when(
@@ -57,10 +59,7 @@ void main() {
       ),
     ).thenAnswer((_) async {});
     when(
-      () => navigationService.openUrl(
-        any(),
-        external: any(named: 'external'),
-      ),
+      () => navigationService.openUrl(any(), external: any(named: 'external')),
     ).thenAnswer((_) async {});
   });
 
@@ -71,8 +70,9 @@ void main() {
   /// getNeedUpdate が呼ばれるたびに [results] を先頭から順に返す。
   void stubNeedUpdate(List<Result<bool>> results) {
     var index = 0;
-    when(() => checkAppUpdateUseCase.getNeedUpdate())
-        .thenAnswer((_) async => results[index++]);
+    when(
+      () => checkAppUpdateUseCase.getNeedUpdate(),
+    ).thenAnswer((_) async => results[index++]);
   }
 
   test('アップデートが不要なら、マスターデータの確認へ進む', () async {
@@ -120,10 +120,10 @@ void main() {
 
     verifyInOrder([
       () => navigationService.showAlert(
-            title: 'バージョンエラー',
-            message: '最新のバージョンがリリースされています。アプリをアップデートしてください。',
-            buttonTitle: 'ストアを開く',
-          ),
+        title: 'バージョンエラー',
+        message: '最新のバージョンがリリースされています。アプリをアップデートしてください。',
+        buttonTitle: 'ストアを開く',
+      ),
       () => navigationService.goToCheckMasterUpdate(),
     ]);
     verify(() => checkAppUpdateUseCase.getNeedUpdate()).called(2);
@@ -134,17 +134,18 @@ void main() {
       const Result<void>.failure(OfflineException()),
       const Result<void>.success(null),
     ];
-    when(() => userUseCase.signIn())
-        .thenAnswer((_) async => signInResults.removeAt(0));
+    when(
+      () => userUseCase.signIn(),
+    ).thenAnswer((_) async => signInResults.removeAt(0));
     stubNeedUpdate([const Result.success(false)]);
 
     await container.read(checkAppUpdateViewModelProvider.notifier).onLoad();
 
     verifyInOrder([
       () => navigationService.showFailure(
-            title: 'アプリの準備ができませんでした',
-            exception: any(named: 'exception', that: isA<OfflineException>()),
-          ),
+        title: 'アプリの準備ができませんでした',
+        exception: any(named: 'exception', that: isA<OfflineException>()),
+      ),
       () => userUseCase.signIn(),
       () => analyticsUseCase.send(event: const AnalyticsEvent.appOpen()),
       () => checkAppUpdateUseCase.getNeedUpdate(),

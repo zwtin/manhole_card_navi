@@ -30,9 +30,9 @@ void main() {
         AppInfo(name: 'マンホールカードナビ', version: AppVersion.parse(current)),
       ),
     );
-    when(() => repository.getInquiredVersion()).thenAnswer(
-      (_) async => Result.success(AppVersion.parse(inquired)),
-    );
+    when(
+      () => repository.getInquiredVersion(),
+    ).thenAnswer((_) async => Result.success(AppVersion.parse(inquired)));
     return container.read(checkAppUpdateUseCaseProvider).getNeedUpdate();
   }
 
@@ -66,9 +66,9 @@ void main() {
         AppInfo(name: 'マンホールカードナビ', version: AppVersion.parse('1.5.0')),
       ),
     );
-    when(() => repository.getInquiredVersion()).thenAnswer(
-      (_) async => const Result.failure(OfflineException()),
-    );
+    when(
+      () => repository.getInquiredVersion(),
+    ).thenAnswer((_) async => const Result.failure(OfflineException()));
 
     final result =
         await container.read(checkAppUpdateUseCaseProvider).getNeedUpdate();

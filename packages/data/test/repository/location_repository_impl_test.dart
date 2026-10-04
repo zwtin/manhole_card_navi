@@ -45,8 +45,9 @@ void main() {
 
   group('requestPermission', () {
     test('端末の位置情報がオフなら、許可を求めずに false', () async {
-      when(() => platform.isLocationServiceEnabled())
-          .thenAnswer((_) async => false);
+      when(
+        () => platform.isLocationServiceEnabled(),
+      ).thenAnswer((_) async => false);
 
       final result = await repository.requestPermission();
 
@@ -55,12 +56,15 @@ void main() {
     });
 
     test('まだ決めていなければ許可を求め、使用中のみでも許可とみなす', () async {
-      when(() => platform.isLocationServiceEnabled())
-          .thenAnswer((_) async => true);
-      when(() => platform.checkPermission())
-          .thenAnswer((_) async => LocationPermission.denied);
-      when(() => platform.requestPermission())
-          .thenAnswer((_) async => LocationPermission.whileInUse);
+      when(
+        () => platform.isLocationServiceEnabled(),
+      ).thenAnswer((_) async => true);
+      when(
+        () => platform.checkPermission(),
+      ).thenAnswer((_) async => LocationPermission.denied);
+      when(
+        () => platform.requestPermission(),
+      ).thenAnswer((_) async => LocationPermission.whileInUse);
 
       final result = await repository.requestPermission();
 
@@ -70,8 +74,9 @@ void main() {
 
   group('getCurrentLocation', () {
     test('現在地を座標で返す', () async {
-      when(() => platform.getCurrentPosition())
-          .thenAnswer((_) async => _position());
+      when(
+        () => platform.getCurrentPosition(),
+      ).thenAnswer((_) async => _position());
 
       final result = await repository.getCurrentLocation();
 

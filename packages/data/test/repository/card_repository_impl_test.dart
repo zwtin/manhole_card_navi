@@ -28,9 +28,7 @@ void main() {
   late CardRepositoryImpl repository;
 
   setUpAll(() {
-    registerFallbackValue(
-      const AnalyticsEventModel(name: '', parameters: {}),
-    );
+    registerFallbackValue(const AnalyticsEventModel(name: '', parameters: {}));
   });
 
   setUp(() async {
@@ -66,7 +64,10 @@ void main() {
 
     final result = await repository.get(id: 'Z');
 
-    expect((result as Failure<ManholeCard>).exception, isA<NotFoundException>());
+    expect(
+      (result as Failure<ManholeCard>).exception,
+      isA<NotFoundException>(),
+    );
     expect(recordedErrors(crashlytics).single.error, isA<NotFoundException>());
   });
 
@@ -142,8 +143,9 @@ void main() {
       final result = await repository.fetchImage(cardId: 'A');
 
       expect((result as Success<List<int>>).value, [7]);
-      final sent = verify(() => analytics.send(captureAny())).captured
-          .cast<AnalyticsEventModel>();
+      final sent = verify(
+        () => analytics.send(captureAny()),
+      ).captured.cast<AnalyticsEventModel>();
       expect(sent.single.name, 'image_load_failed');
       expect(sent.single.parameters['host'], 'r2');
       expect(sent.single.parameters['runtime_type'], 'SocketException');
@@ -160,13 +162,14 @@ void main() {
       final result = await repository.fetchImage(cardId: 'A');
 
       expect((result as Failure).exception, isA<OfflineException>());
-      final sent = verify(() => analytics.send(captureAny())).captured
-          .cast<AnalyticsEventModel>();
+      final sent = verify(
+        () => analytics.send(captureAny()),
+      ).captured.cast<AnalyticsEventModel>();
       expect(sent.map((event) => event.parameters['host']), ['r2', 'sub']);
-      expect(
-        sent.map((event) => event.parameters['runtime_type']),
-        ['SocketException', 'HandshakeException'],
-      );
+      expect(sent.map((event) => event.parameters['runtime_type']), [
+        'SocketException',
+        'HandshakeException',
+      ]);
       // 遮断された端末で大量に出て、非重大の枠をほかの失敗から奪うため。
       verifyNotRecorded(crashlytics);
     });

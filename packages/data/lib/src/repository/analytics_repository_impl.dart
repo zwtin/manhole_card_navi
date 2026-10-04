@@ -7,10 +7,7 @@ import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
 class AnalyticsRepositoryImpl implements AnalyticsRepository {
-  AnalyticsRepositoryImpl(
-    this._analytics,
-    this._crashlytics,
-  );
+  AnalyticsRepositoryImpl(this._analytics, this._crashlytics);
 
   final _logger = Logger();
   final AnalyticsDataSource _analytics;

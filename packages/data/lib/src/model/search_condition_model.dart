@@ -107,17 +107,10 @@ class MapSearchConditionModel {
 }
 
 /// 値の名前が保存する文字列そのもの。変えると保存済みの値が読めなくなる。
-enum DisplayFilterModel {
-  all,
-  acquired,
-  unacquired,
-}
+enum DisplayFilterModel { all, acquired, unacquired }
 
 /// 値の名前が保存する文字列そのもの。変えると保存済みの値が読めなくなる。
-enum CoordinateTypeModel {
-  distribution,
-  position,
-}
+enum CoordinateTypeModel { distribution, position }
 
 class _StringSetConverter implements JsonConverter<Set<String>, Object?> {
   const _StringSetConverter();

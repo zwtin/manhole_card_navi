@@ -7,11 +7,7 @@ import 'package:data/src/model/local_card_model.dart';
 import 'package:domain/domain.dart';
 
 class MasterDataRepositoryImpl implements MasterDataRepository {
-  MasterDataRepositoryImpl(
-    this._remote,
-    this._local,
-    this._crashlytics,
-  );
+  MasterDataRepositoryImpl(this._remote, this._local, this._crashlytics);
 
   final MasterDataRemoteDataSource _remote;
   final MasterDataLocalDataSource _local;
@@ -57,9 +53,7 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
     ];
     if (cards.isEmpty) {
       // 取り込むと一覧もマップも空になる。
-      throw const CorruptedDataException(
-        detail: 'サーバーのマスターデータにカードがありません',
-      );
+      throw const CorruptedDataException(detail: 'サーバーのマスターデータにカードがありません');
     }
     return cards;
   }

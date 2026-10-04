@@ -11,14 +11,11 @@ abstract final class AnalyticsEventMapper {
 
   static AnalyticsEventModel toModel(AnalyticsEvent event) {
     return switch (event) {
-      AppOpen() => const AnalyticsEventModel(
-          name: 'app_open',
-          parameters: {},
-        ),
+      AppOpen() => const AnalyticsEventModel(name: 'app_open', parameters: {}),
       ScreenView(:final screenName, :final parameters) => AnalyticsEventModel(
-          name: 'screen_pv',
-          parameters: {'screen_name': screenName, ...parameters},
-        ),
+        name: 'screen_pv',
+        parameters: {'screen_name': screenName, ...parameters},
+      ),
       ImageLoadFailed(
         :final host,
         :final errorRuntimeType,
@@ -57,8 +54,7 @@ abstract final class AnalyticsEventMapper {
     final message = switch (error) {
       HandshakeException(:final osError) ||
       SocketException(:final osError) ||
-      FileSystemException(:final osError) =>
-        osError?.message ?? '',
+      FileSystemException(:final osError) => osError?.message ?? '',
       _ => '',
     };
     return message.length <= _maxValueLength

@@ -131,48 +131,48 @@ class AppText extends StatelessWidget {
     this.fontWeight,
     this.overflow,
     super.key,
-  })  : _variant = _Variant.titleLargeLink,
-        color = null;
+  }) : _variant = _Variant.titleLargeLink,
+       color = null;
 
   const AppText.titleMediumLink(
     this.data, {
     this.fontWeight,
     this.overflow,
     super.key,
-  })  : _variant = _Variant.titleMediumLink,
-        color = null;
+  }) : _variant = _Variant.titleMediumLink,
+       color = null;
 
   const AppText.titleSmallLink(
     this.data, {
     this.fontWeight,
     this.overflow,
     super.key,
-  })  : _variant = _Variant.titleSmallLink,
-        color = null;
+  }) : _variant = _Variant.titleSmallLink,
+       color = null;
 
   const AppText.bodyLargeLink(
     this.data, {
     this.fontWeight,
     this.overflow,
     super.key,
-  })  : _variant = _Variant.bodyLargeLink,
-        color = null;
+  }) : _variant = _Variant.bodyLargeLink,
+       color = null;
 
   const AppText.bodyMediumLink(
     this.data, {
     this.fontWeight,
     this.overflow,
     super.key,
-  })  : _variant = _Variant.bodyMediumLink,
-        color = null;
+  }) : _variant = _Variant.bodyMediumLink,
+       color = null;
 
   const AppText.bodySmallLink(
     this.data, {
     this.fontWeight,
     this.overflow,
     super.key,
-  })  : _variant = _Variant.bodySmallLink,
-        color = null;
+  }) : _variant = _Variant.bodySmallLink,
+       color = null;
 
   final String data;
   final Color? color;
@@ -185,7 +185,9 @@ class AppText extends StatelessWidget {
     final linkColor = _variant.isLink ? context.appColors.link : null;
     return Text(
       data,
-      style: _variant.baseStyle(Theme.of(context).textTheme)?.copyWith(
+      style: _variant
+          .baseStyle(Theme.of(context).textTheme)
+          ?.copyWith(
             color: linkColor ?? color,
             fontWeight: fontWeight,
             overflow: overflow,

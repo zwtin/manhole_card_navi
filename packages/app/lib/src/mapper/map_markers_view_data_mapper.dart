@@ -48,14 +48,15 @@ abstract final class MapMarkersViewDataMapper {
       return latitude * latitude + longitude * longitude;
     }
 
-    final near = pins.where((pin) {
-      return searchCondition.matchesCard(pin.card) &&
-          searchCondition.matchesAlreadyGet(
-            alreadyGet: alreadyGetCardIds.contains(pin.card.id),
-          ) &&
-          distanceOf(pin) < _nearDistance;
-    }).toList()
-      ..sort((pin1, pin2) => distanceOf(pin1).compareTo(distanceOf(pin2)));
+    final near =
+        pins.where((pin) {
+            return searchCondition.matchesCard(pin.card) &&
+                searchCondition.matchesAlreadyGet(
+                  alreadyGet: alreadyGetCardIds.contains(pin.card.id),
+                ) &&
+                distanceOf(pin) < _nearDistance;
+          }).toList()
+          ..sort((pin1, pin2) => distanceOf(pin1).compareTo(distanceOf(pin2)));
     return near.take(_limit).toList();
   }
 
@@ -67,7 +68,8 @@ abstract final class MapMarkersViewDataMapper {
       // マーカーの識別子は再生成をまたいで安定させる。ランダムだと GoogleMap が
       // 同一カードを「削除 + 追加」と誤認してちらつく。配布モードでは同一カードが
       // 複数地点に出るため座標も含めて一意にする。
-      id: '${pin.card.id}_${pin.coordinate.latitude}_'
+      id:
+          '${pin.card.id}_${pin.coordinate.latitude}_'
           '${pin.coordinate.longitude}',
       cardId: pin.card.id,
       icon: icon,

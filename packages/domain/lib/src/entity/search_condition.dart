@@ -45,8 +45,7 @@ abstract class CommonSearchCondition with _$CommonSearchCondition {
   const factory CommonSearchCondition({
     @Default(AlreadyGetFilter.all) AlreadyGetFilter alreadyGetFilter,
     @Default(<String>{}) Set<String> volumeIds,
-    @Default(<DistributionState>{})
-    Set<DistributionState> distributionStates,
+    @Default(<DistributionState>{}) Set<DistributionState> distributionStates,
   }) = _CommonSearchCondition;
   const CommonSearchCondition._();
 
@@ -99,11 +98,7 @@ abstract class MapSearchCondition with _$MapSearchCondition {
   }) = _MapSearchCondition;
 }
 
-enum AlreadyGetFilter {
-  all,
-  alreadyGet,
-  notAlreadyGet,
-}
+enum AlreadyGetFilter { all, alreadyGet, notAlreadyGet }
 
 enum MapCoordinateType {
   /// 配布場所。

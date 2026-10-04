@@ -6,10 +6,7 @@ import 'package:data/src/model/search_condition_model.dart';
 import 'package:domain/domain.dart';
 
 class SearchConditionRepositoryImpl implements SearchConditionRepository {
-  SearchConditionRepositoryImpl(
-    this._preferences,
-    this._crashlytics,
-  );
+  SearchConditionRepositoryImpl(this._preferences, this._crashlytics);
 
   static const _key = 'search_condition';
 
@@ -22,9 +19,7 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
   }
 
   @override
-  Future<Result<void>> save({
-    required SearchCondition searchCondition,
-  }) async {
+  Future<Result<void>> save({required SearchCondition searchCondition}) async {
     try {
       final saved = await _preferences.writeString(
         _key,

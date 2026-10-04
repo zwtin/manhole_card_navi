@@ -4,10 +4,7 @@ import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
 class PrivacyPolicyRepositoryImpl implements PrivacyPolicyRepository {
-  PrivacyPolicyRepositoryImpl(
-    this._remoteConfig,
-    this._crashlytics,
-  );
+  PrivacyPolicyRepositoryImpl(this._remoteConfig, this._crashlytics);
 
   static const _key = 'privacy_policy';
 

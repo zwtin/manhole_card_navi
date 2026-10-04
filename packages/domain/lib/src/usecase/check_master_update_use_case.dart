@@ -5,8 +5,7 @@ import 'package:domain/src/entity/master_version.dart';
 import 'package:domain/src/repository/master_data_repository.dart';
 import 'package:domain/src/repository/master_version_repository.dart';
 
-final checkMasterUpdateUseCaseProvider =
-    Provider<CheckMasterUpdateUseCase>(
+final checkMasterUpdateUseCaseProvider = Provider<CheckMasterUpdateUseCase>(
   (ref) => CheckMasterUpdateUseCase(
     ref.watch(masterDataRepositoryProvider),
     ref.watch(masterVersionRepositoryProvider),

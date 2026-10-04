@@ -9,7 +9,6 @@ import '../widget/card_image.dart';
 
 /// カード画像を、地図マーカーのアイコン（吹き出し枠との合成結果）にする。
 abstract final class MarkerIconMapper {
-
   /// マーカーアイコンの出力サイズ（論理ピクセル基準の実ピクセル）。
   /// 枠 PNG のアスペクト比 200:300 に合わせる。
   static const int _iconWidth = 200;
@@ -44,9 +43,7 @@ abstract final class MarkerIconMapper {
   }
 
   /// 頒布状況に対応する枠 PNG アセットを読み込み、デコードして返す。
-  static Future<ui.Image> _loadFrame(
-    DistributionState distributionState,
-  ) {
+  static Future<ui.Image> _loadFrame(DistributionState distributionState) {
     return _loadFramePath(_framePath(distributionState));
   }
 

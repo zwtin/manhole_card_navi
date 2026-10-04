@@ -9,9 +9,7 @@ import '../view_data/detail_card_view_data.dart';
 
 /// 引数はカード ID。
 final detailViewModelProvider = AsyncNotifierProvider.autoDispose
-    .family<DetailViewModel, DetailCardViewData, String>(
-  DetailViewModel.new,
-);
+    .family<DetailViewModel, DetailCardViewData, String>(DetailViewModel.new);
 
 /// カード詳細画面の ViewModel。
 class DetailViewModel
@@ -28,18 +26,12 @@ class DetailViewModel
     _cardUseCase = ref.watch(cardUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
 
-    final subscription = _alreadyGetCardUseCase.watch().listen((
-      cardIds,
-    ) {
+    final subscription = _alreadyGetCardUseCase.watch().listen((cardIds) {
       final current = state.valueOrNull;
       if (current == null) {
         return;
       }
-      state = AsyncData(
-        current.copyWith(
-          alreadyGet: cardIds.contains(cardId),
-        ),
-      );
+      state = AsyncData(current.copyWith(alreadyGet: cardIds.contains(cardId)));
     });
     ref.onDispose(subscription.cancel);
 

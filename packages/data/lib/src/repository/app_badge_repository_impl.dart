@@ -4,18 +4,13 @@ import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
 class AppBadgeRepositoryImpl implements AppBadgeRepository {
-  AppBadgeRepositoryImpl(
-    this._appBadge,
-    this._crashlytics,
-  );
+  AppBadgeRepositoryImpl(this._appBadge, this._crashlytics);
 
   final AppBadgeDataSource _appBadge;
   final CrashlyticsDataSource _crashlytics;
 
   @override
-  Future<Result<void>> updateCount({
-    required int count,
-  }) async {
+  Future<Result<void>> updateCount({required int count}) async {
     try {
       await _appBadge.updateCount(count);
       return const Result.success(null);

@@ -18,7 +18,8 @@ void main() {
     await directory.delete(recursive: true);
   });
 
-  MasterDataLocalDataSource store() => MasterDataLocalDataSource(directory: () async => directory);
+  MasterDataLocalDataSource store() =>
+      MasterDataLocalDataSource(directory: () async => directory);
 
   List<Map<String, dynamic>> toJson(List<LocalCardModel>? cards) {
     return [for (final card in cards!) card.toJson()];
@@ -78,10 +79,7 @@ void main() {
   test('壊れたファイルは消し、次の確認では取り込んでいない扱いになる', () async {
     File('${directory.path}/master_data_v1.json').writeAsStringSync('[{');
 
-    await expectLater(
-      store().readAll(),
-      throwsA(isA<FormatException>()),
-    );
+    await expectLater(store().readAll(), throwsA(isA<FormatException>()));
     expect(await store().exists(), isFalse);
   });
 

@@ -7,9 +7,9 @@ import '../router/navigation_service.dart';
 import '../view_data/check_app_update_view_data.dart';
 
 final checkAppUpdateViewModelProvider = NotifierProvider.autoDispose<
-    CheckAppUpdateViewModel, CheckAppUpdateViewData>(
-  CheckAppUpdateViewModel.new,
-);
+  CheckAppUpdateViewModel,
+  CheckAppUpdateViewData
+>(CheckAppUpdateViewModel.new);
 
 /// 起動時にアプリの強制アップデートが必要か確認する画面の ViewModel。
 class CheckAppUpdateViewModel

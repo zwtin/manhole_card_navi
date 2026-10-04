@@ -47,9 +47,7 @@ void main() {
         common: CommonSearchCondition(
           alreadyGetFilter: AlreadyGetFilter.alreadyGet,
           volumeIds: {'0000', '0001'},
-          distributionStates: {
-            DistributionState.stopped,
-          },
+          distributionStates: {DistributionState.stopped},
         ),
         map: const MapSearchCondition(
           coordinateType: MapCoordinateType.position,
@@ -66,9 +64,7 @@ void main() {
 
       expect(condition.matchesVolume('0005'), isTrue);
       expect(
-        condition.matchesDistributionState(
-          DistributionState.notClear,
-        ),
+        condition.matchesDistributionState(DistributionState.notClear),
         isTrue,
       );
       expect(condition.matchesAlreadyGet(alreadyGet: false), isTrue);
@@ -76,21 +72,15 @@ void main() {
 
     test('配布状態は、選んだ状態だけを通す', () {
       final condition = CommonSearchCondition(
-        distributionStates: {
-          DistributionState.distributing,
-        },
+        distributionStates: {DistributionState.distributing},
       );
 
       expect(
-        condition.matchesDistributionState(
-          DistributionState.distributing,
-        ),
+        condition.matchesDistributionState(DistributionState.distributing),
         isTrue,
       );
       expect(
-        condition.matchesDistributionState(
-          DistributionState.stopped,
-        ),
+        condition.matchesDistributionState(DistributionState.stopped),
         isFalse,
       );
     });

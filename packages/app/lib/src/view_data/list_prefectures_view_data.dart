@@ -30,12 +30,14 @@ abstract class ListPrefecturesViewData with _$ListPrefecturesViewData {
 
   ListPrefecturesViewData onExpandedChanged(bool initiallyExpanded, String id) {
     return ListPrefecturesViewData(
-        list: list.map((prefecture) {
-      if (prefecture.id == id) {
-        return prefecture.copyWith(initiallyExpanded: initiallyExpanded);
-      } else {
-        return prefecture;
-      }
-    }).toList());
+      list:
+          list.map((prefecture) {
+            if (prefecture.id == id) {
+              return prefecture.copyWith(initiallyExpanded: initiallyExpanded);
+            } else {
+              return prefecture;
+            }
+          }).toList(),
+    );
   }
 }

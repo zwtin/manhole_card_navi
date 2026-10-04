@@ -12,19 +12,14 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
   final crashlytics = infrastructure.crashlytics;
   return [
     alreadyGetCardRepositoryProvider.overrideWith(
-      (_) => AlreadyGetCardRepositoryImpl(
-        infrastructure.preferences,
-        crashlytics,
-      ),
+      (_) =>
+          AlreadyGetCardRepositoryImpl(infrastructure.preferences, crashlytics),
     ),
     analyticsRepositoryProvider.overrideWith(
       (_) => AnalyticsRepositoryImpl(infrastructure.analytics, crashlytics),
     ),
     appBadgeRepositoryProvider.overrideWith(
-      (_) => AppBadgeRepositoryImpl(
-        const AppBadgeDataSource(),
-        crashlytics,
-      ),
+      (_) => AppBadgeRepositoryImpl(const AppBadgeDataSource(), crashlytics),
     ),
     appInfoRepositoryProvider.overrideWith(
       (_) => AppInfoRepositoryImpl(
@@ -42,10 +37,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
       ),
     ),
     locationRepositoryProvider.overrideWith(
-      (_) => LocationRepositoryImpl(
-        const LocationDataSource(),
-        crashlytics,
-      ),
+      (_) => LocationRepositoryImpl(const LocationDataSource(), crashlytics),
     ),
     masterDataRepositoryProvider.overrideWith(
       (_) => MasterDataRepositoryImpl(
@@ -62,10 +54,8 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
       ),
     ),
     privacyPolicyRepositoryProvider.overrideWith(
-      (_) => PrivacyPolicyRepositoryImpl(
-        infrastructure.remoteConfig,
-        crashlytics,
-      ),
+      (_) =>
+          PrivacyPolicyRepositoryImpl(infrastructure.remoteConfig, crashlytics),
     ),
     pushNotificationRepositoryProvider.overrideWith(
       (_) => PushNotificationRepositoryImpl(

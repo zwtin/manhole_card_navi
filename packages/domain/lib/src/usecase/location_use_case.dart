@@ -5,15 +5,11 @@ import 'package:domain/src/entity/coordinate.dart';
 import 'package:domain/src/repository/location_repository.dart';
 
 final locationUseCaseProvider = Provider<LocationUseCase>(
-  (ref) => LocationUseCase(
-    ref.watch(locationRepositoryProvider),
-  ),
+  (ref) => LocationUseCase(ref.watch(locationRepositoryProvider)),
 );
 
 class LocationUseCase {
-  LocationUseCase(
-    this._locationRepository,
-  );
+  LocationUseCase(this._locationRepository);
 
   final LocationRepository _locationRepository;
 

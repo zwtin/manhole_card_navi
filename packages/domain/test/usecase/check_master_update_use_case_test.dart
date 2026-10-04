@@ -31,8 +31,9 @@ void main() {
         ),
       ],
     );
-    when(() => masterVersionRepository.getInquiredVersion())
-        .thenAnswer((_) async => const Result.success(inquiredVersion));
+    when(
+      () => masterVersionRepository.getInquiredVersion(),
+    ).thenAnswer((_) async => const Result.success(inquiredVersion));
   });
 
   tearDown(() {
@@ -44,8 +45,9 @@ void main() {
   }
 
   void stubCurrentVersion(MasterVersion? version) {
-    when(() => masterVersionRepository.getCurrentVersion())
-        .thenAnswer((_) async => Result.success(version));
+    when(
+      () => masterVersionRepository.getCurrentVersion(),
+    ).thenAnswer((_) async => Result.success(version));
   }
 
   group('getNeedUpdate', () {
@@ -68,8 +70,9 @@ void main() {
 
     test('バージョンが同じでも端末にマスターデータが無ければ更新が必要', () async {
       stubCurrentVersion(inquiredVersion);
-      when(() => masterDataRepository.exists())
-          .thenAnswer((_) async => const Result.success(false));
+      when(
+        () => masterDataRepository.exists(),
+      ).thenAnswer((_) async => const Result.success(false));
 
       final result = await getUseCase().getNeedUpdate();
 
@@ -78,8 +81,9 @@ void main() {
 
     test('バージョンが同じで端末にマスターデータがあれば更新は不要', () async {
       stubCurrentVersion(inquiredVersion);
-      when(() => masterDataRepository.exists())
-          .thenAnswer((_) async => const Result.success(true));
+      when(
+        () => masterDataRepository.exists(),
+      ).thenAnswer((_) async => const Result.success(true));
 
       final result = await getUseCase().getNeedUpdate();
 
@@ -88,8 +92,9 @@ void main() {
 
     test('要求バージョンの取得の失敗は、種類を変えずにそのまま返す', () async {
       const failure = OfflineException();
-      when(() => masterVersionRepository.getInquiredVersion())
-          .thenAnswer((_) async => const Result.failure(failure));
+      when(
+        () => masterVersionRepository.getInquiredVersion(),
+      ).thenAnswer((_) async => const Result.failure(failure));
 
       final result = await getUseCase().getNeedUpdate();
 
@@ -99,8 +104,9 @@ void main() {
 
   group('updateMaster', () {
     setUp(() {
-      when(() => masterDataRepository.replace(version: any(named: 'version')))
-          .thenAnswer((_) async => const Result.success(null));
+      when(
+        () => masterDataRepository.replace(version: any(named: 'version')),
+      ).thenAnswer((_) async => const Result.success(null));
       when(
         () => masterVersionRepository.setCurrentVersion(
           version: any(named: 'version'),
@@ -108,23 +114,22 @@ void main() {
       ).thenAnswer((_) async => const Result.success(null));
     });
 
-    test('要求バージョンのマスターデータで入れ替えてから、取り込み済みバージョンを記録する',
-        () async {
+    test('要求バージョンのマスターデータで入れ替えてから、取り込み済みバージョンを記録する', () async {
       final result = await getUseCase().updateMaster();
 
       expect(result, isA<Success<void>>());
       verifyInOrder([
         () => masterDataRepository.replace(version: inquiredVersion),
-        () => masterVersionRepository.setCurrentVersion(
-              version: inquiredVersion,
-            ),
+        () =>
+            masterVersionRepository.setCurrentVersion(version: inquiredVersion),
       ]);
     });
 
     test('取得・入れ替えに失敗したら、取り込み済みバージョンを記録しない', () async {
       const failure = OfflineException();
-      when(() => masterDataRepository.replace(version: any(named: 'version')))
-          .thenAnswer((_) async => const Result.failure(failure));
+      when(
+        () => masterDataRepository.replace(version: any(named: 'version')),
+      ).thenAnswer((_) async => const Result.failure(failure));
 
       final result = await getUseCase().updateMaster();
 

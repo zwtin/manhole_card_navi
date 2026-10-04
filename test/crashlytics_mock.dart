@@ -21,16 +21,17 @@ void stubRecordError(MockFirebaseCrashlytics crashlytics) {
 List<({Object? error, StackTrace? stackTrace, bool fatal})> recordedErrors(
   MockFirebaseCrashlytics crashlytics,
 ) {
-  final captured = verify(
-    () => crashlytics.recordError(
-      captureAny(),
-      captureAny(),
-      reason: any(named: 'reason'),
-      information: any(named: 'information'),
-      printDetails: any(named: 'printDetails'),
-      fatal: captureAny(named: 'fatal'),
-    ),
-  ).captured;
+  final captured =
+      verify(
+        () => crashlytics.recordError(
+          captureAny(),
+          captureAny(),
+          reason: any(named: 'reason'),
+          information: any(named: 'information'),
+          printDetails: any(named: 'printDetails'),
+          fatal: captureAny(named: 'fatal'),
+        ),
+      ).captured;
   return [
     for (var i = 0; i < captured.length; i += 3)
       (

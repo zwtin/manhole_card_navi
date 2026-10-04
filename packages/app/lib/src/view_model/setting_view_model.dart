@@ -8,8 +8,8 @@ import '../view_data/setting_view_data.dart';
 
 final settingViewModelProvider =
     AsyncNotifierProvider.autoDispose<SettingViewModel, SettingViewData>(
-  SettingViewModel.new,
-);
+      SettingViewModel.new,
+    );
 
 /// 設定タブの ViewModel。
 class SettingViewModel extends AutoDisposeAsyncNotifier<SettingViewData> {

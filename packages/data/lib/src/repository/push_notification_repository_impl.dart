@@ -4,10 +4,7 @@ import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
 class PushNotificationRepositoryImpl implements PushNotificationRepository {
-  PushNotificationRepositoryImpl(
-    this._pushNotification,
-    this._crashlytics,
-  );
+  PushNotificationRepositoryImpl(this._pushNotification, this._crashlytics);
 
   final PushNotificationDataSource _pushNotification;
   final CrashlyticsDataSource _crashlytics;

@@ -6,9 +6,8 @@ part 'map_markers_view_data.freezed.dart';
 
 @freezed
 abstract class MapMarkersViewData with _$MapMarkersViewData {
-  const factory MapMarkersViewData({
-    required List<MapMarkerViewData> list,
-  }) = _MapMarkersViewData;
+  const factory MapMarkersViewData({required List<MapMarkerViewData> list}) =
+      _MapMarkersViewData;
   const MapMarkersViewData._();
 
   Iterable<T> map<T>(T Function(MapMarkerViewData) toElement) {

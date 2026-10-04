@@ -5,9 +5,6 @@ part 'volume.freezed.dart';
 /// 弾（第 1 弾・第 2 弾…）。
 @freezed
 abstract class Volume with _$Volume {
-  const factory Volume({
-    required String id,
-    required String name,
-  }) = _Volume;
+  const factory Volume({required String id, required String name}) = _Volume;
   const Volume._();
 }

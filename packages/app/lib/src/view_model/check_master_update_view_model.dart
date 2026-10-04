@@ -5,9 +5,9 @@ import '../router/navigation_service.dart';
 import '../view_data/check_master_update_view_data.dart';
 
 final checkMasterUpdateViewModelProvider = NotifierProvider.autoDispose<
-    CheckMasterUpdateViewModel, CheckMasterUpdateViewData>(
-  CheckMasterUpdateViewModel.new,
-);
+  CheckMasterUpdateViewModel,
+  CheckMasterUpdateViewData
+>(CheckMasterUpdateViewModel.new);
 
 /// 起動時にマスターデータを更新し、利用規約の同意状況で次の画面を決める ViewModel。
 class CheckMasterUpdateViewModel

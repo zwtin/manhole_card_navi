@@ -7,15 +7,11 @@ import 'package:domain/src/entity/manhole_card.dart';
 import 'package:domain/src/repository/card_repository.dart';
 
 final cardUseCaseProvider = Provider<CardUseCase>(
-  (ref) => CardUseCase(
-    ref.watch(cardRepositoryProvider),
-  ),
+  (ref) => CardUseCase(ref.watch(cardRepositoryProvider)),
 );
 
 class CardUseCase {
-  CardUseCase(
-    this._cardRepository,
-  );
+  CardUseCase(this._cardRepository);
 
   final CardRepository _cardRepository;
 

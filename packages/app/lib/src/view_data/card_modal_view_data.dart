@@ -12,6 +12,5 @@ abstract class CardModalViewData with _$CardModalViewData {
   }) = _CardModalViewData;
   const CardModalViewData._();
 
-  String get alreadyGetActionButtonTitle =>
-      alreadyGet ? '未取得に戻す' : '取得済みにする';
+  String get alreadyGetActionButtonTitle => alreadyGet ? '未取得に戻す' : '取得済みにする';
 }

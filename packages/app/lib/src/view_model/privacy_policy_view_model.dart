@@ -8,8 +8,8 @@ import '../router/navigation_service.dart';
 /// 状態はプライバシーポリシーの HTML。
 final privacyPolicyViewModelProvider =
     AsyncNotifierProvider.autoDispose<PrivacyPolicyViewModel, String>(
-  PrivacyPolicyViewModel.new,
-);
+      PrivacyPolicyViewModel.new,
+    );
 
 /// プライバシーポリシー画面の ViewModel。
 class PrivacyPolicyViewModel extends AutoDisposeAsyncNotifier<String> {

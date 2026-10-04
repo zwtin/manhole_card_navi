@@ -12,8 +12,8 @@ class MasterDataLocalDataSource {
   MasterDataLocalDataSource({
     required Future<Directory> Function() directory,
     Future<void> Function()? cleanUp,
-  })  : _directory = directory,
-        _cleanUp = cleanUp;
+  }) : _directory = directory,
+       _cleanUp = cleanUp;
 
   factory MasterDataLocalDataSource.inApplicationSupport() {
     return MasterDataLocalDataSource(

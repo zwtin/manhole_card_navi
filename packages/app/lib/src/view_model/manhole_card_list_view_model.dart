@@ -10,9 +10,9 @@ import '../view_data/list_prefectures_view_data.dart';
 import '../view_data/manhole_card_list_view_data.dart';
 
 final manholeCardListViewModelProvider = AsyncNotifierProvider.autoDispose<
-    ManholeCardListViewModel, ManholeCardListViewData>(
-  ManholeCardListViewModel.new,
-);
+  ManholeCardListViewModel,
+  ManholeCardListViewData
+>(ManholeCardListViewModel.new);
 
 /// リストタブの ViewModel。
 class ManholeCardListViewModel
@@ -52,9 +52,9 @@ class ManholeCardListViewModel
     _searchCondition = await _searchConditionUseCase.watch().first;
     _alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
 
-    final alreadyGetSubscription = _alreadyGetCardUseCase
-        .watch()
-        .listen((cardIds) async {
+    final alreadyGetSubscription = _alreadyGetCardUseCase.watch().listen((
+      cardIds,
+    ) async {
       // 購読開始時にも現在値が流れてくるため、変わっていなければ作り直さない。
       if (setEquals(cardIds, _alreadyGetCardIds)) {
         return;
@@ -64,9 +64,9 @@ class ManholeCardListViewModel
     });
     ref.onDispose(alreadyGetSubscription.cancel);
 
-    final searchConditionSubscription = _searchConditionUseCase
-        .watch()
-        .listen((condition) async {
+    final searchConditionSubscription = _searchConditionUseCase.watch().listen((
+      condition,
+    ) async {
       if (condition == _searchCondition) {
         return;
       }
@@ -124,15 +124,16 @@ class ManholeCardListViewModel
     );
     return ManholeCardListViewData(
       prefectures: ListPrefecturesViewData(
-        list: prefectures.list
-            .map(
-              (prefecture) => prefecture.copyWith(
-                initiallyExpanded: _expandedPrefectureIds.contains(
-                  prefecture.id,
-                ),
-              ),
-            )
-            .toList(),
+        list:
+            prefectures.list
+                .map(
+                  (prefecture) => prefecture.copyWith(
+                    initiallyExpanded: _expandedPrefectureIds.contains(
+                      prefecture.id,
+                    ),
+                  ),
+                )
+                .toList(),
       ),
       totalCount: _cards.length,
       alreadyGetCount: _alreadyGetCardIds.length,

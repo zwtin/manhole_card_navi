@@ -21,9 +21,7 @@ void main() {
           DistributionState.notClear,
         },
       ),
-      map: const MapSearchCondition(
-        coordinateType: MapCoordinateType.position,
-      ),
+      map: const MapSearchCondition(coordinateType: MapCoordinateType.position),
     );
 
     final source = SearchConditionMapper.toModel(original).toJsonString();
@@ -60,17 +58,14 @@ void main() {
       map: MapSearchCondition(coordinateType: MapCoordinateType.position),
     );
 
-    expect(
-      SearchConditionMapper.toModel(condition).toJson(),
-      {
-        'common': {
-          'displayFilter': 'unacquired',
-          'volumeIds': <String>[],
-          'distributionStates': ['notClear'],
-        },
-        'map': {'coordinateType': 'position'},
+    expect(SearchConditionMapper.toModel(condition).toJson(), {
+      'common': {
+        'displayFilter': 'unacquired',
+        'volumeIds': <String>[],
+        'distributionStates': ['notClear'],
       },
-    );
+      'map': {'coordinateType': 'position'},
+    });
   });
 
   test('未保存（空文字）・壊れた JSON・形の違う JSON なら初期状態', () {
@@ -88,10 +83,9 @@ void main() {
 
     expect(restored.common.alreadyGetFilter, AlreadyGetFilter.all);
     expect(restored.common.volumeIds, {'0001'});
-    expect(
-      restored.common.distributionStates,
-      {DistributionState.distributing},
-    );
+    expect(restored.common.distributionStates, {
+      DistributionState.distributing,
+    });
     expect(restored.map.coordinateType, MapCoordinateType.distribution);
   });
 }

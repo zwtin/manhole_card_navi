@@ -10,8 +10,8 @@ final locationPermissionRequestedProvider = StateProvider<bool>((ref) => false);
 
 final shellViewModelProvider =
     NotifierProvider.autoDispose<ShellViewModel, ShellViewData>(
-  ShellViewModel.new,
-);
+      ShellViewModel.new,
+    );
 
 /// 下タブ（マップ・リスト・設定）を持つ画面の ViewModel。
 class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
@@ -50,9 +50,7 @@ class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
 
   Future<void> _listenAlreadyGetCard() async {
     _alreadyGetCardCount = (await _alreadyGetCardUseCase.watch().first).length;
-    final subscription = _alreadyGetCardUseCase.watch().listen((
-      cardIds,
-    ) {
+    final subscription = _alreadyGetCardUseCase.watch().listen((cardIds) {
       if (cardIds.length > _alreadyGetCardCount) {
         state = state.copyWith(partyCount: state.partyCount + 1);
       }

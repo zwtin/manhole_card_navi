@@ -4,17 +4,12 @@ import 'package:domain/src/core/result.dart';
 import 'package:domain/src/entity/app_info.dart';
 import 'package:domain/src/repository/app_info_repository.dart';
 
-final checkAppUpdateUseCaseProvider =
-    Provider<CheckAppUpdateUseCase>(
-  (ref) => CheckAppUpdateUseCase(
-    ref.watch(appInfoRepositoryProvider),
-  ),
+final checkAppUpdateUseCaseProvider = Provider<CheckAppUpdateUseCase>(
+  (ref) => CheckAppUpdateUseCase(ref.watch(appInfoRepositoryProvider)),
 );
 
 class CheckAppUpdateUseCase {
-  CheckAppUpdateUseCase(
-    this._appInfoRepository,
-  );
+  CheckAppUpdateUseCase(this._appInfoRepository);
 
   final AppInfoRepository _appInfoRepository;
 

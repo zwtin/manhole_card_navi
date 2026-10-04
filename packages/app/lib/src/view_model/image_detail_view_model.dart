@@ -3,9 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// 引数はカード ID。
 final imageDetailViewModelProvider = NotifierProvider.autoDispose
-    .family<ImageDetailViewModel, void, String>(
-  ImageDetailViewModel.new,
-);
+    .family<ImageDetailViewModel, void, String>(ImageDetailViewModel.new);
 
 /// カード画像の拡大表示の ViewModel。
 class ImageDetailViewModel extends AutoDisposeFamilyNotifier<void, String> {

@@ -15,14 +15,15 @@ abstract final class DomainExceptionMapper {
     return switch (error) {
       DomainException() => error,
       CheckedFromJsonException() => CorruptedDataException(
-          detail: '${error.className} の ${error.key} が読めません（${error.message}）',
-        ),
+        detail: '${error.className} の ${error.key} が読めません（${error.message}）',
+      ),
       FormatException() => CorruptedDataException(detail: error.message),
       TimeoutException() => const TimedOutException(),
       FirebaseException() => _fromFirebase(error),
-      HttpExceptionWithStatus() => error.statusCode == HttpStatus.notFound
-          ? NotFoundException(detail: '${error.uri} がありません')
-          : UnknownException(detail: '${error.uri} が ${error.statusCode}'),
+      HttpExceptionWithStatus() =>
+        error.statusCode == HttpStatus.notFound
+            ? NotFoundException(detail: '${error.uri} がありません')
+            : UnknownException(detail: '${error.uri} が ${error.statusCode}'),
       http.ClientException() => const OfflineException(),
       FileSystemException() => PersistenceException(detail: error.message),
       // 接続できない・名前が引けない・経路上のフィルタに割り込まれる など。利用者
@@ -40,9 +41,8 @@ abstract final class DomainExceptionMapper {
     }
     return switch (error.code) {
       // サーバーの一時的な障害でもこのコードになるが、スマホではほとんどが電波。
-      'unavailable' || 'network-request-failed' => OfflineException(
-          detail: detail,
-        ),
+      'unavailable' ||
+      'network-request-failed' => OfflineException(detail: detail),
       'deadline-exceeded' => TimedOutException(detail: detail),
       _ => UnknownException(detail: detail),
     };

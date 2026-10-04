@@ -5,7 +5,6 @@ import 'package:data/src/model/distribution_state_model.dart';
 import 'package:data/src/model/firestore_master_models.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-
 Map<String, dynamic> cardDocument() {
   return {
     'id': '27-226-B001',

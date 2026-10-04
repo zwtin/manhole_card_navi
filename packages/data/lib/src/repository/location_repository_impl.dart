@@ -6,10 +6,7 @@ import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
 class LocationRepositoryImpl implements LocationRepository {
-  LocationRepositoryImpl(
-    this._location,
-    this._crashlytics,
-  );
+  LocationRepositoryImpl(this._location, this._crashlytics);
 
   final LocationDataSource _location;
   final CrashlyticsDataSource _crashlytics;
@@ -46,10 +43,7 @@ class LocationRepositoryImpl implements LocationRepository {
     try {
       final position = await _location.getCurrentPosition();
       return Result.success(
-        Coordinate(
-          latitude: position.latitude,
-          longitude: position.longitude,
-        ),
+        Coordinate(latitude: position.latitude, longitude: position.longitude),
       );
     } on LocationServiceDisabledException {
       // 利用者が選んだ状態なので失敗にしない。

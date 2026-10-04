@@ -10,7 +10,9 @@ import 'package:domain/domain.dart';
 void main() {
   group('toModel', () {
     test('アプリを開いたイベントは app_open', () {
-      final model = AnalyticsEventMapper.toModel(const AnalyticsEvent.appOpen());
+      final model = AnalyticsEventMapper.toModel(
+        const AnalyticsEvent.appOpen(),
+      );
 
       expect(model.name, 'app_open');
       expect(model.parameters, isEmpty);
@@ -53,10 +55,12 @@ void main() {
 
   group('toImageLoadFailed', () {
     test('配信元のホストと、応答があればその状態を入れる', () {
-      final event = AnalyticsEventMapper.toImageLoadFailed(
-        url: 'https://r2.example.com/A.jpg',
-        error: HttpExceptionWithStatus(503, 'だめ'),
-      ) as ImageLoadFailed;
+      final event =
+          AnalyticsEventMapper.toImageLoadFailed(
+                url: 'https://r2.example.com/A.jpg',
+                error: HttpExceptionWithStatus(503, 'だめ'),
+              )
+              as ImageLoadFailed;
 
       expect(event.host, 'r2.example.com');
       expect(event.statusCode, 503);
@@ -73,10 +77,12 @@ void main() {
       };
 
       for (final entry in types.entries) {
-        final event = AnalyticsEventMapper.toImageLoadFailed(
-          url: 'https://r2/A.jpg',
-          error: entry.key,
-        ) as ImageLoadFailed;
+        final event =
+            AnalyticsEventMapper.toImageLoadFailed(
+                  url: 'https://r2/A.jpg',
+                  error: entry.key,
+                )
+                as ImageLoadFailed;
 
         expect(event.errorRuntimeType, entry.value, reason: '${entry.key}');
       }
@@ -96,26 +102,32 @@ void main() {
       };
 
       for (final entry in osErrors.entries) {
-        final event = AnalyticsEventMapper.toImageLoadFailed(
-          url: 'https://r2/A.jpg',
-          error: entry.key,
-        ) as ImageLoadFailed;
+        final event =
+            AnalyticsEventMapper.toImageLoadFailed(
+                  url: 'https://r2/A.jpg',
+                  error: entry.key,
+                )
+                as ImageLoadFailed;
 
         expect(event.osError, entry.value, reason: '${entry.key}');
       }
     });
 
     test('OS のエラーがなければ空。長すぎるものは Analytics の上限で切る', () {
-      final none = AnalyticsEventMapper.toImageLoadFailed(
-        url: 'https://r2/A.jpg',
-        error: TimeoutException('だめ'),
-      ) as ImageLoadFailed;
+      final none =
+          AnalyticsEventMapper.toImageLoadFailed(
+                url: 'https://r2/A.jpg',
+                error: TimeoutException('だめ'),
+              )
+              as ImageLoadFailed;
       expect(none.osError, isEmpty);
 
-      final long = AnalyticsEventMapper.toImageLoadFailed(
-        url: 'https://r2/A.jpg',
-        error: SocketException('だめ', osError: OSError('x' * 200)),
-      ) as ImageLoadFailed;
+      final long =
+          AnalyticsEventMapper.toImageLoadFailed(
+                url: 'https://r2/A.jpg',
+                error: SocketException('だめ', osError: OSError('x' * 200)),
+              )
+              as ImageLoadFailed;
       expect(long.osError.length, 100);
     });
   });

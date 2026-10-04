@@ -46,8 +46,8 @@ class CurrentRoute {
 /// など GoRouter を通さない表示は含まない。
 final currentRouteProvider =
     NotifierProvider<CurrentRouteNotifier, CurrentRoute?>(
-  CurrentRouteNotifier.new,
-);
+      CurrentRouteNotifier.new,
+    );
 
 class CurrentRouteNotifier extends Notifier<CurrentRoute?> {
   @override

@@ -55,8 +55,9 @@ FutureOr<void> main() async {
       debugPrint('Uncaught zone error: $error');
       debugPrintStack(stackTrace: stack);
       try {
-        CrashlyticsDataSource(FirebaseCrashlytics.instance)
-            .recordFatal(error, stack);
+        CrashlyticsDataSource(
+          FirebaseCrashlytics.instance,
+        ).recordFatal(error, stack);
       } catch (e) {
         debugPrint('Crashlytics へ記録できませんでした: $e');
       }

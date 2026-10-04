@@ -27,8 +27,9 @@ void main() {
 
   group('readCache', () {
     test('保存済みならそのデータを返す', () async {
-      when(() => cache.getFileFromCache(_url))
-          .thenAnswer((_) async => fileInfo([1, 2, 3]));
+      when(
+        () => cache.getFileFromCache(_url),
+      ).thenAnswer((_) async => fileInfo([1, 2, 3]));
 
       expect(await dataSource.readCache(_url), [1, 2, 3]);
     });
@@ -42,15 +43,17 @@ void main() {
 
   group('download', () {
     test('取って保存したデータを返す', () async {
-      when(() => cache.downloadFile(_url))
-          .thenAnswer((_) async => fileInfo([4, 5]));
+      when(
+        () => cache.downloadFile(_url),
+      ).thenAnswer((_) async => fileInfo([4, 5]));
 
       expect(await dataSource.download(_url), [4, 5]);
     });
 
     test('取れなければ、そのまま例外を投げる', () async {
-      when(() => cache.downloadFile(_url))
-          .thenThrow(const SocketException('だめ'));
+      when(
+        () => cache.downloadFile(_url),
+      ).thenThrow(const SocketException('だめ'));
 
       expect(dataSource.download(_url), throwsA(isA<SocketException>()));
     });

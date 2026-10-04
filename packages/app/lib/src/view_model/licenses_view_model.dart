@@ -8,8 +8,8 @@ import '../view_data/licenses_view_data.dart';
 
 final licensesViewModelProvider =
     AsyncNotifierProvider.autoDispose<LicensesViewModel, LicensesViewData>(
-  LicensesViewModel.new,
-);
+      LicensesViewModel.new,
+    );
 
 /// ライセンス画面の ViewModel。
 class LicensesViewModel extends AutoDisposeAsyncNotifier<LicensesViewData> {

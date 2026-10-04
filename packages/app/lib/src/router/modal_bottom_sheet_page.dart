@@ -23,8 +23,10 @@ class ModalBottomSheetPage<T> extends Page<T> {
       // モーダルへ go すると Navigator は Route を作り直さず settings だけ差し替える。
       // 作成時の child を覚えていると前のカードを表示し続けるため、表示のたびに
       // その時点の Page から child を読む（MaterialPage と同じ振る舞い）。
-      builder: (context) =>
-          (ModalRoute.of(context)!.settings as ModalBottomSheetPage<T>).child,
+      builder:
+          (context) =>
+              (ModalRoute.of(context)!.settings as ModalBottomSheetPage<T>)
+                  .child,
       isScrollControlled: true,
     );
   }

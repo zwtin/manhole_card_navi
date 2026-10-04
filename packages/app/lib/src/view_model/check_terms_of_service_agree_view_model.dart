@@ -5,9 +5,9 @@ import '../router/navigation_service.dart';
 import '../view_data/check_terms_of_service_agree_view_data.dart';
 
 final checkTermsOfServiceAgreeViewModelProvider = NotifierProvider.autoDispose<
-    CheckTermsOfServiceAgreeViewModel, CheckTermsOfServiceAgreeViewData>(
-  CheckTermsOfServiceAgreeViewModel.new,
-);
+  CheckTermsOfServiceAgreeViewModel,
+  CheckTermsOfServiceAgreeViewData
+>(CheckTermsOfServiceAgreeViewModel.new);
 
 /// 初回起動時に利用規約とプライバシーポリシーへの同意を求める画面の ViewModel。
 class CheckTermsOfServiceAgreeViewModel
