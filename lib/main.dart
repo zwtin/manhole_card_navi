@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:app/app.dart';
-import 'package:data/data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'debug_proxy.dart';
-import 'di/infrastructure.dart';
-import 'di/repository_overrides.dart';
-import 'firebase_options.dart';
-import 'uncaught_error_observer.dart';
+import 'package:app/app.dart';
+import 'package:data/data.dart';
+import 'package:manhole_card_navi/debug_proxy.dart';
+import 'package:manhole_card_navi/di/infrastructure.dart';
+import 'package:manhole_card_navi/di/repository_overrides.dart';
+import 'package:manhole_card_navi/firebase_options.dart';
+import 'package:manhole_card_navi/uncaught_error_observer.dart';
 
 FutureOr<void> main() async {
   runZonedGuarded<Future<void>>(

@@ -1,6 +1,7 @@
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'package:data/data.dart';
 import 'package:domain/domain.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// provider の生成中の例外は Riverpod が受け止めるので、Zone の未捕捉エラーに
 /// 届かない。ここで拾ってクラッシュとして記録する。
