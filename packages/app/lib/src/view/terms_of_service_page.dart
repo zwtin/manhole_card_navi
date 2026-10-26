@@ -12,7 +12,8 @@ class TermsOfServicePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final html = ref.watch(termsOfServiceViewModelProvider).valueOrNull ?? '';
+    final html =
+        ref.watch(termsOfServiceViewModelProvider).valueOrNull?.html ?? '';
     final viewModel = ref.read(termsOfServiceViewModelProvider.notifier);
 
     useScreenView(ref, viewModel.sendScreenView);

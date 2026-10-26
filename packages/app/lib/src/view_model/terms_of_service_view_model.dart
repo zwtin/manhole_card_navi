@@ -3,19 +3,20 @@ import 'dart:async';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/terms_of_service_view_data.dart';
 import 'package:domain/domain.dart';
 
-/// 状態は利用規約の HTML。
-final termsOfServiceViewModelProvider =
-    AsyncNotifierProvider.autoDispose<TermsOfServiceViewModel, String>(
-      TermsOfServiceViewModel.new,
-    );
+final termsOfServiceViewModelProvider = AsyncNotifierProvider.autoDispose<
+  TermsOfServiceViewModel,
+  TermsOfServiceViewData
+>(TermsOfServiceViewModel.new);
 
-class TermsOfServiceViewModel extends AutoDisposeAsyncNotifier<String> {
+class TermsOfServiceViewModel
+    extends AutoDisposeAsyncNotifier<TermsOfServiceViewData> {
   AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
 
   @override
-  Future<String> build() async {
+  Future<TermsOfServiceViewData> build() async {
     final termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
     final navigationService = ref.watch(navigationServiceProvider);
 
@@ -27,9 +28,11 @@ class TermsOfServiceViewModel extends AutoDisposeAsyncNotifier<String> {
           exception: exception,
         ),
       );
-      return '';
+      return const TermsOfServiceViewData();
     }
-    return (result as Success<TermsOfService>).value.value;
+    return TermsOfServiceViewData(
+      html: (result as Success<TermsOfService>).value.value,
+    );
   }
 
   Future<void> sendScreenView() async {

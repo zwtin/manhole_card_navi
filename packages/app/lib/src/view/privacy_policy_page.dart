@@ -12,7 +12,8 @@ class PrivacyPolicyPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final html = ref.watch(privacyPolicyViewModelProvider).valueOrNull ?? '';
+    final html =
+        ref.watch(privacyPolicyViewModelProvider).valueOrNull?.html ?? '';
     final viewModel = ref.read(privacyPolicyViewModelProvider.notifier);
 
     useScreenView(ref, viewModel.sendScreenView);

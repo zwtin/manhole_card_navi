@@ -3,19 +3,20 @@ import 'dart:async';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/privacy_policy_view_data.dart';
 import 'package:domain/domain.dart';
 
-/// 状態はプライバシーポリシーの HTML。
-final privacyPolicyViewModelProvider =
-    AsyncNotifierProvider.autoDispose<PrivacyPolicyViewModel, String>(
-      PrivacyPolicyViewModel.new,
-    );
+final privacyPolicyViewModelProvider = AsyncNotifierProvider.autoDispose<
+  PrivacyPolicyViewModel,
+  PrivacyPolicyViewData
+>(PrivacyPolicyViewModel.new);
 
-class PrivacyPolicyViewModel extends AutoDisposeAsyncNotifier<String> {
+class PrivacyPolicyViewModel
+    extends AutoDisposeAsyncNotifier<PrivacyPolicyViewData> {
   AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
 
   @override
-  Future<String> build() async {
+  Future<PrivacyPolicyViewData> build() async {
     final privacyPolicyUseCase = ref.watch(privacyPolicyUseCaseProvider);
     final navigationService = ref.watch(navigationServiceProvider);
 
@@ -27,9 +28,11 @@ class PrivacyPolicyViewModel extends AutoDisposeAsyncNotifier<String> {
           exception: exception,
         ),
       );
-      return '';
+      return const PrivacyPolicyViewData();
     }
-    return (result as Success<PrivacyPolicy>).value.value;
+    return PrivacyPolicyViewData(
+      html: (result as Success<PrivacyPolicy>).value.value,
+    );
   }
 
   Future<void> sendScreenView() async {
