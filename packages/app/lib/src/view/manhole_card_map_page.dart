@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -7,6 +9,14 @@ import '../router/use_screen_view.dart';
 import '../view_model/manhole_card_map_view_model.dart';
 import '../widget/app_bar_title.dart';
 
+final _initialCameraPosition = CameraPosition(
+  target: LatLng(
+    ManholeCardMapViewModel.initialCamera.latitude,
+    ManholeCardMapViewModel.initialCamera.longitude,
+  ),
+  zoom: ManholeCardMapViewModel.initialCamera.zoom,
+);
+
 /// マップタブ。
 class ManholeCardMapPage extends HookConsumerWidget {
   const ManholeCardMapPage({super.key});
@@ -15,8 +25,27 @@ class ManholeCardMapPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(manholeCardMapViewModelProvider);
     final viewModel = ref.read(manholeCardMapViewModelProvider.notifier);
+    final mapController = useRef<GoogleMapController?>(null);
 
     useScreenView(ref, viewModel.sendScreenView);
+    ref.listen(
+      manholeCardMapViewModelProvider.select((state) => state.cameraMove),
+      (previous, next) {
+        final controller = mapController.value;
+        if (next == null || controller == null) {
+          return;
+        }
+        // 中心だけを動かし、ズームは利用者が合わせたままにする。
+        final update = CameraUpdate.newLatLng(
+          LatLng(next.latitude, next.longitude),
+        );
+        unawaited(
+          next.animated
+              ? controller.animateCamera(update)
+              : controller.moveCamera(update),
+        );
+      },
+    );
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         await viewModel.onLoad();
@@ -56,10 +85,9 @@ class ManholeCardMapPage extends HookConsumerWidget {
                 children: [
                   Flexible(
                     child: GoogleMap(
-                      initialCameraPosition:
-                          ManholeCardMapViewModel.initialCameraPosition,
+                      initialCameraPosition: _initialCameraPosition,
                       onMapCreated: (controller) async {
-                        viewModel.setGoogleMapController(controller);
+                        mapController.value = controller;
                         await viewModel.updateMyLocationEnabled();
                       },
                       mapToolbarEnabled: false,
@@ -82,7 +110,11 @@ class ManholeCardMapPage extends HookConsumerWidget {
                               onTap: () => viewModel.onTapMarker(viewData.id),
                             );
                           }).toSet(),
-                      onCameraMove: viewModel.onCameraMove,
+                      onCameraMove:
+                          (position) => viewModel.onCameraMove(
+                            latitude: position.target.latitude,
+                            longitude: position.target.longitude,
+                          ),
                       onCameraIdle: viewModel.onCameraIdle,
                     ),
                   ),

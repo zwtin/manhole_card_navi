@@ -33,7 +33,7 @@ fvm flutter build ios --dart-define-from-file=dart_defines/production.env
 # コード解析（ルートで実行すると packages/ 配下もまとめて解析する）
 fvm flutter analyze
 
-# app の約束（デザインシステム・View が domain を知らないこと・ViewModel の独立）の検査。flutter analyze では見つからない
+# app の約束（デザインシステム・View が domain を知らないこと・ViewModel の独立と画面の部品）の検査。flutter analyze では見つからない
 ./scripts/check_app_rules.sh
 
 # テストの実行（パッケージごと。ルートにもある）
@@ -153,6 +153,7 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 - 1 画面 1 ViewModel 1 State。State は freezed、依存は `build()` で `ref.watch` して `late final` に保持する
 - 読み込むだけの画面は `AsyncNotifier`（`build()` で取得）、起動時チェックやマップのように読み込みに副作用を伴う画面は `Notifier` にして View の `useEffect` から `onLoad()` を呼ぶ
 - ViewModel は BuildContext を持たない。遷移・アラート・URL を開く操作は `NavigationService` 経由で行う
+- **ViewModel は画面の部品（widget・地図の `GoogleMapController` など）を持たない**（`scripts/check_app_rules.sh` が止める）。部品を動かしたいときは指示を State に載せ、View が `ref.listen` で受け取って自分の部品を動かす。マップのカメラなら、ViewModel は `CameraMoveViewData` を出し、controller は View が `useRef` で持つ。同じ指示を続けて出しても届くよう、指示ごとに番号を振る
 - ViewModel が読み書きするのは UseCase だけで、Repository を直接呼ばない。処理のない読み取りも、Repository を素通しする UseCase のメソッドを通す
 - **ViewModel は他の ViewModel を読まない**（`scripts/check_app_rules.sh` が止める）。画面をまたいで共有する状態は UseCase の watch で流す（取得済みカード・検索条件・位置情報の許可）。例外はカードのモーダルの高さだけで、マップの表示エリアの 2/3 にするため、モーダルの画面がマップの ViewModel から読んでいる。画面の高さは domain の状態ではないので UseCase に載せられず、独立させるのは後回しにしている
 - カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）がカードの ID で `CardUseCase.fetchImage` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない。View と widget はカードの ID を `cardImageProvider` に渡して受け取るだけで、UseCase を知っているのは `card_image_provider.dart` だけ。画像の URL・代わりの配信元・端末に保存するかは data だけが知っていて、エンティティにも画像の URL は持たせない

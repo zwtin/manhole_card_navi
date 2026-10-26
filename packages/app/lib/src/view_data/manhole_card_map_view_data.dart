@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'camera_move_view_data.dart';
 import 'map_markers_view_data.dart';
 
 part 'manhole_card_map_view_data.freezed.dart';
@@ -19,6 +20,9 @@ abstract class ManholeCardMapViewData with _$ManholeCardMapViewData {
 
     /// マップタブでカードのモーダル（またはその上の詳細）を表示中か。
     @Default(false) bool isShowingCardModal,
+
+    /// 最後に出したカメラを動かす指示。まだ出していなければ null。
+    CameraMoveViewData? cameraMove,
   }) = _ManholeCardMapViewData;
   const ManholeCardMapViewData._();
 

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:domain/domain.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../mapper/map_coordinate_type_name_mapper.dart';
@@ -11,6 +10,7 @@ import '../mapper/marker_icon_mapper.dart';
 import '../router/app_router.dart';
 import '../router/current_route.dart';
 import '../router/navigation_service.dart';
+import '../view_data/camera_move_view_data.dart';
 import '../view_data/manhole_card_map_view_data.dart';
 import '../view_data/map_marker_view_data.dart';
 import '../view_data/map_markers_view_data.dart';
@@ -23,8 +23,10 @@ final manholeCardMapViewModelProvider = NotifierProvider.autoDispose<
 /// マップタブの ViewModel。
 class ManholeCardMapViewModel
     extends AutoDisposeNotifier<ManholeCardMapViewData> {
-  static const initialCameraPosition = CameraPosition(
-    target: LatLng(35.680212, 139.757669),
+  /// 起動時に映す場所。View の地図と、ここでピンを選ぶ中心の両方が使う。
+  static const initialCamera = (
+    latitude: 35.680212,
+    longitude: 139.757669,
     zoom: 12.0,
   );
 
@@ -34,8 +36,6 @@ class ManholeCardMapViewModel
   late final LocationUseCase _locationUseCase;
   late final NavigationService _navigationService;
   late final SearchConditionUseCase _searchConditionUseCase;
-
-  GoogleMapController? _mapController;
 
   /// マーカー生成の世代番号。生成中に新しい再読み込みが始まったら、古い世代の
   /// プログレッシブ通知・最終結果を破棄するために使う。
@@ -50,8 +50,14 @@ class ManholeCardMapViewModel
 
   List<CardPin> get _currentPins => _pins[_coordinateType] ?? const [];
   Set<String> _alreadyGetCardIds = {};
-  double _zoom = initialCameraPosition.zoom;
-  LatLng _position = initialCameraPosition.target;
+
+  /// カメラの中心。ピンはここから近いものを選ぶ。
+  Coordinate _center = Coordinate(
+    latitude: initialCamera.latitude,
+    longitude: initialCamera.longitude,
+  );
+
+  int _cameraMoveId = 0;
 
   /// マップタブで最後に表示していた画面のパス。
   String? _mapLocation;
@@ -96,10 +102,6 @@ class ManholeCardMapViewModel
     await _navigationService.presentSearchCondition();
   }
 
-  void setGoogleMapController(GoogleMapController controller) {
-    _mapController = controller;
-  }
-
   void setMapAreaHeight(double height) {
     if (state.mapAreaHeight == height) {
       return;
@@ -114,7 +116,8 @@ class ManholeCardMapViewModel
 
   Future<void> onTapCurrentLocationButton() async {
     if (!state.myLocationEnabled ||
-        await _moveToCurrentLocation(false) == _CurrentLocation.unavailable) {
+        await _moveToCurrentLocation(animated: false) ==
+            _CurrentLocation.unavailable) {
       await _navigationService.showAlert(
         title: 'エラー',
         message: '位置情報を取得できません。設定を変更してください。',
@@ -139,16 +142,16 @@ class ManholeCardMapViewModel
     );
   }
 
-  Future<void> onCameraMove(CameraPosition position) async {
-    _zoom = position.zoom;
-    final latitudeDistance =
-        (_position.latitude - position.target.latitude).abs();
-    final longitudeDistance =
-        (_position.longitude - position.target.longitude).abs();
+  Future<void> onCameraMove({
+    required double latitude,
+    required double longitude,
+  }) async {
+    final latitudeDistance = (_center.latitude - latitude).abs();
+    final longitudeDistance = (_center.longitude - longitude).abs();
     if (latitudeDistance * latitudeDistance +
             longitudeDistance * longitudeDistance >
         0.01) {
-      _position = position.target;
+      _center = Coordinate(latitude: latitude, longitude: longitude);
       await _reloadMarkerViewData();
     }
   }
@@ -160,13 +163,12 @@ class ManholeCardMapViewModel
   /// 表示中の座標種別で、カードのピンの位置を返す。見つからなければ null。
   ///
   /// 配布場所マップでは 1 枚のカードに複数のピンがあるため、最初のピンを返す。
-  Future<LatLng?> _findCardPosition(String cardId) async {
+  Future<Coordinate?> _findCardPosition(String cardId) async {
     await _fetchCards();
-    final pin = _currentPins.where((pin) => pin.card.id == cardId).firstOrNull;
-    if (pin == null) {
-      return null;
-    }
-    return LatLng(pin.coordinate.latitude, pin.coordinate.longitude);
+    return _currentPins
+        .where((pin) => pin.card.id == cardId)
+        .firstOrNull
+        ?.coordinate;
   }
 
   Future<void> sendScreenView() async {
@@ -212,7 +214,10 @@ class ManholeCardMapViewModel
     final pin = AppRoutePath.pinOf(route.uri);
     if (pin != null) {
       // ピンをタップして開いたときは、ピンが見えている範囲の中央へ滑らかに動かす。
-      await _moveToLocation(LatLng(pin.latitude, pin.longitude), true);
+      await _moveCamera(
+        Coordinate(latitude: pin.latitude, longitude: pin.longitude),
+        animated: true,
+      );
       return;
     }
 
@@ -225,7 +230,7 @@ class ManholeCardMapViewModel
       );
       return;
     }
-    await _moveToLocation(position, false);
+    await _moveCamera(position, animated: false);
   }
 
   Future<void> _loadSearchCondition() async {
@@ -288,7 +293,7 @@ class ManholeCardMapViewModel
   Future<void> _reloadMarkerViewData() async {
     final reloadKey =
         '${_coordinateType.name}_${_searchCondition.common.hashCode}_'
-        '${_position.latitude}_${_position.longitude}';
+        '${_center.latitude}_${_center.longitude}';
     if (reloadKey == _lastReloadKey) {
       return;
     }
@@ -299,10 +304,7 @@ class ManholeCardMapViewModel
       pins: _currentPins,
       searchCondition: _searchCondition.common,
       alreadyGetCardIds: _alreadyGetCardIds,
-      center: Coordinate(
-        latitude: _position.latitude,
-        longitude: _position.longitude,
-      ),
+      center: _center,
     );
 
     // できたものから順に地図へ反映する。30 枚そろうまで待つと、地図がしばらく
@@ -351,11 +353,13 @@ class ManholeCardMapViewModel
 
   Future<void> _setMyLocationEnabled(bool enabled) async {
     state = state.copyWith(myLocationEnabled: enabled);
-    await _moveToCurrentLocation(false);
+    await _moveToCurrentLocation(animated: false);
   }
 
   /// 現在地へカメラを動かす。動かせなかったときは、その理由を返す。
-  Future<_CurrentLocation> _moveToCurrentLocation(bool animation) async {
+  Future<_CurrentLocation> _moveToCurrentLocation({
+    required bool animated,
+  }) async {
     if (!state.myLocationEnabled) {
       return _CurrentLocation.unavailable;
     }
@@ -365,24 +369,22 @@ class ManholeCardMapViewModel
       case Success(value: null):
         return _CurrentLocation.unavailable;
       case Success(value: final coordinate?):
-        await _moveToLocation(
-          LatLng(coordinate.latitude, coordinate.longitude),
-          animation,
-        );
+        await _moveCamera(coordinate, animated: animated);
         return _CurrentLocation.moved;
     }
   }
 
-  Future<void> _moveToLocation(LatLng latLng, bool animation) async {
-    final cameraUpdate = CameraUpdate.newCameraPosition(
-      CameraPosition(target: latLng, zoom: _zoom),
+  /// カメラは View が動かす。ピンは動かした先を中心に選び直す。
+  Future<void> _moveCamera(Coordinate target, {required bool animated}) async {
+    state = state.copyWith(
+      cameraMove: CameraMoveViewData(
+        id: ++_cameraMoveId,
+        latitude: target.latitude,
+        longitude: target.longitude,
+        animated: animated,
+      ),
     );
-    if (animation) {
-      await _mapController?.animateCamera(cameraUpdate);
-    } else {
-      await _mapController?.moveCamera(cameraUpdate);
-    }
-    _position = latLng;
+    _center = target;
     await _reloadMarkerViewData();
   }
 }
