@@ -48,7 +48,7 @@ class DetailViewModel
     final card = (result as Success<ManholeCard>).value;
 
     final alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
-    return DetailCardViewDataMapper.convertToViewData(
+    return DetailCardViewDataMapper.toViewData(
       card: card,
       alreadyGet: alreadyGetCardIds.contains(cardId),
     );

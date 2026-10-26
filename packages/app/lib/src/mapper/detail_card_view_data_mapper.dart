@@ -1,36 +1,23 @@
-import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 import 'package:app/src/mapper/prefecture_name_mapper.dart';
 import 'package:app/src/view_data/detail_card_view_data.dart';
 import 'package:domain/domain.dart';
 
-class DetailCardViewDataMapper {
-  static Future<DetailCardViewData> convertToViewData({
+abstract final class DetailCardViewDataMapper {
+  static final _dateFormat = DateFormat('yyyy/MM/dd');
+
+  static DetailCardViewData toViewData({
     required ManholeCard card,
     required bool alreadyGet,
-  }) async {
-    final map = <String, dynamic>{};
-    map['card'] = card;
-    map['alreadyGet'] = alreadyGet;
-    return compute(_convert, map);
-  }
-
-  static Future<DetailCardViewData> _convert(
-    Map<String, dynamic> parameter,
-  ) async {
-    final card = parameter['card'] as ManholeCard;
-    final alreadyGet = parameter['alreadyGet'] as bool;
-
-    final dateFormatter = DateFormat('yyyy/MM/dd');
-
+  }) {
     return DetailCardViewData(
       id: card.id,
       alreadyGet: alreadyGet,
       name: card.name,
       prefecture: PrefectureNameMapper.nameOf(card.prefecture),
       volume: card.volume.name,
-      publicationDate: dateFormatter.format(card.publicationDate.toLocal()),
+      publicationDate: _dateFormat.format(card.publicationDate.toLocal()),
       distributionPlaceHtml: card.distributionPlaceHtml,
       distributionTimeHtml: card.distributionTimeHtml,
       stockHtml: card.stockHtml,

@@ -5,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:app/src/mapper/list_prefectures_view_data_mapper.dart';
 import 'package:app/src/router/navigation_service.dart';
-import 'package:app/src/view_data/list_prefectures_view_data.dart';
 import 'package:app/src/view_data/manhole_card_list_view_data.dart';
 import 'package:domain/domain.dart';
 
@@ -54,24 +53,24 @@ class ManholeCardListViewModel
 
     final alreadyGetSubscription = _alreadyGetCardUseCase.watch().listen((
       cardIds,
-    ) async {
+    ) {
       // 購読開始時にも現在値が流れてくるため、変わっていなければ作り直さない。
       if (setEquals(cardIds, _alreadyGetCardIds)) {
         return;
       }
       _alreadyGetCardIds = cardIds;
-      state = AsyncData(await _buildViewData());
+      state = AsyncData(_buildViewData());
     });
     ref.onDispose(alreadyGetSubscription.cancel);
 
     final searchConditionSubscription = _searchConditionUseCase.watch().listen((
       condition,
-    ) async {
+    ) {
       if (condition == _searchCondition) {
         return;
       }
       _searchCondition = condition;
-      state = AsyncData(await _buildViewData());
+      state = AsyncData(_buildViewData());
     });
     ref.onDispose(searchConditionSubscription.cancel);
 
@@ -116,24 +115,13 @@ class ManholeCardListViewModel
     );
   }
 
-  Future<ManholeCardListViewData> _buildViewData() async {
-    final prefectures = await ListPrefecturesViewDataMapper.convertToViewData(
-      cards: _cards,
-      alreadyGetCardIds: _alreadyGetCardIds,
-      searchCondition: _searchCondition.common,
-    );
+  ManholeCardListViewData _buildViewData() {
     return ManholeCardListViewData(
-      prefectures: ListPrefecturesViewData(
-        list:
-            prefectures.list
-                .map(
-                  (prefecture) => prefecture.copyWith(
-                    initiallyExpanded: _expandedPrefectureIds.contains(
-                      prefecture.id,
-                    ),
-                  ),
-                )
-                .toList(),
+      prefectures: ListPrefecturesViewDataMapper.toViewData(
+        cards: _cards,
+        alreadyGetCardIds: _alreadyGetCardIds,
+        searchCondition: _searchCondition.common,
+        expandedPrefectureIds: _expandedPrefectureIds,
       ),
       totalCount: _cards.length,
       alreadyGetCount: _alreadyGetCardIds.length,
