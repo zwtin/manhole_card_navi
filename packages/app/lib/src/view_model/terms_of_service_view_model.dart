@@ -12,20 +12,17 @@ final termsOfServiceViewModelProvider =
     );
 
 class TermsOfServiceViewModel extends AutoDisposeAsyncNotifier<String> {
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final TermsOfServiceUseCase _termsOfServiceUseCase;
-  late final NavigationService _navigationService;
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
 
   @override
   Future<String> build() async {
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
+    final termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
+    final navigationService = ref.watch(navigationServiceProvider);
 
-    final result = await _termsOfServiceUseCase.get();
+    final result = await termsOfServiceUseCase.get();
     if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showFailure(
+        navigationService.showFailure(
           title: '利用規約を表示できませんでした',
           exception: exception,
         ),

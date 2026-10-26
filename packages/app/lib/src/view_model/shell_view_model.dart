@@ -11,21 +11,18 @@ final shellViewModelProvider =
     );
 
 class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
-  late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final AppBadgeUseCase _appBadgeUseCase;
-  late final LocationUseCase _locationUseCase;
-  late final PushNotificationUseCase _pushNotificationUseCase;
+  AlreadyGetCardUseCase get _alreadyGetCardUseCase =>
+      ref.read(alreadyGetCardUseCaseProvider);
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  AppBadgeUseCase get _appBadgeUseCase => ref.read(appBadgeUseCaseProvider);
+  LocationUseCase get _locationUseCase => ref.read(locationUseCaseProvider);
+  PushNotificationUseCase get _pushNotificationUseCase =>
+      ref.read(pushNotificationUseCaseProvider);
 
   int _alreadyGetCardCount = 0;
 
   @override
   ShellViewData build() {
-    _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _appBadgeUseCase = ref.watch(appBadgeUseCaseProvider);
-    _locationUseCase = ref.watch(locationUseCaseProvider);
-    _pushNotificationUseCase = ref.watch(pushNotificationUseCaseProvider);
     return const ShellViewData();
   }
 

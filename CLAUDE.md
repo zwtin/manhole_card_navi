@@ -150,7 +150,8 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 - `CrashlyticsDataSource` の記録の失敗だけは Error も含めて捨てる。投げ直すと Zone から同じ記録を呼び直して堂々巡りになる
 
 ### 状態管理（app）
-- 1 画面 1 ViewModel 1 State。State は freezed、依存は `build()` で `ref.watch` して `late final` に保持する
+- 1 画面 1 ViewModel 1 State。State は freezed
+- 依存は、`build()` で使うものは `build()` の中で `ref.watch` してローカル変数にし（`await` より前に）、メソッドで使うものはその都度 `ref.read` する（`XxxUseCase get _xxxUseCase => ref.read(...)` のゲッターにする）。`build()` から呼ぶ補助メソッドには、watch した値を引数で渡す。**`late final` のフィールドに入れない。** Riverpod の Notifier は `build()` が走り直しても同じインスタンスを使い回すので、2 回目の代入で落ちる
 - 読み込むだけの画面は `AsyncNotifier`（`build()` で取得）、起動時チェックやマップのように読み込みに副作用を伴う画面は `Notifier` にして View の `useEffect` から `onLoad()` を呼ぶ
 - ViewModel は BuildContext を持たない。遷移・アラート・URL を開く操作は `NavigationService` 経由で行う
 - **ViewModel は画面の部品（widget・地図の `GoogleMapController` など）を持たない**（`scripts/check_app_rules.sh` が止める）。部品を動かしたいときは指示を State に載せ、View が `ref.listen` で受け取って自分の部品を動かす。マップのカメラなら、ViewModel は `CameraMoveViewData` を出し、controller は View が `useRef` で持つ。同じ指示を続けて出しても届くよう、指示ごとに番号を振る

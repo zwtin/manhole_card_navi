@@ -12,15 +12,14 @@ final checkTermsOfServiceAgreeViewModelProvider = NotifierProvider.autoDispose<
 /// 初回起動時に利用規約とプライバシーポリシーへの同意を求める画面の ViewModel。
 class CheckTermsOfServiceAgreeViewModel
     extends AutoDisposeNotifier<CheckTermsOfServiceAgreeViewData> {
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final NavigationService _navigationService;
-  late final TermsOfServiceUseCase _termsOfServiceUseCase;
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
+  TermsOfServiceUseCase get _termsOfServiceUseCase =>
+      ref.read(termsOfServiceUseCaseProvider);
 
   @override
   CheckTermsOfServiceAgreeViewData build() {
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
-    _termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
     return const CheckTermsOfServiceAgreeViewData();
   }
 

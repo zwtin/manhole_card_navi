@@ -29,12 +29,15 @@ class ManholeCardMapViewModel
     zoom: 12.0,
   );
 
-  late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final CardUseCase _cardUseCase;
-  late final LocationUseCase _locationUseCase;
-  late final NavigationService _navigationService;
-  late final SearchConditionUseCase _searchConditionUseCase;
+  AlreadyGetCardUseCase get _alreadyGetCardUseCase =>
+      ref.read(alreadyGetCardUseCaseProvider);
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  CardUseCase get _cardUseCase => ref.read(cardUseCaseProvider);
+  LocationUseCase get _locationUseCase => ref.read(locationUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
+  SearchConditionUseCase get _searchConditionUseCase =>
+      ref.read(searchConditionUseCaseProvider);
 
   /// 生成中に新しい再読み込みが始まったら、古い世代の結果を捨てるための番号。
   int _markerGeneration = 0;
@@ -66,16 +69,11 @@ class ManholeCardMapViewModel
 
   @override
   ManholeCardMapViewData build() {
-    _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _cardUseCase = ref.watch(cardUseCaseProvider);
-    _locationUseCase = ref.watch(locationUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
-    _searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
+    final locationUseCase = ref.watch(locationUseCaseProvider);
 
     ref.listen(currentRouteProvider, (previous, next) => _onRouteChanged(next));
     // 起動時に下タブが許可を求める。答えが出たら現在地の表示を切り替える。
-    final subscription = _locationUseCase.watchPermissionGranted().listen(
+    final subscription = locationUseCase.watchPermissionGranted().listen(
       _setMyLocationEnabled,
     );
     ref.onDispose(subscription.cancel);

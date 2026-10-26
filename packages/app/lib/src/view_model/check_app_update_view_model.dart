@@ -20,17 +20,15 @@ class CheckAppUpdateViewModel
   /// Play Store のパッケージ名（本番）
   static const _androidPackageName = 'com.zwtin.manholecardnavi';
 
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final CheckAppUpdateUseCase _checkAppUpdateUseCase;
-  late final NavigationService _navigationService;
-  late final UserUseCase _userUseCase;
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  CheckAppUpdateUseCase get _checkAppUpdateUseCase =>
+      ref.read(checkAppUpdateUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
+  UserUseCase get _userUseCase => ref.read(userUseCaseProvider);
 
   @override
   CheckAppUpdateViewData build() {
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _checkAppUpdateUseCase = ref.watch(checkAppUpdateUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
-    _userUseCase = ref.watch(userUseCaseProvider);
     return const CheckAppUpdateViewData();
   }
 

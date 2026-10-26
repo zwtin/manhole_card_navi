@@ -20,21 +20,20 @@ final cardModalViewModelProvider = AsyncNotifierProvider.autoDispose
 
 class CardModalViewModel
     extends AutoDisposeFamilyAsyncNotifier<CardModalViewData, CardModalArgs> {
-  late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final CardUseCase _cardUseCase;
-  late final NavigationService _navigationService;
-  late final SearchConditionUseCase _searchConditionUseCase;
+  AlreadyGetCardUseCase get _alreadyGetCardUseCase =>
+      ref.read(alreadyGetCardUseCaseProvider);
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
 
   @override
   Future<CardModalViewData> build(CardModalArgs arg) async {
-    _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _cardUseCase = ref.watch(cardUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
-    _searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
+    final alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
+    final cardUseCase = ref.watch(cardUseCaseProvider);
+    final navigationService = ref.watch(navigationServiceProvider);
+    final searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
 
-    final subscription = _alreadyGetCardUseCase.watch().listen((cardIds) {
+    final subscription = alreadyGetCardUseCase.watch().listen((cardIds) {
       final current = state.valueOrNull;
       if (current == null) {
         return;
@@ -45,10 +44,10 @@ class CardModalViewModel
     });
     ref.onDispose(subscription.cancel);
 
-    final result = await _cardUseCase.get(id: arg.cardId);
+    final result = await cardUseCase.get(id: arg.cardId);
     if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showFailure(
+        navigationService.showFailure(
           title: 'カード情報を取得できませんでした',
           exception: exception,
         ),
@@ -57,11 +56,11 @@ class CardModalViewModel
     }
     final card = (result as Success<ManholeCard>).value;
 
-    final alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
+    final alreadyGetCardIds = await alreadyGetCardUseCase.watch().first;
     return CardModalViewData(
       card: ModalCardViewDataMapper.toViewData(
         card: card,
-        position: await _positionOf(card),
+        position: await _positionOf(card, searchConditionUseCase),
       ),
       alreadyGet: alreadyGetCardIds.contains(arg.cardId),
     );
@@ -140,12 +139,15 @@ class CardModalViewModel
   }
 
   /// 「マップで見る」から開いたときは、マップがカメラを向けるのと同じピンにする。
-  Future<Coordinate> _positionOf(ManholeCard card) async {
+  Future<Coordinate> _positionOf(
+    ManholeCard card,
+    SearchConditionUseCase searchConditionUseCase,
+  ) async {
     final pin = arg.pin;
     if (pin != null) {
       return Coordinate(latitude: pin.latitude, longitude: pin.longitude);
     }
-    final condition = await _searchConditionUseCase.watch().first;
+    final condition = await searchConditionUseCase.watch().first;
     return MapMarkersViewDataMapper.firstPinOf(
           card,
           condition.map.coordinateType,

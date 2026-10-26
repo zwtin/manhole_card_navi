@@ -15,11 +15,9 @@ final manholeCardListViewModelProvider = AsyncNotifierProvider.autoDispose<
 
 class ManholeCardListViewModel
     extends AutoDisposeAsyncNotifier<ManholeCardListViewData> {
-  late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final CardUseCase _cardUseCase;
-  late final SearchConditionUseCase _searchConditionUseCase;
-  late final NavigationService _navigationService;
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
 
   List<ManholeCard> _cards = [];
   Set<String> _alreadyGetCardIds = {};
@@ -30,27 +28,26 @@ class ManholeCardListViewModel
 
   @override
   Future<ManholeCardListViewData> build() async {
-    _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _cardUseCase = ref.watch(cardUseCaseProvider);
-    _searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
+    final alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
+    final cardUseCase = ref.watch(cardUseCaseProvider);
+    final searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
+    final navigationService = ref.watch(navigationServiceProvider);
 
-    switch (await _cardUseCase.fetchAll()) {
+    switch (await cardUseCase.fetchAll()) {
       case Success(:final value):
         _cards = value;
       case Failure(:final exception):
         unawaited(
-          _navigationService.showFailure(
+          navigationService.showFailure(
             title: 'カード一覧を取得できませんでした',
             exception: exception,
           ),
         );
     }
-    _searchCondition = await _searchConditionUseCase.watch().first;
-    _alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
+    _searchCondition = await searchConditionUseCase.watch().first;
+    _alreadyGetCardIds = await alreadyGetCardUseCase.watch().first;
 
-    final alreadyGetSubscription = _alreadyGetCardUseCase.watch().listen((
+    final alreadyGetSubscription = alreadyGetCardUseCase.watch().listen((
       cardIds,
     ) {
       // 購読開始時にも現在値が流れてくるため、変わっていなければ作り直さない。
@@ -62,7 +59,7 @@ class ManholeCardListViewModel
     });
     ref.onDispose(alreadyGetSubscription.cancel);
 
-    final searchConditionSubscription = _searchConditionUseCase.watch().listen((
+    final searchConditionSubscription = searchConditionUseCase.watch().listen((
       condition,
     ) {
       if (condition == _searchCondition) {

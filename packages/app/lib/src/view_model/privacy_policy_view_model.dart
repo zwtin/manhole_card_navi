@@ -12,20 +12,17 @@ final privacyPolicyViewModelProvider =
     );
 
 class PrivacyPolicyViewModel extends AutoDisposeAsyncNotifier<String> {
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final PrivacyPolicyUseCase _privacyPolicyUseCase;
-  late final NavigationService _navigationService;
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
 
   @override
   Future<String> build() async {
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _privacyPolicyUseCase = ref.watch(privacyPolicyUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
+    final privacyPolicyUseCase = ref.watch(privacyPolicyUseCaseProvider);
+    final navigationService = ref.watch(navigationServiceProvider);
 
-    final result = await _privacyPolicyUseCase.get();
+    final result = await privacyPolicyUseCase.get();
     if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showFailure(
+        navigationService.showFailure(
           title: 'プライバシーポリシーを表示できませんでした',
           exception: exception,
         ),
