@@ -9,7 +9,6 @@ final customIntroductionViewModelProvider = NotifierProvider.autoDispose
       CustomIntroductionViewModel.new,
     );
 
-/// アプリの使い方（チュートリアル）画面の ViewModel。
 class CustomIntroductionViewModel
     extends AutoDisposeFamilyNotifier<void, bool> {
   late final AnalyticsUseCase _analyticsUseCase;

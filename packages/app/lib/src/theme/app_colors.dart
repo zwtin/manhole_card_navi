@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:app/src/gen/colors.gen.dart';
 
-/// Material 3 の色の役割（[ColorScheme]）に当てはまらない色だけを置く。
-/// 役割があるもの（面・文字・枠線・強調）は [ColorScheme] から引く。
-///
-/// `Theme.of(context).extension<AppColors>()!` か、[AppColorsOf.appColors] で引く。
 class AppColors extends ThemeExtension<AppColors> {
   const AppColors({
     required this.link,

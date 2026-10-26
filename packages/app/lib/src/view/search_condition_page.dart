@@ -9,12 +9,7 @@ import 'package:app/src/view_model/search_condition_view_model.dart';
 import 'package:app/src/widget/app_bar_title.dart';
 import 'package:app/src/widget/app_text.dart';
 
-/// 検索条件画面。
-///
-/// マップ・リストの両方から遷移する共通の検索条件編集画面。ナビゲーションバーと
-/// 下部の「この条件で表示」ボタンは固定し、その間のセクション群だけをスクロールで
-/// 表示する。編集内容はドラフトとして保持し、「この条件で表示」で端末保存され、
-/// Stream 経由で両画面へ反映される。
+/// 検索条件。マップとリストの両方から開く。
 class SearchConditionPage extends HookConsumerWidget {
   const SearchConditionPage({super.key});
 
@@ -27,7 +22,6 @@ class SearchConditionPage extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      // ==== 固定: ナビゲーションバー ====
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),
@@ -49,7 +43,6 @@ class SearchConditionPage extends HookConsumerWidget {
           const SizedBox(width: 8),
         ],
       ),
-      // ==== スクロール: セクション群 ====
       // 端末から読むだけで一瞬なので、読み込み中は何も出さない。
       body:
           state == null
@@ -57,7 +50,6 @@ class SearchConditionPage extends HookConsumerWidget {
               : ListView(
                 padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
                 children: [
-                  // ---- 表示（取得状態）: 単一選択 ----
                   _SectionCard(
                     title: '表示',
                     child: _Segmented(
@@ -66,7 +58,6 @@ class SearchConditionPage extends HookConsumerWidget {
                     ),
                   ),
 
-                  // ---- 弾数: 複数選択（空＝すべて表示） ----
                   _SectionCard(
                     title: '弾数',
                     actions: _QuickActions(
@@ -79,7 +70,6 @@ class SearchConditionPage extends HookConsumerWidget {
                     ),
                   ),
 
-                  // ---- 配布状態: 複数選択（空＝すべて表示） ----
                   _SectionCard(
                     title: '配布状態',
                     actions: _QuickActions(
@@ -92,7 +82,6 @@ class SearchConditionPage extends HookConsumerWidget {
                     ),
                   ),
 
-                  // ---- マップ表示（マップ画面にのみ適用）: 単一選択 ----
                   _SectionCard(
                     title: 'マップ表示',
                     pill: 'マップのみ',
@@ -104,7 +93,6 @@ class SearchConditionPage extends HookConsumerWidget {
                   const SizedBox(height: 8),
                 ],
               ),
-      // ==== 固定: 「この条件で表示」ボタン ====
       bottomNavigationBar: Container(
         color: Theme.of(context).colorScheme.surfaceContainerLowest,
         child: SafeArea(
@@ -144,7 +132,6 @@ Color _subColor(BuildContext context) {
   return theme.iconTheme.color ?? theme.colorScheme.onSurface;
 }
 
-/// セクションカード。見出し・任意のバッジ／補助テキスト／右上クイックアクションを持つ。
 class _SectionCard extends StatelessWidget {
   const _SectionCard({
     required this.title,
@@ -155,6 +142,8 @@ class _SectionCard extends StatelessWidget {
 
   final String title;
   final Widget child;
+
+  /// 見出しの横に出す札（「マップのみ」など）。
   final String? pill;
   final Widget? actions;
 
@@ -231,7 +220,6 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-/// 右上の「すべて / クリア」クイックアクション。
 class _QuickActions extends StatelessWidget {
   const _QuickActions({required this.onSelectAll, required this.onClear});
 
@@ -240,9 +228,8 @@ class _QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // アプリの TextButtonTheme は余白を 0 にしているため、そのままだと
-    // 「すべて」「クリア」が密着してタップしづらい。各ボタンに横余白を与えて
-    // タップ領域を広げ、区切りの前後にも間隔を確保する。
+    // アプリの TextButtonTheme は余白を 0 にしているので、そのままだと
+    // 「すべて」「クリア」が密着してタップしづらい。
     final style = TextButton.styleFrom(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       minimumSize: Size.zero,
@@ -268,11 +255,8 @@ class _QuickActions extends StatelessWidget {
   }
 }
 
-/// 単一選択のセグメントコントロール。
-///
-/// 見た目はアプリの配色（トラック＝`track` / 選択中＝`primary`）に合わせつつ、
-/// 選択位置の移動やドラッグ操作は [CupertinoSlidingSegmentedControl] に任せて
-/// スライドアニメーションを得る。
+/// 選択の移動のアニメーションとドラッグは、[CupertinoSlidingSegmentedControl] に
+/// 任せる。
 class _Segmented extends StatelessWidget {
   const _Segmented({required this.options, required this.onChanged});
 
@@ -287,8 +271,8 @@ class _Segmented extends StatelessWidget {
     return SizedBox(
       // 幅いっぱいのタイトな制約を与えることで、各セグメントが均等幅になる。
       width: double.infinity,
-      // トラックの角丸は本体側が持つ固定値（9）より従来の 12 の方がカードや
-      // チップと揃うため、背景は透明にして外側の DecoratedBox で描画する。
+      // 本体のトラックの角丸（9）は変えられないので、背景は透明にして、カードや
+      // チップとそろう 12 の角丸を外側で描く。
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerHigh,
@@ -320,18 +304,13 @@ class _Segmented extends StatelessWidget {
   }
 }
 
-/// セグメント 1 つ分のラベル。
-///
 /// [CupertinoSlidingSegmentedControl] はサムをドラッグしている間 `onValueChanged`
-/// を呼ばず、指を離した時点で初めて通知する。そのため [selected]（= groupValue と
-/// の一致）だけを見ていると、スライド中は文字色が変わらず指を離してから切り替わって
-/// しまう。
+/// を呼ばないので、[selected] だけを見ると、文字色が指を離すまで変わらない。
 ///
-/// 一方で本体は「今サムがいるセグメント」に `FontWeight.w600`、それ以外に `w500` の
-/// [DefaultTextStyle] をドラッグ中もリアルタイムに敷いている。ここではその継承された
-/// フォントウェイトから現在の選択位置を読み取り、サムの移動に追従して文字色を変える。
-/// 想定外のウェイトだった場合（SDK 側の実装変更）は [selected] にフォールバックし、
-/// 指を離した時点で色が変わる従来の挙動になる。
+/// 本体はドラッグ中も、サムがいるセグメントに `FontWeight.w600`、それ以外に `w500`
+/// の [DefaultTextStyle] を敷いている。その太さから今の位置を読み、サムに合わせて
+/// 文字色を変える。想定外の太さ（SDK の実装が変わったとき）なら [selected] に戻り、
+/// 指を離したときに色が変わる。
 class _SegmentLabel extends StatelessWidget {
   const _SegmentLabel({
     required this.label,
@@ -347,7 +326,6 @@ class _SegmentLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 本体が敷いたスタイル（アプリ既定のスタイル＋ウェイト／サイズ）を土台にする。
     final inheritedStyle = DefaultTextStyle.of(context).style;
     final bool highlighted;
     if (inheritedStyle.fontWeight == FontWeight.w600) {
@@ -359,7 +337,6 @@ class _SegmentLabel extends StatelessWidget {
     }
 
     return AnimatedDefaultTextStyle(
-      // サムの移動に合わせて文字色を滑らかに変える。
       duration: const Duration(milliseconds: 150),
       curve: Curves.easeInOut,
       textAlign: TextAlign.center,
@@ -380,7 +357,6 @@ class _SegmentLabel extends StatelessWidget {
   }
 }
 
-/// 複数選択のフィルタチップを並べる。
 class _FilterChips extends StatelessWidget {
   const _FilterChips({required this.options, required this.onTap});
 
@@ -406,7 +382,6 @@ class _FilterChips extends StatelessWidget {
   }
 }
 
-/// 複数選択用のフィルタチップ。選択中は塗り＋チェック、未選択は枠線のみ。
 class _FilterChip extends StatelessWidget {
   const _FilterChip({
     required this.label,
@@ -447,13 +422,11 @@ class _FilterChip extends StatelessWidget {
                     : Theme.of(context).colorScheme.outline,
           ),
         ),
-        // ON 状態（チェック＋テキスト）の幅を常に確保しておき、ON/OFF を切り替えても
-        // チップ幅が変わらない（＝後続のチップがズレない）ようにする。見せる内容は
-        // 中央寄せで、OFF はテキストのみ、ON はチェックマークを含めて中央に配置する。
+        // 選んでも外してもチップの幅が変わらない（後ろのチップがずれない）よう、
+        // チェック付きの幅を常に取っておく。
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // 幅を固定するための不可視サイザー。常に ON 状態の内容を占有させる。
             Opacity(
               opacity: 0,
               child: _content(context, labelWidget, withCheck: true),

@@ -8,16 +8,11 @@ import 'package:app/src/widget/app_alert.dart';
 import 'package:domain/domain.dart';
 
 /// [NavigationService] の go_router による実装。
-///
-/// 起動時チェックの画面は前の画面へ戻れないよう go で置き換え、それ以外は push で
-/// 積む。マップのモーダルは、どのカードを表示中かをマップが現在地から読めるよう
-/// go で表す。
 class GoRouterNavigationService implements NavigationService {
   GoRouterNavigationService(this._router);
 
   final GoRouter _router;
 
-  /// 最前面の画面のパス。
   String get _currentLocation => _router.state.matchedLocation;
 
   @override

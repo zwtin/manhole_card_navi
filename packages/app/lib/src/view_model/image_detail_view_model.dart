@@ -6,7 +6,6 @@ import 'package:domain/domain.dart';
 final imageDetailViewModelProvider = NotifierProvider.autoDispose
     .family<ImageDetailViewModel, void, String>(ImageDetailViewModel.new);
 
-/// カード画像の拡大表示の ViewModel。
 class ImageDetailViewModel extends AutoDisposeFamilyNotifier<void, String> {
   late final AnalyticsUseCase _analyticsUseCase;
 

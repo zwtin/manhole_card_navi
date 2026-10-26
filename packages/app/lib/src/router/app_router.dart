@@ -20,10 +20,8 @@ import 'package:app/src/view/search_condition_page.dart';
 import 'package:app/src/view/setting_page.dart';
 import 'package:app/src/view/terms_of_service_page.dart';
 
-/// マップのピンの座標。
 typedef PinCoordinate = ({double latitude, double longitude});
 
-/// 画面のパス。
 abstract final class AppRoutePath {
   // ── 起動時チェック（タブの外） ──
   static const checkAppUpdate = '/check-app-update';
@@ -82,7 +80,6 @@ abstract final class AppRoutePath {
   static const settingLicense = '/setting/license';
 }
 
-/// カード画像の拡大表示に渡す引数。
 class ImageDetailArgs {
   const ImageDetailArgs({
     required this.cardId,
@@ -203,7 +200,6 @@ final routerProvider = Provider<GoRouter>((ref) {
               child: ShellScaffold(navigationShell: navigationShell),
             ),
         branches: [
-          // ── Branch 0: マップタブ ──
           StatefulShellBranch(
             navigatorKey: _mapNavigatorKey,
             // タブを開く前からデータを読み込んでおく。
@@ -217,7 +213,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                       child: const ManholeCardMapPage(),
                     ),
                 routes: [
-                  // /map/card/:cardId → カードのモーダル
                   GoRoute(
                     path: 'card/:cardId',
                     pageBuilder:
@@ -229,7 +224,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                           ),
                         ),
                     routes: [
-                      // /map/card/:cardId/detail → モーダルから開くカード詳細
                       GoRoute(
                         path: 'detail',
                         pageBuilder:
@@ -246,7 +240,6 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // ── Branch 1: リストタブ ──
           StatefulShellBranch(
             navigatorKey: _listNavigatorKey,
             preload: true,
@@ -273,7 +266,6 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // ── Branch 2: 設定タブ ──
           StatefulShellBranch(
             navigatorKey: _settingNavigatorKey,
             preload: true,

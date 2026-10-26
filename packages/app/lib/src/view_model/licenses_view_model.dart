@@ -11,7 +11,6 @@ final licensesViewModelProvider =
       LicensesViewModel.new,
     );
 
-/// ライセンス画面の ViewModel。
 class LicensesViewModel extends AutoDisposeAsyncNotifier<LicensesViewData> {
   late final AnalyticsUseCase _analyticsUseCase;
   late final AppInfoUseCase _appInfoUseCase;

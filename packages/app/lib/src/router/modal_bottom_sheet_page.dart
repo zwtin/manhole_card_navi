@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
 /// [ModalBottomSheetRoute] を go_router のルートとして積むための [Page]。
-///
-/// カードのモーダルをルートにしておくと、画面遷移の状態（どのカードを表示中か）を
-/// GoRouter の現在地から読める。マップはこれを見て表示エリアを縮める。
 class ModalBottomSheetPage<T> extends Page<T> {
   const ModalBottomSheetPage({
     required this.child,

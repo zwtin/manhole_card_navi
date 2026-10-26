@@ -15,12 +15,8 @@ final cardImageProvider = Provider.autoDispose
       ),
     );
 
-/// カード画像を [CardUseCase.fetchImage] から受け取って表示する [ImageProvider]。
-///
-/// 画像の取得（端末への保存・配信元の切り替え・失敗の計測）は data が受け持ち、
-/// ここは受け取ったデータをデコードするだけにする。デコードした画像は Flutter の
-/// ImageCache に [cardId] で保存されるので、同じ画像を出す画面どうし（詳細の
-/// サムネイルと画像拡大など）で共有される。
+/// デコードした画像は Flutter の ImageCache に [cardId] で保存されるので、同じ
+/// 画像を出す画面どうし（詳細のサムネイルと画像拡大など）で共有される。
 ///
 /// 表示するときの縮小は [ResizeImage] で包んで行う。
 @immutable
@@ -29,7 +25,6 @@ class CardImageProvider extends ImageProvider<CardImageProvider> {
 
   final CardUseCase useCase;
 
-  /// 画像を出すカードの ID。
   final String cardId;
 
   @override

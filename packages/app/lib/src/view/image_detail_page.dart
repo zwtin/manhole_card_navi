@@ -6,7 +6,6 @@ import 'package:app/src/router/use_screen_view.dart';
 import 'package:app/src/view_model/image_detail_view_model.dart';
 import 'package:app/src/widget/image_detail.dart';
 
-/// カード画像の拡大表示。
 class ImageDetailPage extends HookConsumerWidget {
   const ImageDetailPage({super.key, required this.args});
 

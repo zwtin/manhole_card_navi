@@ -40,10 +40,8 @@ class CurrentRoute {
   final Map<String, String> pathParameters;
 }
 
-/// GoRouter の遷移を監視し、最前面の画面を公開する。
-///
-/// PV の送信（useScreenView）と、マップがモーダル表示中かの判定に使う。ダイアログ
-/// など GoRouter を通さない表示は含まない。
+/// GoRouter の遷移を監視し、最前面の画面を公開する。ダイアログなど GoRouter を
+/// 通さない表示は含まない。
 final currentRouteProvider =
     NotifierProvider<CurrentRouteNotifier, CurrentRoute?>(
       CurrentRouteNotifier.new,

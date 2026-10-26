@@ -13,7 +13,6 @@ final manholeCardListViewModelProvider = AsyncNotifierProvider.autoDispose<
   ManholeCardListViewData
 >(ManholeCardListViewModel.new);
 
-/// リストタブの ViewModel。
 class ManholeCardListViewModel
     extends AutoDisposeAsyncNotifier<ManholeCardListViewData> {
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
@@ -81,7 +80,6 @@ class ManholeCardListViewModel
     await _navigationService.pushCardDetail(cardId: cardId);
   }
 
-  /// 検索条件画面へ遷移する。
   Future<void> onTapSearchCondition() async {
     await _navigationService.presentSearchCondition();
   }

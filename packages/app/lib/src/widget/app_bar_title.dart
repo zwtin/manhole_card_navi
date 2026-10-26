@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:app/src/widget/app_text.dart';
 
-/// [AppBar] の見出し。画面ごとに大きさや太さを決めない。
-///
-/// テーマの `appBarTheme.titleTextStyle` には入れられない。`ThemeData` を組む
-/// 時点では `textTheme` に大きさが入っておらず（言語に応じた字形と合わせるのは
-/// 画面を描くとき）、そこで焼き込むと大きさのない style になってしまう。
+/// [AppBar] の見出し。
 class AppBarTitle extends StatelessWidget {
   const AppBarTitle(this.data, {super.key});
 

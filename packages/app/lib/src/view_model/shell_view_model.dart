@@ -10,7 +10,6 @@ final shellViewModelProvider =
       ShellViewModel.new,
     );
 
-/// 下タブ（マップ・リスト・設定）を持つ画面の ViewModel。
 class ShellViewModel extends AutoDisposeNotifier<ShellViewData> {
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;

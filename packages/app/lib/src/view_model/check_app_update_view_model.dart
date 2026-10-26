@@ -63,10 +63,6 @@ class CheckAppUpdateViewModel
     }
   }
 
-  /// 起動時チェックの最初に、利用者を識別できる状態にする（匿名ログイン）。以降の
-  /// イベントに利用者の ID が付くよう、アプリを開いたイベントもここで送る。
-  ///
-  /// 初回だけ通信が要る。できなければ、できるまでやり直す。
   Future<void> _signIn() async {
     while (true) {
       state = state.copyWith(isLoading: true);
@@ -92,7 +88,6 @@ class CheckAppUpdateViewModel
     );
   }
 
-  /// ストア（App Store / Play Store）を開く。
   Future<void> _openStore() async {
     if (Platform.isIOS) {
       await _navigationService.openUrl(

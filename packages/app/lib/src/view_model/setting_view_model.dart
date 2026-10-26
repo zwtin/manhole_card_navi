@@ -11,7 +11,6 @@ final settingViewModelProvider =
       SettingViewModel.new,
     );
 
-/// 設定タブの ViewModel。
 class SettingViewModel extends AutoDisposeAsyncNotifier<SettingViewData> {
   late final AnalyticsUseCase _analyticsUseCase;
   late final AppInfoUseCase _appInfoUseCase;

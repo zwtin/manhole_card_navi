@@ -10,7 +10,6 @@ abstract class ManholeCardMapViewData with _$ManholeCardMapViewData {
   const factory ManholeCardMapViewData({
     required String navigationTitle,
 
-    /// 有効な絞り込みの数。検索ボタンのバッジ表示に使う。
     @Default(0) int activeFilterCount,
     @Default(false) bool myLocationEnabled,
     @Default(MapMarkersViewData(list: [])) MapMarkersViewData markers,

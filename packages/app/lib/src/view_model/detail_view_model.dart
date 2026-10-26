@@ -11,7 +11,6 @@ import 'package:domain/domain.dart';
 final detailViewModelProvider = AsyncNotifierProvider.autoDispose
     .family<DetailViewModel, DetailCardViewData, String>(DetailViewModel.new);
 
-/// カード詳細画面の ViewModel。
 class DetailViewModel
     extends AutoDisposeFamilyAsyncNotifier<DetailCardViewData, String> {
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;

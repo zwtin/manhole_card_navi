@@ -11,7 +11,6 @@ final privacyPolicyViewModelProvider =
       PrivacyPolicyViewModel.new,
     );
 
-/// プライバシーポリシー画面の ViewModel。
 class PrivacyPolicyViewModel extends AutoDisposeAsyncNotifier<String> {
   late final AnalyticsUseCase _analyticsUseCase;
   late final PrivacyPolicyUseCase _privacyPolicyUseCase;

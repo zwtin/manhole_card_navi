@@ -11,7 +11,6 @@ final termsOfServiceViewModelProvider =
       TermsOfServiceViewModel.new,
     );
 
-/// 利用規約画面の ViewModel。
 class TermsOfServiceViewModel extends AutoDisposeAsyncNotifier<String> {
   late final AnalyticsUseCase _analyticsUseCase;
   late final TermsOfServiceUseCase _termsOfServiceUseCase;

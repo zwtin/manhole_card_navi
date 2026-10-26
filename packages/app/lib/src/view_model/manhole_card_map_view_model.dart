@@ -20,7 +20,6 @@ final manholeCardMapViewModelProvider = NotifierProvider.autoDispose<
   ManholeCardMapViewData
 >(ManholeCardMapViewModel.new);
 
-/// マップタブの ViewModel。
 class ManholeCardMapViewModel
     extends AutoDisposeNotifier<ManholeCardMapViewData> {
   /// 起動時に映す場所。View の地図と、ここでピンを選ぶ中心の両方が使う。
@@ -37,8 +36,7 @@ class ManholeCardMapViewModel
   late final NavigationService _navigationService;
   late final SearchConditionUseCase _searchConditionUseCase;
 
-  /// マーカー生成の世代番号。生成中に新しい再読み込みが始まったら、古い世代の
-  /// プログレッシブ通知・最終結果を破棄するために使う。
+  /// 生成中に新しい再読み込みが始まったら、古い世代の結果を捨てるための番号。
   int _markerGeneration = 0;
 
   SearchCondition _searchCondition = SearchCondition.initial();
@@ -97,7 +95,6 @@ class ManholeCardMapViewModel
     _listenSearchCondition();
   }
 
-  /// 検索条件画面へ遷移する。
   Future<void> onTapSearchCondition() async {
     await _navigationService.presentSearchCondition();
   }
@@ -281,7 +278,6 @@ class ManholeCardMapViewModel
     final subscription = _searchConditionUseCase.watch().listen((
       condition,
     ) async {
-      // タイトル・フィルタバッジを更新する。
       _applySearchCondition(condition);
       // 起動時に読み込めていなければ、ここで読み込み直す。
       await _fetchCards();

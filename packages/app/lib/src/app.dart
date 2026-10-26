@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:app/src/router/app_router.dart';
 import 'package:app/src/theme/app_theme.dart';
 
-/// アプリのルート Widget。routerProvider の GoRouter を MaterialApp.router に渡す。
+/// アプリのルート Widget。
 class App extends ConsumerWidget {
   const App({super.key});
 

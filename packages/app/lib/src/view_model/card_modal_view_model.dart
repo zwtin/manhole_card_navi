@@ -18,7 +18,6 @@ final cardModalViewModelProvider = AsyncNotifierProvider.autoDispose
       CardModalViewModel.new,
     );
 
-/// マップタブでピンをタップしたときに出るカードのモーダルの ViewModel。
 class CardModalViewModel
     extends AutoDisposeFamilyAsyncNotifier<CardModalViewData, CardModalArgs> {
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;

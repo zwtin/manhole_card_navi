@@ -7,7 +7,6 @@ import 'package:app/src/view_model/setting_view_model.dart';
 import 'package:app/src/widget/app_bar_title.dart';
 import 'package:app/src/widget/app_text.dart';
 
-/// 設定タブ。
 class SettingPage extends HookConsumerWidget {
   const SettingPage({super.key});
 

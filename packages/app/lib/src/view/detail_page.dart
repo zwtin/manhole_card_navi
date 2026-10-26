@@ -47,18 +47,17 @@ class DetailPage extends HookConsumerWidget {
                                     final heroTag = const Uuid().v4();
                                     return GestureDetector(
                                       onTap: () async {
-                                        // 画像拡大（PhotoView）で使う原寸画像の
-                                        // デコード完了を待ってから遷移する。
-                                        // 遷移開始時に PhotoView が即 Hero を
-                                        // 構築でき、初回でも Hero が成立する。
-                                        // 先読みに失敗しても遷移は続行する。
+                                        // 画像拡大（PhotoView）が使う原寸の
+                                        // デコードを待ってから遷移する。遷移を
+                                        // 始めた時点で PhotoView が Hero を作れ、
+                                        // 初回でも Hero が成立する。
                                         try {
                                           await precacheImage(
                                             ref.read(cardImageProvider(cardId)),
                                             context,
                                           );
                                         } on Exception {
-                                          // 先読み失敗時はそのまま遷移する。
+                                          // 先読みに失敗しても遷移は続ける。
                                         }
                                         await viewModel.onTapImage(heroTag);
                                       },
@@ -201,7 +200,6 @@ class DetailPage extends HookConsumerWidget {
   }
 }
 
-/// 項目名と値を横に並べた 1 行。
 class _DetailRow extends StatelessWidget {
   const _DetailRow({required this.label, required this.child});
 

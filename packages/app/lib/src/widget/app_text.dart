@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:app/src/theme/app_colors.dart';
 
-/// アプリで使う文字。見た目はここに並べたものだけで、画面側で [TextStyle] を
-/// 作らない（lint で禁止している）。使っていない見た目も、そろえるために残す。
 class AppText extends StatelessWidget {
   const AppText.displayLarge(
     this.data, {
@@ -125,7 +123,7 @@ class AppText extends StatelessWidget {
     super.key,
   }) : _variant = _Variant.labelSmall;
 
-  /// 押せる文字。色は [AppColors.link] で、下線を引く。
+  /// 押せる文字。
   const AppText.titleLargeLink(
     this.data, {
     this.fontWeight,

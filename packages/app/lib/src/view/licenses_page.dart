@@ -7,7 +7,7 @@ import 'package:app/src/view_data/licenses_view_data.dart';
 import 'package:app/src/view_model/licenses_view_model.dart';
 import 'package:app/src/widget/app_bar_title.dart';
 
-/// ライセンス画面。Flutter 標準の [LicensePage] をアプリの配色で包む。
+/// Flutter 標準の [LicensePage] を、アプリの見た目で包む。
 class LicensesPage extends HookConsumerWidget {
   const LicensesPage({super.key});
 

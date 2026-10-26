@@ -10,10 +10,6 @@ final searchConditionViewModelProvider = AsyncNotifierProvider.autoDispose<
   SearchConditionViewData
 >(SearchConditionViewModel.new);
 
-/// 検索条件画面の ViewModel。
-///
-/// 編集内容はドラフトとして保持し、「この条件で表示」で端末保存する。保存した条件は
-/// SearchConditionUseCase の Stream を通じてマップ・リストの両画面へ反映される。
 class SearchConditionViewModel
     extends AutoDisposeAsyncNotifier<SearchConditionViewData> {
   late final SearchConditionUseCase _searchConditionUseCase;
@@ -70,7 +66,6 @@ class SearchConditionViewModel
     });
   }
 
-  /// すべての弾を選択する（結果は「すべて表示」と同じ）。
   void selectAllVolumes() {
     final volumeIds = _allVolumeIds;
     _updateDraft(
@@ -79,7 +74,6 @@ class SearchConditionViewModel
     );
   }
 
-  /// 弾の絞り込みをクリアする（未選択＝すべて表示）。
   void clearVolumes() {
     _updateDraft(
       (draft) =>
@@ -100,7 +94,6 @@ class SearchConditionViewModel
     });
   }
 
-  /// すべての配布状態を選択する（結果は「すべて表示」と同じ）。
   void selectAllDistributionStates() {
     _updateDraft(
       (draft) => draft.copyWith(
@@ -112,7 +105,6 @@ class SearchConditionViewModel
     );
   }
 
-  /// 配布状態の絞り込みをクリアする（未選択＝すべて表示）。
   void clearDistributionStates() {
     _updateDraft(
       (draft) => draft.copyWith(
@@ -121,8 +113,7 @@ class SearchConditionViewModel
     );
   }
 
-  /// 横断的な絞り込み（取得状態・弾数・配布状態）をすべてクリアする。
-  /// マップ座標種別は表示オプションなので変更しない。
+  /// 座標の種類は絞り込みではなく、マップの表示の選択なので残す。
   void clearAllFilters() {
     _updateDraft(
       (draft) => draft.copyWith(common: const CommonSearchCondition()),

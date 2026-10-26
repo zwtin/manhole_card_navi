@@ -10,7 +10,6 @@ import 'package:app/src/view_model/manhole_card_map_view_model.dart';
 import 'package:app/src/widget/app_text.dart';
 import 'package:app/src/widget/html_content.dart';
 
-/// マップタブでピンをタップしたときに出るカードのモーダル。
 class CardModalPage extends HookConsumerWidget {
   const CardModalPage({super.key, required this.cardId, this.pin});
 

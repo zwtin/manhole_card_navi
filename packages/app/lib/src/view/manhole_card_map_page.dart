@@ -17,7 +17,6 @@ final _initialCameraPosition = CameraPosition(
   zoom: ManholeCardMapViewModel.initialCamera.zoom,
 );
 
-/// マップタブ。
 class ManholeCardMapPage extends HookConsumerWidget {
   const ManholeCardMapPage({super.key});
 

@@ -9,10 +9,6 @@ import 'package:lottie/lottie.dart';
 import 'package:app/src/view_model/shell_view_model.dart';
 
 /// 下タブ（マップ・リスト・設定）のシェル。
-///
-/// - GoRouter の StatefulNavigationShell を包み、ConvexAppBar で装飾する
-/// - 表示中のタブを再タップしたら、そのタブを先頭まで戻す
-/// - カードを取得済みにしたら、クラッカーのアニメーションを重ねて流す
 class ShellScaffold extends HookConsumerWidget {
   const ShellScaffold({super.key, required this.navigationShell});
 
@@ -60,9 +56,8 @@ class ShellScaffold extends HookConsumerWidget {
     });
 
     return PopScope(
-      // タブのルートで戻る操作をしたときの挙動をここで決める。タブ内に積んだ画面が
-      // あれば GoRouter が先にそちらを閉じるので、ここに来るのはタブのルートだけ。
-      // マップタブならアプリを閉じ、それ以外のタブならマップタブへ切り替える。
+      // タブ内に積んだ画面があれば GoRouter が先にそちらを閉じるので、ここに
+      // 来るのはタブのルートで戻る操作をしたときだけ。
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {

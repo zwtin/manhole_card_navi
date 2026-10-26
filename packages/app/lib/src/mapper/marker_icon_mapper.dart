@@ -19,7 +19,6 @@ abstract final class MarkerIconMapper {
   static const double _imageInsetRatio = 0.05;
   static const double _imageBottomRatio = 0.10;
 
-  /// 頒布状況に対応する枠 PNG のアセットパス。
   static String _framePath(DistributionState distributionState) {
     switch (distributionState) {
       case DistributionState.distributing:
@@ -31,7 +30,6 @@ abstract final class MarkerIconMapper {
     }
   }
 
-  /// デコード済みの枠 PNG（アセットパス → ui.Image）のキャッシュ。
   static final Map<String, ui.Image> _frameCache = <String, ui.Image>{};
 
   /// 枠 PNG（3 色）を事前にデコードしてキャッシュしておく。地図表示前に
@@ -42,12 +40,10 @@ abstract final class MarkerIconMapper {
     );
   }
 
-  /// 頒布状況に対応する枠 PNG アセットを読み込み、デコードして返す。
   static Future<ui.Image> _loadFrame(DistributionState distributionState) {
     return _loadFramePath(_framePath(distributionState));
   }
 
-  /// アセットパスから枠 PNG を読み込み、デコードして返す（結果をキャッシュ）。
   static Future<ui.Image> _loadFramePath(String path) async {
     final cached = _frameCache[path];
     if (cached != null) {
@@ -64,7 +60,6 @@ abstract final class MarkerIconMapper {
     return frame.image;
   }
 
-  /// 原本画像のバイト列を、原本領域の幅に合わせてデコードする。
   static Future<ui.Image> _decodeOriginal(Uint8List bytes) async {
     final targetWidth = (_iconWidth * (1 - _imageInsetRatio * 2)).round();
     final codec = await ui.instantiateImageCodec(
@@ -75,8 +70,7 @@ abstract final class MarkerIconMapper {
     return frame.image;
   }
 
-  /// [originalBytes] は原本画像のエンコード済みバイト列。[alreadyGet] が false
-  /// なら、彩度 0 のグレースケールで描く。
+  /// [alreadyGet] が false なら、グレーで描く。
   static Future<Uint8List> toIcon({
     required Uint8List originalBytes,
     required DistributionState distributionState,
@@ -88,7 +82,6 @@ abstract final class MarkerIconMapper {
     final recorder = ui.PictureRecorder();
     final canvas = ui.Canvas(recorder);
 
-    // 枠（吹き出し）を全面に描画。
     canvas.drawImageRect(
       frame,
       Rect.fromLTWH(0, 0, frame.width.toDouble(), frame.height.toDouble()),
@@ -96,7 +89,6 @@ abstract final class MarkerIconMapper {
       Paint(),
     );
 
-    // 原本画像を吹き出しの角丸矩形部分へ収めて描画。
     final destLeft = _iconWidth * _imageInsetRatio;
     final destTop = _iconWidth * _imageInsetRatio;
     final destWidth = _iconWidth * (1 - _imageInsetRatio * 2);

@@ -27,12 +27,6 @@ final _pageTransitionsTheme = PageTransitionsTheme(
   },
 );
 
-/// アプリのテーマ。色は Material 3 の役割（[ColorScheme]）に載せ、役割のない色
-/// だけを [AppColors] に置く。
-///
-/// 面の重なりは `surface`（画面の地）と `surfaceContainerLowest`（カード・リスト
-/// の面）で表す。Material 3 はこの 2 つを、明るいテーマでは面のほうを明るく、
-/// 暗いテーマでは面のほうを暗くする向きで定義している。
 abstract final class AppTheme {
   static ThemeData light() {
     return _build(

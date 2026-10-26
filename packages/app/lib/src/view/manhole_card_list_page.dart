@@ -7,7 +7,6 @@ import 'package:app/src/widget/app_bar_title.dart';
 import 'package:app/src/widget/app_text.dart';
 import 'package:app/src/widget/card_image.dart';
 
-/// リストタブ。都道府県ごとにカードを折りたたんで表示する。
 class ManholeCardListPage extends HookConsumerWidget {
   const ManholeCardListPage({super.key});
 
