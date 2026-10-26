@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:app/src/widget/card_image_provider.dart';
-import 'package:domain/domain.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import 'package:app/src/widget/card_image_provider.dart';
+import 'package:domain/domain.dart';
 
 class MockCardUseCase extends Mock implements CardUseCase {}
 
@@ -33,7 +34,9 @@ void main() {
   Future<Object?> load(WidgetTester tester, CardImageProvider provider) {
     return tester.runAsync(() {
       final completer = Completer<Object>();
-      provider.resolve(ImageConfiguration.empty).addListener(
+      provider
+          .resolve(ImageConfiguration.empty)
+          .addListener(
             ImageStreamListener(
               (info, _) => completer.complete(info),
               onError: (error, _) => completer.complete(error),
@@ -52,9 +55,7 @@ void main() {
     );
 
     expect((loaded! as ImageInfo).image.width, 1);
-    verify(
-      () => useCase.fetchImage(cardId: 'A'),
-    ).called(1);
+    verify(() => useCase.fetchImage(cardId: 'A')).called(1);
   });
 
   testWidgets('取れなかったときは、失敗をそのまま報告する', (tester) async {

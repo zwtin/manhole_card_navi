@@ -17,9 +17,7 @@ void main() {
   late AnalyticsRepositoryImpl repository;
 
   setUpAll(() {
-    registerFallbackValue(
-      const AnalyticsEventModel(name: '', parameters: {}),
-    );
+    registerFallbackValue(const AnalyticsEventModel(name: '', parameters: {}));
   });
 
   setUp(() {
@@ -41,9 +39,9 @@ void main() {
       ),
     );
 
-    final sent = verify(() => analytics.send(captureAny()))
-        .captured
-        .single as AnalyticsEventModel;
+    final sent =
+        verify(() => analytics.send(captureAny())).captured.single
+            as AnalyticsEventModel;
     expect(sent.name, 'screen_pv');
     expect(sent.parameters, {
       'screen_name': 'detail_view',
@@ -55,9 +53,7 @@ void main() {
     final thrown = Exception('だめ');
     when(() => analytics.send(any())).thenThrow(thrown);
 
-    final result = await repository.send(
-      event: const AnalyticsEvent.appOpen(),
-    );
+    final result = await repository.send(event: const AnalyticsEvent.appOpen());
 
     expect((result as Failure<void>).exception, isA<UnknownException>());
     expect(recordedErrors(crashlytics).single.error, same(thrown));

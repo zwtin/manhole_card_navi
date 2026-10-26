@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../gen/colors.gen.dart';
+import 'package:app/src/gen/colors.gen.dart';
+import 'package:app/src/theme/app_colors.dart';
 
 /// ページ遷移アニメーション。Android は Flutter 3.43 までの既定である
 /// [ZoomPageTransitionsBuilder] に固定する。
@@ -26,78 +27,86 @@ final _pageTransitionsTheme = PageTransitionsTheme(
   },
 );
 
-/// アプリのテーマ。[base] には MaterialApp の外側の `Theme.of(context)` を渡す。
 abstract final class AppTheme {
-  static ThemeData light(ThemeData base) {
+  static ThemeData light() {
     return _build(
-      base,
+      brightness: Brightness.light,
       primary: ColorName.lightPrimary,
       screenBackground: ColorName.lightScreenBackground,
       contentsBackground: ColorName.lightContentsBackground,
       positiveText: ColorName.lightPositiveText,
       icon: ColorName.lightIcon,
       border: ColorName.lightBorder,
+      chipBorder: ColorName.lightChipBorder,
+      segmentTrack: ColorName.lightSegmentTrack,
+      badgeText: ColorName.lightBadgeText,
+      badgeBackground: ColorName.lightBadgeBackground,
+      colors: AppColors.light,
     );
   }
 
-  static ThemeData dark(ThemeData base) {
+  static ThemeData dark() {
     return _build(
-      base,
+      brightness: Brightness.dark,
       primary: ColorName.darkPrimary,
       screenBackground: ColorName.darkScreenBackground,
       contentsBackground: ColorName.darkContentsBackground,
       positiveText: ColorName.darkPositiveText,
       icon: ColorName.darkIcon,
       border: ColorName.darkBorder,
+      chipBorder: ColorName.darkChipBorder,
+      segmentTrack: ColorName.darkSegmentTrack,
+      badgeText: ColorName.darkBadgeText,
+      badgeBackground: ColorName.darkBadgeBackground,
+      colors: AppColors.dark,
     );
   }
 
-  static ThemeData _build(
-    ThemeData base, {
+  static ThemeData _build({
+    required Brightness brightness,
     required Color primary,
     required Color screenBackground,
     required Color contentsBackground,
     required Color positiveText,
     required Color icon,
     required Color border,
+    required Color chipBorder,
+    required Color segmentTrack,
+    required Color badgeText,
+    required Color badgeBackground,
+    required AppColors colors,
   }) {
-    final textTheme = base.textTheme;
+    // 決めていない役割（tertiary など）は、ブランド色から調和した値を作らせる。
+    final scheme = ColorScheme.fromSeed(
+      seedColor: primary,
+      brightness: brightness,
+    ).copyWith(
+      primary: primary,
+      onPrimary: contentsBackground,
+      surface: screenBackground,
+      surfaceContainerLowest: contentsBackground,
+      surfaceContainerHigh: segmentTrack,
+      onSurface: positiveText,
+      onSurfaceVariant: icon,
+      outline: chipBorder,
+      outlineVariant: border,
+      secondaryContainer: badgeBackground,
+      onSecondaryContainer: badgeText,
+    );
+    // 文字色は onSurface から導かれるので、textTheme に色を配って回らなくてよい。
+    final base = ThemeData(colorScheme: scheme, extensions: [colors]);
+
     return base.copyWith(
+      // ThemeData は暗いテーマの primaryColor を colorScheme.surface にするので、
+      // ブランド色を使いたいところは明示する。
+      primaryColor: primary,
+      iconTheme: IconThemeData(color: icon),
+      dividerColor: border,
       appBarTheme: base.appBarTheme.copyWith(
-        color: contentsBackground,
+        backgroundColor: contentsBackground,
         elevation: 0,
         iconTheme: IconThemeData(color: icon),
-        titleTextStyle: textTheme.titleLarge?.copyWith(
-          color: positiveText,
-          fontWeight: FontWeight.bold,
-        ),
       ),
-      textTheme: textTheme.copyWith(
-        displayLarge: textTheme.displayLarge?.copyWith(color: positiveText),
-        displayMedium: textTheme.displayMedium?.copyWith(color: positiveText),
-        displaySmall: textTheme.displaySmall?.copyWith(color: positiveText),
-        headlineLarge: textTheme.headlineLarge?.copyWith(color: positiveText),
-        headlineMedium: textTheme.headlineMedium?.copyWith(
-          color: positiveText,
-        ),
-        headlineSmall: textTheme.headlineSmall?.copyWith(color: positiveText),
-        titleLarge: textTheme.titleLarge?.copyWith(color: positiveText),
-        titleMedium: textTheme.titleMedium?.copyWith(color: positiveText),
-        titleSmall: textTheme.titleSmall?.copyWith(color: positiveText),
-        bodyLarge: textTheme.bodyLarge?.copyWith(color: positiveText),
-        bodyMedium: textTheme.bodyMedium?.copyWith(color: positiveText),
-        bodySmall: textTheme.bodySmall?.copyWith(color: positiveText),
-        labelLarge: textTheme.labelLarge?.copyWith(color: positiveText),
-        labelMedium: textTheme.labelMedium?.copyWith(color: positiveText),
-        labelSmall: textTheme.labelSmall?.copyWith(color: positiveText),
-      ),
-      primaryColor: primary,
-      colorScheme: base.colorScheme.copyWith(
-        primary: primary,
-        background: screenBackground,
-        surface: contentsBackground,
-      ),
-      iconTheme: IconThemeData(color: icon),
       cardColor: screenBackground,
       listTileTheme: base.listTileTheme.copyWith(
         tileColor: contentsBackground,
@@ -109,7 +118,6 @@ abstract final class AppTheme {
         indent: 0.0,
         thickness: 0.5,
       ),
-      dividerColor: border,
       expansionTileTheme: base.expansionTileTheme.copyWith(
         backgroundColor: contentsBackground,
         iconColor: icon,
@@ -118,8 +126,8 @@ abstract final class AppTheme {
         collapsedShape: const Border(),
       ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return icon;
           }
           return null;
@@ -128,8 +136,8 @@ abstract final class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          textStyle: textTheme.titleLarge?.copyWith(color: contentsBackground),
           backgroundColor: primary,
+          foregroundColor: contentsBackground,
           elevation: 0.0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),

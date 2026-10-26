@@ -5,17 +5,12 @@ import 'package:domain/src/entity/terms_of_service.dart';
 import 'package:domain/src/entity/terms_of_service_version.dart';
 import 'package:domain/src/repository/terms_of_service_repository.dart';
 
-final termsOfServiceUseCaseProvider =
-    Provider<TermsOfServiceUseCase>(
-  (ref) => TermsOfServiceUseCase(
-    ref.watch(termsOfServiceRepositoryProvider),
-  ),
+final termsOfServiceUseCaseProvider = Provider<TermsOfServiceUseCase>(
+  (ref) => TermsOfServiceUseCase(ref.watch(termsOfServiceRepositoryProvider)),
 );
 
 class TermsOfServiceUseCase {
-  TermsOfServiceUseCase(
-    this._termsOfServiceRepository,
-  );
+  TermsOfServiceUseCase(this._termsOfServiceRepository);
 
   final TermsOfServiceRepository _termsOfServiceRepository;
 

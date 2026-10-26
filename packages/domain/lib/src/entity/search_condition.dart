@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:domain/src/entity/distribution_state.dart';
+import 'package:domain/src/entity/manhole_card.dart';
 
 part 'search_condition.freezed.dart';
 
@@ -44,8 +45,7 @@ abstract class CommonSearchCondition with _$CommonSearchCondition {
   const factory CommonSearchCondition({
     @Default(AlreadyGetFilter.all) AlreadyGetFilter alreadyGetFilter,
     @Default(<String>{}) Set<String> volumeIds,
-    @Default(<DistributionState>{})
-    Set<DistributionState> distributionStates,
+    @Default(<DistributionState>{}) Set<DistributionState> distributionStates,
   }) = _CommonSearchCondition;
   const CommonSearchCondition._();
 
@@ -61,6 +61,13 @@ abstract class CommonSearchCondition with _$CommonSearchCondition {
       count++;
     }
     return count;
+  }
+
+  /// 取得済みかどうかは [matchesAlreadyGet] で別に見る。一覧は、取得済みで
+  /// 絞り込む前の数を分母に出すため。
+  bool matchesCard(ManholeCard card) {
+    return matchesVolume(card.volume.id) &&
+        matchesDistributionState(card.distributionState);
   }
 
   bool matchesVolume(String volumeId) {
@@ -91,11 +98,7 @@ abstract class MapSearchCondition with _$MapSearchCondition {
   }) = _MapSearchCondition;
 }
 
-enum AlreadyGetFilter {
-  all,
-  alreadyGet,
-  notAlreadyGet,
-}
+enum AlreadyGetFilter { all, alreadyGet, notAlreadyGet }
 
 enum MapCoordinateType {
   /// 配布場所。

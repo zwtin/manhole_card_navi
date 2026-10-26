@@ -1,9 +1,10 @@
-import 'package:app/src/router/navigation_service.dart';
-import 'package:app/src/view_model/check_master_update_view_model.dart';
-import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
+
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_model/check_master_update_view_model.dart';
+import 'package:domain/domain.dart';
 
 class MockAnalyticsUseCase extends Mock implements AnalyticsUseCase {}
 
@@ -46,9 +47,9 @@ void main() {
         exception: any(named: 'exception'),
       ),
     ).thenAnswer((_) async {});
-    when(() => termsOfServiceUseCase.getNeedAgree()).thenAnswer(
-      (_) async => const Result.success(true),
-    );
+    when(
+      () => termsOfServiceUseCase.getNeedAgree(),
+    ).thenAnswer((_) async => const Result.success(true));
   });
 
   tearDown(() {
@@ -58,8 +59,9 @@ void main() {
   /// getNeedUpdate が呼ばれるたびに [results] を先頭から順に返す。
   void stubNeedUpdate(List<Result<bool>> results) {
     var index = 0;
-    when(() => checkMasterUpdateUseCase.getNeedUpdate())
-        .thenAnswer((_) async => results[index++]);
+    when(
+      () => checkMasterUpdateUseCase.getNeedUpdate(),
+    ).thenAnswer((_) async => results[index++]);
   }
 
   Future<void> onLoad() {
@@ -77,11 +79,12 @@ void main() {
 
   test('更新が必要なら、取り込んでから次の画面へ進む', () async {
     stubNeedUpdate([const Result.success(true)]);
-    when(() => checkMasterUpdateUseCase.updateMaster())
-        .thenAnswer((_) async => const Result.success(null));
-    when(() => termsOfServiceUseCase.getNeedAgree()).thenAnswer(
-      (_) async => const Result.success(false),
-    );
+    when(
+      () => checkMasterUpdateUseCase.updateMaster(),
+    ).thenAnswer((_) async => const Result.success(null));
+    when(
+      () => termsOfServiceUseCase.getNeedAgree(),
+    ).thenAnswer((_) async => const Result.success(false));
 
     await onLoad();
 
@@ -109,9 +112,9 @@ void main() {
 
   test('取り込みに失敗したら、確認からやり直す', () async {
     stubNeedUpdate([const Result.success(true), const Result.success(false)]);
-    when(() => checkMasterUpdateUseCase.updateMaster()).thenAnswer(
-      (_) async => const Result.failure(CorruptedDataException()),
-    );
+    when(
+      () => checkMasterUpdateUseCase.updateMaster(),
+    ).thenAnswer((_) async => const Result.failure(CorruptedDataException()));
 
     await onLoad();
 

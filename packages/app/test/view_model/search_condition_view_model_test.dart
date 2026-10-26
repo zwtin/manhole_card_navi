@@ -1,9 +1,11 @@
-import 'package:app/src/router/navigation_service.dart';
-import 'package:app/src/view_model/search_condition_view_model.dart';
-import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
+
+import 'package:app/src/mapper/search_condition_view_data_mapper.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_model/search_condition_view_model.dart';
+import 'package:domain/domain.dart';
 
 class MockAnalyticsUseCase extends Mock implements AnalyticsUseCase {}
 
@@ -44,9 +46,9 @@ void main() {
     searchConditionUseCase = MockSearchConditionUseCase();
     navigationService = MockNavigationService();
 
-    when(() => searchConditionUseCase.watch()).thenAnswer(
-      (_) => Stream.value(SearchCondition.initial()),
-    );
+    when(
+      () => searchConditionUseCase.watch(),
+    ).thenAnswer((_) => Stream.value(SearchCondition.initial()));
     when(() => cardUseCase.fetchAll()).thenAnswer(
       (_) async => Result.success([
         _card(volumeId: '0000', volumeName: '第1弾'),
@@ -85,26 +87,24 @@ void main() {
 
   SearchCondition savedCondition() {
     return verify(
-      () => searchConditionUseCase.save(
-        searchCondition: captureAny(named: 'searchCondition'),
-      ),
-    ).captured.single as SearchCondition;
+          () => searchConditionUseCase.save(
+            searchCondition: captureAny(named: 'searchCondition'),
+          ),
+        ).captured.single
+        as SearchCondition;
   }
 
   test('弾の選択肢は新しい弾から並ぶ', () {
     final state = container.read(searchConditionViewModelProvider).requireValue;
 
-    expect(
-      state.volumeOptions.map((option) => option.id),
-      ['0017', '0001', '0000'],
-    );
+    expect(state.volumes.map((option) => option.label), ['第18弾', '第2弾', '第1弾']);
   });
 
   test('弾を切り替えるとドラフトだけが変わり、保存はしない', () {
-    viewModel().toggleVolume('0001');
+    viewModel().toggleVolume(1);
 
     final state = container.read(searchConditionViewModelProvider).requireValue;
-    expect(state.isVolumeSelected('0001'), isTrue);
+    expect(state.volumes[1], (label: '第2弾', selected: true));
     verifyNever(
       () => searchConditionUseCase.save(
         searchCondition: any(named: 'searchCondition'),
@@ -114,8 +114,12 @@ void main() {
 
   test('一部の弾を選んで適用すると、その条件を保存して閉じる', () async {
     viewModel()
-      ..toggleVolume('0001')
-      ..setAlreadyGetFilter(AlreadyGetFilter.alreadyGet);
+      ..toggleVolume(1)
+      ..selectAlreadyGetFilter(
+        SearchConditionViewDataMapper.alreadyGetFilters.indexOf(
+          AlreadyGetFilter.alreadyGet,
+        ),
+      );
 
     await viewModel().onApply();
 
@@ -133,15 +137,25 @@ void main() {
     expect(savedCondition().common.volumeIds, isEmpty);
   });
 
-  test('リセットは絞り込みだけを消し、マップ表示は残す', () {
+  test('リセットは絞り込みだけを消し、マップ表示は残す', () async {
     viewModel()
-      ..setCoordinateType(MapCoordinateType.position)
-      ..toggleDistributionState(DistributionState.stopped)
+      ..selectCoordinateType(
+        SearchConditionViewDataMapper.coordinateTypes.indexOf(
+          MapCoordinateType.position,
+        ),
+      )
+      ..toggleDistributionState(
+        SearchConditionViewDataMapper.distributionStates.indexOf(
+          DistributionState.stopped,
+        ),
+      )
       ..clearAllFilters();
 
-    final state = container.read(searchConditionViewModelProvider).requireValue;
-    expect(state.draft.activeFilterCount, 0);
-    expect(state.coordinateType, MapCoordinateType.position);
+    await viewModel().onApply();
+
+    final saved = savedCondition();
+    expect(saved.activeFilterCount, 0);
+    expect(saved.map.coordinateType, MapCoordinateType.position);
   });
 
   test('閉じるときは保存しない', () {

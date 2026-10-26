@@ -1,13 +1,13 @@
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/navigation_service.dart';
-import '../view_data/check_terms_of_service_agree_view_data.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/check_terms_of_service_agree_view_data.dart';
+import 'package:domain/domain.dart';
 
 final checkTermsOfServiceAgreeViewModelProvider = NotifierProvider.autoDispose<
-    CheckTermsOfServiceAgreeViewModel, CheckTermsOfServiceAgreeViewData>(
-  CheckTermsOfServiceAgreeViewModel.new,
-);
+  CheckTermsOfServiceAgreeViewModel,
+  CheckTermsOfServiceAgreeViewData
+>(CheckTermsOfServiceAgreeViewModel.new);
 
 /// 初回起動時に利用規約とプライバシーポリシーへの同意を求める画面の ViewModel。
 class CheckTermsOfServiceAgreeViewModel

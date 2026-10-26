@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
-import '../gen/assets.gen.dart';
-import '../router/use_screen_view.dart';
-import '../view_model/check_terms_of_service_agree_view_model.dart';
-import '../widget/custom_check_box.dart';
-import '../widget/custom_text.dart';
+import 'package:app/src/gen/assets.gen.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/check_terms_of_service_agree_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
+import 'package:app/src/widget/app_text.dart';
+import 'package:app/src/widget/custom_check_box.dart';
 
 /// 初回起動時に利用規約とプライバシーポリシーへの同意を求める画面。
 class CheckTermsOfServiceAgreePage extends HookConsumerWidget {
@@ -23,17 +24,12 @@ class CheckTermsOfServiceAgreePage extends HookConsumerWidget {
 
     return LoadingOverlay(
       isLoading: state.isLoading,
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       child: Scaffold(
-        appBar: AppBar(
-          title: const TitleLargeText(
-            '同意確認',
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        appBar: AppBar(title: const AppBarTitle('同意確認')),
         body: Stack(
           children: [
-            Container(color: Theme.of(context).colorScheme.background),
+            Container(color: Theme.of(context).colorScheme.surface),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SafeArea(
@@ -41,14 +37,11 @@ class CheckTermsOfServiceAgreePage extends HookConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const TitleMediumText(
+                    const AppText.titleMedium(
                       'アプリを使うためには、利用規約とプライバシーポリシーに同意する必要があります。',
                     ),
                     const Spacer(flex: 1),
-                    Assets.images.terms.terms.image(
-                      width: 300,
-                      height: 300,
-                    ),
+                    Assets.images.terms.terms.image(width: 300, height: 300),
                     const Spacer(flex: 2),
                     Row(
                       children: [
@@ -63,18 +56,18 @@ class CheckTermsOfServiceAgreePage extends HookConsumerWidget {
                               children: [
                                 TextButton(
                                   onPressed: viewModel.onTapTermsOfService,
-                                  child: const TitleMediumLinkText('利用規約'),
+                                  child: const AppText.titleMediumLink('利用規約'),
                                 ),
-                                const TitleMediumText('と'),
+                                const AppText.titleMedium('と'),
                                 TextButton(
                                   onPressed: viewModel.onTapPrivacyPolicy,
-                                  child: const TitleMediumLinkText(
+                                  child: const AppText.titleMediumLink(
                                     'プライバシーポリシー',
                                   ),
                                 ),
                               ],
                             ),
-                            const TitleMediumText('に同意する'),
+                            const AppText.titleMedium('に同意する'),
                           ],
                         ),
                       ],
@@ -84,9 +77,12 @@ class CheckTermsOfServiceAgreePage extends HookConsumerWidget {
                       height: 48,
                       child: ElevatedButton(
                         onPressed: viewModel.onTapAgreeButton,
-                        child: TitleMediumText(
+                        child: AppText.titleMedium(
                           'はじめる',
-                          color: Theme.of(context).colorScheme.surface,
+                          color:
+                              Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerLowest,
                         ),
                       ),
                     ),

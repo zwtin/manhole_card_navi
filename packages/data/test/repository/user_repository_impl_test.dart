@@ -25,8 +25,7 @@ void main() {
     analytics = MockAnalyticsDataSource();
     crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
-    when(() => analytics.setUserId(any()))
-        .thenAnswer((_) async {});
+    when(() => analytics.setUserId(any())).thenAnswer((_) async {});
     when(() => crashlytics.setUserIdentifier(any())).thenAnswer((_) async {});
     repository = UserRepositoryImpl(
       auth,
@@ -58,9 +57,9 @@ void main() {
 
   test('通信できずに登録できなければ、通信できない失敗にする', () async {
     when(() => auth.currentUserId).thenReturn(null);
-    when(auth.signInAnonymously).thenThrow(
-      FirebaseAuthException(code: 'network-request-failed'),
-    );
+    when(
+      auth.signInAnonymously,
+    ).thenThrow(FirebaseAuthException(code: 'network-request-failed'));
 
     final result = await repository.signIn();
 

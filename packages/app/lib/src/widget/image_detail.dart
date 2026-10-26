@@ -1,12 +1,12 @@
 import 'dart:math';
 
-import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 
-import 'card_image.dart';
-import 'card_image_provider.dart';
+import 'package:app/src/theme/app_colors.dart';
+import 'package:app/src/widget/card_image.dart';
+import 'package:app/src/widget/card_image_provider.dart';
 
 class ImageDetail extends ConsumerStatefulWidget {
   const ImageDetail({
@@ -21,10 +21,10 @@ class ImageDetail extends ConsumerStatefulWidget {
   final String imageTag;
 
   @override
-  ImageDetailViewState createState() => ImageDetailViewState();
+  ConsumerState<ImageDetail> createState() => _ImageDetailState();
 }
 
-class ImageDetailViewState extends ConsumerState<ImageDetail> {
+class _ImageDetailState extends ConsumerState<ImageDetail> {
   Offset beginningDragPosition = Offset.zero;
   Offset currentDragPosition = Offset.zero;
   PhotoViewScaleState scaleState = PhotoViewScaleState.initial;
@@ -59,36 +59,37 @@ class ImageDetailViewState extends ConsumerState<ImageDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          _buildImage(context),
-          _buildTopBar(context),
-        ],
-      ),
+      body: Stack(children: [_buildImage(context), _buildTopBar(context)]),
     );
   }
 
   Widget _buildImage(BuildContext context) {
     return GestureDetector(
       onTap: onTapPhotoView,
-      onVerticalDragStart: scaleState == PhotoViewScaleState.initial
-          ? onVerticalDragStart
-          : null,
-      onVerticalDragUpdate: scaleState == PhotoViewScaleState.initial
-          ? onVerticalDragUpdate
-          : null,
+      onVerticalDragStart:
+          scaleState == PhotoViewScaleState.initial
+              ? onVerticalDragStart
+              : null,
+      onVerticalDragUpdate:
+          scaleState == PhotoViewScaleState.initial
+              ? onVerticalDragUpdate
+              : null,
       onVerticalDragEnd:
           scaleState == PhotoViewScaleState.initial ? onVerticalDragEnd : null,
-      onHorizontalDragStart: scaleState == PhotoViewScaleState.initial
-          ? onVerticalDragStart
-          : null,
-      onHorizontalDragUpdate: scaleState == PhotoViewScaleState.initial
-          ? onVerticalDragUpdate
-          : null,
+      onHorizontalDragStart:
+          scaleState == PhotoViewScaleState.initial
+              ? onVerticalDragStart
+              : null,
+      onHorizontalDragUpdate:
+          scaleState == PhotoViewScaleState.initial
+              ? onVerticalDragUpdate
+              : null,
       onHorizontalDragEnd:
           scaleState == PhotoViewScaleState.initial ? onVerticalDragEnd : null,
       child: Container(
-        color: Colors.black.withOpacity(photoViewOpacity),
+        color: Theme.of(
+          context,
+        ).colorScheme.scrim.withValues(alpha: photoViewOpacity),
         child: AnimatedContainer(
           duration: Duration(milliseconds: photoViewAnimationDurationMilliSec),
           transform: photoViewTransform,
@@ -102,10 +103,7 @@ class ImageDetailViewState extends ConsumerState<ImageDetail> {
     final photoView = PhotoView(
       backgroundDecoration: const BoxDecoration(color: Colors.transparent),
       // 詳細のサムネイル・先読みと同じ原寸の画像にし、デコード済みの画像を共有する。
-      imageProvider: CardImageProvider(
-        useCase: ref.watch(cardUseCaseProvider),
-        cardId: widget.cardId,
-      ),
+      imageProvider: ref.watch(cardImageProvider(widget.cardId)),
       heroAttributes: PhotoViewHeroAttributes(
         tag: widget.imageTag,
         transitionOnUserGestures: true,
@@ -138,7 +136,7 @@ class ImageDetailViewState extends ConsumerState<ImageDetail> {
       duration: const Duration(milliseconds: 200),
       opacity: barsOpacity,
       child: Container(
-        color: Colors.black.withOpacity(0.4),
+        color: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.4),
         height: topBarHeight,
         child: Column(
           children: [
@@ -150,9 +148,9 @@ class ImageDetailViewState extends ConsumerState<ImageDetail> {
                 children: [
                   Container(width: 8),
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.close,
-                      color: Colors.white,
+                      color: context.appColors.onScrim,
                       size: 30,
                     ),
                     onPressed: () {

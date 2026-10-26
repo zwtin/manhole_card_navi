@@ -1,13 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/use_screen_view.dart';
-import '../view_model/manhole_card_map_view_model.dart';
-import '../widget/custom_text.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/manhole_card_map_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
 
-/// マップタブ。
+final _initialCameraPosition = CameraPosition(
+  target: LatLng(
+    ManholeCardMapViewModel.initialCamera.latitude,
+    ManholeCardMapViewModel.initialCamera.longitude,
+  ),
+  zoom: ManholeCardMapViewModel.initialCamera.zoom,
+);
+
 class ManholeCardMapPage extends HookConsumerWidget {
   const ManholeCardMapPage({super.key});
 
@@ -15,24 +24,37 @@ class ManholeCardMapPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(manholeCardMapViewModelProvider);
     final viewModel = ref.read(manholeCardMapViewModelProvider.notifier);
+    final mapController = useRef<GoogleMapController?>(null);
 
     useScreenView(ref, viewModel.sendScreenView);
-    useEffect(
-      () {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await viewModel.onLoad();
-        });
-        return null;
+    ref.listen(
+      manholeCardMapViewModelProvider.select((state) => state.cameraMove),
+      (previous, next) {
+        final controller = mapController.value;
+        if (next == null || controller == null) {
+          return;
+        }
+        // 中心だけを動かし、ズームは利用者が合わせたままにする。
+        final update = CameraUpdate.newLatLng(
+          LatLng(next.latitude, next.longitude),
+        );
+        unawaited(
+          next.animated
+              ? controller.animateCamera(update)
+              : controller.moveCamera(update),
+        );
       },
-      const [],
     );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await viewModel.onLoad();
+      });
+      return null;
+    }, const []);
 
     return Scaffold(
       appBar: AppBar(
-        title: TitleLargeText(
-          state.navigationTitle,
-          fontWeight: FontWeight.bold,
-        ),
+        title: AppBarTitle(state.navigationTitle),
         actions: <Widget>[
           IconButton(
             tooltip: '検索条件',
@@ -57,42 +79,41 @@ class ManholeCardMapPage extends HookConsumerWidget {
           }
           return Stack(
             children: [
-              Container(color: Theme.of(context).colorScheme.background),
+              Container(color: Theme.of(context).colorScheme.surface),
               Column(
                 children: [
                   Flexible(
                     child: GoogleMap(
-                      initialCameraPosition:
-                          ManholeCardMapViewModel.initialCameraPosition,
+                      initialCameraPosition: _initialCameraPosition,
                       onMapCreated: (controller) async {
-                        viewModel.setGoogleMapController(controller);
+                        mapController.value = controller;
                         await viewModel.updateMyLocationEnabled();
                       },
                       mapToolbarEnabled: false,
                       mapType: MapType.normal,
-                      minMaxZoomPreference: const MinMaxZoomPreference(
-                        5,
-                        17,
-                      ),
+                      minMaxZoomPreference: const MinMaxZoomPreference(5, 17),
                       rotateGesturesEnabled: false,
                       zoomControlsEnabled: false,
                       tiltGesturesEnabled: false,
                       myLocationEnabled: state.myLocationEnabled,
                       myLocationButtonEnabled: false,
-                      markers: state.markers.map((viewData) {
-                        return Marker(
-                          markerId: MarkerId(viewData.id),
-                          icon: BitmapDescriptor.fromBytes(
-                            viewData.icon,
+                      markers:
+                          state.markers.map((viewData) {
+                            return Marker(
+                              markerId: MarkerId(viewData.id),
+                              icon: BitmapDescriptor.bytes(viewData.icon),
+                              position: LatLng(
+                                viewData.latitude,
+                                viewData.longitude,
+                              ),
+                              onTap: () => viewModel.onTapMarker(viewData.id),
+                            );
+                          }).toSet(),
+                      onCameraMove:
+                          (position) => viewModel.onCameraMove(
+                            latitude: position.target.latitude,
+                            longitude: position.target.longitude,
                           ),
-                          position: LatLng(
-                            viewData.latitude,
-                            viewData.longitude,
-                          ),
-                          onTap: () => viewModel.onTapMarker(viewData.id),
-                        );
-                      }).toSet(),
-                      onCameraMove: viewModel.onCameraMove,
                       onCameraIdle: viewModel.onCameraIdle,
                     ),
                   ),
@@ -106,11 +127,11 @@ class ManholeCardMapPage extends HookConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: viewModel.onTapCurrentLocationButton,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: Theme.of(context).iconTheme.color,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+        foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
         shape: CircleBorder(
           side: BorderSide(
-            color: Theme.of(context).iconTheme.color ?? Colors.transparent,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             width: 2,
           ),
         ),

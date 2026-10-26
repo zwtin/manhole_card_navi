@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -69,10 +68,7 @@ void main() {
     test('Remote Config は、取れない原因がほぼ通信なので通信できない失敗にする', () {
       expect(
         DomainExceptionMapper.from(
-          FirebaseException(
-            plugin: 'firebase_remote_config',
-            code: 'internal',
-          ),
+          FirebaseException(plugin: 'firebase_remote_config', code: 'internal'),
         ),
         isA<OfflineException>(),
       );
@@ -80,10 +76,7 @@ void main() {
 
     test('それ以外のコードは、不明な失敗にする', () {
       final exception = DomainExceptionMapper.from(
-        FirebaseException(
-          plugin: 'cloud_firestore',
-          code: 'permission-denied',
-        ),
+        FirebaseException(plugin: 'cloud_firestore', code: 'permission-denied'),
       );
 
       expect(exception, isA<UnknownException>());

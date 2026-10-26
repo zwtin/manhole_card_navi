@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/navigation_service.dart';
-import '../view_data/check_app_update_view_data.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/check_app_update_view_data.dart';
+import 'package:domain/domain.dart';
 
 final checkAppUpdateViewModelProvider = NotifierProvider.autoDispose<
-    CheckAppUpdateViewModel, CheckAppUpdateViewData>(
-  CheckAppUpdateViewModel.new,
-);
+  CheckAppUpdateViewModel,
+  CheckAppUpdateViewData
+>(CheckAppUpdateViewModel.new);
 
 /// 起動時にアプリの強制アップデートが必要か確認する画面の ViewModel。
 class CheckAppUpdateViewModel
@@ -63,10 +63,6 @@ class CheckAppUpdateViewModel
     }
   }
 
-  /// 起動時チェックの最初に、利用者を識別できる状態にする（匿名ログイン）。以降の
-  /// イベントに利用者の ID が付くよう、アプリを開いたイベントもここで送る。
-  ///
-  /// 初回だけ通信が要る。できなければ、できるまでやり直す。
   Future<void> _signIn() async {
     while (true) {
       state = state.copyWith(isLoading: true);
@@ -92,7 +88,6 @@ class CheckAppUpdateViewModel
     );
   }
 
-  /// ストア（App Store / Play Store）を開く。
   Future<void> _openStore() async {
     if (Platform.isIOS) {
       await _navigationService.openUrl(

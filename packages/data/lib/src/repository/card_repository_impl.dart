@@ -25,9 +25,7 @@ class CardRepositoryImpl implements CardRepository {
   final CrashlyticsDataSource _crashlytics;
 
   @override
-  Future<Result<ManholeCard>> get({
-    required String id,
-  }) async {
+  Future<Result<ManholeCard>> get({required String id}) async {
     try {
       return Result.success(LocalCardMapper.toCard(await _find(id)));
     } on Exception catch (error, stackTrace) {
@@ -60,7 +58,8 @@ class CardRepositoryImpl implements CardRepository {
     final Uint8List? cached;
     try {
       card = await _find(cardId);
-      cached = await _cardImage.readCache(card.image) ??
+      cached =
+          await _cardImage.readCache(card.image) ??
           await _cardImage.readCache(card.imageSub);
     } on Exception catch (error, stackTrace) {
       _crashlytics.recordNonFatal(error, stackTrace);
@@ -86,9 +85,9 @@ class CardRepositoryImpl implements CardRepository {
   void _send(AnalyticsEvent event) {
     unawaited(
       // Error はバグなので捨てずに流し、根でクラッシュとして記録させる。
-      _analytics.send(AnalyticsEventMapper.toModel(event)).onError<Exception>(
-            _crashlytics.recordNonFatal,
-          ),
+      _analytics
+          .send(AnalyticsEventMapper.toModel(event))
+          .onError<Exception>(_crashlytics.recordNonFatal),
     );
   }
 

@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
-import '../gen/assets.gen.dart';
-import '../router/use_screen_view.dart';
-import '../view_model/custom_introduction_view_model.dart';
-import '../widget/custom_text.dart';
+import 'package:app/src/gen/assets.gen.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/custom_introduction_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
+import 'package:app/src/widget/app_text.dart';
 
 /// アプリの使い方。初回起動時のチュートリアルと、設定の「アプリの使い方」で使う。
 class CustomIntroductionPage extends HookConsumerWidget {
@@ -24,38 +25,27 @@ class CustomIntroductionPage extends HookConsumerWidget {
     useScreenView(ref, viewModel.sendScreenView);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const TitleLargeText('アプリの使い方', fontWeight: FontWeight.bold),
-      ),
+      appBar: AppBar(title: const AppBarTitle('アプリの使い方')),
       body: Container(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: IntroductionScreen(
             pages: [
               PageViewModel(
-                titleWidget: const TitleLargeText(
-                  'ようこそ！',
-                  fontWeight: FontWeight.bold,
-                ),
-                bodyWidget: const TitleMediumText('マンホールカード集めをもっと楽しもう！'),
+                titleWidget: const AppBarTitle('ようこそ！'),
+                bodyWidget: const AppText.titleMedium('マンホールカード集めをもっと楽しもう！'),
                 image: Assets.images.tutorials.tutorial1.image(),
               ),
               PageViewModel(
-                titleWidget: const TitleLargeText(
-                  '近所のマンホールを探そう！',
-                  fontWeight: FontWeight.bold,
-                ),
-                bodyWidget: const TitleMediumText(
+                titleWidget: const AppBarTitle('近所のマンホールを探そう！'),
+                bodyWidget: const AppText.titleMedium(
                   '枠の色でカードが配布中かわかります。\n\n緑色: 配布中\n赤色: 配布停止\n黄色: 不明',
                 ),
                 image: Assets.images.tutorials.tutorial2.image(),
               ),
               PageViewModel(
-                titleWidget: const TitleLargeText(
-                  '取得済みカードをチェック！',
-                  fontWeight: FontWeight.bold,
-                ),
-                bodyWidget: const TitleMediumText(
+                titleWidget: const AppBarTitle('取得済みカードをチェック！'),
+                bodyWidget: const AppText.titleMedium(
                   'カードの色で取得済みかわかります。\n\nカラー: 取得済み\nグレー: 未取得',
                 ),
                 image: Assets.images.tutorials.tutorial3.image(),
@@ -67,7 +57,7 @@ class CustomIntroductionPage extends HookConsumerWidget {
             done: const Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TitleMediumText('OK!'),
+                AppText.titleMedium('OK!'),
                 SizedBox(width: 8),
                 Icon(Icons.check),
               ],
@@ -76,7 +66,7 @@ class CustomIntroductionPage extends HookConsumerWidget {
             next: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const TitleMediumText('次へ'),
+                const AppText.titleMedium('次へ'),
                 const SizedBox(width: 4),
                 Transform.scale(
                   scale: 0.75,
@@ -92,12 +82,12 @@ class CustomIntroductionPage extends HookConsumerWidget {
                   child: const Icon(Icons.arrow_back_ios),
                 ),
                 const SizedBox(width: 4),
-                const TitleMediumText('前へ'),
+                const AppText.titleMedium('前へ'),
               ],
             ),
-            globalBackgroundColor: Theme.of(context).colorScheme.background,
+            globalBackgroundColor: Theme.of(context).colorScheme.surface,
             dotsDecorator: DotsDecorator(
-              color: Theme.of(context).iconTheme.color ?? Colors.grey,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             animationDuration: 200,
             bodyPadding: const EdgeInsets.only(top: 16),

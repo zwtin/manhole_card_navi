@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/use_screen_view.dart';
-import '../view_model/privacy_policy_view_model.dart';
-import '../widget/custom_text.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/privacy_policy_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
 
 /// プライバシーポリシー。起動時の同意画面と設定タブの両方から開く。
 class PrivacyPolicyPage extends HookConsumerWidget {
@@ -18,17 +18,10 @@ class PrivacyPolicyPage extends HookConsumerWidget {
     useScreenView(ref, viewModel.sendScreenView);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const TitleLargeText(
-          'プライバシーポリシー',
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+      appBar: AppBar(title: const AppBarTitle('プライバシーポリシー')),
       body: Stack(
         children: [
-          Container(
-            color: Theme.of(context).colorScheme.background,
-          ),
+          Container(color: Theme.of(context).colorScheme.surface),
           SingleChildScrollView(
             padding: EdgeInsets.only(
               left: MediaQuery.of(context).padding.left,
@@ -37,9 +30,7 @@ class PrivacyPolicyPage extends HookConsumerWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Html(
-                data: html,
-              ),
+              child: Html(data: html),
             ),
           ),
         ],

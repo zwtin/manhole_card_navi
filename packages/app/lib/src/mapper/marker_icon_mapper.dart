@@ -1,22 +1,14 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:domain/domain.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 
-import '../widget/card_image.dart';
+import 'package:app/src/widget/card_image.dart';
+import 'package:domain/domain.dart';
 
-/// 地図マーカーのアイコン画像（吹き出し枠 + 原本画像の合成結果）を生成する。
-///
-/// 原本画像（カラー）を実行時に縮小し、頒布状況に応じた枠 PNG（吹き出し型）へ
-/// 重ねてラスタライズする。未所持カードは彩度 0 のグレースケールで描画する。
-///
-/// 枠 PNG は `assets/images/markers/` に配置された 200x300 の吹き出し画像。
-/// 一度読み込んだ枠 PNG とデコード済みの合成結果はメモリにキャッシュする。
-class MarkerIconBuilder {
-  MarkerIconBuilder._();
-
+/// カード画像を、地図マーカーのアイコン（吹き出し枠との合成結果）にする。
+abstract final class MarkerIconMapper {
   /// マーカーアイコンの出力サイズ（論理ピクセル基準の実ピクセル）。
   /// 枠 PNG のアスペクト比 200:300 に合わせる。
   static const int _iconWidth = 200;
@@ -27,16 +19,6 @@ class MarkerIconBuilder {
   static const double _imageInsetRatio = 0.05;
   static const double _imageBottomRatio = 0.10;
 
-  /// 枠と画像のレイアウト（サイズ・余白）を変えたら手動で上げるバージョン番号。
-  /// 上げると旧レイアウトで合成したキャッシュとは別エントリになり、
-  /// 再インストールなしで新しいレイアウトが反映される。
-  static const int _layoutVersion = 1;
-
-  /// アイコンのサイズ・レイアウトを表すキャッシュ識別子。これが変わると
-  /// 旧レイアウトで合成した古いキャッシュとは別エントリになる。
-  static String get sizeKey => '${_iconWidth}x${_iconHeight}_v$_layoutVersion';
-
-  /// 頒布状況に対応する枠 PNG のアセットパス。
   static String _framePath(DistributionState distributionState) {
     switch (distributionState) {
       case DistributionState.distributing:
@@ -48,7 +30,6 @@ class MarkerIconBuilder {
     }
   }
 
-  /// デコード済みの枠 PNG（アセットパス → ui.Image）のキャッシュ。
   static final Map<String, ui.Image> _frameCache = <String, ui.Image>{};
 
   /// 枠 PNG（3 色）を事前にデコードしてキャッシュしておく。地図表示前に
@@ -59,14 +40,10 @@ class MarkerIconBuilder {
     );
   }
 
-  /// 頒布状況に対応する枠 PNG アセットを読み込み、デコードして返す。
-  static Future<ui.Image> _loadFrame(
-    DistributionState distributionState,
-  ) {
+  static Future<ui.Image> _loadFrame(DistributionState distributionState) {
     return _loadFramePath(_framePath(distributionState));
   }
 
-  /// アセットパスから枠 PNG を読み込み、デコードして返す（結果をキャッシュ）。
   static Future<ui.Image> _loadFramePath(String path) async {
     final cached = _frameCache[path];
     if (cached != null) {
@@ -83,7 +60,6 @@ class MarkerIconBuilder {
     return frame.image;
   }
 
-  /// 原本画像のバイト列を、原本領域の幅に合わせてデコードする。
   static Future<ui.Image> _decodeOriginal(Uint8List bytes) async {
     final targetWidth = (_iconWidth * (1 - _imageInsetRatio * 2)).round();
     final codec = await ui.instantiateImageCodec(
@@ -94,11 +70,8 @@ class MarkerIconBuilder {
     return frame.image;
   }
 
-  /// 枠画像の上に原本画像を重ねて合成し、PNG バイト列を返す。
-  ///
-  /// [originalBytes] は原本画像のエンコード済みバイト列。
-  /// [alreadyGet] が false の場合はグレースケールで描画する。
-  static Future<Uint8List> build({
+  /// [alreadyGet] が false なら、グレーで描く。
+  static Future<Uint8List> toIcon({
     required Uint8List originalBytes,
     required DistributionState distributionState,
     required bool alreadyGet,
@@ -109,7 +82,6 @@ class MarkerIconBuilder {
     final recorder = ui.PictureRecorder();
     final canvas = ui.Canvas(recorder);
 
-    // 枠（吹き出し）を全面に描画。
     canvas.drawImageRect(
       frame,
       Rect.fromLTWH(0, 0, frame.width.toDouble(), frame.height.toDouble()),
@@ -117,7 +89,6 @@ class MarkerIconBuilder {
       Paint(),
     );
 
-    // 原本画像を吹き出しの角丸矩形部分へ収めて描画。
     final destLeft = _iconWidth * _imageInsetRatio;
     final destTop = _iconWidth * _imageInsetRatio;
     final destWidth = _iconWidth * (1 - _imageInsetRatio * 2);

@@ -1,23 +1,18 @@
-import 'package:domain/domain.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../mapper/error_message_mapper.dart';
-import '../widget/app_alert.dart';
-import 'app_router.dart';
-import 'navigation_service.dart';
+import 'package:app/src/mapper/error_message_mapper.dart';
+import 'package:app/src/router/app_router.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/widget/app_alert.dart';
+import 'package:domain/domain.dart';
 
 /// [NavigationService] の go_router による実装。
-///
-/// 起動時チェックの画面は前の画面へ戻れないよう go で置き換え、それ以外は push で
-/// 積む。マップのモーダルは、どのカードを表示中かをマップが現在地から読めるよう
-/// go で表す。
 class GoRouterNavigationService implements NavigationService {
   GoRouterNavigationService(this._router);
 
   final GoRouter _router;
 
-  /// 最前面の画面のパス。
   String get _currentLocation => _router.state.matchedLocation;
 
   @override
@@ -79,13 +74,11 @@ class GoRouterNavigationService implements NavigationService {
     required double longitude,
   }) {
     _router.go(
-      Uri(
-        path: AppRoutePath.cardModal(cardId),
-        queryParameters: {
-          'latitude': '$latitude',
-          'longitude': '$longitude',
-        },
-      ).toString(),
+      AppRoutePath.cardModalWithPin(
+        cardId,
+        latitude: latitude,
+        longitude: longitude,
+      ),
     );
   }
 
@@ -182,9 +175,7 @@ class GoRouterNavigationService implements NavigationService {
     }
     await launchUrl(
       uri,
-      mode: external
-          ? LaunchMode.externalApplication
-          : LaunchMode.inAppWebView,
+      mode: external ? LaunchMode.externalApplication : LaunchMode.inAppWebView,
     );
   }
 }

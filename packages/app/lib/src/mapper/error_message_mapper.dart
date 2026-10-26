@@ -1,9 +1,6 @@
 import 'package:domain/domain.dart';
 
 /// 失敗の種類（[DomainException]）から、ダイアログの本文を決める。
-///
-/// タイトル（何に失敗したか）は画面が決め、本文（なぜか・どうすればよいか）は
-/// ここで決める。
 abstract final class ErrorMessageMapper {
   static const _unexpected = '予期しないエラーが発生しました。時間をおいてお試しください。';
 

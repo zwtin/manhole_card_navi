@@ -1,20 +1,18 @@
 import 'dart:async';
 
-import 'package:domain/domain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../mapper/list_prefectures_view_data_mapper.dart';
-import '../router/navigation_service.dart';
-import '../view_data/list_prefectures_view_data.dart';
-import '../view_data/manhole_card_list_view_data.dart';
+import 'package:app/src/mapper/list_prefectures_view_data_mapper.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/manhole_card_list_view_data.dart';
+import 'package:domain/domain.dart';
 
 final manholeCardListViewModelProvider = AsyncNotifierProvider.autoDispose<
-    ManholeCardListViewModel, ManholeCardListViewData>(
-  ManholeCardListViewModel.new,
-);
+  ManholeCardListViewModel,
+  ManholeCardListViewData
+>(ManholeCardListViewModel.new);
 
-/// リストタブの ViewModel。
 class ManholeCardListViewModel
     extends AutoDisposeAsyncNotifier<ManholeCardListViewData> {
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
@@ -52,26 +50,26 @@ class ManholeCardListViewModel
     _searchCondition = await _searchConditionUseCase.watch().first;
     _alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
 
-    final alreadyGetSubscription = _alreadyGetCardUseCase
-        .watch()
-        .listen((cardIds) async {
+    final alreadyGetSubscription = _alreadyGetCardUseCase.watch().listen((
+      cardIds,
+    ) {
       // 購読開始時にも現在値が流れてくるため、変わっていなければ作り直さない。
       if (setEquals(cardIds, _alreadyGetCardIds)) {
         return;
       }
       _alreadyGetCardIds = cardIds;
-      state = AsyncData(await _buildViewData());
+      state = AsyncData(_buildViewData());
     });
     ref.onDispose(alreadyGetSubscription.cancel);
 
-    final searchConditionSubscription = _searchConditionUseCase
-        .watch()
-        .listen((condition) async {
+    final searchConditionSubscription = _searchConditionUseCase.watch().listen((
+      condition,
+    ) {
       if (condition == _searchCondition) {
         return;
       }
       _searchCondition = condition;
-      state = AsyncData(await _buildViewData());
+      state = AsyncData(_buildViewData());
     });
     ref.onDispose(searchConditionSubscription.cancel);
 
@@ -82,7 +80,6 @@ class ManholeCardListViewModel
     await _navigationService.pushCardDetail(cardId: cardId);
   }
 
-  /// 検索条件画面へ遷移する。
   Future<void> onTapSearchCondition() async {
     await _navigationService.presentSearchCondition();
   }
@@ -116,23 +113,13 @@ class ManholeCardListViewModel
     );
   }
 
-  Future<ManholeCardListViewData> _buildViewData() async {
-    final prefectures = await ListPrefecturesViewDataMapper.convertToViewData(
-      cards: _cards,
-      alreadyGetCardIds: _alreadyGetCardIds,
-      searchCondition: _searchCondition.common,
-    );
+  ManholeCardListViewData _buildViewData() {
     return ManholeCardListViewData(
-      prefectures: ListPrefecturesViewData(
-        list: prefectures.list
-            .map(
-              (prefecture) => prefecture.copyWith(
-                initiallyExpanded: _expandedPrefectureIds.contains(
-                  prefecture.id,
-                ),
-              ),
-            )
-            .toList(),
+      prefectures: ListPrefecturesViewDataMapper.toViewData(
+        cards: _cards,
+        alreadyGetCardIds: _alreadyGetCardIds,
+        searchCondition: _searchCondition.common,
+        expandedPrefectureIds: _expandedPrefectureIds,
       ),
       totalCount: _cards.length,
       alreadyGetCount: _alreadyGetCardIds.length,

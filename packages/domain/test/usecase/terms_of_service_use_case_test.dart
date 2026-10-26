@@ -46,9 +46,8 @@ void main() {
     test('一度も同意していなければ同意が必要', () async {
       stubAgreed(null);
 
-      final result = await container
-          .read(termsOfServiceUseCaseProvider)
-          .getNeedAgree();
+      final result =
+          await container.read(termsOfServiceUseCaseProvider).getNeedAgree();
 
       expect((result as Success<bool>).value, isTrue);
     });
@@ -56,9 +55,8 @@ void main() {
     test('同意済みのバージョンがあれば同意は不要', () async {
       stubAgreed('2');
 
-      final result = await container
-          .read(termsOfServiceUseCaseProvider)
-          .getNeedAgree();
+      final result =
+          await container.read(termsOfServiceUseCaseProvider).getNeedAgree();
 
       expect((result as Success<bool>).value, isFalse);
     });
@@ -69,9 +67,8 @@ void main() {
       stubAgreed('1');
       stubInquired('2');
 
-      final result = await container
-          .read(termsOfServiceUseCaseProvider)
-          .getNeedUpdate();
+      final result =
+          await container.read(termsOfServiceUseCaseProvider).getNeedUpdate();
 
       expect((result as Success<bool>).value, isTrue);
     });
@@ -80,9 +77,8 @@ void main() {
       stubAgreed('2');
       stubInquired('2');
 
-      final result = await container
-          .read(termsOfServiceUseCaseProvider)
-          .getNeedUpdate();
+      final result =
+          await container.read(termsOfServiceUseCaseProvider).getNeedUpdate();
 
       expect((result as Success<bool>).value, isFalse);
     });
@@ -95,9 +91,8 @@ void main() {
         () => repository.setAgreedVersion(version: any(named: 'version')),
       ).thenAnswer((_) async => const Result.success(null));
 
-      final result = await container
-          .read(termsOfServiceUseCaseProvider)
-          .agree();
+      final result =
+          await container.read(termsOfServiceUseCaseProvider).agree();
 
       expect(result, isA<Success<void>>());
       verify(
@@ -108,13 +103,12 @@ void main() {
     });
 
     test('要求バージョンが取れなければ保存しない', () async {
-      when(() => repository.getInquiredVersion()).thenAnswer(
-        (_) async => const Result.failure(OfflineException()),
-      );
+      when(
+        () => repository.getInquiredVersion(),
+      ).thenAnswer((_) async => const Result.failure(OfflineException()));
 
-      final result = await container
-          .read(termsOfServiceUseCaseProvider)
-          .agree();
+      final result =
+          await container.read(termsOfServiceUseCaseProvider).agree();
 
       expect(result, isA<Failure<void>>());
       verifyNever(

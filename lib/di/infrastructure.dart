@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data/data.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -33,6 +35,8 @@ class Infrastructure {
       minimumFetchInterval: _isDevelopment ? Duration.zero : _fetchInterval,
     );
     await remoteConfig.activate();
+    // 前の世代が残したマーカー画像のキャッシュを消す。起動は待たせない。
+    unawaited(CardImageDataSource.deleteMarkerIconCache());
     return Infrastructure._(
       preferences: PreferencesDataSource(
         await StreamingSharedPreferences.instance,

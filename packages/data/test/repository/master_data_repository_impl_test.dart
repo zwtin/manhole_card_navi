@@ -95,10 +95,7 @@ void main() {
 
     final result = await repository.replace(version: version);
 
-    expect(
-      (result as Failure<void>).exception,
-      isA<CorruptedDataException>(),
-    );
+    expect((result as Failure<void>).exception, isA<CorruptedDataException>());
     expect((await local.readAll())!.map((card) => card.id), ['old']);
   });
 

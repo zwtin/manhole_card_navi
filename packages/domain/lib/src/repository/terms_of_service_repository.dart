@@ -4,11 +4,11 @@ import 'package:domain/src/core/result.dart';
 import 'package:domain/src/entity/terms_of_service.dart';
 import 'package:domain/src/entity/terms_of_service_version.dart';
 
-final termsOfServiceRepositoryProvider =
-    Provider<TermsOfServiceRepository>(
-  (ref) => throw UnimplementedError(
-    'termsOfServiceRepositoryProvider must be overridden',
-  ),
+final termsOfServiceRepositoryProvider = Provider<TermsOfServiceRepository>(
+  (ref) =>
+      throw UnimplementedError(
+        'termsOfServiceRepositoryProvider must be overridden',
+      ),
 );
 
 abstract class TermsOfServiceRepository {

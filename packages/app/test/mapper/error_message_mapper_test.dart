@@ -1,6 +1,7 @@
+import 'package:flutter_test/flutter_test.dart';
+
 import 'package:app/src/mapper/error_message_mapper.dart';
 import 'package:domain/domain.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('失敗の種類ごとに、利用者がとれる行動を本文にする', () {

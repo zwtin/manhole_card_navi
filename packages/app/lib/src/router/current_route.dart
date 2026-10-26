@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'app_router.dart';
+import 'package:app/src/router/app_router.dart';
 
 /// 最前面に表示されている画面。
 @immutable
@@ -40,14 +40,12 @@ class CurrentRoute {
   final Map<String, String> pathParameters;
 }
 
-/// GoRouter の遷移を監視し、最前面の画面を公開する。
-///
-/// PV の送信（useScreenView）と、マップがモーダル表示中かの判定に使う。ダイアログ
-/// など GoRouter を通さない表示は含まない。
+/// GoRouter の遷移を監視し、最前面の画面を公開する。ダイアログなど GoRouter を
+/// 通さない表示は含まない。
 final currentRouteProvider =
     NotifierProvider<CurrentRouteNotifier, CurrentRoute?>(
-  CurrentRouteNotifier.new,
-);
+      CurrentRouteNotifier.new,
+    );
 
 class CurrentRouteNotifier extends Notifier<CurrentRoute?> {
   @override

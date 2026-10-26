@@ -30,8 +30,9 @@ void main() {
 
   test('空なら取り直してから読む', () async {
     final values = ['', 'value'];
-    when(() => remoteConfig.getString('key'))
-        .thenAnswer((_) => values.removeAt(0));
+    when(
+      () => remoteConfig.getString('key'),
+    ).thenAnswer((_) => values.removeAt(0));
 
     expect(await reader.readString('key'), 'value');
     verify(() => remoteConfig.fetchAndActivate()).called(1);
@@ -57,16 +58,19 @@ void main() {
     });
 
     setUp(() {
-      when(() => remoteConfig.setConfigSettings(any()))
-          .thenAnswer((_) async {});
+      when(
+        () => remoteConfig.setConfigSettings(any()),
+      ).thenAnswer((_) async {});
     });
 
     test('待ち時間を 10 秒、取り直さない時間を渡されたものにして取得する', () async {
       await reader.activate();
 
-      final settings = verify(
-        () => remoteConfig.setConfigSettings(captureAny()),
-      ).captured.single as RemoteConfigSettings;
+      final settings =
+          verify(
+                () => remoteConfig.setConfigSettings(captureAny()),
+              ).captured.single
+              as RemoteConfigSettings;
       expect(settings.fetchTimeout, const Duration(seconds: 10));
       expect(settings.minimumFetchInterval, const Duration(hours: 12));
       verify(() => remoteConfig.fetchAndActivate()).called(1);

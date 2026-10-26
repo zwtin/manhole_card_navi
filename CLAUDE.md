@@ -33,6 +33,9 @@ fvm flutter build ios --dart-define-from-file=dart_defines/production.env
 # コード解析（ルートで実行すると packages/ 配下もまとめて解析する）
 fvm flutter analyze
 
+# app の約束（デザインシステム・View が domain を知らないこと・ViewModel の独立と画面の部品）の検査。flutter analyze では見つからない
+./scripts/check_app_rules.sh
+
 # テストの実行（パッケージごと。ルートにもある）
 (cd packages/domain && fvm dart test)  # domain は Flutter に依存しないので dart で回せる
 (cd packages/data && fvm flutter test)
@@ -50,6 +53,16 @@ fvm flutter pub run flutter_launcher_icons -f flutter_launcher_icons-production.
 # ネイティブスプラッシュ画面の生成
 fvm flutter pub run flutter_native_splash:create
 ```
+
+## コミットとプッシュ
+lefthook がフックで検査を走らせる。導入は `brew install lefthook` の後、**git worktree ごとに** `lefthook install`。
+
+- コミット時: `dart fix --apply` → `dart format` → app の約束の検査（いずれも staged なファイルだけ）
+- プッシュ時: `fvm flutter analyze` と全パッケージのテスト（`scripts/run_tests.sh`）
+
+**`git commit --no-verify` や `git push --no-verify` は使わない。** 検査を飛ばすと、壊れたものがそのまま乗る。直せない事情があるなら、フックを飛ばすのではなく `// ignore:` に理由を書く。
+
+`lefthook.yml` の `env -u GIT_DIR` は git worktree 対策で、外してはいけない。worktree からコミットすると git がフックに `GIT_DIR` を渡し、fvm がそれを継承して自分のキャッシュを見失い `exit 255` で落ちる。lefthook の `env:` では代用できない（unset ではなく空文字になり、fvm がミラーを作り直す）。
 
 ## アーキテクチャ
 
@@ -83,7 +96,14 @@ fvm flutter pub run flutter_native_splash:create
    - `view/` - 画面（`*_page.dart`）
    - `view_model/` - 画面ごとの ViewModel
    - `view_data/` - 画面ごとの State（freezed）と表示用データ
-   - `widget/` / `mapper/` / `service/` / `theme/` - 共通部品・エンティティから表示用データへの変換・マーカー画像の合成・テーマ
+   - **View・ViewData・widget は domain を知らない。** ViewData は表示の形（文字・bool・数）だけを持ち、domain の値を表示名や並び順にするのは mapper。編集中の条件のように画面が domain の値を持ち続けるときは、ViewModel の private な変数に置く。選択肢は「表示名と選ばれているか」で渡し、押されたものは何番目かで ViewModel に返す（番号を値に戻す並びは mapper が持つ）。例外はカード画像の `card_image_provider.dart` だけ（状態管理の節）
+   - `widget/` / `mapper/` / `theme/` - 共通部品・変換・テーマ
+   - **見た目はデザインシステムから選ぶ。** 文字は `AppText`（`widget/app_text.dart`）の名前付きコンストラクタ、色は `ColorScheme`（Material 3 の色の役割）から引く。役割に当てはまらない色だけ `AppColors`（`theme/app_colors.dart`、`ThemeExtension`）に置く。いまそこにあるのはリンク・カードの枠線・カードの影の 3 つだけ
+   - `AppBar` の見出しは `AppBarTitle`。画面ごとに大きさや太さを決めない
+   - **`ThemeData` を組む時点の `textTheme` には大きさが入っていない**（言語に応じた字形と合わせるのは画面を描くとき）。`appBarTheme.titleTextStyle` のようなところに `textTheme` から作った style を焼き込むと、大きさのない style になって既定値に落ちる。テーマに焼き込まず、描画時に読むウィジェット側で決める
+   - 面の重なりは `surface`（画面の地）と `surfaceContainerLowest`（カード・リストの面）で表す。Material 3 はこの 2 つを、明るいテーマでは面のほうを明るく、暗いテーマでは面のほうを暗くする向きで定義している。`ColorScheme.background` のように**役割を自分の意味で使い回すと、フレームワークの移行（`dart fix`）に踏まれる**
+   - 色の値そのものは `assets/colors/colors.xml` に名前を付けてから使う。画面で `Text`・`TextStyle`・`Color` を直接作らず、Material のパレット（`Colors.xxx`）も使わない（`scripts/check_app_rules.sh` が止める。塗らないことを表す `Colors.transparent` だけは許す。動かせない事情があるところは、その行の直前に `// ignore: <ルール名>` と理由を書く）。使っていない見た目も、そろえるために `AppText` に残す
+   - `mapper/` は純粋な変換だけを置く。通信・保存・キャッシュを持たせない。マップのマーカーなら、ピンの選び方（`MapMarkersViewDataMapper`）と 1 枚の合成（`MarkerIconMapper`）が mapper で、画像を取る・並べる段取りは ViewModel の役目
    - `assets/` - 画面で使うアセット。flutter_gen の生成物は `lib/src/gen/`
 
 4. **ルート** (`lib/`) - アプリを組み立てる場所（Composition Root）。`main.dart` で Firebase を初期化し、`di/` で data の実装を domain の provider に当てはめる
@@ -133,15 +153,17 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 - 1 画面 1 ViewModel 1 State。State は freezed、依存は `build()` で `ref.watch` して `late final` に保持する
 - 読み込むだけの画面は `AsyncNotifier`（`build()` で取得）、起動時チェックやマップのように読み込みに副作用を伴う画面は `Notifier` にして View の `useEffect` から `onLoad()` を呼ぶ
 - ViewModel は BuildContext を持たない。遷移・アラート・URL を開く操作は `NavigationService` 経由で行う
+- **ViewModel は画面の部品（widget・地図の `GoogleMapController` など）を持たない**（`scripts/check_app_rules.sh` が止める）。部品を動かしたいときは指示を State に載せ、View が `ref.listen` で受け取って自分の部品を動かす。マップのカメラなら、ViewModel は `CameraMoveViewData` を出し、controller は View が `useRef` で持つ。同じ指示を続けて出しても届くよう、指示ごとに番号を振る
 - ViewModel が読み書きするのは UseCase だけで、Repository を直接呼ばない。処理のない読み取りも、Repository を素通しする UseCase のメソッドを通す
-- カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）がカードの ID で `CardUseCase.fetchImage` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない。画像の URL・代わりの配信元・端末に保存するかは data だけが知っていて、エンティティにも画像の URL は持たせない
+- **ViewModel は他の ViewModel を読まない**（`scripts/check_app_rules.sh` が止める）。画面をまたいで共有する状態は UseCase の watch で流す（取得済みカード・検索条件・位置情報の許可）。例外はカードのモーダルの高さだけで、マップの表示エリアの 2/3 にするため、モーダルの画面がマップの ViewModel から読んでいる。画面の高さは domain の状態ではないので UseCase に載せられず、独立させるのは後回しにしている
+- カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）がカードの ID で `CardUseCase.fetchImage` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない。View と widget はカードの ID を `cardImageProvider` に渡して受け取るだけで、UseCase を知っているのは `card_image_provider.dart` だけ。画像の URL・代わりの配信元・端末に保存するかは data だけが知っていて、エンティティにも画像の URL は持たせない
 
 ### 画面遷移（app）
 - go_router の `StatefulShellRoute` で、マップ・リスト・設定のタブがそれぞれ独立した遷移スタックを持つ
 - 起動時チェックは `go` で置き換えながら進み、タブの外に出す画面（検索条件・画像拡大・起動時の規約）は root Navigator に積む
 - 起動時チェックの最初（アプリのバージョン確認の画面）で匿名ログインを済ませてから `app_open` を送る。イベントに利用者の ID が付いた状態でアプリを使ってもらうため。初回だけ通信が要り、できなければやり直す
 - オフラインでも起動できる。起動時の Remote Config の取得（待ち時間 10 秒）は失敗しても止まらず前回の値で続け、マスターデータは端末のものを使う。前回の値がない初回は、起動時チェックが「通信できませんでした」を出してやり直す
-- マップのカードモーダルもルート（`/map/card/:cardId`）で、マップはその有無で表示エリアを縮める
+- マップのカードモーダルもルート（`/map/card/:cardId`）で、マップはその有無で表示エリアを縮める。ピンをタップして開いたときはピンの座標をクエリに載せる。URL の組み立てと読み取りは `AppRoutePath` だけが行う
 - 戻る操作はタブ内の画面があればそれを閉じ、タブのルートでは `ShellScaffold` の `PopScope` がタブ切り替え／アプリ終了を決める
 - PV は各画面の `useScreenView` が、GoRouter 上で最前面になったとき（表示・戻り・タブ切り替え）に送る
 
@@ -158,9 +180,9 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 - データモデル用のFreezed
 
 ## コードの書き方
-domain と data はこの形にそろえてある。app はまだそろえていない。
+domain・data・app ともこの形にそろえてある。
 
-- import は相対パスにせず `package:` の形で書く。`dart:`・外部のパッケージ・このアプリのパッケージ（`package:domain/` など）の順にまとめ、まとまりの間に空行を入れる。domain と data は lint（`always_use_package_imports`）で相対パスを禁じている。テストの中でテスト用のファイルを読むときだけは相対パスで、最後のまとまりにする
+- import は相対パスにせず `package:` の形で書く。`dart:`・外部のパッケージ・このアプリのパッケージ（`package:domain/` など）の順にまとめ、まとまりの間に空行を入れる。domain・data・app とも lint（`always_use_package_imports`）で相対パスを禁じている。テストの中でテスト用のファイルを読むときだけは相対パスで、最後のまとまりにする
 - コメントは、コードを読んでもわからないこと（そうしている理由・型や名前に表れない約束・名前だけでは意味の取れないもの）だけを書く。コードを言い直すコメントや、設計の方針（このファイルに書く）はコードに書かない。コメントとコードを二重に管理しないため
 
 ## 環境設定

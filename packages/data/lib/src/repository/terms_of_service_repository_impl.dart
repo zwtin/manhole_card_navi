@@ -66,9 +66,7 @@ class TermsOfServiceRepositoryImpl implements TermsOfServiceRepository {
   }) async {
     try {
       if (!await _preferences.writeString(_agreedVersionKey, version.value)) {
-        throw const PersistenceException(
-          detail: '同意した利用規約のバージョンを保存できませんでした',
-        );
+        throw const PersistenceException(detail: '同意した利用規約のバージョンを保存できませんでした');
       }
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {

@@ -1,25 +1,12 @@
+import 'package:app/src/view_data/modal_card_view_data.dart';
 import 'package:domain/domain.dart';
-import 'package:flutter/foundation.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../view_data/modal_card_view_data.dart';
-
-class ModalCardViewDataMapper {
-  static Future<ModalCardViewData> convertToViewData({
+abstract final class ModalCardViewDataMapper {
+  /// [position] はモーダルを開いたピンの座標。地図アプリで開く場所になる。
+  static ModalCardViewData toViewData({
     required ManholeCard card,
-    required LatLng position,
-  }) async {
-    final map = <String, dynamic>{};
-    map['card'] = card;
-    map['position'] = position;
-    return compute(_convert, map);
-  }
-
-  static Future<ModalCardViewData> _convert(
-    Map<String, dynamic> parameter,
-  ) async {
-    final card = parameter['card'] as ManholeCard;
-    final position = parameter['position'] as LatLng;
+    required Coordinate position,
+  }) {
     return ModalCardViewData(
       id: card.id,
       name: card.name,

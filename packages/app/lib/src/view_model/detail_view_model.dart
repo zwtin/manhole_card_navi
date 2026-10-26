@@ -1,19 +1,16 @@
 import 'dart:async';
 
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../mapper/detail_card_view_data_mapper.dart';
-import '../router/navigation_service.dart';
-import '../view_data/detail_card_view_data.dart';
+import 'package:app/src/mapper/detail_card_view_data_mapper.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/detail_card_view_data.dart';
+import 'package:domain/domain.dart';
 
 /// 引数はカード ID。
 final detailViewModelProvider = AsyncNotifierProvider.autoDispose
-    .family<DetailViewModel, DetailCardViewData, String>(
-  DetailViewModel.new,
-);
+    .family<DetailViewModel, DetailCardViewData, String>(DetailViewModel.new);
 
-/// カード詳細画面の ViewModel。
 class DetailViewModel
     extends AutoDisposeFamilyAsyncNotifier<DetailCardViewData, String> {
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
@@ -28,18 +25,12 @@ class DetailViewModel
     _cardUseCase = ref.watch(cardUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
 
-    final subscription = _alreadyGetCardUseCase.watch().listen((
-      cardIds,
-    ) {
+    final subscription = _alreadyGetCardUseCase.watch().listen((cardIds) {
       final current = state.valueOrNull;
       if (current == null) {
         return;
       }
-      state = AsyncData(
-        current.copyWith(
-          alreadyGet: cardIds.contains(cardId),
-        ),
-      );
+      state = AsyncData(current.copyWith(alreadyGet: cardIds.contains(cardId)));
     });
     ref.onDispose(subscription.cancel);
 
@@ -56,7 +47,7 @@ class DetailViewModel
     final card = (result as Success<ManholeCard>).value;
 
     final alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
-    return DetailCardViewDataMapper.convertToViewData(
+    return DetailCardViewDataMapper.toViewData(
       card: card,
       alreadyGet: alreadyGetCardIds.contains(cardId),
     );

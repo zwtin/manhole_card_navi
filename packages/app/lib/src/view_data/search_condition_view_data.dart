@@ -1,33 +1,16 @@
-import 'package:domain/domain.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'search_condition_view_data.freezed.dart';
 
-/// 弾の選択肢（ID と表示名）。
-typedef VolumeOption = ({String id, String name});
-
-/// 配布状態の選択肢（値と表示名）。
-typedef DistributionStateOption = ({
-  DistributionState state,
-  String name,
-});
+/// 選択肢 1 つ分。押されたことは、リストの何番目かで ViewModel に返す。
+typedef OptionViewData = ({String label, bool selected});
 
 @freezed
 abstract class SearchConditionViewData with _$SearchConditionViewData {
   const factory SearchConditionViewData({
-    /// 編集中のドラフト。適用するまで端末保存も他画面も変更しない。
-    required SearchCondition draft,
-    @Default(<VolumeOption>[]) List<VolumeOption> volumeOptions,
+    required List<OptionViewData> alreadyGetFilters,
+    required List<OptionViewData> volumes,
+    required List<OptionViewData> distributionStates,
+    required List<OptionViewData> coordinateTypes,
   }) = _SearchConditionViewData;
-  const SearchConditionViewData._();
-
-  AlreadyGetFilter get alreadyGetFilter => draft.common.alreadyGetFilter;
-
-  MapCoordinateType get coordinateType => draft.map.coordinateType;
-
-  bool isVolumeSelected(String volumeId) =>
-      draft.common.volumeIds.contains(volumeId);
-
-  bool isDistributionStateSelected(DistributionState state) =>
-      draft.common.distributionStates.contains(state);
 }

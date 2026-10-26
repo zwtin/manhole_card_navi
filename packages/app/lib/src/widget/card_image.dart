@@ -1,15 +1,8 @@
-import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'card_image_provider.dart';
+import 'package:app/src/widget/card_image_provider.dart';
 
-/// マンホールカードの画像を表示するウィジェット。
-///
-/// [cardId] のカードの画像を出す。未所持（[alreadyGet] が false）の場合は実行時に
-/// 彩度 0 のカラーフィルターを掛けてグレースケール表示する。
-///
-/// [memCacheWidth] は表示するときの幅。指定すると原寸デコードを避けられる。
 class CardImage extends ConsumerWidget {
   const CardImage({
     required this.cardId,
@@ -21,10 +14,11 @@ class CardImage extends ConsumerWidget {
 
   final String cardId;
   final bool alreadyGet;
+
+  /// 表示するときの幅。指定すると原寸でデコードしない。
   final int? memCacheWidth;
   final BoxFit? fit;
 
-  /// 彩度 0（グレースケール化）のカラーマトリクス。
   static const List<double> grayscaleMatrix = <double>[
     0.2126, 0.7152, 0.0722, 0, 0, //
     0.2126, 0.7152, 0.0722, 0, 0, //
@@ -32,19 +26,14 @@ class CardImage extends ConsumerWidget {
     0, 0, 0, 1, 0, //
   ];
 
-  /// Hero 遷移中も所持状況に応じた色（未所持ならグレー）を維持するための
-  /// flightShuttleBuilder を返す。
+  /// Hero の飛行中は遷移先の child が出るが、画像拡大（PhotoView）はグレーの
+  /// フィルタが Hero の外にあるので、未取得のカードでも飛行中だけカラーになる。
+  /// 飛行中の widget をグレーのフィルタで包んで防ぐ。
   ///
-  /// Hero の飛行中はデフォルトで遷移先の child が表示されるが、遷移先
-  /// （画像拡大の PhotoView）はグレーフィルタが Hero の外側にあるため、
-  /// 未所持カードでも飛行中だけカラーが覗いてしまう。飛行中の widget を
-  /// グレーフィルタで包むことでこれを防ぐ。
-  ///
-  /// 注意: 復路（拡大→詳細）では遷移先 child が詳細サムネの [CardImage] で、
-  /// 既にグレー化済みのため、ここでの ColorFiltered と合わせて二重適用になる。
-  /// [grayscaleMatrix]（彩度 0・係数和 1.0）は冪等なので二重適用でも結果は
-  /// 変わらず問題ないが、この行列を彩度 0 以外（セピア等・係数和 ≠ 1.0）に
-  /// 変更する場合は二重適用で色が破綻する点に注意すること。
+  /// 復路（拡大→詳細）の遷移先は、グレーにしてある詳細の [CardImage] なので、
+  /// フィルタが二重に掛かる。[grayscaleMatrix] は何度掛けても同じ結果になる
+  /// （彩度 0・係数の和 1.0）ので問題ないが、セピアなど係数の和が 1.0 でない
+  /// 行列に変えると色が崩れる。
   static HeroFlightShuttleBuilder heroFlightShuttleBuilder({
     required bool alreadyGet,
   }) {
@@ -55,8 +44,7 @@ class CardImage extends ConsumerWidget {
       fromHeroContext,
       toHeroContext,
     ) {
-      // 飛行中に表示する widget は遷移先 Hero の child を用いる
-      // （デフォルトの flightShuttleBuilder と同じ挙動）。
+      // 既定の flightShuttleBuilder と同じく、遷移先の Hero の child を出す。
       final toHero = toHeroContext.widget as Hero;
       if (alreadyGet) {
         return toHero.child;
@@ -74,10 +62,7 @@ class CardImage extends ConsumerWidget {
       image: ResizeImage.resizeIfNeeded(
         memCacheWidth,
         null,
-        CardImageProvider(
-          useCase: ref.watch(cardUseCaseProvider),
-          cardId: cardId,
-        ),
+        ref.watch(cardImageProvider(cardId)),
       ),
       fit: fit,
     );

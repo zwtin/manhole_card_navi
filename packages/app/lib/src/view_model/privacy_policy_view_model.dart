@@ -1,17 +1,16 @@
 import 'dart:async';
 
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/navigation_service.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:domain/domain.dart';
 
 /// 状態はプライバシーポリシーの HTML。
 final privacyPolicyViewModelProvider =
     AsyncNotifierProvider.autoDispose<PrivacyPolicyViewModel, String>(
-  PrivacyPolicyViewModel.new,
-);
+      PrivacyPolicyViewModel.new,
+    );
 
-/// プライバシーポリシー画面の ViewModel。
 class PrivacyPolicyViewModel extends AutoDisposeAsyncNotifier<String> {
   late final AnalyticsUseCase _analyticsUseCase;
   late final PrivacyPolicyUseCase _privacyPolicyUseCase;

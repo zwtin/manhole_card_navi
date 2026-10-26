@@ -12,19 +12,14 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
   final crashlytics = infrastructure.crashlytics;
   return [
     alreadyGetCardRepositoryProvider.overrideWith(
-      (_) => AlreadyGetCardRepositoryImpl(
-        infrastructure.preferences,
-        crashlytics,
-      ),
+      (_) =>
+          AlreadyGetCardRepositoryImpl(infrastructure.preferences, crashlytics),
     ),
     analyticsRepositoryProvider.overrideWith(
       (_) => AnalyticsRepositoryImpl(infrastructure.analytics, crashlytics),
     ),
     appBadgeRepositoryProvider.overrideWith(
-      (_) => AppBadgeRepositoryImpl(
-        const AppBadgeDataSource(),
-        crashlytics,
-      ),
+      (_) => AppBadgeRepositoryImpl(const AppBadgeDataSource(), crashlytics),
     ),
     appInfoRepositoryProvider.overrideWith(
       (_) => AppInfoRepositoryImpl(
@@ -41,12 +36,14 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
         crashlytics,
       ),
     ),
-    locationRepositoryProvider.overrideWith(
-      (_) => LocationRepositoryImpl(
+    locationRepositoryProvider.overrideWith((ref) {
+      final repository = LocationRepositoryImpl(
         const LocationDataSource(),
         crashlytics,
-      ),
-    ),
+      );
+      ref.onDispose(repository.dispose);
+      return repository;
+    }),
     masterDataRepositoryProvider.overrideWith(
       (_) => MasterDataRepositoryImpl(
         infrastructure.masterDataRemote,
@@ -62,10 +59,8 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
       ),
     ),
     privacyPolicyRepositoryProvider.overrideWith(
-      (_) => PrivacyPolicyRepositoryImpl(
-        infrastructure.remoteConfig,
-        crashlytics,
-      ),
+      (_) =>
+          PrivacyPolicyRepositoryImpl(infrastructure.remoteConfig, crashlytics),
     ),
     pushNotificationRepositoryProvider.overrideWith(
       (_) => PushNotificationRepositoryImpl(

@@ -17,6 +17,5 @@ abstract class DetailCardViewData with _$DetailCardViewData {
   }) = _DetailCardViewData;
   const DetailCardViewData._();
 
-  String get alreadyGetActionButtonTitle =>
-      alreadyGet ? '未取得に戻す' : '取得済みにする';
+  String get alreadyGetActionButtonTitle => alreadyGet ? '未取得に戻す' : '取得済みにする';
 }

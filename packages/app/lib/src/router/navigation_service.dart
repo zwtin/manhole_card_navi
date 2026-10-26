@@ -1,31 +1,24 @@
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'app_router.dart';
-import 'go_router_navigation_service.dart';
+import 'package:app/src/router/app_router.dart';
+import 'package:app/src/router/go_router_navigation_service.dart';
+import 'package:domain/domain.dart';
 
 final navigationServiceProvider = Provider<NavigationService>(
   (ref) => GoRouterNavigationService(ref.watch(routerProvider)),
 );
 
 /// 画面遷移とダイアログ表示の窓口。
-///
-/// ViewModel が BuildContext や go_router に触れずに遷移を指示できるようにする。
-/// テストではモックに差し替えて、どの遷移が指示されたかを検証できる。
 abstract class NavigationService {
-  /// 起動時チェック: マスターデータの更新確認へ進む。
   void goToCheckMasterUpdate();
 
-  /// 起動時チェック: 利用規約の更新確認へ進む。
   void goToCheckTermsOfServiceUpdate();
 
-  /// 起動時チェック: 初回のチュートリアルへ進む。
   void goToTutorial();
 
   /// 起動時チェックを終えてタブ画面へ進む。戻る操作でチェック画面に戻らない。
   void goToHome();
 
-  /// チュートリアルの後に利用規約の同意画面を積む。
   Future<void> pushTermsOfServiceAgree();
 
   /// 利用規約を積む。起動時チェック中はタブの外、設定タブからはタブの中に積む。
@@ -66,7 +59,6 @@ abstract class NavigationService {
   /// マップタブへ切り替え、そのタブを先頭まで戻してからカードのモーダルを表示する。
   void showCardOnMap({required String cardId});
 
-  /// 最前面の画面を閉じる。
   void pop();
 
   /// OK ボタンだけのアラートを表示し、閉じられるまで待つ。
@@ -79,8 +71,7 @@ abstract class NavigationService {
   /// 失敗をアラートで知らせ、閉じられるまで待つ。
   ///
   /// [title] には何に失敗したか（例: 「マスターデータを更新できませんでした」）を
-  /// 渡す。本文は [exception] の種類から決まる。記録は data が失敗を返すときに
-  /// 済ませているので、ここでは記録しない。
+  /// 渡す。本文は [exception] の種類から決まる。
   Future<void> showFailure({
     required String title,
     required DomainException exception,

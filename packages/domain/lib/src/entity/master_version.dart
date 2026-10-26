@@ -6,7 +6,5 @@ part 'master_version.freezed.dart';
 /// Remote Config の値を戻すだけで済むように。
 @freezed
 abstract class MasterVersion with _$MasterVersion {
-  const factory MasterVersion({
-    required String value,
-  }) = _MasterVersion;
+  const factory MasterVersion({required String value}) = _MasterVersion;
 }

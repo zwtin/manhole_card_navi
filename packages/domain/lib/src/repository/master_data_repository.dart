@@ -3,11 +3,11 @@ import 'package:riverpod/riverpod.dart';
 import 'package:domain/src/core/result.dart';
 import 'package:domain/src/entity/master_version.dart';
 
-final masterDataRepositoryProvider =
-    Provider<MasterDataRepository>(
-  (ref) => throw UnimplementedError(
-    'masterDataRepositoryProvider must be overridden',
-  ),
+final masterDataRepositoryProvider = Provider<MasterDataRepository>(
+  (ref) =>
+      throw UnimplementedError(
+        'masterDataRepositoryProvider must be overridden',
+      ),
 );
 
 abstract class MasterDataRepository {

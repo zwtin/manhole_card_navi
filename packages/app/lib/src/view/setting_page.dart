@@ -1,30 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/use_screen_view.dart';
-import '../view_data/setting_view_data.dart';
-import '../view_model/setting_view_model.dart';
-import '../widget/custom_text.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_data/setting_view_data.dart';
+import 'package:app/src/view_model/setting_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
+import 'package:app/src/widget/app_text.dart';
 
-/// 設定タブ。
 class SettingPage extends HookConsumerWidget {
   const SettingPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(settingViewModelProvider).valueOrNull ??
+    final state =
+        ref.watch(settingViewModelProvider).valueOrNull ??
         const SettingViewData();
     final viewModel = ref.read(settingViewModelProvider.notifier);
 
     useScreenView(ref, viewModel.sendScreenView);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const TitleLargeText('設定', fontWeight: FontWeight.bold),
-      ),
+      appBar: AppBar(title: const AppBarTitle('設定')),
       body: Stack(
         children: [
-          Container(color: Theme.of(context).colorScheme.background),
+          Container(color: Theme.of(context).colorScheme.surface),
           SingleChildScrollView(
             child: SafeArea(
               child: Padding(
@@ -43,7 +42,7 @@ class SettingPage extends HookConsumerWidget {
                         child: Column(
                           children: [
                             ListTile(
-                              title: const TitleMediumText('アプリの使い方'),
+                              title: const AppText.titleMedium('アプリの使い方'),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 color: Theme.of(context).iconTheme.color,
@@ -73,7 +72,7 @@ class SettingPage extends HookConsumerWidget {
                         child: Column(
                           children: [
                             ListTile(
-                              title: const TitleMediumText('改善要望・不具合報告'),
+                              title: const AppText.titleMedium('改善要望・不具合報告'),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 color: Theme.of(context).iconTheme.color,
@@ -103,7 +102,7 @@ class SettingPage extends HookConsumerWidget {
                         child: Column(
                           children: [
                             ListTile(
-                              title: const TitleMediumText('利用規約'),
+                              title: const AppText.titleMedium('利用規約'),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 color: Theme.of(context).iconTheme.color,
@@ -120,7 +119,7 @@ class SettingPage extends HookConsumerWidget {
                               height: 1,
                             ),
                             ListTile(
-                              title: const TitleMediumText('プライバシーポリシー'),
+                              title: const AppText.titleMedium('プライバシーポリシー'),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 color: Theme.of(context).iconTheme.color,
@@ -132,7 +131,7 @@ class SettingPage extends HookConsumerWidget {
                               height: 1,
                             ),
                             ListTile(
-                              title: const TitleMediumText('ライセンス'),
+                              title: const AppText.titleMedium('ライセンス'),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
                                 color: Theme.of(context).iconTheme.color,
@@ -149,8 +148,8 @@ class SettingPage extends HookConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    TitleMediumText(state.appName),
-                    TitleMediumText('バージョン ${state.appVersion}'),
+                    AppText.titleMedium(state.appName),
+                    AppText.titleMedium('バージョン ${state.appVersion}'),
                   ],
                 ),
               ),

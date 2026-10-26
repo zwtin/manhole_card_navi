@@ -4,10 +4,7 @@ import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
 class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
-  AlreadyGetCardRepositoryImpl(
-    this._preferences,
-    this._crashlytics,
-  );
+  AlreadyGetCardRepositoryImpl(this._preferences, this._crashlytics);
 
   static const _key = 'already_get_cards';
 
@@ -20,9 +17,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   }
 
   @override
-  Future<Result<void>> save({
-    required String cardId,
-  }) async {
+  Future<Result<void>> save({required String cardId}) async {
     try {
       await _write({..._preferences.readStringList(_key), cardId});
       return const Result.success(null);
@@ -33,9 +28,7 @@ class AlreadyGetCardRepositoryImpl implements AlreadyGetCardRepository {
   }
 
   @override
-  Future<Result<void>> delete({
-    required String cardId,
-  }) async {
+  Future<Result<void>> delete({required String cardId}) async {
     try {
       await _write(_preferences.readStringList(_key).toSet()..remove(cardId));
       return const Result.success(null);

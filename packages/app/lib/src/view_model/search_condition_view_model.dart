@@ -1,31 +1,26 @@
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/navigation_service.dart';
-import '../view_data/search_condition_view_data.dart';
+import 'package:app/src/mapper/search_condition_view_data_mapper.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/search_condition_view_data.dart';
+import 'package:domain/domain.dart';
 
 final searchConditionViewModelProvider = AsyncNotifierProvider.autoDispose<
-    SearchConditionViewModel, SearchConditionViewData>(
-  SearchConditionViewModel.new,
-);
+  SearchConditionViewModel,
+  SearchConditionViewData
+>(SearchConditionViewModel.new);
 
-/// 検索条件画面の ViewModel。
-///
-/// 編集内容はドラフトとして保持し、「この条件で表示」で端末保存する。保存した条件は
-/// SearchConditionUseCase の Stream を通じてマップ・リストの両画面へ反映される。
 class SearchConditionViewModel
     extends AutoDisposeAsyncNotifier<SearchConditionViewData> {
-  /// 配布状態の選択肢。表示順は固定。
-  static const List<DistributionStateOption> distributionStateOptions = [
-    (state: DistributionState.distributing, name: '配布中'),
-    (state: DistributionState.stopped, name: '配布停止'),
-    (state: DistributionState.notClear, name: '不明'),
-  ];
-
   late final SearchConditionUseCase _searchConditionUseCase;
   late final CardUseCase _cardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
   late final NavigationService _navigationService;
+
+  /// 編集中のドラフト。適用するまで端末保存も他画面も変更しない。
+  late SearchCondition _draft;
+
+  late List<Volume> _volumes;
 
   @override
   Future<SearchConditionViewData> build() async {
@@ -34,29 +29,34 @@ class SearchConditionViewModel
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
 
-    return SearchConditionViewData(
-      draft: await _searchConditionUseCase.watch().first,
-      volumeOptions: await _loadVolumeOptions(),
-    );
+    _draft = await _searchConditionUseCase.watch().first;
+    _volumes = await _loadVolumes();
+    return _toViewData();
   }
 
-  void setAlreadyGetFilter(AlreadyGetFilter value) {
+  void selectAlreadyGetFilter(int index) {
     _updateDraft(
       (draft) => draft.copyWith(
-        common: draft.common.copyWith(alreadyGetFilter: value),
+        common: draft.common.copyWith(
+          alreadyGetFilter:
+              SearchConditionViewDataMapper.alreadyGetFilters[index],
+        ),
       ),
     );
   }
 
-  void setCoordinateType(MapCoordinateType value) {
+  void selectCoordinateType(int index) {
     _updateDraft(
       (draft) => draft.copyWith(
-        map: draft.map.copyWith(coordinateType: value),
+        map: draft.map.copyWith(
+          coordinateType: SearchConditionViewDataMapper.coordinateTypes[index],
+        ),
       ),
     );
   }
 
-  void toggleVolume(String volumeId) {
+  void toggleVolume(int index) {
+    final volumeId = _volumes[index].id;
     _updateDraft((draft) {
       final next = Set<String>.of(draft.common.volumeIds);
       if (!next.remove(volumeId)) {
@@ -66,30 +66,25 @@ class SearchConditionViewModel
     });
   }
 
-  /// すべての弾を選択する（結果は「すべて表示」と同じ）。
   void selectAllVolumes() {
     final volumeIds = _allVolumeIds;
     _updateDraft(
-      (draft) => draft.copyWith(
-        common: draft.common.copyWith(volumeIds: volumeIds),
-      ),
+      (draft) =>
+          draft.copyWith(common: draft.common.copyWith(volumeIds: volumeIds)),
     );
   }
 
-  /// 弾の絞り込みをクリアする（未選択＝すべて表示）。
   void clearVolumes() {
     _updateDraft(
-      (draft) => draft.copyWith(
-        common: draft.common.copyWith(volumeIds: const {}),
-      ),
+      (draft) =>
+          draft.copyWith(common: draft.common.copyWith(volumeIds: const {})),
     );
   }
 
-  void toggleDistributionState(DistributionState state) {
+  void toggleDistributionState(int index) {
+    final state = SearchConditionViewDataMapper.distributionStates[index];
     _updateDraft((draft) {
-      final next = Set<DistributionState>.of(
-        draft.common.distributionStates,
-      );
+      final next = Set<DistributionState>.of(draft.common.distributionStates);
       if (!next.remove(state)) {
         next.add(state);
       }
@@ -99,19 +94,17 @@ class SearchConditionViewModel
     });
   }
 
-  /// すべての配布状態を選択する（結果は「すべて表示」と同じ）。
   void selectAllDistributionStates() {
     _updateDraft(
       (draft) => draft.copyWith(
         common: draft.common.copyWith(
           distributionStates:
-              distributionStateOptions.map((option) => option.state).toSet(),
+              SearchConditionViewDataMapper.distributionStates.toSet(),
         ),
       ),
     );
   }
 
-  /// 配布状態の絞り込みをクリアする（未選択＝すべて表示）。
   void clearDistributionStates() {
     _updateDraft(
       (draft) => draft.copyWith(
@@ -120,8 +113,7 @@ class SearchConditionViewModel
     );
   }
 
-  /// 横断的な絞り込み（取得状態・弾数・配布状態）をすべてクリアする。
-  /// マップ座標種別は表示オプションなので変更しない。
+  /// 座標の種類は絞り込みではなく、マップの表示の選択なので残す。
   void clearAllFilters() {
     _updateDraft(
       (draft) => draft.copyWith(common: const CommonSearchCondition()),
@@ -129,11 +121,10 @@ class SearchConditionViewModel
   }
 
   Future<void> onApply() async {
-    final current = state.valueOrNull;
-    if (current == null) {
+    if (!state.hasValue) {
       return;
     }
-    final normalized = current.draft.normalized(allVolumeIds: _allVolumeIds);
+    final normalized = _draft.normalized(allVolumeIds: _allVolumeIds);
     final result = await _searchConditionUseCase.save(
       searchCondition: normalized,
     );
@@ -159,36 +150,29 @@ class SearchConditionViewModel
     );
   }
 
-  Set<String> get _allVolumeIds =>
-      (state.valueOrNull?.volumeOptions ?? const <VolumeOption>[])
-          .map((option) => option.id)
-          .toSet();
+  Set<String> get _allVolumeIds => _volumes.map((volume) => volume.id).toSet();
 
   void _updateDraft(SearchCondition Function(SearchCondition draft) update) {
-    final current = state.valueOrNull;
-    if (current == null) {
+    // 読み込みが終わるまでは、ドラフトも選択肢もまだない。
+    if (!state.hasValue) {
       return;
     }
-    state = AsyncData(current.copyWith(draft: update(current.draft)));
+    _draft = update(_draft);
+    state = AsyncData(_toViewData());
   }
 
-  Future<List<VolumeOption>> _loadVolumeOptions() async {
+  SearchConditionViewData _toViewData() {
+    return SearchConditionViewDataMapper.toViewData(
+      draft: _draft,
+      volumes: _volumes,
+    );
+  }
+
+  Future<List<Volume>> _loadVolumes() async {
     final result = await _cardUseCase.fetchAll();
     if (result is! Success<List<ManholeCard>>) {
       return const [];
     }
-    final byVolume = <String, String>{};
-    for (final card in result.value) {
-      if (card.volume.id.isEmpty) {
-        continue;
-      }
-      byVolume.putIfAbsent(card.volume.id, () => card.volume.name);
-    }
-    final entries = byVolume.entries.toList()
-      // volumeId は「弾番号 - 1」を 4 桁ゼロ埋めした値（第01弾=0000 … 第18弾=0017）
-      // なので、ID の降順に並べれば発行日データの揺れに依存せず新しい弾から表示できる。
-      // （発行日ソートでは 17弾/18弾 の発行日が同日・逆転していると順序が狂っていた）
-      ..sort((a, b) => b.key.compareTo(a.key));
-    return entries.map((entry) => (id: entry.key, name: entry.value)).toList();
+    return SearchConditionViewDataMapper.toVolumes(result.value);
   }
 }

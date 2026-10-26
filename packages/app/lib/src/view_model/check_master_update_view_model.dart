@@ -1,13 +1,13 @@
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/navigation_service.dart';
-import '../view_data/check_master_update_view_data.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/check_master_update_view_data.dart';
+import 'package:domain/domain.dart';
 
 final checkMasterUpdateViewModelProvider = NotifierProvider.autoDispose<
-    CheckMasterUpdateViewModel, CheckMasterUpdateViewData>(
-  CheckMasterUpdateViewModel.new,
-);
+  CheckMasterUpdateViewModel,
+  CheckMasterUpdateViewData
+>(CheckMasterUpdateViewModel.new);
 
 /// 起動時にマスターデータを更新し、利用規約の同意状況で次の画面を決める ViewModel。
 class CheckMasterUpdateViewModel

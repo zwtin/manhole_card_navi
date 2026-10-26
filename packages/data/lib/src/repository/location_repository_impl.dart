@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:geolocator/geolocator.dart';
 
 import 'package:data/src/datasource/crashlytics_data_source.dart';
@@ -6,25 +8,20 @@ import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
 class LocationRepositoryImpl implements LocationRepository {
-  LocationRepositoryImpl(
-    this._location,
-    this._crashlytics,
-  );
+  LocationRepositoryImpl(this._location, this._crashlytics);
 
   final LocationDataSource _location;
   final CrashlyticsDataSource _crashlytics;
+  final _permissionGranted = StreamController<bool>.broadcast();
 
   @override
   Future<Result<bool>> requestPermission() async {
     try {
-      if (!await _location.isLocationServiceEnabled()) {
-        return const Result.success(false);
-      }
-      var permission = await _location.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await _location.requestPermission();
-      }
-      return Result.success(_isGranted(permission));
+      final granted =
+          await _location.isLocationServiceEnabled() &&
+          await _location.requestPermission();
+      _permissionGranted.add(granted);
+      return Result.success(granted);
     } on Exception catch (error, stackTrace) {
       _crashlytics.recordNonFatal(error, stackTrace);
       return Result.failure(DomainExceptionMapper.from(error));
@@ -32,9 +29,12 @@ class LocationRepositoryImpl implements LocationRepository {
   }
 
   @override
+  Stream<bool> watchPermissionGranted() => _permissionGranted.stream;
+
+  @override
   Future<Result<bool>> isPermissionGranted() async {
     try {
-      return Result.success(_isGranted(await _location.checkPermission()));
+      return Result.success(await _location.isPermissionGranted());
     } on Exception catch (error, stackTrace) {
       _crashlytics.recordNonFatal(error, stackTrace);
       return Result.failure(DomainExceptionMapper.from(error));
@@ -46,10 +46,7 @@ class LocationRepositoryImpl implements LocationRepository {
     try {
       final position = await _location.getCurrentPosition();
       return Result.success(
-        Coordinate(
-          latitude: position.latitude,
-          longitude: position.longitude,
-        ),
+        Coordinate(latitude: position.latitude, longitude: position.longitude),
       );
     } on LocationServiceDisabledException {
       // 利用者が選んだ状態なので失敗にしない。
@@ -62,8 +59,5 @@ class LocationRepositoryImpl implements LocationRepository {
     }
   }
 
-  static bool _isGranted(LocationPermission permission) {
-    return permission == LocationPermission.whileInUse ||
-        permission == LocationPermission.always;
-  }
+  Future<void> dispose() => _permissionGranted.close();
 }

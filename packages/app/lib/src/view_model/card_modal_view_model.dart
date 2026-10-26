@@ -1,30 +1,30 @@
 import 'dart:async';
 
-import 'package:domain/domain.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../mapper/modal_card_view_data_mapper.dart';
-import '../router/navigation_service.dart';
-import '../view_data/card_modal_view_data.dart';
-import 'manhole_card_map_view_model.dart';
+import 'package:app/src/mapper/map_markers_view_data_mapper.dart';
+import 'package:app/src/mapper/modal_card_view_data_mapper.dart';
+import 'package:app/src/router/app_router.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/card_modal_view_data.dart';
+import 'package:domain/domain.dart';
 
-/// カードのモーダルの引数。座標はタップしたピンの位置で、カード詳細の
+/// カードのモーダルの引数。[pin] はタップしたピンの座標で、カード詳細の
 /// 「マップで見る」から開いたときは null になる。
-typedef CardModalArgs = ({String cardId, double? latitude, double? longitude});
+typedef CardModalArgs = ({String cardId, PinCoordinate? pin});
 
 final cardModalViewModelProvider = AsyncNotifierProvider.autoDispose
     .family<CardModalViewModel, CardModalViewData, CardModalArgs>(
-  CardModalViewModel.new,
-);
+      CardModalViewModel.new,
+    );
 
-/// マップタブでピンをタップしたときに出るカードのモーダルの ViewModel。
 class CardModalViewModel
     extends AutoDisposeFamilyAsyncNotifier<CardModalViewData, CardModalArgs> {
   late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
   late final AnalyticsUseCase _analyticsUseCase;
   late final CardUseCase _cardUseCase;
   late final NavigationService _navigationService;
+  late final SearchConditionUseCase _searchConditionUseCase;
 
   @override
   Future<CardModalViewData> build(CardModalArgs arg) async {
@@ -32,19 +32,15 @@ class CardModalViewModel
     _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
     _cardUseCase = ref.watch(cardUseCaseProvider);
     _navigationService = ref.watch(navigationServiceProvider);
-    final mapViewModel = ref.read(manholeCardMapViewModelProvider.notifier);
+    _searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
 
-    final subscription = _alreadyGetCardUseCase.watch().listen((
-      cardIds,
-    ) {
+    final subscription = _alreadyGetCardUseCase.watch().listen((cardIds) {
       final current = state.valueOrNull;
       if (current == null) {
         return;
       }
       state = AsyncData(
-        current.copyWith(
-          alreadyGet: cardIds.contains(arg.cardId),
-        ),
+        current.copyWith(alreadyGet: cardIds.contains(arg.cardId)),
       );
     });
     ref.onDispose(subscription.cancel);
@@ -61,18 +57,11 @@ class CardModalViewModel
     }
     final card = (result as Success<ManholeCard>).value;
 
-    final latitude = arg.latitude;
-    final longitude = arg.longitude;
-    final position = latitude != null && longitude != null
-        ? LatLng(latitude, longitude)
-        : await mapViewModel.findCardPosition(arg.cardId) ??
-            LatLng(card.position.latitude, card.position.longitude);
-
     final alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
     return CardModalViewData(
-      card: await ModalCardViewDataMapper.convertToViewData(
+      card: ModalCardViewDataMapper.toViewData(
         card: card,
-        position: position,
+        position: await _positionOf(card),
       ),
       alreadyGet: alreadyGetCardIds.contains(arg.cardId),
     );
@@ -148,5 +137,19 @@ class CardModalViewModel
         parameters: {'card_id': arg.cardId},
       ),
     );
+  }
+
+  /// 「マップで見る」から開いたときは、マップがカメラを向けるのと同じピンにする。
+  Future<Coordinate> _positionOf(ManholeCard card) async {
+    final pin = arg.pin;
+    if (pin != null) {
+      return Coordinate(latitude: pin.latitude, longitude: pin.longitude);
+    }
+    final condition = await _searchConditionUseCase.watch().first;
+    return MapMarkersViewDataMapper.firstPinOf(
+          card,
+          condition.map.coordinateType,
+        ) ??
+        card.position;
   }
 }
