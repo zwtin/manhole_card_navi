@@ -1,13 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:app/src/view_data/list_prefectures_view_data.dart';
+import 'package:app/src/view_data/list_prefecture_view_data.dart';
 
 part 'manhole_card_list_view_data.freezed.dart';
 
 @freezed
 abstract class ManholeCardListViewData with _$ManholeCardListViewData {
   const factory ManholeCardListViewData({
-    required ListPrefecturesViewData prefectures,
+    required List<ListPrefectureViewData> prefectures,
 
     /// 全カードの枚数（絞り込み前）。
     required int totalCount,

@@ -12,7 +12,6 @@ import 'package:app/src/router/navigation_service.dart';
 import 'package:app/src/view_data/camera_move_view_data.dart';
 import 'package:app/src/view_data/manhole_card_map_view_data.dart';
 import 'package:app/src/view_data/map_marker_view_data.dart';
-import 'package:app/src/view_data/map_markers_view_data.dart';
 import 'package:domain/domain.dart';
 
 final manholeCardMapViewModelProvider = NotifierProvider.autoDispose<
@@ -121,7 +120,8 @@ class ManholeCardMapViewModel
   }
 
   Future<void> onTapMarker(String markerId) async {
-    final markerViewData = state.markers.getByMarkerId(markerId);
+    final markerViewData =
+        state.markers.where((marker) => marker.id == markerId).firstOrNull;
     if (markerViewData == null) {
       await _navigationService.showAlert(
         title: 'エラー',
@@ -312,15 +312,13 @@ class ManholeCardMapViewModel
           return;
         }
         markers.add(MapMarkersViewDataMapper.toMarker(pin: pin, icon: icon));
-        state = state.copyWith(
-          markers: MapMarkersViewData(list: List.of(markers)),
-        );
+        state = state.copyWith(markers: List.of(markers));
       }),
     );
     // 1 枚もできなくても最新世代なら反映する（近傍にマーカーが無い領域へ移動した
     // ときに古いマーカーを消すため）。
     if (generation == _markerGeneration) {
-      state = state.copyWith(markers: MapMarkersViewData(list: markers));
+      state = state.copyWith(markers: markers);
     }
   }
 

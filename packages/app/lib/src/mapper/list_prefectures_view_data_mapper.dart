@@ -2,16 +2,14 @@ import 'package:intl/intl.dart';
 
 import 'package:app/src/mapper/prefecture_name_mapper.dart';
 import 'package:app/src/view_data/list_card_view_data.dart';
-import 'package:app/src/view_data/list_cards_view_data.dart';
 import 'package:app/src/view_data/list_prefecture_view_data.dart';
-import 'package:app/src/view_data/list_prefectures_view_data.dart';
 import 'package:domain/domain.dart';
 
 abstract final class ListPrefecturesViewDataMapper {
   static final _dateFormat = DateFormat('yyyy/MM/dd');
 
   /// 都道府県の分数は、取得済みで絞り込む前の枚数を分母にする。
-  static ListPrefecturesViewData toViewData({
+  static List<ListPrefectureViewData> toViewData({
     required List<ManholeCard> cards,
     required Set<String> alreadyGetCardIds,
     required CommonSearchCondition searchCondition,
@@ -38,7 +36,7 @@ abstract final class ListPrefecturesViewDataMapper {
         ListPrefectureViewData(
           id: id,
           name: PrefectureNameMapper.nameOf(inPrefecture.first.prefecture),
-          cards: ListCardsViewData(list: shown),
+          cards: shown,
           initiallyExpanded: expandedPrefectureIds.contains(id),
           totalCount: inPrefecture.length,
           alreadyGetCount:
@@ -48,7 +46,7 @@ abstract final class ListPrefecturesViewDataMapper {
         ),
       );
     }
-    return ListPrefecturesViewData(list: prefectures);
+    return prefectures;
   }
 
   static ListCardViewData _toCard(

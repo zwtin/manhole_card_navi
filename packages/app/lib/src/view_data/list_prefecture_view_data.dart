@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:app/src/view_data/list_cards_view_data.dart';
+import 'package:app/src/view_data/list_card_view_data.dart';
 
 part 'list_prefecture_view_data.freezed.dart';
 
@@ -9,7 +9,7 @@ abstract class ListPrefectureViewData with _$ListPrefectureViewData {
   const factory ListPrefectureViewData({
     required String id,
     required String name,
-    required ListCardsViewData cards,
+    required List<ListCardViewData> cards,
     required bool initiallyExpanded,
     required int totalCount,
     required int alreadyGetCount,

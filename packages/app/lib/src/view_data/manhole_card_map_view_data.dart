@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:app/src/view_data/camera_move_view_data.dart';
-import 'package:app/src/view_data/map_markers_view_data.dart';
+import 'package:app/src/view_data/map_marker_view_data.dart';
 
 part 'manhole_card_map_view_data.freezed.dart';
 
@@ -12,7 +12,7 @@ abstract class ManholeCardMapViewData with _$ManholeCardMapViewData {
 
     @Default(0) int activeFilterCount,
     @Default(false) bool myLocationEnabled,
-    @Default(MapMarkersViewData(list: [])) MapMarkersViewData markers,
+    @Default(<MapMarkerViewData>[]) List<MapMarkerViewData> markers,
 
     /// マップ表示エリア（ナビゲーションエリアと下タブエリアの間）の高さ。
     @Default(0.0) double mapAreaHeight,

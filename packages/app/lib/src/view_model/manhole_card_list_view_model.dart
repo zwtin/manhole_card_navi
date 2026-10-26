@@ -87,18 +87,11 @@ class ManholeCardListViewModel
     } else {
       _expandedPrefectureIds.remove(prefectureId);
     }
-    final current = state.valueOrNull;
-    if (current == null) {
+    if (!state.hasValue) {
       return;
     }
-    state = AsyncData(
-      current.copyWith(
-        prefectures: current.prefectures.onExpandedChanged(
-          expanded,
-          prefectureId,
-        ),
-      ),
-    );
+    // 一覧はスクロールで外れた行を作り直すので、開いた状態も ViewData に持たせる。
+    state = AsyncData(_buildViewData());
   }
 
   Future<void> sendScreenView() async {
