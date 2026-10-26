@@ -21,10 +21,10 @@ class ImageDetail extends ConsumerStatefulWidget {
   final String imageTag;
 
   @override
-  ImageDetailViewState createState() => ImageDetailViewState();
+  ConsumerState<ImageDetail> createState() => _ImageDetailState();
 }
 
-class ImageDetailViewState extends ConsumerState<ImageDetail> {
+class _ImageDetailState extends ConsumerState<ImageDetail> {
   Offset beginningDragPosition = Offset.zero;
   Offset currentDragPosition = Offset.zero;
   PhotoViewScaleState scaleState = PhotoViewScaleState.initial;
