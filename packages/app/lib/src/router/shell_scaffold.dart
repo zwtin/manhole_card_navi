@@ -97,12 +97,12 @@ class ShellScaffold extends HookConsumerWidget {
                 final bodyHeight =
                     constraints.maxHeight -
                     kToolbarHeight -
-                    MediaQuery.of(context).padding.top;
+                    MediaQuery.paddingOf(context).top;
                 return Stack(
                   children: [
                     Positioned(
                       right:
-                          -(bodyHeight - MediaQuery.of(context).size.width) /
+                          -(bodyHeight - MediaQuery.sizeOf(context).width) /
                           2.0,
                       bottom: 0.0,
                       child: IgnorePointer(

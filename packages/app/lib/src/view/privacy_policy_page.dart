@@ -25,9 +25,9 @@ class PrivacyPolicyPage extends HookConsumerWidget {
           Container(color: Theme.of(context).colorScheme.surface),
           SingleChildScrollView(
             padding: EdgeInsets.only(
-              left: MediaQuery.of(context).padding.left,
-              bottom: MediaQuery.of(context).padding.bottom,
-              right: MediaQuery.of(context).padding.right,
+              left: MediaQuery.paddingOf(context).left,
+              bottom: MediaQuery.paddingOf(context).bottom,
+              right: MediaQuery.paddingOf(context).right,
             ),
             child: Padding(
               padding: const EdgeInsets.all(8),
