@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:app/src/widget/card_image_provider.dart';
-import 'package:domain/domain.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import 'package:app/src/widget/card_image_provider.dart';
+import 'package:domain/domain.dart';
 
 class MockCardUseCase extends Mock implements CardUseCase {}
 

@@ -1,6 +1,7 @@
+import 'package:flutter_test/flutter_test.dart';
+
 import 'package:app/src/mapper/prefecture_name_mapper.dart';
 import 'package:domain/domain.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('全国のカードは「全国」、それ以外は都道府県名を表示する', () {

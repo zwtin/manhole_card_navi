@@ -1,5 +1,6 @@
-import 'package:app/src/router/app_router.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'package:app/src/router/app_router.dart';
 
 void main() {
   test('ピンの座標を載せたモーダルの URL から、同じ座標を読める', () {

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
-import '../gen/assets.gen.dart';
-import '../router/use_screen_view.dart';
-import '../view_model/check_terms_of_service_agree_view_model.dart';
-import '../widget/custom_check_box.dart';
-import '../widget/app_bar_title.dart';
-import '../widget/app_text.dart';
+import 'package:app/src/gen/assets.gen.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/check_terms_of_service_agree_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
+import 'package:app/src/widget/app_text.dart';
+import 'package:app/src/widget/custom_check_box.dart';
 
 /// 初回起動時に利用規約とプライバシーポリシーへの同意を求める画面。
 class CheckTermsOfServiceAgreePage extends HookConsumerWidget {

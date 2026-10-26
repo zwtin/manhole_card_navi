@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 
-import '../theme/app_colors.dart';
-import 'card_image.dart';
-import 'card_image_provider.dart';
+import 'package:app/src/theme/app_colors.dart';
+import 'package:app/src/widget/card_image.dart';
+import 'package:app/src/widget/card_image_provider.dart';
 
 class ImageDetail extends ConsumerStatefulWidget {
   const ImageDetail({

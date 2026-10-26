@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/use_screen_view.dart';
-import '../view_model/terms_of_service_view_model.dart';
-import '../widget/app_bar_title.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/terms_of_service_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
 
 /// 利用規約。起動時の同意画面と設定タブの両方から開く。
 class TermsOfServicePage extends HookConsumerWidget {

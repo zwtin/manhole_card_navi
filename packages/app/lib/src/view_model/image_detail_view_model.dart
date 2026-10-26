@@ -1,5 +1,6 @@
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:domain/domain.dart';
 
 /// 引数はカード ID。
 final imageDetailViewModelProvider = NotifierProvider.autoDispose

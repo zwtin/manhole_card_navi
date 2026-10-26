@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
+import 'package:app/src/theme/app_colors.dart';
 
 /// アプリで使う文字。見た目はここに並べたものだけで、画面側で [TextStyle] を
 /// 作らない（lint で禁止している）。使っていない見た目も、そろえるために残す。

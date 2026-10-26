@@ -1,9 +1,9 @@
-import 'package:domain/domain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
-import '../view_data/detail_card_view_data.dart';
-import 'prefecture_name_mapper.dart';
+import 'package:app/src/mapper/prefecture_name_mapper.dart';
+import 'package:app/src/view_data/detail_card_view_data.dart';
+import 'package:domain/domain.dart';
 
 class DetailCardViewDataMapper {
   static Future<DetailCardViewData> convertToViewData({

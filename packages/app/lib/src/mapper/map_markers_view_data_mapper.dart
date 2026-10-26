@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:app/src/view_data/map_marker_view_data.dart';
 import 'package:domain/domain.dart';
-
-import '../view_data/map_marker_view_data.dart';
 
 /// マップに立てるピン 1 本分。どのカードのピンを、どの座標に立てるか。
 typedef CardPin = ({ManholeCard card, Coordinate coordinate});

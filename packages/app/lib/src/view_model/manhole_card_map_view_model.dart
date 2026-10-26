@@ -1,19 +1,19 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../mapper/map_coordinate_type_name_mapper.dart';
-import '../mapper/map_markers_view_data_mapper.dart';
-import '../mapper/marker_icon_mapper.dart';
-import '../router/app_router.dart';
-import '../router/current_route.dart';
-import '../router/navigation_service.dart';
-import '../view_data/camera_move_view_data.dart';
-import '../view_data/manhole_card_map_view_data.dart';
-import '../view_data/map_marker_view_data.dart';
-import '../view_data/map_markers_view_data.dart';
+import 'package:app/src/mapper/map_coordinate_type_name_mapper.dart';
+import 'package:app/src/mapper/map_markers_view_data_mapper.dart';
+import 'package:app/src/mapper/marker_icon_mapper.dart';
+import 'package:app/src/router/app_router.dart';
+import 'package:app/src/router/current_route.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/camera_move_view_data.dart';
+import 'package:app/src/view_data/manhole_card_map_view_data.dart';
+import 'package:app/src/view_data/map_marker_view_data.dart';
+import 'package:app/src/view_data/map_markers_view_data.dart';
+import 'package:domain/domain.dart';
 
 final manholeCardMapViewModelProvider = NotifierProvider.autoDispose<
   ManholeCardMapViewModel,

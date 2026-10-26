@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
-import '../view_model/shell_view_model.dart';
+import 'package:app/src/view_model/shell_view_model.dart';
 
 /// 下タブ（マップ・リスト・設定）のシェル。
 ///

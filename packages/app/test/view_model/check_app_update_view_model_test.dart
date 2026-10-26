@@ -1,9 +1,10 @@
-import 'package:app/src/router/navigation_service.dart';
-import 'package:app/src/view_model/check_app_update_view_model.dart';
-import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
+
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_model/check_app_update_view_model.dart';
+import 'package:domain/domain.dart';
 
 class MockAnalyticsUseCase extends Mock implements AnalyticsUseCase {}
 

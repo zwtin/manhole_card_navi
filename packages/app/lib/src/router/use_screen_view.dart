@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'current_route.dart';
+import 'package:app/src/router/current_route.dart';
 
 /// この画面が最前面になるたびに [onVisible] を呼ぶ（PV の送信に使う）。
 ///

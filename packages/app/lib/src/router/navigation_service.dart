@@ -1,8 +1,8 @@
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'app_router.dart';
-import 'go_router_navigation_service.dart';
+import 'package:app/src/router/app_router.dart';
+import 'package:app/src/router/go_router_navigation_service.dart';
+import 'package:domain/domain.dart';
 
 final navigationServiceProvider = Provider<NavigationService>(
   (ref) => GoRouterNavigationService(ref.watch(routerProvider)),

@@ -3,13 +3,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:uuid/uuid.dart';
 
-import '../router/use_screen_view.dart';
-import '../view_model/detail_view_model.dart';
-import '../widget/card_image.dart';
-import '../widget/card_image_provider.dart';
-import '../widget/app_bar_title.dart';
-import '../widget/app_text.dart';
-import '../widget/html_content.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/detail_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
+import 'package:app/src/widget/app_text.dart';
+import 'package:app/src/widget/card_image.dart';
+import 'package:app/src/widget/card_image_provider.dart';
+import 'package:app/src/widget/html_content.dart';
 
 /// カード詳細。リストタブと、マップタブのモーダルから開く。
 class DetailPage extends HookConsumerWidget {

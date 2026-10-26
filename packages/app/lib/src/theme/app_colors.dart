@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../gen/colors.gen.dart';
+import 'package:app/src/gen/colors.gen.dart';
 
 /// Material 3 の色の役割（[ColorScheme]）に当てはまらない色だけを置く。
 /// 役割があるもの（面・文字・枠線・強調）は [ColorScheme] から引く。

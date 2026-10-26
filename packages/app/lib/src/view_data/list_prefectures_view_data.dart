@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'list_prefecture_view_data.dart';
+import 'package:app/src/view_data/list_prefecture_view_data.dart';
 
 part 'list_prefectures_view_data.freezed.dart';
 

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
-import '../gen/assets.gen.dart';
-import '../router/use_screen_view.dart';
-import '../view_model/custom_introduction_view_model.dart';
-import '../widget/app_bar_title.dart';
-import '../widget/app_text.dart';
+import 'package:app/src/gen/assets.gen.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/custom_introduction_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
+import 'package:app/src/widget/app_text.dart';
 
 /// アプリの使い方。初回起動時のチュートリアルと、設定の「アプリの使い方」で使う。
 class CustomIntroductionPage extends HookConsumerWidget {

@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../mapper/map_markers_view_data_mapper.dart';
-import '../mapper/modal_card_view_data_mapper.dart';
-import '../router/app_router.dart';
-import '../router/navigation_service.dart';
-import '../view_data/card_modal_view_data.dart';
+import 'package:app/src/mapper/map_markers_view_data_mapper.dart';
+import 'package:app/src/mapper/modal_card_view_data_mapper.dart';
+import 'package:app/src/router/app_router.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/card_modal_view_data.dart';
+import 'package:domain/domain.dart';
 
 /// カードのモーダルの引数。[pin] はタップしたピンの座標で、カード詳細の
 /// 「マップで見る」から開いたときは null になる。

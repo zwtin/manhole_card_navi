@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../mapper/detail_card_view_data_mapper.dart';
-import '../router/navigation_service.dart';
-import '../view_data/detail_card_view_data.dart';
+import 'package:app/src/mapper/detail_card_view_data_mapper.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/detail_card_view_data.dart';
+import 'package:domain/domain.dart';
 
 /// 引数はカード ID。
 final detailViewModelProvider = AsyncNotifierProvider.autoDispose

@@ -1,11 +1,11 @@
-import 'package:domain/domain.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../mapper/error_message_mapper.dart';
-import '../widget/app_alert.dart';
-import 'app_router.dart';
-import 'navigation_service.dart';
+import 'package:app/src/mapper/error_message_mapper.dart';
+import 'package:app/src/router/app_router.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/widget/app_alert.dart';
+import 'package:domain/domain.dart';
 
 /// [NavigationService] の go_router による実装。
 ///

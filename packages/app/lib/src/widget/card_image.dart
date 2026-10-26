@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'card_image_provider.dart';
+import 'package:app/src/widget/card_image_provider.dart';
 
 /// マンホールカードの画像を表示するウィジェット。
 ///

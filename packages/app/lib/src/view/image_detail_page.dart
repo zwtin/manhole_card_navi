@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/app_router.dart';
-import '../router/use_screen_view.dart';
-import '../view_model/image_detail_view_model.dart';
-import '../widget/image_detail.dart';
+import 'package:app/src/router/app_router.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/image_detail_view_model.dart';
+import 'package:app/src/widget/image_detail.dart';
 
 /// カード画像の拡大表示。
 class ImageDetailPage extends HookConsumerWidget {

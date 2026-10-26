@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'camera_move_view_data.dart';
-import 'map_markers_view_data.dart';
+import 'package:app/src/view_data/camera_move_view_data.dart';
+import 'package:app/src/view_data/map_markers_view_data.dart';
 
 part 'manhole_card_map_view_data.freezed.dart';
 

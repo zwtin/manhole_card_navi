@@ -1,6 +1,7 @@
+import 'package:flutter_test/flutter_test.dart';
+
 import 'package:app/src/mapper/map_markers_view_data_mapper.dart';
 import 'package:domain/domain.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 ManholeCard _card({
   required String id,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'app_text.dart';
+import 'package:app/src/widget/app_text.dart';
 
 /// [AppBar] の見出し。画面ごとに大きさや太さを決めない。
 ///

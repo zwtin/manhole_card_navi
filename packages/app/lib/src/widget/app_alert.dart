@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-import 'app_text.dart';
+import 'package:app/src/widget/app_text.dart';
 
 /// アプリ共通のアラートを表示する。OK が押されたら true、キャンセルなら false。
 ///

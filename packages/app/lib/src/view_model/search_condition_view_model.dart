@@ -1,9 +1,9 @@
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../mapper/search_condition_view_data_mapper.dart';
-import '../router/navigation_service.dart';
-import '../view_data/search_condition_view_data.dart';
+import 'package:app/src/mapper/search_condition_view_data_mapper.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/search_condition_view_data.dart';
+import 'package:domain/domain.dart';
 
 final searchConditionViewModelProvider = AsyncNotifierProvider.autoDispose<
   SearchConditionViewModel,

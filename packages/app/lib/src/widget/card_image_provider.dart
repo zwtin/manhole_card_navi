@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:domain/domain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:domain/domain.dart';
 
 final cardImageProvider = Provider.autoDispose
     .family<CardImageProvider, String>(

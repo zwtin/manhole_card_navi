@@ -1,12 +1,12 @@
-import 'package:domain/domain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
-import '../view_data/list_card_view_data.dart';
-import '../view_data/list_cards_view_data.dart';
-import '../view_data/list_prefecture_view_data.dart';
-import '../view_data/list_prefectures_view_data.dart';
-import 'prefecture_name_mapper.dart';
+import 'package:app/src/mapper/prefecture_name_mapper.dart';
+import 'package:app/src/view_data/list_card_view_data.dart';
+import 'package:app/src/view_data/list_cards_view_data.dart';
+import 'package:app/src/view_data/list_prefecture_view_data.dart';
+import 'package:app/src/view_data/list_prefectures_view_data.dart';
+import 'package:domain/domain.dart';
 
 class ListPrefecturesViewDataMapper {
   static Future<ListPrefecturesViewData> convertToViewData({

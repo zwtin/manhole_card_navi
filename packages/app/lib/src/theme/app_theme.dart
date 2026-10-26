@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../gen/colors.gen.dart';
-import 'app_colors.dart';
+import 'package:app/src/gen/colors.gen.dart';
+import 'package:app/src/theme/app_colors.dart';
 
 /// ページ遷移アニメーション。Android は Flutter 3.43 までの既定である
 /// [ZoomPageTransitionsBuilder] に固定する。

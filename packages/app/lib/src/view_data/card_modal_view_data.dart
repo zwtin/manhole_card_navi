@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'modal_card_view_data.dart';
+import 'package:app/src/view_data/modal_card_view_data.dart';
 
 part 'card_modal_view_data.freezed.dart';
 

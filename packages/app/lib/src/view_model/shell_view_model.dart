@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../view_data/shell_view_data.dart';
+import 'package:app/src/view_data/shell_view_data.dart';
+import 'package:domain/domain.dart';
 
 final shellViewModelProvider =
     NotifierProvider.autoDispose<ShellViewModel, ShellViewData>(

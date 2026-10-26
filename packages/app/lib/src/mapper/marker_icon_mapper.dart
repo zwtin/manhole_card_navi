@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:domain/domain.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 
-import '../widget/card_image.dart';
+import 'package:app/src/widget/card_image.dart';
+import 'package:domain/domain.dart';
 
 /// カード画像を、地図マーカーのアイコン（吹き出し枠との合成結果）にする。
 abstract final class MarkerIconMapper {

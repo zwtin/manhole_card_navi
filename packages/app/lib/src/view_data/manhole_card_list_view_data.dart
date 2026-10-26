@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'list_prefectures_view_data.dart';
+import 'package:app/src/view_data/list_prefectures_view_data.dart';
 
 part 'manhole_card_list_view_data.freezed.dart';
 

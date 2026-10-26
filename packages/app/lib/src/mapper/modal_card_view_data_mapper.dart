@@ -1,6 +1,5 @@
+import 'package:app/src/view_data/modal_card_view_data.dart';
 import 'package:domain/domain.dart';
-
-import '../view_data/modal_card_view_data.dart';
 
 abstract final class ModalCardViewDataMapper {
   /// [position] はモーダルを開いたピンの座標。地図アプリで開く場所になる。

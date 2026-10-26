@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/app_router.dart';
-import '../router/use_screen_view.dart';
-import '../view_model/card_modal_view_model.dart';
-import '../view_model/manhole_card_map_view_model.dart';
-import '../widget/app_text.dart';
-import '../widget/html_content.dart';
+import 'package:app/src/router/app_router.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/card_modal_view_model.dart';
+import 'package:app/src/view_model/manhole_card_map_view_model.dart';
+import 'package:app/src/widget/app_text.dart';
+import 'package:app/src/widget/html_content.dart';
 
 /// マップタブでピンをタップしたときに出るカードのモーダル。
 class CardModalPage extends HookConsumerWidget {

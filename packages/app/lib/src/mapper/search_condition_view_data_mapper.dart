@@ -1,7 +1,6 @@
+import 'package:app/src/mapper/map_coordinate_type_name_mapper.dart';
+import 'package:app/src/view_data/search_condition_view_data.dart';
 import 'package:domain/domain.dart';
-
-import '../view_data/search_condition_view_data.dart';
-import 'map_coordinate_type_name_mapper.dart';
 
 abstract final class SearchConditionViewDataMapper {
   // 画面に出す順。ViewModel は、押された番号をこの並びで値に戻す。

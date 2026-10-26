@@ -1,7 +1,7 @@
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/navigation_service.dart';
+import 'package:app/src/router/navigation_service.dart';
+import 'package:domain/domain.dart';
 
 /// 引数は、初回起動時のチュートリアルとして表示するか（設定の「アプリの使い方」なら false）。
 final customIntroductionViewModelProvider = NotifierProvider.autoDispose

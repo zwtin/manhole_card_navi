@@ -1,1 +1,1 @@
-export 'src/app.dart';
+export 'package:app/src/app.dart';

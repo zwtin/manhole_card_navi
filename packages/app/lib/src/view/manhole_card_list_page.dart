@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/use_screen_view.dart';
-import '../view_model/manhole_card_list_view_model.dart';
-import '../widget/card_image.dart';
-import '../widget/app_bar_title.dart';
-import '../widget/app_text.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/manhole_card_list_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
+import 'package:app/src/widget/app_text.dart';
+import 'package:app/src/widget/card_image.dart';
 
 /// リストタブ。都道府県ごとにカードを折りたたんで表示する。
 class ManholeCardListPage extends HookConsumerWidget {

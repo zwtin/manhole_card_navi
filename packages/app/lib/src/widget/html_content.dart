@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../theme/app_colors.dart';
+import 'package:app/src/theme/app_colors.dart';
 
 /// マスターデータが持つ HTML（配布場所・在庫状況）をそのまま表示する。
 ///

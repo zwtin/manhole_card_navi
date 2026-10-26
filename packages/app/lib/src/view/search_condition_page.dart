@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/use_screen_view.dart';
-import '../view_data/search_condition_view_data.dart';
-import '../theme/app_colors.dart';
-import '../view_model/search_condition_view_model.dart';
-import '../widget/app_bar_title.dart';
-import '../widget/app_text.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/theme/app_colors.dart';
+import 'package:app/src/view_data/search_condition_view_data.dart';
+import 'package:app/src/view_model/search_condition_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
+import 'package:app/src/widget/app_text.dart';
 
 /// 検索条件画面。
 ///

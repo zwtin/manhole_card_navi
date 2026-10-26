@@ -5,9 +5,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../router/use_screen_view.dart';
-import '../view_model/manhole_card_map_view_model.dart';
-import '../widget/app_bar_title.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/manhole_card_map_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
 
 final _initialCameraPosition = CameraPosition(
   target: LatLng(

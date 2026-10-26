@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../gen/assets.gen.dart';
-import '../router/use_screen_view.dart';
-import '../view_data/licenses_view_data.dart';
-import '../view_model/licenses_view_model.dart';
-import '../widget/app_bar_title.dart';
+import 'package:app/src/gen/assets.gen.dart';
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_data/licenses_view_data.dart';
+import 'package:app/src/view_model/licenses_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
 
 /// ライセンス画面。Flutter 標準の [LicensePage] をアプリの配色で包む。
 class LicensesPage extends HookConsumerWidget {
