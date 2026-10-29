@@ -26,6 +26,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
         infrastructure.packageInfo,
         infrastructure.remoteConfig,
         crashlytics,
+        appName: const String.fromEnvironment('appName'),
       ),
     ),
     cardRepositoryProvider.overrideWith(
