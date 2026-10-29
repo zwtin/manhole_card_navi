@@ -74,6 +74,7 @@ lefthook がフックで検査を走らせる。導入は `brew install lefthook
    - `entity/` - アプリが扱うもの（カードのように ID で区別するものと、座標やバージョンのように値そのものに意味があるもの）
    - `repository/` - リポジトリインターフェースと、その provider
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
+     - クラスは、扱うもの（エンティティ）ごとに 1 つ（`CardUseCase`・`AppInfoUseCase` など）。複数の Repository をまたぐ手順だけ、手順ごとのクラスにする（`CheckMasterUpdateUseCase`）。1 つのユースケースに 1 クラスにすると、Repository を素通しするだけのクラスが大半になるため
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装。組み立て（どの実装をどの部品で作るか）は持たず、実装クラスを公開するだけ
    - `repository/` - Repository の実装だけを置く。**外界に触るのは DataSource 経由だけで、SDK を直接持たない。** DataSource から model を受け取り、mapper でエンティティにして返す。複数の DataSource の組み合わせも、別々のドキュメントどうしが食い違っていないか（カードが指す都道府県があるか など）を確かめるのもここで行う。例外を捕まえるのは data の中でここだけで、捕まえたら記録し、`DomainExceptionMapper.from` で種類に変換して `Result` に包む

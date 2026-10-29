@@ -21,8 +21,7 @@ class CheckAppUpdateViewModel
   static const _androidPackageName = 'com.zwtin.manholecardnavi';
 
   AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
-  CheckAppUpdateUseCase get _checkAppUpdateUseCase =>
-      ref.read(checkAppUpdateUseCaseProvider);
+  AppInfoUseCase get _appInfoUseCase => ref.read(appInfoUseCaseProvider);
   NavigationService get _navigationService =>
       ref.read(navigationServiceProvider);
   UserUseCase get _userUseCase => ref.read(userUseCaseProvider);
@@ -37,7 +36,7 @@ class CheckAppUpdateViewModel
     // 取得に失敗したとき・ストアから戻ったときは、確認が通るまでやり直す。
     while (true) {
       state = state.copyWith(isLoading: true);
-      final result = await _checkAppUpdateUseCase.getNeedUpdate();
+      final result = await _appInfoUseCase.getNeedUpdate();
       state = state.copyWith(isLoading: false);
       if (result case Failure(:final exception)) {
         await _navigationService.showFailure(
