@@ -2,11 +2,11 @@ import 'package:data/src/model/firestore_master_models.dart';
 import 'package:data/src/model/local_card_model.dart';
 
 abstract final class FirestoreMasterMapper {
-  /// [prefectures] と [volumes] は、ID から名前を引く表。
+  /// 都道府県と弾は別のドキュメントにあるので、名前は引き当ててから渡す。
   static LocalCardModel toLocalCard(
     FirestoreCardModel model, {
-    required Map<String, String> prefectures,
-    required Map<String, String> volumes,
+    required String prefectureName,
+    required String volumeName,
   }) {
     return LocalCardModel(
       id: model.id,
@@ -29,14 +29,8 @@ abstract final class FirestoreMasterMapper {
             longitude: point.longitude,
           ),
       ],
-      prefecture: LocalNamedModel(
-        id: model.prefectureId,
-        name: prefectures[model.prefectureId]!,
-      ),
-      volume: LocalNamedModel(
-        id: model.volumeId,
-        name: volumes[model.volumeId]!,
-      ),
+      prefecture: LocalNamedModel(id: model.prefectureId, name: prefectureName),
+      volume: LocalNamedModel(id: model.volumeId, name: volumeName),
     );
   }
 }

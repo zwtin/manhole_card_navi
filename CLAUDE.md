@@ -76,7 +76,7 @@ lefthook がフックで検査を走らせる。導入は `brew install lefthook
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装。組み立て（どの実装をどの部品で作るか）は持たず、実装クラスを公開するだけ
-   - `repository/` - Repository の実装だけを置く。**外界に触るのは DataSource 経由だけで、SDK を直接持たない。** DataSource から model を受け取り、mapper でエンティティにして返す。複数の DataSource の組み合わせもここで行う。例外を捕まえるのは data の中でここだけで、捕まえたら記録し、`DomainExceptionMapper.from` で種類に変換して `Result` に包む
+   - `repository/` - Repository の実装だけを置く。**外界に触るのは DataSource 経由だけで、SDK を直接持たない。** DataSource から model を受け取り、mapper でエンティティにして返す。複数の DataSource の組み合わせも、別々のドキュメントどうしが食い違っていないか（カードが指す都道府県があるか など）を確かめるのもここで行う。例外を捕まえるのは data の中でここだけで、捕まえたら記録し、`DomainExceptionMapper.from` で種類に変換して `Result` に包む
    - `datasource/` - 外界と話すクラス。**Repository は DataSource としか話さない**ので、外界は素通しでも必ずここで包む（包むか判断しないで済むようにするため）。返すのは model か素の値で、SDK の型もエンティティも外に出さない。domain を知らないので、失敗は package が定義した例外（`CheckedFromJsonException`・`FormatException` など）のまま投げる。失敗の種類にするのは Repository
      - **DataSource は 1 つの外界だけを相手にし、単体で独立させる。** DataSource の中に別の DataSource やサービスを持たない。複数の外界を組み合わせる（片方でだめならもう片方、取れたら計測する など）のは Repository の役目
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
