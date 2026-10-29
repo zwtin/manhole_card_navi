@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view/card_modal_page.dart';
 import 'package:app/src/view_model/manhole_card_map_view_model.dart';
 import 'package:app/src/widget/app_bar_title.dart';
 
@@ -69,59 +70,43 @@ class ManholeCardMapPage extends HookConsumerWidget {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          // モーダルはこの表示エリアの 2/3 を占めるため、マップを残り 1/3 に
-          // 縮めて、ピンが見えている範囲の中央に来るようにする。
-          // build 中に状態を変えられないので、描画後に高さを渡す。
-          if (constraints.maxHeight != state.mapAreaHeight) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              viewModel.setMapAreaHeight(constraints.maxHeight);
-            });
-          }
-          return Stack(
-            children: [
-              Container(color: Theme.of(context).colorScheme.surface),
-              Column(
-                children: [
-                  Flexible(
-                    child: GoogleMap(
-                      initialCameraPosition: _initialCameraPosition,
-                      onMapCreated: (controller) async {
-                        mapController.value = controller;
-                        await viewModel.updateMyLocationEnabled();
-                      },
-                      mapToolbarEnabled: false,
-                      mapType: MapType.normal,
-                      minMaxZoomPreference: const MinMaxZoomPreference(5, 17),
-                      rotateGesturesEnabled: false,
-                      zoomControlsEnabled: false,
-                      tiltGesturesEnabled: false,
-                      myLocationEnabled: state.myLocationEnabled,
-                      myLocationButtonEnabled: false,
-                      markers:
-                          state.markers.map((viewData) {
-                            return Marker(
-                              markerId: MarkerId(viewData.id),
-                              icon: BitmapDescriptor.bytes(viewData.icon),
-                              position: LatLng(
-                                viewData.latitude,
-                                viewData.longitude,
-                              ),
-                              onTap: () => viewModel.onTapMarker(viewData.id),
-                            );
-                          }).toSet(),
-                      onCameraMove:
-                          (position) => viewModel.onCameraMove(
-                            latitude: position.target.latitude,
-                            longitude: position.target.longitude,
-                          ),
-                      onCameraIdle: viewModel.onCameraIdle,
-                    ),
-                  ),
-                  if (state.isShowingCardModal)
-                    SizedBox(height: state.modalHeight),
-                ],
-              ),
-            ],
+          // モーダルが覆う分を地図の padding にして、ピンを見えている範囲の中央に出す。
+          // 地図の大きさは変えないので、Google のロゴも見えている範囲に動く。
+          return GoogleMap(
+            initialCameraPosition: _initialCameraPosition,
+            onMapCreated: (controller) async {
+              mapController.value = controller;
+              await viewModel.updateMyLocationEnabled();
+            },
+            mapToolbarEnabled: false,
+            mapType: MapType.normal,
+            minMaxZoomPreference: const MinMaxZoomPreference(5, 17),
+            rotateGesturesEnabled: false,
+            zoomControlsEnabled: false,
+            tiltGesturesEnabled: false,
+            myLocationEnabled: state.myLocationEnabled,
+            myLocationButtonEnabled: false,
+            markers:
+                state.markers.map((viewData) {
+                  return Marker(
+                    markerId: MarkerId(viewData.id),
+                    icon: BitmapDescriptor.bytes(viewData.icon),
+                    position: LatLng(viewData.latitude, viewData.longitude),
+                    onTap: () => viewModel.onTapMarker(viewData.id),
+                  );
+                }).toSet(),
+            onCameraMove:
+                (position) => viewModel.onCameraMove(
+                  latitude: position.target.latitude,
+                  longitude: position.target.longitude,
+                ),
+            onCameraIdle: viewModel.onCameraIdle,
+            padding: EdgeInsets.only(
+              bottom:
+                  state.isShowingCardModal
+                      ? CardModalPage.heightIn(constraints.maxHeight)
+                      : 0,
+            ),
           );
         },
       ),

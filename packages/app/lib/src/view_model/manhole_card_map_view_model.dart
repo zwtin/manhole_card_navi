@@ -96,13 +96,6 @@ class ManholeCardMapViewModel
     await _navigationService.presentSearchCondition();
   }
 
-  void setMapAreaHeight(double height) {
-    if (state.mapAreaHeight == height) {
-      return;
-    }
-    state = state.copyWith(mapAreaHeight: height);
-  }
-
   Future<void> updateMyLocationEnabled() async {
     final result = await _locationUseCase.isPermissionGranted();
     await _setMyLocationEnabled(result is Success<bool> && result.value);

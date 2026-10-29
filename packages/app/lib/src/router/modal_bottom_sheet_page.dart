@@ -25,6 +25,9 @@ class ModalBottomSheetPage<T> extends Page<T> {
               (ModalRoute.of(context)!.settings as ModalBottomSheetPage<T>)
                   .child,
       isScrollControlled: true,
+      // シートをステータスバーより下に置き、中の画面が受け取る高さからステータスバーを
+      // 除く。CardModalPage は、そこからマップの表示エリアを求める。
+      useSafeArea: true,
     );
   }
 }

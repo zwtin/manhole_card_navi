@@ -14,17 +14,10 @@ abstract class ManholeCardMapViewData with _$ManholeCardMapViewData {
     @Default(false) bool myLocationEnabled,
     @Default(<MapMarkerViewData>[]) List<MapMarkerViewData> markers,
 
-    /// マップ表示エリア（ナビゲーションエリアと下タブエリアの間）の高さ。
-    @Default(0.0) double mapAreaHeight,
-
     /// マップタブでカードのモーダル（またはその上の詳細）を表示中か。
     @Default(false) bool isShowingCardModal,
 
     /// 最後に出したカメラを動かす指示。まだ出していなければ null。
     CameraMoveViewData? cameraMove,
   }) = _ManholeCardMapViewData;
-  const ManholeCardMapViewData._();
-
-  /// モーダルの高さ。マップ表示エリアの 2/3 を占め、残り 1/3 がマップとして見える。
-  double get modalHeight => mapAreaHeight * 2.0 / 3.0;
 }
