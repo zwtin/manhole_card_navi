@@ -44,7 +44,7 @@ FutureOr<void> main() async {
         ProviderScope(
           observers: [UncaughtErrorObserver(infrastructure.crashlytics)],
           overrides: repositoryOverrides(infrastructure),
-          child: const App(),
+          child: const ManholeCardNaviApp(),
         ),
       );
     },
