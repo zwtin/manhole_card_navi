@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:app/src/router/navigation_service.dart';
@@ -86,18 +85,21 @@ class CheckAppUpdateViewModel
   }
 
   Future<void> _openStore() async {
-    if (Platform.isIOS) {
-      await _navigationService.openUrl(
-        'https://apps.apple.com/jp/app/id$_iosAppStoreId',
-        external: true,
-      );
-    } else if (Platform.isAndroid) {
-      // フレーバーによってパッケージ名が変わるため、
-      // ストア遷移先は本番のパッケージ名を固定で指定する。
-      await _navigationService.openUrl(
-        'https://play.google.com/store/apps/details?id=$_androidPackageName',
-        external: true,
-      );
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.iOS:
+        await _navigationService.openUrl(
+          'https://apps.apple.com/jp/app/id$_iosAppStoreId',
+          external: true,
+        );
+      case TargetPlatform.android:
+        // フレーバーによってパッケージ名が変わるため、
+        // ストア遷移先は本番のパッケージ名を固定で指定する。
+        await _navigationService.openUrl(
+          'https://play.google.com/store/apps/details?id=$_androidPackageName',
+          external: true,
+        );
+      default:
+        break;
     }
   }
 }

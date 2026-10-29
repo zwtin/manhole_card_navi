@@ -31,7 +31,14 @@ class PrivacyPolicyPage extends HookConsumerWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Html(data: html),
+              child: Html(
+                data: html,
+                onLinkTap: (url, attributes, element) {
+                  if (url != null) {
+                    viewModel.onTapLink(url);
+                  }
+                },
+              ),
             ),
           ),
         ],

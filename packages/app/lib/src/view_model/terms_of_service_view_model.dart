@@ -14,6 +14,8 @@ final termsOfServiceViewModelProvider = AsyncNotifierProvider.autoDispose<
 class TermsOfServiceViewModel
     extends AutoDisposeAsyncNotifier<TermsOfServiceViewData> {
   AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
 
   @override
   Future<TermsOfServiceViewData> build() async {
@@ -34,6 +36,8 @@ class TermsOfServiceViewModel
       html: (result as Success<TermsOfService>).value.value,
     );
   }
+
+  Future<void> onTapLink(String url) => _navigationService.openUrl(url);
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(

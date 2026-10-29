@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -80,6 +78,7 @@ class CardModalPage extends HookConsumerWidget {
                                     Flexible(
                                       child: HtmlContent(
                                         state.card.distributionPlaceHtml,
+                                        onTapLink: viewModel.onTapLink,
                                       ),
                                     ),
                                   ],
@@ -95,7 +94,10 @@ class CardModalPage extends HookConsumerWidget {
                                     child: AppText.bodyLarge('在庫状況'),
                                   ),
                                   Flexible(
-                                    child: HtmlContent(state.card.stockHtml),
+                                    child: HtmlContent(
+                                      state.card.stockHtml,
+                                      onTapLink: viewModel.onTapLink,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -111,13 +113,7 @@ class CardModalPage extends HookConsumerWidget {
                       height: 48,
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: ElevatedButton(
-                        onPressed: () async {
-                          if (Platform.isAndroid) {
-                            await viewModel.openGoogleMap();
-                          } else if (Platform.isIOS) {
-                            await _showSelectMapModal(context, viewModel);
-                          }
-                        },
+                        onPressed: viewModel.onTapOpenInOtherApp,
                         child: AppText.titleMedium(
                           '別アプリで開く',
                           color:
@@ -172,44 +168,6 @@ class CardModalPage extends HookConsumerWidget {
                   ],
                 ),
       ),
-    );
-  }
-
-  /// iOS では Apple Map と Google Map のどちらで開くか選んでもらう。
-  Future<void> _showSelectMapModal(
-    BuildContext context,
-    CardModalViewModel viewModel,
-  ) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      builder: (modalContext) {
-        return SingleChildScrollView(
-          child: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: const AppText.titleMedium('Apple Map で開く'),
-                  tileColor: Colors.transparent,
-                  onTap: () async {
-                    Navigator.of(modalContext).pop();
-                    await viewModel.openAppleMap();
-                  },
-                ),
-                ListTile(
-                  title: const AppText.titleMedium('Google Map で開く'),
-                  tileColor: Colors.transparent,
-                  onTap: () async {
-                    Navigator.of(modalContext).pop();
-                    await viewModel.openGoogleMap();
-                  },
-                ),
-                const SizedBox(height: 30),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

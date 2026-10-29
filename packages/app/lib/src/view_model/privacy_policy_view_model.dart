@@ -14,6 +14,8 @@ final privacyPolicyViewModelProvider = AsyncNotifierProvider.autoDispose<
 class PrivacyPolicyViewModel
     extends AutoDisposeAsyncNotifier<PrivacyPolicyViewData> {
   AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
 
   @override
   Future<PrivacyPolicyViewData> build() async {
@@ -34,6 +36,8 @@ class PrivacyPolicyViewModel
       html: (result as Success<PrivacyPolicy>).value.value,
     );
   }
+
+  Future<void> onTapLink(String url) => _navigationService.openUrl(url);
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(

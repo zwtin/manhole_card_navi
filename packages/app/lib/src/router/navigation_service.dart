@@ -85,6 +85,10 @@ abstract class NavigationService {
     String cancelButtonTitle = 'キャンセル',
   });
 
+  /// 画面の下から選択肢を出し、選ばれたものが [options] の何番目かを返す。選ばずに
+  /// 閉じたら null。
+  Future<int?> showChoice({required List<String> options});
+
   /// URL を開く。[external] が true なら外部アプリ、false ならアプリ内ブラウザで開く。
   Future<void> openUrl(String url, {bool external = false});
 }

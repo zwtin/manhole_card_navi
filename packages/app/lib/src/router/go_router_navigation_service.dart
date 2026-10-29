@@ -5,6 +5,7 @@ import 'package:app/src/mapper/error_message_mapper.dart';
 import 'package:app/src/router/app_router.dart';
 import 'package:app/src/router/navigation_service.dart';
 import 'package:app/src/widget/app_alert.dart';
+import 'package:app/src/widget/app_choice_sheet.dart';
 import 'package:domain/domain.dart';
 
 /// [NavigationService] の go_router による実装。
@@ -165,6 +166,15 @@ class GoRouterNavigationService implements NavigationService {
       okButtonTitle: okButtonTitle,
       cancelButtonTitle: cancelButtonTitle,
     );
+  }
+
+  @override
+  Future<int?> showChoice({required List<String> options}) async {
+    final context = rootNavigatorKey.currentContext;
+    if (context == null) {
+      return null;
+    }
+    return showAppChoiceSheet(context, options: options);
   }
 
   @override

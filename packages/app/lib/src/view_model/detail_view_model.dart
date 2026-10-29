@@ -95,6 +95,8 @@ class DetailViewModel
     );
   }
 
+  Future<void> onTapLink(String url) => _navigationService.openUrl(url);
+
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(
       event: AnalyticsEvent.screenView(

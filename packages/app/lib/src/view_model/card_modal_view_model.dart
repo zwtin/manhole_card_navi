@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:app/src/mapper/map_markers_view_data_mapper.dart';
@@ -96,7 +97,27 @@ class CardModalViewModel
     }
   }
 
-  Future<void> openGoogleMap() async {
+  Future<void> onTapOpenInOtherApp() async {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        await _openGoogleMap();
+      case TargetPlatform.iOS:
+        final index = await _navigationService.showChoice(
+          options: const ['Apple Map で開く', 'Google Map で開く'],
+        );
+        if (index == 0) {
+          await _openAppleMap();
+        } else if (index == 1) {
+          await _openGoogleMap();
+        }
+      default:
+        break;
+    }
+  }
+
+  Future<void> onTapLink(String url) => _navigationService.openUrl(url);
+
+  Future<void> _openGoogleMap() async {
     final card = state.valueOrNull?.card;
     if (card == null) {
       return;
@@ -113,7 +134,7 @@ class CardModalViewModel
     await _navigationService.openUrl(uri.toString(), external: true);
   }
 
-  Future<void> openAppleMap() async {
+  Future<void> _openAppleMap() async {
     final card = state.valueOrNull?.card;
     if (card == null) {
       return;
