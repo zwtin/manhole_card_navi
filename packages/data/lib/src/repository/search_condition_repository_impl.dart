@@ -35,9 +35,15 @@ class SearchConditionRepositoryImpl implements SearchConditionRepository {
     }
   }
 
-  static SearchCondition _toSearchCondition(String source) {
-    return SearchConditionMapper.toSearchCondition(
-      SearchConditionModel.fromJsonString(source),
-    );
+  /// 壊れていても、絞り込みなしで使い続けられるようにする。次に保存すれば直る。
+  SearchCondition _toSearchCondition(String source) {
+    try {
+      return SearchConditionMapper.toSearchCondition(
+        SearchConditionModel.fromJsonString(source),
+      );
+    } on Exception catch (error, stackTrace) {
+      _crashlytics.recordNonFatal(error, stackTrace);
+      return SearchCondition.initial();
+    }
   }
 }

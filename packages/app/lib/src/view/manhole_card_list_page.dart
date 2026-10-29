@@ -66,9 +66,7 @@ class ManholeCardListPage extends HookConsumerWidget {
                 if (index == state.prefectures.length + 2) {
                   return Container(color: Colors.transparent, height: 0.5);
                 }
-                final prefectureViewData = state.prefectures.getByIndex(
-                  index - 1,
-                );
+                final prefectureViewData = state.prefectures[index - 1];
                 final cardWithSeparator =
                     prefectureViewData.cards.map((cardViewData) {
                       return GestureDetector(

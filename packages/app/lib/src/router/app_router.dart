@@ -34,7 +34,6 @@ abstract final class AppRoutePath {
   static const termsOfService = '/terms-of-service';
   static const privacyPolicy = '/privacy-policy';
   static const searchCondition = '/search-condition';
-  static const imageDetail = '/image-detail';
 
   // ── マップタブ ──
   static const map = '/map';
@@ -66,6 +65,30 @@ abstract final class AppRoutePath {
   static const _latitude = 'latitude';
   static const _longitude = 'longitude';
 
+  /// カード画像の拡大。取得済みかを載せるのは、Hero が飛び始める時点で色（未取得なら
+  /// グレー）を決めるため。開いている間は取得済みを切り替えられないので古くならない。
+  static String imageDetail(
+    String cardId, {
+    required bool alreadyGet,
+    required String heroTag,
+  }) {
+    return Uri(
+      path: '/image-detail/$cardId',
+      queryParameters: {_alreadyGet: '$alreadyGet', _heroTag: heroTag},
+    ).toString();
+  }
+
+  /// [imageDetail] で開いたときの引数。
+  static ({bool alreadyGet, String heroTag}) imageDetailOf(Uri uri) {
+    return (
+      alreadyGet: uri.queryParameters[_alreadyGet] == 'true',
+      heroTag: uri.queryParameters[_heroTag] ?? '',
+    );
+  }
+
+  static const _alreadyGet = 'alreadyGet';
+  static const _heroTag = 'heroTag';
+
   static String mapCardDetail(String cardId) => '${cardModal(cardId)}/detail';
 
   // ── リストタブ ──
@@ -78,18 +101,6 @@ abstract final class AppRoutePath {
   static const settingTermsOfService = '/setting/terms-of-service';
   static const settingPrivacyPolicy = '/setting/privacy-policy';
   static const settingLicense = '/setting/license';
-}
-
-class ImageDetailArgs {
-  const ImageDetailArgs({
-    required this.cardId,
-    required this.alreadyGet,
-    required this.heroTag,
-  });
-
-  final String cardId;
-  final bool alreadyGet;
-  final String heroTag;
 }
 
 /// タブの外（全画面）に積む画面が使う Navigator。
@@ -176,13 +187,17 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
       ),
       GoRoute(
-        path: AppRoutePath.imageDetail,
+        path: '/image-detail/:cardId',
         pageBuilder:
             (context, state) => CustomTransitionPage(
               key: state.pageKey,
               // 背面のカード詳細を透かしながら、ドラッグで閉じられるようにする。
               opaque: false,
-              child: ImageDetailPage(args: state.extra! as ImageDetailArgs),
+              child: ImageDetailPage(
+                cardId: state.pathParameters['cardId']!,
+                alreadyGet: AppRoutePath.imageDetailOf(state.uri).alreadyGet,
+                heroTag: AppRoutePath.imageDetailOf(state.uri).heroTag,
+              ),
               transitionsBuilder: (
                 context,
                 animation,

@@ -5,17 +5,20 @@ import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:domain/domain.dart';
 
 class AppInfoRepositoryImpl implements AppInfoRepository {
+  /// [appName] は環境で変わるので、ルートから渡す。
   AppInfoRepositoryImpl(
     this._packageInfo,
     this._remoteConfig,
-    this._crashlytics,
-  );
+    this._crashlytics, {
+    required String appName,
+  }) : _appName = appName;
 
   static const _inquiredVersionKey = 'inquired_app_version';
 
   final PackageInfoDataSource _packageInfo;
   final RemoteConfigDataSource _remoteConfig;
   final CrashlyticsDataSource _crashlytics;
+  final String _appName;
 
   @override
   Future<Result<AppInfo>> getAppInfo() async {
@@ -24,12 +27,7 @@ class AppInfoRepositoryImpl implements AppInfoRepository {
       if (version == null) {
         throw const CorruptedDataException(detail: 'アプリのバージョンが読めません');
       }
-      return Result.success(
-        AppInfo(
-          name: const String.fromEnvironment('appName'),
-          version: version,
-        ),
-      );
+      return Result.success(AppInfo(name: _appName, version: version));
     } on Exception catch (error, stackTrace) {
       _crashlytics.recordNonFatal(error, stackTrace);
       return Result.failure(DomainExceptionMapper.from(error));

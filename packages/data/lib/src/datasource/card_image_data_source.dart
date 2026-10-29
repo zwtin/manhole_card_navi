@@ -59,19 +59,15 @@ class CardImageDataSource {
   /// の .db に置くので、両方を消す。
   static Future<void> deleteMarkerIconCache() async {
     const key = 'markerIconCache';
-    try {
-      final images = Directory('${(await getTemporaryDirectory()).path}/$key');
-      if (await images.exists()) {
-        await images.delete(recursive: true);
-      }
-      final index = File(
-        '${(await getApplicationSupportDirectory()).path}/$key.db',
-      );
-      if (await index.exists()) {
-        await index.delete();
-      }
-    } on FileSystemException {
-      // 残っても動作には関わらない。次の起動でまた試す。
+    final images = Directory('${(await getTemporaryDirectory()).path}/$key');
+    if (await images.exists()) {
+      await images.delete(recursive: true);
+    }
+    final index = File(
+      '${(await getApplicationSupportDirectory()).path}/$key.db',
+    );
+    if (await index.exists()) {
+      await index.delete();
     }
   }
 }

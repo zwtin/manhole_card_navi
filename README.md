@@ -62,9 +62,8 @@ fvm flutter run --dart-define-from-file=dart_defines/development.env
 消す口はないので、調査のたびに**アプリを削除して入れ直す**（Android なら
 設定 > アプリ > ストレージ消去でもよい）。
 
-一覧・詳細の画像（`CardImageCacheManager`、キー `libCachedImageData`）と
-マーカー画像（`map_markers_view_data_mapper.dart` の独自ディスクキャッシュ）は
-別々のキャッシュだが、どちらも入れ直せば消える。
+カード画像のキャッシュは data の `CardImageDataSource`（キー `libCachedImageData`）
+の 1 つだけで、一覧・詳細・マーカーのどれもここから読む。
 
 ### 覗ける通信の対応表
 

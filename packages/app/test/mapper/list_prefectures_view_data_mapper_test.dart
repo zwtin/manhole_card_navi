@@ -37,13 +37,13 @@ void main() {
     );
 
     expect(
-      viewData.list.map(
+      viewData.map(
         (prefecture) => (
           prefecture.id,
           prefecture.alreadyGetCount,
           prefecture.totalCount,
           prefecture.initiallyExpanded,
-          prefecture.cards.list.map((card) => card.id).join(','),
+          prefecture.cards.map((card) => card.id).join(','),
         ),
       ),
       [('13', 1, 2, false, 'C'), ('27', 0, 1, true, 'B')],
@@ -60,6 +60,6 @@ void main() {
       expandedPrefectureIds: const {},
     );
 
-    expect(viewData.list.map((prefecture) => prefecture.id), ['27']);
+    expect(viewData.map((prefecture) => prefecture.id), ['27']);
   });
 }

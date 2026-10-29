@@ -12,10 +12,11 @@ final searchConditionViewModelProvider = AsyncNotifierProvider.autoDispose<
 
 class SearchConditionViewModel
     extends AutoDisposeAsyncNotifier<SearchConditionViewData> {
-  late final SearchConditionUseCase _searchConditionUseCase;
-  late final CardUseCase _cardUseCase;
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final NavigationService _navigationService;
+  SearchConditionUseCase get _searchConditionUseCase =>
+      ref.read(searchConditionUseCaseProvider);
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
 
   /// 編集中のドラフト。適用するまで端末保存も他画面も変更しない。
   late SearchCondition _draft;
@@ -24,13 +25,11 @@ class SearchConditionViewModel
 
   @override
   Future<SearchConditionViewData> build() async {
-    _searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
-    _cardUseCase = ref.watch(cardUseCaseProvider);
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
+    final searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
+    final cardUseCase = ref.watch(cardUseCaseProvider);
 
-    _draft = await _searchConditionUseCase.watch().first;
-    _volumes = await _loadVolumes();
+    _draft = await searchConditionUseCase.watch().first;
+    _volumes = await _loadVolumes(cardUseCase);
     return _toViewData();
   }
 
@@ -168,8 +167,8 @@ class SearchConditionViewModel
     );
   }
 
-  Future<List<Volume>> _loadVolumes() async {
-    final result = await _cardUseCase.fetchAll();
+  Future<List<Volume>> _loadVolumes(CardUseCase cardUseCase) async {
+    final result = await cardUseCase.fetchAll();
     if (result is! Success<List<ManholeCard>>) {
       return const [];
     }

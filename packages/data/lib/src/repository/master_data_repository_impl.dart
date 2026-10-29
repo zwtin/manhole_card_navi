@@ -47,8 +47,16 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
       for (final card in master.cards)
         FirestoreMasterMapper.toLocalCard(
           card,
-          prefectures: prefectures,
-          volumes: volumes,
+          prefectureName: _nameOf(
+            prefectures,
+            card.prefectureId,
+            detail: 'サーバーのマスターデータのカードが、ない都道府県を指しています',
+          ),
+          volumeName: _nameOf(
+            volumes,
+            card.volumeId,
+            detail: 'サーバーのマスターデータのカードが、ない弾を指しています',
+          ),
         ),
     ];
     if (cards.isEmpty) {
@@ -56,5 +64,17 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
       throw const CorruptedDataException(detail: 'サーバーのマスターデータにカードがありません');
     }
     return cards;
+  }
+
+  static String _nameOf(
+    Map<String, String> names,
+    String id, {
+    required String detail,
+  }) {
+    final name = names[id];
+    if (name == null) {
+      throw CorruptedDataException(detail: detail);
+    }
+    return name;
   }
 }

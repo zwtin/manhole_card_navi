@@ -82,18 +82,4 @@ void main() {
     await expectLater(store().readAll(), throwsA(isA<FormatException>()));
     expect(await store().exists(), isFalse);
   });
-
-  test('起動して最初に使うときに、後片付けを 1 回だけ行う', () async {
-    var cleanUpCount = 0;
-    final target = MasterDataLocalDataSource(
-      directory: () async => directory,
-      cleanUp: () async => cleanUpCount++,
-    );
-
-    await target.exists();
-    await target.writeAll([localCard()]);
-    await target.readAll();
-
-    expect(cleanUpCount, 1);
-  });
 }

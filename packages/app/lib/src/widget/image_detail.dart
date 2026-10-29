@@ -130,7 +130,7 @@ class _ImageDetailState extends ConsumerState<ImageDetail> {
   }
 
   Widget _buildTopBar(BuildContext context) {
-    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final statusBarHeight = MediaQuery.paddingOf(context).top;
     const topBarHeight = 108.0;
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 200),

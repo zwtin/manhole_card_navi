@@ -11,14 +11,12 @@ final customIntroductionViewModelProvider = NotifierProvider.autoDispose
 
 class CustomIntroductionViewModel
     extends AutoDisposeFamilyNotifier<void, bool> {
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final NavigationService _navigationService;
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
 
   @override
-  void build(bool isTutorial) {
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
-  }
+  void build(bool isTutorial) {}
 
   Future<void> onDone() async {
     if (arg) {

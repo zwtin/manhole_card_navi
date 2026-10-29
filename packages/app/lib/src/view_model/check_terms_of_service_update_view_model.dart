@@ -12,15 +12,14 @@ final checkTermsOfServiceUpdateViewModelProvider = NotifierProvider.autoDispose<
 /// 起動時に利用規約が更新されていないか確認し、更新されていれば再同意を求める ViewModel。
 class CheckTermsOfServiceUpdateViewModel
     extends AutoDisposeNotifier<CheckTermsOfServiceUpdateViewData> {
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final NavigationService _navigationService;
-  late final TermsOfServiceUseCase _termsOfServiceUseCase;
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
+  TermsOfServiceUseCase get _termsOfServiceUseCase =>
+      ref.read(termsOfServiceUseCaseProvider);
 
   @override
   CheckTermsOfServiceUpdateViewData build() {
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
-    _termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
     return const CheckTermsOfServiceUpdateViewData();
   }
 

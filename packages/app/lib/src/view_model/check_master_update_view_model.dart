@@ -12,17 +12,16 @@ final checkMasterUpdateViewModelProvider = NotifierProvider.autoDispose<
 /// 起動時にマスターデータを更新し、利用規約の同意状況で次の画面を決める ViewModel。
 class CheckMasterUpdateViewModel
     extends AutoDisposeNotifier<CheckMasterUpdateViewData> {
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final CheckMasterUpdateUseCase _checkMasterUpdateUseCase;
-  late final NavigationService _navigationService;
-  late final TermsOfServiceUseCase _termsOfServiceUseCase;
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  CheckMasterUpdateUseCase get _checkMasterUpdateUseCase =>
+      ref.read(checkMasterUpdateUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
+  TermsOfServiceUseCase get _termsOfServiceUseCase =>
+      ref.read(termsOfServiceUseCaseProvider);
 
   @override
   CheckMasterUpdateViewData build() {
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _checkMasterUpdateUseCase = ref.watch(checkMasterUpdateUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
-    _termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
     return const CheckMasterUpdateViewData();
   }
 

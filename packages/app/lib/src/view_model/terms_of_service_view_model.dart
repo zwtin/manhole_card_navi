@@ -3,37 +3,41 @@ import 'dart:async';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/terms_of_service_view_data.dart';
 import 'package:domain/domain.dart';
 
-/// 状態は利用規約の HTML。
-final termsOfServiceViewModelProvider =
-    AsyncNotifierProvider.autoDispose<TermsOfServiceViewModel, String>(
-      TermsOfServiceViewModel.new,
-    );
+final termsOfServiceViewModelProvider = AsyncNotifierProvider.autoDispose<
+  TermsOfServiceViewModel,
+  TermsOfServiceViewData
+>(TermsOfServiceViewModel.new);
 
-class TermsOfServiceViewModel extends AutoDisposeAsyncNotifier<String> {
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final TermsOfServiceUseCase _termsOfServiceUseCase;
-  late final NavigationService _navigationService;
+class TermsOfServiceViewModel
+    extends AutoDisposeAsyncNotifier<TermsOfServiceViewData> {
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
 
   @override
-  Future<String> build() async {
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
+  Future<TermsOfServiceViewData> build() async {
+    final termsOfServiceUseCase = ref.watch(termsOfServiceUseCaseProvider);
+    final navigationService = ref.watch(navigationServiceProvider);
 
-    final result = await _termsOfServiceUseCase.get();
+    final result = await termsOfServiceUseCase.get();
     if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showFailure(
+        navigationService.showFailure(
           title: '利用規約を表示できませんでした',
           exception: exception,
         ),
       );
-      return '';
+      return const TermsOfServiceViewData();
     }
-    return (result as Success<TermsOfService>).value.value;
+    return TermsOfServiceViewData(
+      html: (result as Success<TermsOfService>).value.value,
+    );
   }
+
+  Future<void> onTapLink(String url) => _navigationService.openUrl(url);
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(

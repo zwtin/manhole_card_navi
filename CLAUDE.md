@@ -74,13 +74,14 @@ lefthook がフックで検査を走らせる。導入は `brew install lefthook
    - `entity/` - アプリが扱うもの（カードのように ID で区別するものと、座標やバージョンのように値そのものに意味があるもの）
    - `repository/` - リポジトリインターフェースと、その provider
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
+     - クラスは、扱うもの（エンティティ）ごとに 1 つ（`CardUseCase`・`AppInfoUseCase` など）。複数の Repository をまたぐ手順だけ、手順ごとのクラスにする（`CheckMasterUpdateUseCase`）。1 つのユースケースに 1 クラスにすると、Repository を素通しするだけのクラスが大半になるため
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装。組み立て（どの実装をどの部品で作るか）は持たず、実装クラスを公開するだけ
-   - `repository/` - Repository の実装だけを置く。**外界に触るのは DataSource 経由だけで、SDK を直接持たない。** DataSource から model を受け取り、mapper でエンティティにして返す。複数の DataSource の組み合わせもここで行う。例外を捕まえるのは data の中でここだけで、捕まえたら記録し、`DomainExceptionMapper.from` で種類に変換して `Result` に包む
-   - `datasource/` - 外界と話すクラス。**Repository は DataSource としか話さない**ので、外界は素通しでも必ずここで包む（包むか判断しないで済むようにするため）。返すのは model か素の値で、SDK の型もエンティティも外に出さない。domain を知らないので、失敗は package が定義した例外（`CheckedFromJsonException`・`FormatException` など）のまま投げる。失敗の種類にするのは Repository
+   - `repository/` - Repository の実装だけを置く。**外界に触るのは DataSource 経由だけで、SDK を直接持たない。** DataSource から model を受け取り、mapper でエンティティにして返す。複数の DataSource の組み合わせも、別々のドキュメントどうしが食い違っていないか（カードが指す都道府県があるか など）を確かめるのもここで行う。例外を捕まえるのは data の中でここだけで、捕まえたら記録し、`DomainExceptionMapper.from` で種類に変換して `Result` に包む
+   - `datasource/` - 外界と話すクラス。**Repository は DataSource としか話さない**ので、外界は素通しでも必ずここで包む（包むか判断しないで済むようにするため）。返すのは model か素の値で、SDK の型もエンティティも外に出さない。domain を知らないので、失敗は package が定義した例外（`CheckedFromJsonException`・`FormatException` など）のまま投げる。失敗の種類にするのは Repository。**DataSource は例外を捕まえない**（壊れたファイルを消す など、後片付けをして投げ直すときだけ捕まえてよい）。握りつぶすと、どこで何が起きたかが誰にも見えなくなる
      - **DataSource は 1 つの外界だけを相手にし、単体で独立させる。** DataSource の中に別の DataSource やサービスを持たない。複数の外界を組み合わせる（片方でだめならもう片方、取れたら計測する など）のは Repository の役目
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
-     - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）。取り直さない時間は環境で変わるので、ルートから渡す
+     - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）。取り直さない時間は環境で変わるので、ルートから渡す。同じく環境で変わるアプリ名も、ルートが `AppInfoRepositoryImpl` に渡す（data は `String.fromEnvironment` を読まない）
      - `CardImageDataSource`: カード画像を、端末のキャッシュから読む／URL から取って保存する
      - `AnalyticsDataSource`: アプリのイベントを Analytics に送る。イベント名とパラメータへの置き換えは `AnalyticsEventMapper`
      - `MasterDataRemoteDataSource`: サーバー（Firestore）が配信するマスターデータ
@@ -143,19 +144,20 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 
 - fatal か non-fatal かは種類で決めない。**根に届いた＝誰も扱わなかった＝ fatal、捕まえた＝扱った＝ non-fatal**
 - Crashlytics を知っているのは data と `main.dart` だけ。app と domain は記録に関わらない
-- data で捕まえるのは Repository だけ（`on Exception`）。Error は捕まえないので根まで流れる。`UncaughtErrorObserver` が `DomainException` を飛ばすのは、Repository で記録済みだから
+- data で捕まえるのは Repository だけ（`on Exception`）。Error は捕まえないので根まで流れる。Repository を通らない起動時の仕事（Remote Config の取得・前の世代が残したファイルの削除）は、ルートの `Infrastructure` が受け止める。Remote Config は取れなくても記録せずに続け（値が要るときに Repository が取り直して記録する）、ファイルの削除の失敗は非重大として記録する。`UncaughtErrorObserver` が `DomainException` を飛ばすのは、Repository で記録済みだから
 - **非重大は 1 セッション 8 件まで**で、超えると古いものから消える（iOS SDK の `maxCustomExceptions` の既定値。サーバー設定 `max_custom_exception_events` で変えられる）。大量に出る事象を入れると、ほかの失敗が押し出される
 - 画像の取得の失敗（`CardRepositoryImpl.fetchImage` のダウンロード）だけは Crashlytics に記録せず、Analytics の `image_load_failed`（`AnalyticsEvent.imageLoadFailed`）で数える。失敗の種類にこちらで名前を付けず、例外の型名（`runtime_type`）と OS が返したエラー（`os_error`。`WRONG_VERSION_NUMBER` なら経路上の装置が平文を返している、`nodename nor servname provided` なら DNS で潰されている）をそのまま送る。遮断された端末では画面 1 つで何十件も出て 8 件の枠を使い切るため。同じカードの「端末にない」「キャッシュが読めない」は画像の配信とは別の話なので記録する。`FlutterError.onError` が `library` の `image resource service` を記録しないのも同じ理由
 - Crashlytics のグルーピングはスタックトレースだけでなく**例外のメッセージも見る**。Flutter の記録は例外の名前が `FlutterError` 固定で、`toString()` の文字列がメッセージになる（`reason` を渡すとそこに連結される）。**投げる `DomainException` の `detail` に可変の値を入れない**。同じ失敗が値ごとに別の issue に分かれてしまう。値を残したいときは `recordError` の `information` に渡す（ログ行になるだけで、グルーピングには影響しない）
 - `CrashlyticsDataSource` の記録の失敗だけは Error も含めて捨てる。投げ直すと Zone から同じ記録を呼び直して堂々巡りになる
 
 ### 状態管理（app）
-- 1 画面 1 ViewModel 1 State。State は freezed、依存は `build()` で `ref.watch` して `late final` に保持する
+- 1 画面 1 ViewModel 1 State。State は freezed
+- 依存は、`build()` で使うものは `build()` の中で `ref.watch` してローカル変数にし（`await` より前に）、メソッドで使うものはその都度 `ref.read` する（`XxxUseCase get _xxxUseCase => ref.read(...)` のゲッターにする）。`build()` から呼ぶ補助メソッドには、watch した値を引数で渡す。**`late final` のフィールドに入れない。** Riverpod の Notifier は `build()` が走り直しても同じインスタンスを使い回すので、2 回目の代入で落ちる
 - 読み込むだけの画面は `AsyncNotifier`（`build()` で取得）、起動時チェックやマップのように読み込みに副作用を伴う画面は `Notifier` にして View の `useEffect` から `onLoad()` を呼ぶ
-- ViewModel は BuildContext を持たない。遷移・アラート・URL を開く操作は `NavigationService` 経由で行う
+- ViewModel は BuildContext を持たない。遷移・アラート・選択肢（`showChoice`）・URL を開く操作は `NavigationService` 経由で行う。画面や widget も自分でダイアログを出したり URL を開いたりせず、ViewModel に渡す（HTML のリンクなら `HtmlContent` の `onTapLink` で受け取って ViewModel へ）。OS で分ける判断は ViewModel が `defaultTargetPlatform` で行う（`dart:io` の `Platform` はテストで差し替えられない）
 - **ViewModel は画面の部品（widget・地図の `GoogleMapController` など）を持たない**（`scripts/check_app_rules.sh` が止める）。部品を動かしたいときは指示を State に載せ、View が `ref.listen` で受け取って自分の部品を動かす。マップのカメラなら、ViewModel は `CameraMoveViewData` を出し、controller は View が `useRef` で持つ。同じ指示を続けて出しても届くよう、指示ごとに番号を振る
 - ViewModel が読み書きするのは UseCase だけで、Repository を直接呼ばない。処理のない読み取りも、Repository を素通しする UseCase のメソッドを通す
-- **ViewModel は他の ViewModel を読まない**（`scripts/check_app_rules.sh` が止める）。画面をまたいで共有する状態は UseCase の watch で流す（取得済みカード・検索条件・位置情報の許可）。例外はカードのモーダルの高さだけで、マップの表示エリアの 2/3 にするため、モーダルの画面がマップの ViewModel から読んでいる。画面の高さは domain の状態ではないので UseCase に載せられず、独立させるのは後回しにしている
+- **ViewModel は他の ViewModel を読まず、画面は自分の ViewModel だけを読む**（`scripts/check_app_rules.sh` が止める）。画面をまたいで共有する状態は UseCase の watch で流す（取得済みカード・検索条件・位置情報の許可）。レイアウトの寸法は状態にせず、要る画面が自分の受け取った大きさ（constraints）から求める（マップとカードのモーダルの高さ）
 - カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）がカードの ID で `CardUseCase.fetchImage` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない。View と widget はカードの ID を `cardImageProvider` に渡して受け取るだけで、UseCase を知っているのは `card_image_provider.dart` だけ。画像の URL・代わりの配信元・端末に保存するかは data だけが知っていて、エンティティにも画像の URL は持たせない
 
 ### 画面遷移（app）
@@ -163,7 +165,8 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 - 起動時チェックは `go` で置き換えながら進み、タブの外に出す画面（検索条件・画像拡大・起動時の規約）は root Navigator に積む
 - 起動時チェックの最初（アプリのバージョン確認の画面）で匿名ログインを済ませてから `app_open` を送る。イベントに利用者の ID が付いた状態でアプリを使ってもらうため。初回だけ通信が要り、できなければやり直す
 - オフラインでも起動できる。起動時の Remote Config の取得（待ち時間 10 秒）は失敗しても止まらず前回の値で続け、マスターデータは端末のものを使う。前回の値がない初回は、起動時チェックが「通信できませんでした」を出してやり直す
-- マップのカードモーダルもルート（`/map/card/:cardId`）で、マップはその有無で表示エリアを縮める。ピンをタップして開いたときはピンの座標をクエリに載せる。URL の組み立てと読み取りは `AppRoutePath` だけが行う
+- マップのカードモーダルもルート（`/map/card/:cardId`）で、ピンをタップして開いたときはピンの座標をクエリに載せる。モーダルはマップの表示エリア（AppBar より下）の 2/3 を覆い、マップはその分を地図の `padding` にして、ピンをモーダルの上の中央に出す（地図を縮めない。Google のロゴも見えている範囲に動く）。`padding` はシートと同じ長さと曲線で動かし、地図がモーダルと一緒に上へずれるようにする。モーダルがないときも、下タブの丸がはみ出す分（`ShellScaffold.tabBarOverlap`）を空けて、ロゴを隠さない。高さは受け渡さず、マップは自分の表示エリアから、モーダルはシートで使える高さ（ステータスバーより下）からマップの AppBar を除いて、どちらも `CardModalPage.heightIn` で求める
+- 画面の引数は URL（パスとクエリ）に載せ、go_router の `extra` は使わない（URL に載らず、復元できない）。URL の組み立てと読み取りは `AppRoutePath` だけが行う。画像の拡大は、Hero が飛び始める時点で色を決めるため、取得済みかもクエリに載せる
 - 戻る操作はタブ内の画面があればそれを閉じ、タブのルートでは `ShellScaffold` の `PopScope` がタブ切り替え／アプリ終了を決める
 - PV は各画面の `useScreenView` が、GoRouter 上で最前面になったとき（表示・戻り・タブ切り替え）に送る
 
@@ -182,7 +185,7 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 ## コードの書き方
 domain・data・app ともこの形にそろえてある。
 
-- import は相対パスにせず `package:` の形で書く。`dart:`・外部のパッケージ・このアプリのパッケージ（`package:domain/` など）の順にまとめ、まとまりの間に空行を入れる。domain・data・app とも lint（`always_use_package_imports`）で相対パスを禁じている。テストの中でテスト用のファイルを読むときだけは相対パスで、最後のまとまりにする
+- import は相対パスにせず `package:` の形で書く。`dart:`・外部のパッケージ・このアプリのパッケージ（`package:domain/` など）の順にまとめ、まとまりの間に空行を入れる。domain・data・app・ルートとも lint（`always_use_package_imports`）で相対パスを禁じている。テストの中でテスト用のファイルを読むときだけは相対パスで、最後のまとまりにする
 - コメントは、コードを読んでもわからないこと（そうしている理由・型や名前に表れない約束・名前だけでは意味の取れないもの）だけを書く。コードを言い直すコメントや、設計の方針（このファイルに書く）はコードに書かない。コメントとコードを二重に管理しないため
 
 ## 環境設定

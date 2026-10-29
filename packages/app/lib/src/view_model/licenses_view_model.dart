@@ -12,20 +12,17 @@ final licensesViewModelProvider =
     );
 
 class LicensesViewModel extends AutoDisposeAsyncNotifier<LicensesViewData> {
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final AppInfoUseCase _appInfoUseCase;
-  late final NavigationService _navigationService;
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
 
   @override
   Future<LicensesViewData> build() async {
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _appInfoUseCase = ref.watch(appInfoUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
+    final appInfoUseCase = ref.watch(appInfoUseCaseProvider);
+    final navigationService = ref.watch(navigationServiceProvider);
 
-    final result = await _appInfoUseCase.get();
+    final result = await appInfoUseCase.get();
     if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showFailure(
+        navigationService.showFailure(
           title: 'アプリの情報を取得できませんでした',
           exception: exception,
         ),

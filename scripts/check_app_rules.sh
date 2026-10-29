@@ -4,6 +4,7 @@
 # - 見た目はデザインシステムから選ぶ。画面で Text・TextStyle・Color を直接作らない
 # - View・ViewData・widget は domain を知らない。domain の値を表示の形にするのは mapper
 # - ViewModel は他の ViewModel を読まない。画面をまたぐ状態は UseCase の watch で共有する
+# - 画面は自分の ViewModel だけを読む
 # - ViewModel は画面の部品（widget・地図の controller）を持たない
 #
 # 動かせない事情があるところは、その行の直前に `// ignore: <ルール名>` と理由を書く。
@@ -71,6 +72,12 @@ check no_domain_in_view "$view_targets" "^import 'package:domain/" \
   'View・ViewData・widget は domain を知らない。表示の形にするのは mapper で、ViewModel が ViewData にして渡す。'
 check independent_view_model "$view_model_targets" "^import '.*_view_model\.dart';" \
   'ViewModel は他の ViewModel を読まない。画面をまたぐ状態は UseCase の watch で共有する。'
+# 画面（view/xxx_page.dart）が読んでよい ViewModel は view_model/xxx_view_model.dart だけ。
+for page in $(printf '%s\n' "$all" | grep -E '/view/[a-z_]+_page\.dart$'); do
+  check own_view_model "$page" "^import '.*/view_model/" \
+    '画面は自分の ViewModel だけを読む。画面をまたぐ状態は UseCase の watch で共有する。' \
+    "/view_model/$(basename "$page" _page.dart)_view_model\.dart';"
+done
 check no_ui_in_view_model "$view_model_targets" \
   "^import 'package:(flutter/(material|widgets|cupertino|painting|rendering|services|gestures|animation)\.dart|google_maps_flutter/)" \
   'ViewModel は画面の部品を持たない。State に載せ、View が受け取って部品を動かす。'

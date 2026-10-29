@@ -99,6 +99,38 @@ void main() {
     expect((await local.readAll())!.map((card) => card.id), ['old']);
   });
 
+  test('カードが、ない都道府県・弾を指していれば壊れたデータにし、端末のものは変えない', () async {
+    await local.writeAll([localCard(id: 'old')]);
+    for (final (prefectures, volumes) in [
+      (
+        <Map<String, dynamic>>[],
+        [
+          {'id': '0000', 'name': '第1弾'},
+        ],
+      ),
+      (
+        [
+          {'id': '27', 'name': '大阪府'},
+        ],
+        <Map<String, dynamic>>[],
+      ),
+    ]) {
+      stubRead(
+        cards: [cardDocument()],
+        prefectures: prefectures,
+        volumes: volumes,
+      );
+
+      final result = await repository.replace(version: version);
+
+      expect(
+        (result as Failure<void>).exception,
+        isA<CorruptedDataException>(),
+      );
+      expect((await local.readAll())!.map((card) => card.id), ['old']);
+    }
+  });
+
   test('形の違うドキュメントがあれば壊れたデータにし、端末のものは変えない', () async {
     await local.writeAll([localCard(id: 'old')]);
     when(() => remote.read('0006')).thenThrow(

@@ -7,12 +7,10 @@ final imageDetailViewModelProvider = NotifierProvider.autoDispose
     .family<ImageDetailViewModel, void, String>(ImageDetailViewModel.new);
 
 class ImageDetailViewModel extends AutoDisposeFamilyNotifier<void, String> {
-  late final AnalyticsUseCase _analyticsUseCase;
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
 
   @override
-  void build(String cardId) {
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-  }
+  void build(String cardId) {}
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(

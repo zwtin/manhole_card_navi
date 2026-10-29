@@ -108,6 +108,7 @@ class DetailPage extends HookConsumerWidget {
                                     label: '配布場所',
                                     child: HtmlContent(
                                       card.distributionPlaceHtml,
+                                      onTapLink: viewModel.onTapLink,
                                     ),
                                   ),
                                 if (card.distributionTimeHtml.isNotEmpty)
@@ -115,11 +116,15 @@ class DetailPage extends HookConsumerWidget {
                                     label: '配布時間',
                                     child: HtmlContent(
                                       card.distributionTimeHtml,
+                                      onTapLink: viewModel.onTapLink,
                                     ),
                                   ),
                                 _DetailRow(
                                   label: '在庫状況',
-                                  child: HtmlContent(card.stockHtml),
+                                  child: HtmlContent(
+                                    card.stockHtml,
+                                    onTapLink: viewModel.onTapLink,
+                                  ),
                                 ),
                               ],
                             ),

@@ -76,12 +76,12 @@ void main() {
       verify(() => remoteConfig.fetchAndActivate()).called(1);
     });
 
-    test('取得に失敗しても止まらない', () async {
+    test('取得に失敗したら、そのまま投げる（続けるかは呼ぶ側が決める）', () async {
       when(() => remoteConfig.fetchAndActivate()).thenThrow(
         FirebaseException(plugin: 'firebase_remote_config', code: 'internal'),
       );
 
-      await expectLater(reader.activate(), completes);
+      await expectLater(reader.activate(), throwsA(isA<FirebaseException>()));
     });
   });
 }

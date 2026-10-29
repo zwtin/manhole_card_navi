@@ -1,8 +1,8 @@
-import 'package:data/data.dart';
-import 'package:domain/domain.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'infrastructure.dart';
+import 'package:data/data.dart';
+import 'package:domain/domain.dart';
+import 'package:manhole_card_navi/di/infrastructure.dart';
 
 /// domain が宣言した Repository の provider を、data の実装に差し替える。
 /// main.dart の ProviderScope に渡す。
@@ -26,6 +26,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
         infrastructure.packageInfo,
         infrastructure.remoteConfig,
         crashlytics,
+        appName: const String.fromEnvironment('appName'),
       ),
     ),
     cardRepositoryProvider.overrideWith(

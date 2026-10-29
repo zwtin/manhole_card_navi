@@ -33,7 +33,7 @@ void main() {
     when(
       () => repository.getInquiredVersion(),
     ).thenAnswer((_) async => Result.success(AppVersion.parse(inquired)));
-    return container.read(checkAppUpdateUseCaseProvider).getNeedUpdate();
+    return container.read(appInfoUseCaseProvider).getNeedUpdate();
   }
 
   test('必要なバージョンより古ければ、アップデートが必要', () async {
@@ -70,8 +70,7 @@ void main() {
       () => repository.getInquiredVersion(),
     ).thenAnswer((_) async => const Result.failure(OfflineException()));
 
-    final result =
-        await container.read(checkAppUpdateUseCaseProvider).getNeedUpdate();
+    final result = await container.read(appInfoUseCaseProvider).getNeedUpdate();
 
     expect((result as Failure<bool>).exception, isA<OfflineException>());
   });

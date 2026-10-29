@@ -13,19 +13,19 @@ final detailViewModelProvider = AsyncNotifierProvider.autoDispose
 
 class DetailViewModel
     extends AutoDisposeFamilyAsyncNotifier<DetailCardViewData, String> {
-  late final AlreadyGetCardUseCase _alreadyGetCardUseCase;
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final CardUseCase _cardUseCase;
-  late final NavigationService _navigationService;
+  AlreadyGetCardUseCase get _alreadyGetCardUseCase =>
+      ref.read(alreadyGetCardUseCaseProvider);
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
 
   @override
   Future<DetailCardViewData> build(String cardId) async {
-    _alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _cardUseCase = ref.watch(cardUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
+    final alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
+    final cardUseCase = ref.watch(cardUseCaseProvider);
+    final navigationService = ref.watch(navigationServiceProvider);
 
-    final subscription = _alreadyGetCardUseCase.watch().listen((cardIds) {
+    final subscription = alreadyGetCardUseCase.watch().listen((cardIds) {
       final current = state.valueOrNull;
       if (current == null) {
         return;
@@ -34,10 +34,10 @@ class DetailViewModel
     });
     ref.onDispose(subscription.cancel);
 
-    final result = await _cardUseCase.get(id: cardId);
+    final result = await cardUseCase.get(id: cardId);
     if (result case Failure(:final exception)) {
       unawaited(
-        _navigationService.showFailure(
+        navigationService.showFailure(
           title: 'カード情報を取得できませんでした',
           exception: exception,
         ),
@@ -46,7 +46,7 @@ class DetailViewModel
     }
     final card = (result as Success<ManholeCard>).value;
 
-    final alreadyGetCardIds = await _alreadyGetCardUseCase.watch().first;
+    final alreadyGetCardIds = await alreadyGetCardUseCase.watch().first;
     return DetailCardViewDataMapper.toViewData(
       card: card,
       alreadyGet: alreadyGetCardIds.contains(cardId),
@@ -94,6 +94,8 @@ class DetailViewModel
       heroTag: heroTag,
     );
   }
+
+  Future<void> onTapLink(String url) => _navigationService.openUrl(url);
 
   Future<void> sendScreenView() async {
     await _analyticsUseCase.send(

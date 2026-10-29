@@ -6,8 +6,8 @@ import 'package:app/src/router/app_router.dart';
 import 'package:app/src/theme/app_theme.dart';
 
 /// アプリのルート Widget。
-class App extends ConsumerWidget {
-  const App({super.key});
+class ManholeCardNaviApp extends ConsumerWidget {
+  const ManholeCardNaviApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

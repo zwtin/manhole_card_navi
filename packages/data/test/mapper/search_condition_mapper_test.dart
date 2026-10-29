@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import 'package:data/src/mapper/search_condition_mapper.dart';
 import 'package:data/src/model/search_condition_model.dart';
@@ -68,10 +69,17 @@ void main() {
     });
   });
 
-  test('未保存（空文字）・壊れた JSON・形の違う JSON なら初期状態', () {
-    for (final source in ['', '{not json', '[]', '{"common":3}']) {
-      expect(_read(source), SearchCondition.initial(), reason: source);
-    }
+  test('未保存（空文字）なら初期状態', () {
+    expect(_read(''), SearchCondition.initial());
+  });
+
+  test('壊れた JSON・形の違う JSON は投げる', () {
+    expect(() => _read('{not json'), throwsFormatException);
+    expect(() => _read('[]'), throwsFormatException);
+    expect(
+      () => _read('{"common":3}'),
+      throwsA(isA<CheckedFromJsonException>()),
+    );
   });
 
   test('知らない値は無視して既定値にする', () {

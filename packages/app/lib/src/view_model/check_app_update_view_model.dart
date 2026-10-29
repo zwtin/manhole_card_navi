@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:app/src/router/navigation_service.dart';
@@ -20,17 +19,14 @@ class CheckAppUpdateViewModel
   /// Play Store のパッケージ名（本番）
   static const _androidPackageName = 'com.zwtin.manholecardnavi';
 
-  late final AnalyticsUseCase _analyticsUseCase;
-  late final CheckAppUpdateUseCase _checkAppUpdateUseCase;
-  late final NavigationService _navigationService;
-  late final UserUseCase _userUseCase;
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  AppInfoUseCase get _appInfoUseCase => ref.read(appInfoUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
+  UserUseCase get _userUseCase => ref.read(userUseCaseProvider);
 
   @override
   CheckAppUpdateViewData build() {
-    _analyticsUseCase = ref.watch(analyticsUseCaseProvider);
-    _checkAppUpdateUseCase = ref.watch(checkAppUpdateUseCaseProvider);
-    _navigationService = ref.watch(navigationServiceProvider);
-    _userUseCase = ref.watch(userUseCaseProvider);
     return const CheckAppUpdateViewData();
   }
 
@@ -39,7 +35,7 @@ class CheckAppUpdateViewModel
     // 取得に失敗したとき・ストアから戻ったときは、確認が通るまでやり直す。
     while (true) {
       state = state.copyWith(isLoading: true);
-      final result = await _checkAppUpdateUseCase.getNeedUpdate();
+      final result = await _appInfoUseCase.getNeedUpdate();
       state = state.copyWith(isLoading: false);
       if (result case Failure(:final exception)) {
         await _navigationService.showFailure(
@@ -89,18 +85,21 @@ class CheckAppUpdateViewModel
   }
 
   Future<void> _openStore() async {
-    if (Platform.isIOS) {
-      await _navigationService.openUrl(
-        'https://apps.apple.com/jp/app/id$_iosAppStoreId',
-        external: true,
-      );
-    } else if (Platform.isAndroid) {
-      // フレーバーによってパッケージ名が変わるため、
-      // ストア遷移先は本番のパッケージ名を固定で指定する。
-      await _navigationService.openUrl(
-        'https://play.google.com/store/apps/details?id=$_androidPackageName',
-        external: true,
-      );
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.iOS:
+        await _navigationService.openUrl(
+          'https://apps.apple.com/jp/app/id$_iosAppStoreId',
+          external: true,
+        );
+      case TargetPlatform.android:
+        // フレーバーによってパッケージ名が変わるため、
+        // ストア遷移先は本番のパッケージ名を固定で指定する。
+        await _navigationService.openUrl(
+          'https://play.google.com/store/apps/details?id=$_androidPackageName',
+          external: true,
+        );
+      default:
+        break;
     }
   }
 }

@@ -14,6 +14,9 @@ class ShellScaffold extends HookConsumerWidget {
 
   final StatefulNavigationShell navigationShell;
 
+  /// 選んでいるタブの丸が、下タブの上の端からタブの画面へはみ出す高さ。
+  static const double tabBarOverlap = -CURVE_TOP;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(shellViewModelProvider);
@@ -97,12 +100,12 @@ class ShellScaffold extends HookConsumerWidget {
                 final bodyHeight =
                     constraints.maxHeight -
                     kToolbarHeight -
-                    MediaQuery.of(context).padding.top;
+                    MediaQuery.paddingOf(context).top;
                 return Stack(
                   children: [
                     Positioned(
                       right:
-                          -(bodyHeight - MediaQuery.of(context).size.width) /
+                          -(bodyHeight - MediaQuery.sizeOf(context).width) /
                           2.0,
                       bottom: 0.0,
                       child: IgnorePointer(

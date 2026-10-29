@@ -6,34 +6,26 @@ import 'package:app/src/router/navigation_service.dart';
 import 'package:app/src/view_model/check_app_update_view_model.dart';
 import 'package:domain/domain.dart';
 
-class MockAnalyticsUseCase extends Mock implements AnalyticsUseCase {}
-
-class MockCheckAppUpdateUseCase extends Mock implements CheckAppUpdateUseCase {}
-
-class MockNavigationService extends Mock implements NavigationService {}
-
-class MockUserUseCase extends Mock implements UserUseCase {}
+import 'test_doubles.dart';
 
 void main() {
   late MockAnalyticsUseCase analyticsUseCase;
-  late MockCheckAppUpdateUseCase checkAppUpdateUseCase;
+  late MockAppInfoUseCase appInfoUseCase;
   late MockNavigationService navigationService;
   late MockUserUseCase userUseCase;
   late ProviderContainer container;
 
-  setUpAll(() {
-    registerFallbackValue(const UnknownException());
-  });
+  setUpAll(registerFallbackValues);
 
   setUp(() {
     analyticsUseCase = MockAnalyticsUseCase();
-    checkAppUpdateUseCase = MockCheckAppUpdateUseCase();
+    appInfoUseCase = MockAppInfoUseCase();
     navigationService = MockNavigationService();
     userUseCase = MockUserUseCase();
     container = ProviderContainer(
       overrides: [
         analyticsUseCaseProvider.overrideWithValue(analyticsUseCase),
-        checkAppUpdateUseCaseProvider.overrideWithValue(checkAppUpdateUseCase),
+        appInfoUseCaseProvider.overrideWithValue(appInfoUseCase),
         navigationServiceProvider.overrideWithValue(navigationService),
         userUseCaseProvider.overrideWithValue(userUseCase),
       ],
@@ -72,7 +64,7 @@ void main() {
   void stubNeedUpdate(List<Result<bool>> results) {
     var index = 0;
     when(
-      () => checkAppUpdateUseCase.getNeedUpdate(),
+      () => appInfoUseCase.getNeedUpdate(),
     ).thenAnswer((_) async => results[index++]);
   }
 
@@ -106,7 +98,7 @@ void main() {
         exception: any(named: 'exception', that: isA<OfflineException>()),
       ),
     ).called(1);
-    verify(() => checkAppUpdateUseCase.getNeedUpdate()).called(2);
+    verify(() => appInfoUseCase.getNeedUpdate()).called(2);
     verify(() => navigationService.goToCheckMasterUpdate()).called(1);
   });
 
@@ -127,7 +119,7 @@ void main() {
       ),
       () => navigationService.goToCheckMasterUpdate(),
     ]);
-    verify(() => checkAppUpdateUseCase.getNeedUpdate()).called(2);
+    verify(() => appInfoUseCase.getNeedUpdate()).called(2);
   });
 
   test('最初に利用者を識別できる状態にし、それからアプリを開いたイベントを送る', () async {
@@ -149,7 +141,7 @@ void main() {
       ),
       () => userUseCase.signIn(),
       () => analyticsUseCase.send(event: const AnalyticsEvent.appOpen()),
-      () => checkAppUpdateUseCase.getNeedUpdate(),
+      () => appInfoUseCase.getNeedUpdate(),
     ]);
     // 送るのは 1 回だけ（verifyInOrder で確かめた分のほかに呼ばれていない）。
     verifyNever(

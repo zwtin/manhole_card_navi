@@ -17,8 +17,8 @@ import 'package:flutter/foundation.dart';
 /// ポートは省略できない。値が空か解釈できない場合は何もせず素通しになる。
 ///
 /// **効く範囲**: Dart 側（`dart:io` の [HttpClient]）の通信すべて。カード画像の
-/// 取得（card_image_cache_manager.dart / map_markers_view_data_mapper.dart）や
-/// `package:http` はここを通るので覗ける。一方、Firebase SDK と Google Maps は
+/// 取得（data の `CardImageDataSource`）や `package:http` はここを通るので
+/// 覗ける。一方、Firebase SDK と Google Maps は
 /// ネイティブ実装なのでここは通らず、端末（またはシミュレータを動かしている Mac）
 /// の OS のプロキシ設定に従う。詳しくは README の「通信をプロキシで覗く」を参照。
 ///

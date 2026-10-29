@@ -31,15 +31,14 @@ void main() {
       ),
       remoteConfig,
       CrashlyticsDataSource(crashlytics),
+      appName: 'マンホールカードナビ',
     );
   });
 
   test('端末のアプリのバージョンを読む。読めなければ壊れたデータの失敗', () async {
     expect(
-      (await repository('1.5.0').getAppInfo() as Success<AppInfo>)
-          .value
-          .version,
-      AppVersion.parse('1.5.0'),
+      (await repository('1.5.0').getAppInfo() as Success<AppInfo>).value,
+      AppInfo(name: 'マンホールカードナビ', version: AppVersion.parse('1.5.0')),
     );
     expect(
       (await repository('1.5.0-dev').getAppInfo() as Failure<AppInfo>)

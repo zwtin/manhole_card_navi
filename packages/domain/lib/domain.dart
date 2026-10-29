@@ -31,7 +31,6 @@ export 'package:domain/src/usecase/analytics_use_case.dart';
 export 'package:domain/src/usecase/app_badge_use_case.dart';
 export 'package:domain/src/usecase/app_info_use_case.dart';
 export 'package:domain/src/usecase/card_use_case.dart';
-export 'package:domain/src/usecase/check_app_update_use_case.dart';
 export 'package:domain/src/usecase/check_master_update_use_case.dart';
 export 'package:domain/src/usecase/location_use_case.dart';
 export 'package:domain/src/usecase/privacy_policy_use_case.dart';

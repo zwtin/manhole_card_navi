@@ -10,13 +10,13 @@ import '../model/firestore_master_models_test.dart' show cardDocument;
 LocalCardModel _toLocalCard(Map<String, dynamic> data) {
   return FirestoreMasterMapper.toLocalCard(
     FirestoreCardModel.fromDocument(data),
-    prefectures: const {'27': '大阪府'},
-    volumes: const {'0000': '第1弾'},
+    prefectureName: '大阪府',
+    volumeName: '第1弾',
   );
 }
 
 void main() {
-  test('都道府県名・弾名を引き当てて、端末に保存するカードにする', () {
+  test('都道府県名・弾名を付けて、端末に保存するカードにする', () {
     final card = _toLocalCard(cardDocument());
 
     expect(card.id, '27-226-B001');
