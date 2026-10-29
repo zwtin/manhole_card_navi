@@ -100,9 +100,8 @@ class GoRouterNavigationService implements NavigationService {
     required String heroTag,
   }) async {
     await _router.push<void>(
-      AppRoutePath.imageDetail,
-      extra: ImageDetailArgs(
-        cardId: cardId,
+      AppRoutePath.imageDetail(
+        cardId,
         alreadyGet: alreadyGet,
         heroTag: heroTag,
       ),
