@@ -6,13 +6,7 @@ import 'package:app/src/router/navigation_service.dart';
 import 'package:app/src/view_model/check_app_update_view_model.dart';
 import 'package:domain/domain.dart';
 
-class MockAnalyticsUseCase extends Mock implements AnalyticsUseCase {}
-
-class MockAppInfoUseCase extends Mock implements AppInfoUseCase {}
-
-class MockNavigationService extends Mock implements NavigationService {}
-
-class MockUserUseCase extends Mock implements UserUseCase {}
+import 'test_doubles.dart';
 
 void main() {
   late MockAnalyticsUseCase analyticsUseCase;
@@ -21,9 +15,7 @@ void main() {
   late MockUserUseCase userUseCase;
   late ProviderContainer container;
 
-  setUpAll(() {
-    registerFallbackValue(const UnknownException());
-  });
+  setUpAll(registerFallbackValues);
 
   setUp(() {
     analyticsUseCase = MockAnalyticsUseCase();

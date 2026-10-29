@@ -7,14 +7,7 @@ import 'package:app/src/router/navigation_service.dart';
 import 'package:app/src/view_model/search_condition_view_model.dart';
 import 'package:domain/domain.dart';
 
-class MockAnalyticsUseCase extends Mock implements AnalyticsUseCase {}
-
-class MockCardUseCase extends Mock implements CardUseCase {}
-
-class MockNavigationService extends Mock implements NavigationService {}
-
-class MockSearchConditionUseCase extends Mock
-    implements SearchConditionUseCase {}
+import 'test_doubles.dart';
 
 ManholeCard _card({required String volumeId, required String volumeName}) {
   return ManholeCard(
@@ -37,9 +30,7 @@ void main() {
   late MockNavigationService navigationService;
   late ProviderContainer container;
 
-  setUpAll(() {
-    registerFallbackValue(SearchCondition.initial());
-  });
+  setUpAll(registerFallbackValues);
 
   setUp(() async {
     final cardUseCase = MockCardUseCase();
