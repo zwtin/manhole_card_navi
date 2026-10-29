@@ -171,7 +171,7 @@ class ManholeCardMapViewModel
     );
   }
 
-  /// マップタブの画面遷移に合わせて、表示エリアの縮小とカメラの移動を行う。
+  /// マップタブの画面遷移に合わせて、モーダルを表示中かとカメラの移動を決める。
   Future<void> _onRouteChanged(CurrentRoute? route) async {
     // 他のタブや、タブの外に積んだ画面へ移ったときは、マップタブの状態は変わらない。
     if (route == null || !route.matchedLocation.startsWith(AppRoutePath.map)) {

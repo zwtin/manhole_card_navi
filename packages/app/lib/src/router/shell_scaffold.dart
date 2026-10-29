@@ -14,6 +14,9 @@ class ShellScaffold extends HookConsumerWidget {
 
   final StatefulNavigationShell navigationShell;
 
+  /// 選んでいるタブの丸が、下タブの上の端からタブの画面へはみ出す高さ。
+  static const double tabBarOverlap = -CURVE_TOP;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(shellViewModelProvider);
