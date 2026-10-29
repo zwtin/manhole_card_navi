@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
@@ -19,6 +20,7 @@ class MockRemoteConfigReader extends Mock implements RemoteConfigDataSource {}
 void main() {
   late StreamingSharedPreferences store;
   late PreferencesDataSource preferences;
+  late MockFirebaseCrashlytics crashlytics;
   late CrashlyticsDataSource crashlyticsDataSource;
 
   setUpAll(() async {
@@ -30,7 +32,7 @@ void main() {
 
   setUp(() async {
     await store.clear();
-    final crashlytics = MockFirebaseCrashlytics();
+    crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     crashlyticsDataSource = CrashlyticsDataSource(crashlytics);
   });
@@ -91,6 +93,20 @@ void main() {
       await repository.save(searchCondition: condition);
 
       expect(await repository.watch().first, condition);
+    });
+
+    test('保存した値が壊れていたら、絞り込みなしで続け、元の例外を記録する', () async {
+      await store.setString('search_condition', '{"common":3}');
+      final repository = SearchConditionRepositoryImpl(
+        preferences,
+        crashlyticsDataSource,
+      );
+
+      expect(await repository.watch().first, SearchCondition.initial());
+      expect(
+        recordedErrors(crashlytics).single.error,
+        isA<CheckedFromJsonException>(),
+      );
     });
   });
 

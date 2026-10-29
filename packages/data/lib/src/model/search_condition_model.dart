@@ -6,30 +6,25 @@ import 'package:data/src/model/distribution_state_model.dart';
 
 part 'search_condition_model.g.dart';
 
-/// 以前のバージョンのアプリが保存したものも読むので、知らない値・欠けた項目・
-/// 壊れた JSON は既定値にする。
-@JsonSerializable(explicitToJson: true)
+/// 以前のバージョンのアプリが保存したものも読むので、知らない値・欠けた項目は
+/// 既定値にする。形が違えば投げる。
+@JsonSerializable(checked: true, explicitToJson: true)
 class SearchConditionModel {
   const SearchConditionModel({required this.common, required this.map});
 
   factory SearchConditionModel.fromJson(Map<String, dynamic> json) =>
       _$SearchConditionModelFromJson(json);
 
+  /// まだ保存していなければ空文字。
   factory SearchConditionModel.fromJsonString(String source) {
     if (source.isEmpty) {
       return SearchConditionModel.initial();
     }
-    try {
-      final json = jsonDecode(source);
-      if (json is Map<String, dynamic>) {
-        return SearchConditionModel.fromJson(json);
-      }
-    } on FormatException {
-      // 初期状態で続ける。
-    } on TypeError {
-      // 初期状態で続ける。
+    final json = jsonDecode(source);
+    if (json is! Map<String, dynamic>) {
+      throw const FormatException('保存した検索条件がオブジェクトではありません');
     }
-    return SearchConditionModel.initial();
+    return SearchConditionModel.fromJson(json);
   }
 
   factory SearchConditionModel.initial() {
@@ -50,7 +45,7 @@ class SearchConditionModel {
   final MapSearchConditionModel map;
 }
 
-@JsonSerializable()
+@JsonSerializable(checked: true)
 class CommonSearchConditionModel {
   const CommonSearchConditionModel({
     required this.displayFilter,
@@ -84,7 +79,7 @@ class CommonSearchConditionModel {
   final Set<DistributionStateModel> distributionStates;
 }
 
-@JsonSerializable()
+@JsonSerializable(checked: true)
 class MapSearchConditionModel {
   const MapSearchConditionModel({required this.coordinateType});
 
