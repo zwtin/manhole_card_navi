@@ -9,17 +9,31 @@ import 'package:data/src/model/local_card_model.dart';
 
 /// 読み込んだカードをメモリに持つので、アプリ全体で 1 つだけ作る。
 class MasterDataLocalDataSource {
-  MasterDataLocalDataSource({
-    required Future<Directory> Function() directory,
-    Future<void> Function()? cleanUp,
-  }) : _directory = directory,
-       _cleanUp = cleanUp;
+  MasterDataLocalDataSource({required Future<Directory> Function() directory})
+    : _directory = directory;
 
   factory MasterDataLocalDataSource.inApplicationSupport() {
-    return MasterDataLocalDataSource(
-      directory: getApplicationSupportDirectory,
-      cleanUp: _deleteRealmFiles,
-    );
+    return MasterDataLocalDataSource(directory: getApplicationSupportDirectory);
+  }
+
+  /// 以前マスターデータを入れていた Realm のファイルを消す。Realm は iOS では
+  /// Documents、Android では files（Application Support と同じ場所）に置いていた。
+  static Future<void> deleteRealmFiles() async {
+    for (final getDirectory in [
+      getApplicationDocumentsDirectory,
+      getApplicationSupportDirectory,
+    ]) {
+      final directory = await getDirectory();
+      if (!await directory.exists()) {
+        continue;
+      }
+      await for (final entity in directory.list()) {
+        final name = entity.uri.pathSegments.lastWhere((s) => s.isNotEmpty);
+        if (name.startsWith('default.realm')) {
+          await entity.delete(recursive: true);
+        }
+      }
+    }
   }
 
   /// ファイルの形を変えたら上げる。古い形のファイルは読まずに消すので、取り込んで
@@ -29,7 +43,6 @@ class MasterDataLocalDataSource {
   static final _oldFileName = RegExp(r'^master_data_v\d+\.json(\.tmp)?$');
 
   final Future<Directory> Function() _directory;
-  final Future<void> Function()? _cleanUp;
 
   Future<File>? _file;
   Future<List<LocalCardModel>?>? _reading;
@@ -103,7 +116,6 @@ class MasterDataLocalDataSource {
   Future<File> _resolveFile() => _file ??= _prepare();
 
   Future<File> _prepare() async {
-    await _cleanUp?.call();
     final directory = await _directory();
     await directory.create(recursive: true);
     await for (final entity in directory.list()) {
@@ -113,29 +125,5 @@ class MasterDataLocalDataSource {
       }
     }
     return File('${directory.path}/$_fileName');
-  }
-}
-
-/// 以前マスターデータを入れていた Realm のファイルを消す。Realm は iOS では
-/// Documents、Android では files（Application Support と同じ場所）に置いていた。
-Future<void> _deleteRealmFiles() async {
-  for (final getDirectory in [
-    getApplicationDocumentsDirectory,
-    getApplicationSupportDirectory,
-  ]) {
-    try {
-      final directory = await getDirectory();
-      if (!await directory.exists()) {
-        continue;
-      }
-      await for (final entity in directory.list()) {
-        final name = entity.uri.pathSegments.lastWhere((s) => s.isNotEmpty);
-        if (name.startsWith('default.realm')) {
-          await entity.delete(recursive: true);
-        }
-      }
-    } on FileSystemException {
-      // 残っても動作には関わらない。
-    }
   }
 }

@@ -77,7 +77,7 @@ lefthook がフックで検査を走らせる。導入は `brew install lefthook
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装。組み立て（どの実装をどの部品で作るか）は持たず、実装クラスを公開するだけ
    - `repository/` - Repository の実装だけを置く。**外界に触るのは DataSource 経由だけで、SDK を直接持たない。** DataSource から model を受け取り、mapper でエンティティにして返す。複数の DataSource の組み合わせも、別々のドキュメントどうしが食い違っていないか（カードが指す都道府県があるか など）を確かめるのもここで行う。例外を捕まえるのは data の中でここだけで、捕まえたら記録し、`DomainExceptionMapper.from` で種類に変換して `Result` に包む
-   - `datasource/` - 外界と話すクラス。**Repository は DataSource としか話さない**ので、外界は素通しでも必ずここで包む（包むか判断しないで済むようにするため）。返すのは model か素の値で、SDK の型もエンティティも外に出さない。domain を知らないので、失敗は package が定義した例外（`CheckedFromJsonException`・`FormatException` など）のまま投げる。失敗の種類にするのは Repository
+   - `datasource/` - 外界と話すクラス。**Repository は DataSource としか話さない**ので、外界は素通しでも必ずここで包む（包むか判断しないで済むようにするため）。返すのは model か素の値で、SDK の型もエンティティも外に出さない。domain を知らないので、失敗は package が定義した例外（`CheckedFromJsonException`・`FormatException` など）のまま投げる。失敗の種類にするのは Repository。**DataSource は例外を捕まえない**（壊れたファイルを消す など、後片付けをして投げ直すときだけ捕まえてよい）。握りつぶすと、どこで何が起きたかが誰にも見えなくなる
      - **DataSource は 1 つの外界だけを相手にし、単体で独立させる。** DataSource の中に別の DataSource やサービスを持たない。複数の外界を組み合わせる（片方でだめならもう片方、取れたら計測する など）のは Repository の役目
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
      - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）。取り直さない時間は環境で変わるので、ルートから渡す。同じく環境で変わるアプリ名も、ルートが `AppInfoRepositoryImpl` に渡す（data は `String.fromEnvironment` を読まない）
@@ -143,7 +143,7 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 
 - fatal か non-fatal かは種類で決めない。**根に届いた＝誰も扱わなかった＝ fatal、捕まえた＝扱った＝ non-fatal**
 - Crashlytics を知っているのは data と `main.dart` だけ。app と domain は記録に関わらない
-- data で捕まえるのは Repository だけ（`on Exception`）。Error は捕まえないので根まで流れる。`UncaughtErrorObserver` が `DomainException` を飛ばすのは、Repository で記録済みだから
+- data で捕まえるのは Repository だけ（`on Exception`）。Error は捕まえないので根まで流れる。Repository を通らない起動時の仕事（Remote Config の取得・前の世代が残したファイルの削除）は、ルートの `Infrastructure` が受け止める。Remote Config は取れなくても記録せずに続け（値が要るときに Repository が取り直して記録する）、ファイルの削除の失敗は非重大として記録する。`UncaughtErrorObserver` が `DomainException` を飛ばすのは、Repository で記録済みだから
 - **非重大は 1 セッション 8 件まで**で、超えると古いものから消える（iOS SDK の `maxCustomExceptions` の既定値。サーバー設定 `max_custom_exception_events` で変えられる）。大量に出る事象を入れると、ほかの失敗が押し出される
 - 画像の取得の失敗（`CardRepositoryImpl.fetchImage` のダウンロード）だけは Crashlytics に記録せず、Analytics の `image_load_failed`（`AnalyticsEvent.imageLoadFailed`）で数える。失敗の種類にこちらで名前を付けず、例外の型名（`runtime_type`）と OS が返したエラー（`os_error`。`WRONG_VERSION_NUMBER` なら経路上の装置が平文を返している、`nodename nor servname provided` なら DNS で潰されている）をそのまま送る。遮断された端末では画面 1 つで何十件も出て 8 件の枠を使い切るため。同じカードの「端末にない」「キャッシュが読めない」は画像の配信とは別の話なので記録する。`FlutterError.onError` が `library` の `image resource service` を記録しないのも同じ理由
 - Crashlytics のグルーピングはスタックトレースだけでなく**例外のメッセージも見る**。Flutter の記録は例外の名前が `FlutterError` 固定で、`toString()` の文字列がメッセージになる（`reason` を渡すとそこに連結される）。**投げる `DomainException` の `detail` に可変の値を入れない**。同じ失敗が値ごとに別の issue に分かれてしまう。値を残したいときは `recordError` の `information` に渡す（ログ行になるだけで、グルーピングには影響しない）

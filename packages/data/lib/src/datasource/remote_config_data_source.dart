@@ -11,22 +11,16 @@ class RemoteConfigDataSource {
   /// 前に取ってからこの時間は取り直さない。
   final Duration _minimumFetchInterval;
 
-  /// 取れなくても止まらず、前回取った値で続ける。前回の値もなければ [readString] で
-  /// 読むときに取り直す。
+  /// 取れなくても、前回取った値は [readString] で読める。
   Future<void> activate() async {
-    try {
-      await _remoteConfig.setConfigSettings(
-        RemoteConfigSettings(
-          // 既定の 60 秒だと、電波が弱いときにスプラッシュ画面のまま待たせる。
-          fetchTimeout: const Duration(seconds: 10),
-          minimumFetchInterval: _minimumFetchInterval,
-        ),
-      );
-      await _remoteConfig.fetchAndActivate();
-    } on Exception catch (_) {
-      // 記録もしない。値が要るときに readString が取り直し、そこでも取れなければ
-      // Repository が失敗として記録する。
-    }
+    await _remoteConfig.setConfigSettings(
+      RemoteConfigSettings(
+        // 既定の 60 秒だと、電波が弱いときにスプラッシュ画面のまま待たせる。
+        fetchTimeout: const Duration(seconds: 10),
+        minimumFetchInterval: _minimumFetchInterval,
+      ),
+    );
+    await _remoteConfig.fetchAndActivate();
   }
 
   /// [activate] で取れていないと空なので、空なら取り直す。取り直しても空なら

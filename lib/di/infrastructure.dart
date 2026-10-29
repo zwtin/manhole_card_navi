@@ -26,24 +26,37 @@ class Infrastructure {
     required this.pushNotification,
   });
 
-  /// 部品を作り、使える状態にする。Firebase の初期化の後に呼ぶ。
-  ///
-  /// 通信できなくても止まらない。Remote Config は取れなければ前回の値で続ける。
+  /// 部品を作り、使える状態にする。Firebase の初期化の後に呼ぶ。通信できなくても
+  /// 止まらず、Remote Config は前回取った値で続ける。
   static Future<Infrastructure> initialize() async {
+    final crashlytics = CrashlyticsDataSource(FirebaseCrashlytics.instance);
     final remoteConfig = RemoteConfigDataSource(
       FirebaseRemoteConfig.instance,
       // 開発では、Remote Config を変えたらすぐ確かめられるように毎回取り直す。
       minimumFetchInterval: _isDevelopment ? Duration.zero : _fetchInterval,
     );
-    await remoteConfig.activate();
-    // 前の世代が残したマーカー画像のキャッシュを消す。起動は待たせない。
-    unawaited(CardImageDataSource.deleteMarkerIconCache());
+    try {
+      await remoteConfig.activate();
+    } on Exception {
+      // 記録もしない。値が要るときに Repository が取り直し、そこでも取れなければ
+      // 失敗として記録する。
+    }
+    // 前の世代が残したファイルを消す。残っても動作には関わらないので、失敗は記録
+    // して続ける。Realm のファイルは、マスターデータのファイルを用意する前に消す。
+    await MasterDataLocalDataSource.deleteRealmFiles().onError<Exception>(
+      crashlytics.recordNonFatal,
+    );
+    unawaited(
+      CardImageDataSource.deleteMarkerIconCache().onError<Exception>(
+        crashlytics.recordNonFatal,
+      ),
+    );
     return Infrastructure._(
       preferences: PreferencesDataSource(
         await StreamingSharedPreferences.instance,
       ),
       packageInfo: PackageInfoDataSource(await PackageInfo.fromPlatform()),
-      crashlytics: CrashlyticsDataSource(FirebaseCrashlytics.instance),
+      crashlytics: crashlytics,
       remoteConfig: remoteConfig,
       masterDataLocal: MasterDataLocalDataSource.inApplicationSupport(),
       masterDataRemote: MasterDataRemoteDataSource(FirebaseFirestore.instance),
