@@ -38,8 +38,24 @@ class ManholeCardMapViewModel
   SearchConditionUseCase get _searchConditionUseCase =>
       ref.read(searchConditionUseCaseProvider);
 
+  /// 控えておくピンの画像の数。1 枚 50 KB ほど。地図に出すのは 30 本までなので、
+  /// 行き来する範囲のぶんを持てればよい。
+  static const _iconLimit = 200;
+
   /// 生成中に新しい再読み込みが始まったら、古い世代の結果を捨てるための番号。
   int _markerGeneration = 0;
+
+  /// 合成したピンの画像。ピンを選び直すたびに作ると、ほとんど同じカードが並んで
+  /// いても全部を合成し直すことになる。使ったものほど後ろに並べ、上限を超えたら
+  /// 先頭（長く使っていないもの）から捨てる。
+  ///
+  /// 同じカードには同じインスタンスを返す。View はそれを見て、地図に画像を
+  /// 送り直すかを決める。
+  final _icons = <_IconKey, Uint8List>{};
+
+  /// 合成中のピンの画像。合成が終わる前にピンを選び直しても、同じ画像を 2 度
+  /// 合成しない。
+  final _buildingIcons = <_IconKey, Future<Uint8List?>>{};
 
   SearchCondition _searchCondition = SearchCondition.initial();
 
@@ -303,7 +319,7 @@ class ManholeCardMapViewModel
     final markers = <MapMarkerViewData>[];
     await Future.wait(
       pins.map((pin) async {
-        final icon = await _buildIcon(pin);
+        final icon = await _iconOf(pin);
         // 生成中に新しい再読み込みが始まっていたら、古い世代の結果は捨てる。
         if (icon == null || generation != _markerGeneration) {
           return;
@@ -319,8 +335,40 @@ class ManholeCardMapViewModel
     }
   }
 
+  Future<Uint8List?> _iconOf(CardPin pin) async {
+    final key = (
+      cardId: pin.card.id,
+      alreadyGet: _alreadyGetCardIds.contains(pin.card.id),
+    );
+    final icon = _icons.remove(key);
+    if (icon != null) {
+      _icons[key] = icon;
+      return icon;
+    }
+    return _buildingIcons[key] ??= _buildAndKeepIcon(pin, key);
+  }
+
+  Future<Uint8List?> _buildAndKeepIcon(CardPin pin, _IconKey key) async {
+    try {
+      final icon = await _buildIcon(pin, alreadyGet: key.alreadyGet);
+      // 取れなかったものは控えず、次に選び直したときに取り直す。
+      if (icon != null) {
+        _icons[key] = icon;
+        if (_icons.length > _iconLimit) {
+          _icons.remove(_icons.keys.first);
+        }
+      }
+      return icon;
+    } finally {
+      _buildingIcons.remove(key);
+    }
+  }
+
   /// 取れなかった・合成できなかったカードは、そのピンを立てない。
-  Future<Uint8List?> _buildIcon(CardPin pin) async {
+  ///
+  /// [alreadyGet] は控えるときのキーと同じ値を渡す。合成の途中で取得済みが
+  /// 変わっても、違うキーに控えないようにするため。
+  Future<Uint8List?> _buildIcon(CardPin pin, {required bool alreadyGet}) async {
     final Uint8List original;
     switch (await _cardUseCase.fetchImage(cardId: pin.card.id)) {
       case Failure():
@@ -332,7 +380,7 @@ class ManholeCardMapViewModel
       return await MarkerIconMapper.toIcon(
         originalBytes: original,
         distributionState: pin.card.distributionState,
-        alreadyGet: _alreadyGetCardIds.contains(pin.card.id),
+        alreadyGet: alreadyGet,
       );
     } on Exception {
       // 壊れた画像はデコードできない。Error はバグなので捨てずに流す。
@@ -377,6 +425,10 @@ class ManholeCardMapViewModel
     await _reloadMarkerViewData();
   }
 }
+
+/// ピンの画像を引くキー。配布状態はカードを読み込み直さない限り変わらないので、
+/// キーに入れない。
+typedef _IconKey = ({String cardId, bool alreadyGet});
 
 /// 現在地へカメラを動かした結果。
 enum _CurrentLocation {
