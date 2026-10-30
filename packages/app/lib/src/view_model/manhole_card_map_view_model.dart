@@ -78,6 +78,9 @@ class ManholeCardMapViewModel
     ref.onDispose(subscription.cancel);
     return ManholeCardMapViewData(
       navigationTitle: MapCoordinateTypeNameMapper.mapTitleOf(_coordinateType),
+      pinWidth: MapMarkersViewDataMapper.pinWidthOf(
+        _searchCondition.map.pinSize,
+      ),
     );
   }
 
@@ -232,6 +235,7 @@ class ManholeCardMapViewModel
         condition.map.coordinateType,
       ),
       activeFilterCount: condition.activeFilterCount,
+      pinWidth: MapMarkersViewDataMapper.pinWidthOf(condition.map.pinSize),
     );
   }
 

@@ -22,7 +22,10 @@ void main() {
           DistributionState.notClear,
         },
       ),
-      map: const MapSearchCondition(coordinateType: MapCoordinateType.position),
+      map: const MapSearchCondition(
+        coordinateType: MapCoordinateType.position,
+        pinSize: MapPinSize.smallest,
+      ),
     );
 
     final source = SearchConditionMapper.toModel(original).toJsonString();
@@ -30,7 +33,7 @@ void main() {
     expect(_read(source), original);
   });
 
-  test('以前のバージョンが保存した形のまま読める', () {
+  test('以前のバージョンが保存した形のまま読める（ピンの大きさは中）', () {
     expect(
       _read(
         '{"common":{"displayFilter":"acquired","volumeIds":["0001"],'
@@ -56,7 +59,10 @@ void main() {
         alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
         distributionStates: {DistributionState.notClear},
       ),
-      map: MapSearchCondition(coordinateType: MapCoordinateType.position),
+      map: MapSearchCondition(
+        coordinateType: MapCoordinateType.position,
+        pinSize: MapPinSize.largest,
+      ),
     );
 
     expect(SearchConditionMapper.toModel(condition).toJson(), {
@@ -65,7 +71,7 @@ void main() {
         'volumeIds': <String>[],
         'distributionStates': ['notClear'],
       },
-      'map': {'coordinateType': 'position'},
+      'map': {'coordinateType': 'position', 'pinSize': 'largest'},
     });
   });
 
@@ -86,7 +92,7 @@ void main() {
     final restored = _read(
       '{"common":{"displayFilter":"unknown","volumeIds":["0001",3],'
       '"distributionStates":["distributing","unknown"]},'
-      '"map":{"coordinateType":"unknown"}}',
+      '"map":{"coordinateType":"unknown","pinSize":"unknown"}}',
     );
 
     expect(restored.common.alreadyGetFilter, AlreadyGetFilter.all);
@@ -95,5 +101,6 @@ void main() {
       DistributionState.distributing,
     });
     expect(restored.map.coordinateType, MapCoordinateType.distribution);
+    expect(restored.map.pinSize, MapPinSize.medium);
   });
 }

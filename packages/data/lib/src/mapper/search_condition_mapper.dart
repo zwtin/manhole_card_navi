@@ -15,6 +15,7 @@ abstract final class SearchConditionMapper {
       ),
       map: MapSearchConditionModel(
         coordinateType: _toCoordinateTypeModel(condition.map.coordinateType),
+        pinSize: _toPinSizeModel(condition.map.pinSize),
       ),
     );
   }
@@ -31,6 +32,7 @@ abstract final class SearchConditionMapper {
       ),
       map: MapSearchCondition(
         coordinateType: _toMapCoordinateType(model.map.coordinateType),
+        pinSize: _toMapPinSize(model.map.pinSize),
       ),
     );
   }
@@ -62,6 +64,26 @@ abstract final class SearchConditionMapper {
     return switch (model) {
       CoordinateTypeModel.distribution => MapCoordinateType.distribution,
       CoordinateTypeModel.position => MapCoordinateType.position,
+    };
+  }
+
+  static PinSizeModel _toPinSizeModel(MapPinSize size) {
+    return switch (size) {
+      MapPinSize.smallest => PinSizeModel.smallest,
+      MapPinSize.small => PinSizeModel.small,
+      MapPinSize.medium => PinSizeModel.medium,
+      MapPinSize.large => PinSizeModel.large,
+      MapPinSize.largest => PinSizeModel.largest,
+    };
+  }
+
+  static MapPinSize _toMapPinSize(PinSizeModel model) {
+    return switch (model) {
+      PinSizeModel.smallest => MapPinSize.smallest,
+      PinSizeModel.small => MapPinSize.small,
+      PinSizeModel.medium => MapPinSize.medium,
+      PinSizeModel.large => MapPinSize.large,
+      PinSizeModel.largest => MapPinSize.largest,
     };
   }
 }

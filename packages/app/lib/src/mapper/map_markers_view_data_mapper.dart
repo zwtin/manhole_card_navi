@@ -13,6 +13,17 @@ abstract final class MapMarkersViewDataMapper {
   /// 中心からこの距離（緯度経度の差の二乗）までを近傍とみなす。
   static const _nearDistance = 0.1;
 
+  /// 地図に出すピンの幅（pt）。高さは枠の画像の比率で決まる。
+  static double pinWidthOf(MapPinSize size) {
+    return switch (size) {
+      MapPinSize.smallest => 25,
+      MapPinSize.small => 50,
+      MapPinSize.medium => 75,
+      MapPinSize.large => 100,
+      MapPinSize.largest => 150,
+    };
+  }
+
   /// 配布場所では配布地点の数だけピンを立てる（配布地点が 0 件のカードには
   /// ピンが立たない）。
   static List<CardPin> toPins(

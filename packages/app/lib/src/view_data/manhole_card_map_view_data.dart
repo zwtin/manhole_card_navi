@@ -10,6 +10,9 @@ abstract class ManholeCardMapViewData with _$ManholeCardMapViewData {
   const factory ManholeCardMapViewData({
     required String navigationTitle,
 
+    /// ピンの幅（pt）。
+    required double pinWidth,
+
     @Default(0) int activeFilterCount,
     @Default(false) bool myLocationEnabled,
     @Default(<MapMarkerViewData>[]) List<MapMarkerViewData> markers,

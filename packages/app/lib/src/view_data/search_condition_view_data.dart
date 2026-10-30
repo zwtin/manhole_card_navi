@@ -12,5 +12,6 @@ abstract class SearchConditionViewData with _$SearchConditionViewData {
     required List<OptionViewData> volumes,
     required List<OptionViewData> distributionStates,
     required List<OptionViewData> coordinateTypes,
+    required List<OptionViewData> pinSizes,
   }) = _SearchConditionViewData;
 }

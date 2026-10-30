@@ -95,6 +95,7 @@ abstract class CommonSearchCondition with _$CommonSearchCondition {
 abstract class MapSearchCondition with _$MapSearchCondition {
   const factory MapSearchCondition({
     @Default(MapCoordinateType.distribution) MapCoordinateType coordinateType,
+    @Default(MapPinSize.medium) MapPinSize pinSize,
   }) = _MapSearchCondition;
 }
 
@@ -107,3 +108,6 @@ enum MapCoordinateType {
   /// 蓋（マンホール）の場所。
   position,
 }
+
+/// マップのピンの大きさ。小さい順。
+enum MapPinSize { smallest, small, medium, large, largest }

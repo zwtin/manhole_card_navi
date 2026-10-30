@@ -38,7 +38,10 @@ class ManholeCardMapPage extends HookConsumerWidget {
           state.markers.map((viewData) {
             return Marker(
               markerId: MarkerId(viewData.id),
-              icon: BitmapDescriptor.bytes(viewData.icon),
+              icon: BitmapDescriptor.bytes(
+                viewData.icon,
+                width: state.pinWidth,
+              ),
               position: LatLng(viewData.latitude, viewData.longitude),
               // 押したときに地図が自分でカメラを動かさないようにする。地図の動きと
               // padding の変化が重なると、iOS ではカメラが押す前の位置へ戻る。
@@ -46,7 +49,7 @@ class ManholeCardMapPage extends HookConsumerWidget {
               onTap: () => viewModel.onTapMarker(viewData.id),
             );
           }).toSet(),
-      [state.markers],
+      [state.markers, state.pinWidth],
     );
 
     useScreenView(ref, viewModel.sendScreenView);
