@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -158,6 +159,64 @@ void main() {
           longitude: any(named: 'longitude'),
         ),
       );
+    });
+
+    test('ピンを選び直しても、同じカードの画像は作り直さない', () async {
+      when(
+        () => cardUseCase.fetchImage(cardId: 'A'),
+      ).thenAnswer((_) async => Result.success(pngBytes));
+      await viewModel().onLoad();
+      final icon = state().markers.single.icon;
+
+      // ピンを押すと、カメラがピンへ動いてピンを選び直す。
+      await go('/map/card/A?latitude=35.69&longitude=139.77');
+
+      expect(state().markers.single.icon, same(icon));
+      verify(() => cardUseCase.fetchImage(cardId: 'A')).called(1);
+    });
+
+    test('合成が終わる前に選び直しても、同じカードの画像を 2 度取らない', () async {
+      final image = Completer<Result<Uint8List>>();
+      when(
+        () => cardUseCase.fetchImage(cardId: 'A'),
+      ).thenAnswer((_) => image.future);
+      final loading = viewModel().onLoad();
+      await pumpEventQueue();
+
+      await go('/map/card/A?latitude=35.69&longitude=139.77');
+      image.complete(Result.success(pngBytes));
+      await loading;
+      await pumpEventQueue();
+
+      expect(state().markers, hasLength(1));
+      verify(() => cardUseCase.fetchImage(cardId: 'A')).called(1);
+    });
+
+    test('取得済みが変わったカードは、画像を作り直す', () async {
+      when(
+        () => cardUseCase.fetchImage(cardId: 'A'),
+      ).thenAnswer((_) async => Result.success(pngBytes));
+      await viewModel().onLoad();
+      final icon = state().markers.single.icon;
+
+      alreadyGet.add({'A'});
+      await pumpEventQueue();
+
+      expect(state().markers.single.icon, isNot(same(icon)));
+      verify(() => cardUseCase.fetchImage(cardId: 'A')).called(2);
+    });
+
+    test('画像を取れなかったカードは、選び直したときに取り直す', () async {
+      await viewModel().onLoad();
+      await pumpEventQueue();
+      expect(state().markers, isEmpty);
+      when(
+        () => cardUseCase.fetchImage(cardId: 'A'),
+      ).thenAnswer((_) async => Result.success(pngBytes));
+
+      await viewModel().onCameraMove(latitude: 35.9, longitude: 139.77);
+
+      expect(state().markers, hasLength(1));
     });
   });
 

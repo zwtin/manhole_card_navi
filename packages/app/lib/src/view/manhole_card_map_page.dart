@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -32,25 +33,37 @@ class ManholeCardMapPage extends HookConsumerWidget {
     final state = ref.watch(manholeCardMapViewModelProvider);
     final viewModel = ref.read(manholeCardMapViewModelProvider.notifier);
     final mapController = useRef<GoogleMapController?>(null);
+    // BitmapDescriptor は中身で比べないので、作り直すとすべてのピンが変わった扱いに
+    // なり、地図が画像を全部受け取り直す。同じ画像（ViewModel が同じインスタンスを
+    // 返す）には同じものを渡し、地図に出ていないピンのものは捨てる。
+    final icons = useRef(<(Uint8List, double), BitmapDescriptor>{});
     // padding を動かす間は毎フレーム GoogleMap を作り直すので、ピンは同じものを渡す。
-    final markers = useMemoized(
-      () =>
+    final markers = useMemoized(() {
+      final previousIcons = icons.value;
+      final currentIcons = <(Uint8List, double), BitmapDescriptor>{};
+      final markers =
           state.markers.map((viewData) {
+            final key = (viewData.icon, state.pinWidth);
+            final icon =
+                currentIcons[key] ??=
+                    previousIcons[key] ??
+                    BitmapDescriptor.bytes(
+                      viewData.icon,
+                      width: state.pinWidth,
+                    );
             return Marker(
               markerId: MarkerId(viewData.id),
-              icon: BitmapDescriptor.bytes(
-                viewData.icon,
-                width: state.pinWidth,
-              ),
+              icon: icon,
               position: LatLng(viewData.latitude, viewData.longitude),
               // 押したときに地図が自分でカメラを動かさないようにする。地図の動きと
               // padding の変化が重なると、iOS ではカメラが押す前の位置へ戻る。
               consumeTapEvents: true,
               onTap: () => viewModel.onTapMarker(viewData.id),
             );
-          }).toSet(),
-      [state.markers, state.pinWidth],
-    );
+          }).toSet();
+      icons.value = currentIcons;
+      return markers;
+    }, [state.markers, state.pinWidth]);
 
     useScreenView(ref, viewModel.sendScreenView);
     ref.listen(
