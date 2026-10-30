@@ -244,7 +244,7 @@ void main() {
 
   test('検索条件が変わると、見出し・絞り込みの数・ピンの幅を変える', () async {
     await viewModel().onLoad();
-    expect(state().pinWidth, 75);
+    expect(state().pinWidth, 72);
 
     searchCondition.add(
       const SearchCondition(
@@ -259,7 +259,7 @@ void main() {
 
     expect(state().navigationTitle, '蓋マップ');
     expect(state().activeFilterCount, 1);
-    expect(state().pinWidth, 150);
+    expect(state().pinWidth, 144);
   });
 
   test('ピンの大きさだけが変わったときは、ピンを作り直さない', () async {
@@ -275,7 +275,7 @@ void main() {
     );
     await pumpEventQueue();
 
-    expect(state().pinWidth, 50);
+    expect(state().pinWidth, 51);
     verifyNever(() => cardUseCase.fetchImage(cardId: any(named: 'cardId')));
   });
 }

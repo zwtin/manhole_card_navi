@@ -14,13 +14,16 @@ abstract final class MapMarkersViewDataMapper {
   static const _nearDistance = 0.1;
 
   /// 地図に出すピンの幅（pt）。高さは枠の画像の比率で決まる。
+  ///
+  /// 1 段ごとに √2 倍にして、面積が 2 倍ずつになるようにしている。どの段階に
+  /// 動かしても、同じだけ大きくなったように見える。
   static double pinWidthOf(MapPinSize size) {
     return switch (size) {
-      MapPinSize.smallest => 25,
-      MapPinSize.small => 50,
-      MapPinSize.medium => 75,
-      MapPinSize.large => 100,
-      MapPinSize.largest => 150,
+      MapPinSize.smallest => 36,
+      MapPinSize.small => 51,
+      MapPinSize.medium => 72,
+      MapPinSize.large => 102,
+      MapPinSize.largest => 144,
     };
   }
 
