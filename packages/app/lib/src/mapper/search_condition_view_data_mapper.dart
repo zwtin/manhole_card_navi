@@ -18,6 +18,13 @@ abstract final class SearchConditionViewDataMapper {
     MapCoordinateType.distribution,
     MapCoordinateType.position,
   ];
+  static const pinSizes = [
+    MapPinSize.smallest,
+    MapPinSize.small,
+    MapPinSize.medium,
+    MapPinSize.large,
+    MapPinSize.largest,
+  ];
 
   /// [volumes] は [toVolumes] で並べたもの。
   static SearchConditionViewData toViewData({
@@ -51,6 +58,10 @@ abstract final class SearchConditionViewDataMapper {
             selected: type == draft.map.coordinateType,
           ),
       ],
+      pinSizes: [
+        for (final size in pinSizes)
+          (label: _pinSizeName(size), selected: size == draft.map.pinSize),
+      ],
     );
   }
 
@@ -83,6 +94,16 @@ abstract final class SearchConditionViewDataMapper {
       DistributionState.distributing => '配布中',
       DistributionState.stopped => '配布停止',
       DistributionState.notClear => '不明',
+    };
+  }
+
+  static String _pinSizeName(MapPinSize size) {
+    return switch (size) {
+      MapPinSize.smallest => '最小',
+      MapPinSize.small => '小',
+      MapPinSize.medium => '中',
+      MapPinSize.large => '大',
+      MapPinSize.largest => '最大',
     };
   }
 }

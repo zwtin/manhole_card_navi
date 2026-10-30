@@ -85,9 +85,22 @@ class SearchConditionPage extends HookConsumerWidget {
                   _SectionCard(
                     title: 'マップ表示',
                     pill: 'マップのみ',
-                    child: _Segmented(
-                      options: state.coordinateTypes,
-                      onChanged: viewModel.selectCoordinateType,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppText.bodySmall('表示する場所', color: _subColor(context)),
+                        const SizedBox(height: 8),
+                        _Segmented(
+                          options: state.coordinateTypes,
+                          onChanged: viewModel.selectCoordinateType,
+                        ),
+                        const SizedBox(height: 16),
+                        _StepSlider(
+                          title: 'ピンの大きさ',
+                          options: state.pinSizes,
+                          onChanged: viewModel.selectPinSize,
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -353,6 +366,112 @@ class _SegmentLabel extends StatelessWidget {
         // ignore: use_app_text
         child: Text(label, textAlign: TextAlign.center),
       ),
+    );
+  }
+}
+
+/// 段階を選ぶスライダー。目盛りの真下に段階の名前を並べる。
+class _StepSlider extends StatelessWidget {
+  const _StepSlider({
+    required this.title,
+    required this.options,
+    required this.onChanged,
+  });
+
+  final String title;
+  final List<OptionViewData> options;
+
+  /// 選ばれた選択肢が [options] の何番目か。
+  final ValueChanged<int> onChanged;
+
+  static const _trackHeight = 4.0;
+  static const _overlayRadius = 20.0;
+
+  /// スライダーの端から、端の目盛りの中心までの長さ。名前を目盛りの真下に置く
+  /// ため、寸法を固定して求める。Slider はトラックの両端をつまみの影（overlay）の
+  /// 半径だけ内側に置き、角の丸いトラックでは目盛りをさらにトラックの太さの半分
+  /// だけ内側に置く。
+  static const _tickInset = _overlayRadius + _trackHeight / 2;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final selectedIndex = options.indexWhere((option) => option.selected);
+    final selected = selectedIndex < 0 ? null : options[selectedIndex];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            AppText.bodySmall(title, color: _subColor(context)),
+            if (selected != null)
+              AppText.bodySmall(selected.label, fontWeight: FontWeight.bold),
+          ],
+        ),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            trackHeight: _trackHeight,
+            trackShape: const RoundedRectSliderTrackShape(),
+            thumbShape: const RoundSliderThumbShape(),
+            overlayShape: const RoundSliderOverlayShape(
+              overlayRadius: _overlayRadius,
+            ),
+            activeTrackColor: theme.primaryColor,
+            inactiveTrackColor: theme.colorScheme.surfaceContainerHigh,
+            thumbColor: theme.primaryColor,
+            overlayColor: theme.primaryColor.withValues(alpha: 0.12),
+            activeTickMarkColor: theme.colorScheme.surfaceContainerLowest,
+            inactiveTickMarkColor: theme.colorScheme.outline,
+          ),
+          child: Slider(
+            value: (selectedIndex < 0 ? 0 : selectedIndex).toDouble(),
+            max: (options.length - 1).toDouble(),
+            divisions: options.length - 1,
+            semanticFormatterCallback: (value) => options[value.round()].label,
+            onChanged: (value) {
+              // 指で動かしている間は、同じ目盛りのまま何度も呼ばれる。
+              final index = value.round();
+              if (index != selectedIndex) {
+                onChanged(index);
+              }
+            },
+          ),
+        ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final step =
+                (constraints.maxWidth - _tickInset * 2) / (options.length - 1);
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // 名前はすべて目盛りの位置に置くので、Stack の高さを決めるため
+                // だけに見えない名前を 1 つ置く。
+                Opacity(
+                  opacity: 0,
+                  child: AppText.labelMedium(options.first.label),
+                ),
+                for (final (index, option) in options.indexed)
+                  Positioned(
+                    left: _tickInset + step * index,
+                    child: FractionalTranslation(
+                      translation: const Offset(-0.5, 0),
+                      child: AppText.labelMedium(
+                        option.label,
+                        fontWeight: option.selected ? FontWeight.bold : null,
+                        color:
+                            option.selected
+                                ? theme.colorScheme.onSurface
+                                : _subColor(context),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+      ],
     );
   }
 }

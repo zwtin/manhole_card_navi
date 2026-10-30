@@ -51,6 +51,7 @@ void main() {
         ),
         map: const MapSearchCondition(
           coordinateType: MapCoordinateType.position,
+          pinSize: MapPinSize.largest,
         ),
       );
 

@@ -18,6 +18,15 @@ void main() {
       SearchConditionViewDataMapper.coordinateTypes.toSet(),
       MapCoordinateType.values.toSet(),
     );
+    expect(
+      SearchConditionViewDataMapper.pinSizes.toSet(),
+      MapPinSize.values.toSet(),
+    );
+  });
+
+  test('ピンの大きさは小さい順に並べる', () {
+    // スライダーの左から右へ、この順に並ぶ。
+    expect(SearchConditionViewDataMapper.pinSizes, MapPinSize.values);
   });
 
   test('ドラフトで選ばれているものに印が付く', () {
@@ -27,7 +36,10 @@ void main() {
         volumeIds: {'0001'},
         distributionStates: {DistributionState.stopped},
       ),
-      map: MapSearchCondition(coordinateType: MapCoordinateType.position),
+      map: MapSearchCondition(
+        coordinateType: MapCoordinateType.position,
+        pinSize: MapPinSize.large,
+      ),
     );
 
     final viewData = SearchConditionViewDataMapper.toViewData(
@@ -55,6 +67,13 @@ void main() {
     expect(viewData.coordinateTypes, [
       (label: '配布場所', selected: false),
       (label: '蓋', selected: true),
+    ]);
+    expect(viewData.pinSizes, [
+      (label: '最小', selected: false),
+      (label: '小', selected: false),
+      (label: '中', selected: false),
+      (label: '大', selected: true),
+      (label: '最大', selected: false),
     ]);
   });
 }

@@ -54,6 +54,16 @@ class SearchConditionViewModel
     );
   }
 
+  void selectPinSize(int index) {
+    _updateDraft(
+      (draft) => draft.copyWith(
+        map: draft.map.copyWith(
+          pinSize: SearchConditionViewDataMapper.pinSizes[index],
+        ),
+      ),
+    );
+  }
+
   void toggleVolume(int index) {
     final volumeId = _volumes[index].id;
     _updateDraft((draft) {
@@ -112,7 +122,7 @@ class SearchConditionViewModel
     );
   }
 
-  /// 座標の種類は絞り込みではなく、マップの表示の選択なので残す。
+  /// 座標の種類とピンの大きさは絞り込みではなく、マップの表示の選択なので残す。
   void clearAllFilters() {
     _updateDraft(
       (draft) => draft.copyWith(common: const CommonSearchCondition()),

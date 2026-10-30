@@ -80,6 +80,12 @@ void main() {
     ]);
   });
 
+  test('ピンの大きさの順に、ピンの幅が広がる', () {
+    final widths = MapPinSize.values.map(MapMarkersViewDataMapper.pinWidthOf);
+
+    expect(widths, [36, 51, 72, 102, 144]);
+  });
+
   group('selectNearest', () {
     const center = Coordinate(latitude: 35.0, longitude: 135.0);
 

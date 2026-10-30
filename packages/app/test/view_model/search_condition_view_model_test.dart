@@ -128,12 +128,27 @@ void main() {
     expect(savedCondition().common.volumeIds, isEmpty);
   });
 
+  test('ピンの大きさは既定で中。選び直して適用すると保存する', () async {
+    final state = container.read(searchConditionViewModelProvider).requireValue;
+    expect(state.pinSizes.singleWhere((option) => option.selected).label, '中');
+
+    viewModel().selectPinSize(
+      SearchConditionViewDataMapper.pinSizes.indexOf(MapPinSize.smallest),
+    );
+    await viewModel().onApply();
+
+    expect(savedCondition().map.pinSize, MapPinSize.smallest);
+  });
+
   test('リセットは絞り込みだけを消し、マップ表示は残す', () async {
     viewModel()
       ..selectCoordinateType(
         SearchConditionViewDataMapper.coordinateTypes.indexOf(
           MapCoordinateType.position,
         ),
+      )
+      ..selectPinSize(
+        SearchConditionViewDataMapper.pinSizes.indexOf(MapPinSize.largest),
       )
       ..toggleDistributionState(
         SearchConditionViewDataMapper.distributionStates.indexOf(
@@ -147,6 +162,7 @@ void main() {
     final saved = savedCondition();
     expect(saved.activeFilterCount, 0);
     expect(saved.map.coordinateType, MapCoordinateType.position);
+    expect(saved.map.pinSize, MapPinSize.largest);
   });
 
   test('閉じるときは保存しない', () {

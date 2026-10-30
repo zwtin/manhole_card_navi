@@ -242,18 +242,40 @@ void main() {
     });
   });
 
-  test('検索条件が変わると、見出しと絞り込みの数を変える', () async {
+  test('検索条件が変わると、見出し・絞り込みの数・ピンの幅を変える', () async {
     await viewModel().onLoad();
+    expect(state().pinWidth, 72);
 
     searchCondition.add(
       const SearchCondition(
         common: CommonSearchCondition(volumeIds: {'0000'}),
-        map: MapSearchCondition(coordinateType: MapCoordinateType.position),
+        map: MapSearchCondition(
+          coordinateType: MapCoordinateType.position,
+          pinSize: MapPinSize.largest,
+        ),
       ),
     );
     await pumpEventQueue();
 
     expect(state().navigationTitle, '蓋マップ');
     expect(state().activeFilterCount, 1);
+    expect(state().pinWidth, 144);
+  });
+
+  test('ピンの大きさだけが変わったときは、ピンを作り直さない', () async {
+    when(
+      () => cardUseCase.fetchImage(cardId: 'A'),
+    ).thenAnswer((_) async => Result.success(pngBytes));
+    await viewModel().onLoad();
+    await pumpEventQueue();
+    clearInteractions(cardUseCase);
+
+    searchCondition.add(
+      const SearchCondition(map: MapSearchCondition(pinSize: MapPinSize.small)),
+    );
+    await pumpEventQueue();
+
+    expect(state().pinWidth, 51);
+    verifyNever(() => cardUseCase.fetchImage(cardId: any(named: 'cardId')));
   });
 }

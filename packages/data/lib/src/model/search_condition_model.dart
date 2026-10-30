@@ -81,7 +81,10 @@ class CommonSearchConditionModel {
 
 @JsonSerializable(checked: true)
 class MapSearchConditionModel {
-  const MapSearchConditionModel({required this.coordinateType});
+  const MapSearchConditionModel({
+    required this.coordinateType,
+    required this.pinSize,
+  });
 
   factory MapSearchConditionModel.fromJson(Map<String, dynamic> json) =>
       _$MapSearchConditionModelFromJson(json);
@@ -89,6 +92,7 @@ class MapSearchConditionModel {
   factory MapSearchConditionModel.initial() {
     return const MapSearchConditionModel(
       coordinateType: CoordinateTypeModel.distribution,
+      pinSize: PinSizeModel.medium,
     );
   }
 
@@ -99,6 +103,12 @@ class MapSearchConditionModel {
     unknownEnumValue: CoordinateTypeModel.distribution,
   )
   final CoordinateTypeModel coordinateType;
+
+  @JsonKey(
+    defaultValue: PinSizeModel.medium,
+    unknownEnumValue: PinSizeModel.medium,
+  )
+  final PinSizeModel pinSize;
 }
 
 /// 値の名前が保存する文字列そのもの。変えると保存済みの値が読めなくなる。
@@ -106,6 +116,9 @@ enum DisplayFilterModel { all, acquired, unacquired }
 
 /// 値の名前が保存する文字列そのもの。変えると保存済みの値が読めなくなる。
 enum CoordinateTypeModel { distribution, position }
+
+/// 値の名前が保存する文字列そのもの。変えると保存済みの値が読めなくなる。
+enum PinSizeModel { smallest, small, medium, large, largest }
 
 class _StringSetConverter implements JsonConverter<Set<String>, Object?> {
   const _StringSetConverter();

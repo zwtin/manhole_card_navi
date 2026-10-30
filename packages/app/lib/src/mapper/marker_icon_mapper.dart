@@ -9,8 +9,8 @@ import 'package:domain/domain.dart';
 
 /// カード画像を、地図マーカーのアイコン（吹き出し枠との合成結果）にする。
 abstract final class MarkerIconMapper {
-  /// マーカーアイコンの出力サイズ（論理ピクセル基準の実ピクセル）。
-  /// 枠 PNG のアスペクト比 200:300 に合わせる。
+  /// マーカーアイコンの出力サイズ（実ピクセル）。地図に出す大きさは、これとは
+  /// 別にピンの幅で決まる。枠 PNG のアスペクト比 200:300 に合わせる。
   static const int _iconWidth = 200;
   static const int _iconHeight = 300;
 
