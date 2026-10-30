@@ -23,6 +23,7 @@ on:
       - main
     paths:
       - 'lib/**'
+      - 'packages/**'
       - 'ios/**'
       - 'pubspec.yaml'
       - 'pubspec.lock'
@@ -75,7 +76,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock', 'packages/*/pubspec.lock') }}
           restore-keys: |
             pub-${{ runner.os }}-
 
@@ -96,9 +97,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ runner.temp }}/DerivedData
-          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile', 'pubspec.lock') }}-${{ github.sha }}
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile', 'pubspec.lock', 'packages/*/pubspec.lock') }}-${{ github.sha }}
           restore-keys: |
-            deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile', 'pubspec.lock') }}-
+            deriveddata-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'ios/Podfile', 'pubspec.lock', 'packages/*/pubspec.lock') }}-
             deriveddata-${{ runner.os }}-
 
       # 温めは flavor に依存しない Pod コンパイルが主目的。配布 dispatch の既定に
@@ -138,8 +139,13 @@ jobs:
 
       # 生成ファイル (*.g.dart / *.freezed.dart / *.realm.dart) は git 管理せず、
       # 後段の xcodebuild が Dart をコンパイルするため事前に生成しておく。
+      # コード生成はパッケージ単位で走るため、依存される側（domain → data → app）から順に行う。
       - name: Run build_runner
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: |
+          set -euo pipefail
+          for package in packages/domain packages/data packages/app; do
+            (cd "$package" && flutter pub get && dart run build_runner build --delete-conflicting-outputs)
+          done
 
       # Xcode の Runner ターゲットに flutterfire upload-crashlytics-symbols を呼ぶ
       # ビルドフェーズがあり、未導入だとビルドが失敗するため導入する。
@@ -247,7 +253,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock', 'packages/*/pubspec.lock') }}
           restore-keys: |
             pub-${{ runner.os }}-
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lightPrimary">#86B6F6</color>
+    <color name="lightPositiveText">#000000</color>
+    <color name="lightIcon">#666666</color>
+    <color name="lightBorder">#AAAAAA</color>
+    <color name="lightContentsBackground">#FFFFFF</color>
+    <color name="lightScreenBackground">#EEEEEE</color>
+    <color name="lightLink">#1565C0</color>
+    <color name="lightSegmentTrack">#E6E6E6</color>
+    <color name="lightChipBorder">#C9C9C9</color>
+    <color name="lightBadgeText">#176B87</color>
+    <color name="lightBadgeBackground">#E4EFF2</color>
+    <color name="lightCardShadow">#14000000</color>
+
+    <color name="darkPrimary">#86B6F6</color>
+    <color name="darkPositiveText">#FFFFFF</color>
+    <color name="darkIcon">#CCCCCC</color>
+    <color name="darkBorder">#999999</color>
+    <color name="darkContentsBackground">#222222</color>
+    <color name="darkScreenBackground">#333333</color>
+    <color name="darkLink">#8AB4F8</color>
+    <color name="darkSegmentTrack">#3A3A3A</color>
+    <color name="darkChipBorder">#555555</color>
+    <color name="darkBadgeText">#8ECFE4</color>
+    <color name="darkBadgeBackground">#16333B</color>
+    <color name="darkCardLine">#2E2E2E</color>
+
+    <color name="onScrim">#FFFFFF</color>
+</resources>

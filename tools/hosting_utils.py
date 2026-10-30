@@ -7,7 +7,7 @@ deploy_images.py / delete_images_from_hosting.py / build_master.py が共有す�
   画像の**主系は Cloudflare R2**（egress 無料）。Hosting は**代替配信元**で、
   master の cards が持つ image_sub_url がこれを指す。
   アプリは image_url（R2）の取得に失敗したときだけ image_sub_url へフォールバックする
-  （lib/app/service/image_fallback.dart）。
+  （packages/app/lib/src/service/image_fallback.dart）。
 
 なぜ代替が要るのか:
   2026-07-27 に画像配信を Hosting から R2 へ移したところ「画像が表示されない」問い合わせが来た。

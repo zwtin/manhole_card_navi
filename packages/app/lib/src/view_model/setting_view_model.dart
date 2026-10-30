@@ -1,0 +1,66 @@
+import 'dart:async';
+
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:app/src/router/navigation_service.dart';
+import 'package:app/src/view_data/setting_view_data.dart';
+import 'package:domain/domain.dart';
+
+final settingViewModelProvider =
+    AsyncNotifierProvider.autoDispose<SettingViewModel, SettingViewData>(
+      SettingViewModel.new,
+    );
+
+class SettingViewModel extends AutoDisposeAsyncNotifier<SettingViewData> {
+  AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  NavigationService get _navigationService =>
+      ref.read(navigationServiceProvider);
+
+  @override
+  Future<SettingViewData> build() async {
+    final appInfoUseCase = ref.watch(appInfoUseCaseProvider);
+    final navigationService = ref.watch(navigationServiceProvider);
+
+    final result = await appInfoUseCase.get();
+    if (result case Failure(:final exception)) {
+      unawaited(
+        navigationService.showFailure(
+          title: 'アプリの情報を取得できませんでした',
+          exception: exception,
+        ),
+      );
+      return const SettingViewData();
+    }
+    final appInfo = (result as Success<AppInfo>).value;
+    return SettingViewData(
+      appName: appInfo.name,
+      appVersion: appInfo.version.value,
+    );
+  }
+
+  Future<void> onTapHowToUse() async {
+    await _navigationService.pushHowToUse();
+  }
+
+  Future<void> onTapRequestImprovement() async {
+    await _navigationService.openUrl('https://forms.gle/JVEuCBxCJhAZFSQA7');
+  }
+
+  Future<void> onTapTermsOfService() async {
+    await _navigationService.pushTermsOfService();
+  }
+
+  Future<void> onTapPrivacyPolicy() async {
+    await _navigationService.pushPrivacyPolicy();
+  }
+
+  Future<void> onTapLicense() async {
+    await _navigationService.pushLicense();
+  }
+
+  Future<void> sendScreenView() async {
+    await _analyticsUseCase.send(
+      event: const AnalyticsEvent.screenView(screenName: 'setting_view'),
+    );
+  }
+}

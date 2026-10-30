@@ -77,9 +77,13 @@ fvm install --skip-pub-get
 echo "==> pub get"
 fvm flutter pub get
 
-# 4. コード生成。.freezed.dart / .g.dart / .realm.dart は gitignore されているため必ず必要。
-echo "==> build_runner（1 分程度かかります）"
-fvm flutter pub run build_runner build --delete-conflicting-outputs
+# 4. コード生成。.freezed.dart / .g.dart は gitignore されているため必ず必要。
+#    コード生成はパッケージ単位で走るため、packages/ 配下の各パッケージで実行する。
+#    app は domain の型を解析するので、依存される側（domain → data → app）から順に生成する。
+for package in packages/domain packages/data packages/app; do
+  echo "==> $package: pub get / build_runner"
+  (cd "$package" && fvm flutter pub get && fvm dart run build_runner build --delete-conflicting-outputs)
+done
 
 # 5. iOS。ios/Pods/ は gitignore されているため pod install が必要。
 #    --config-only は Xcode 用のビルド設定（Generated.xcconfig）の生成と pod install だけを行い、ビルドはしない。
@@ -93,7 +97,6 @@ if [ "$(uname)" = "Darwin" ]; then
   fvm flutter build ios --config-only --debug --no-codesign --dart-define-from-file=dart_defines/development.env
 
   # Pod の構成を変えていなければ Podfile.lock は変わらないはず。
-  # realm のチェックサムがチェックアウトの場所に依存する問題は ios/Podfile で対処している。
   if ! git diff --quiet -- ios/Podfile.lock; then
     echo "!!! ios/Podfile.lock に差分が出ました。Pod を変更していないなら想定外なので git diff で確認してください。" >&2
   fi

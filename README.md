@@ -62,9 +62,8 @@ fvm flutter run --dart-define-from-file=dart_defines/development.env
 消す口はないので、調査のたびに**アプリを削除して入れ直す**（Android なら
 設定 > アプリ > ストレージ消去でもよい）。
 
-一覧・詳細の画像（`CardImageCacheManager`、キー `libCachedImageData`）と
-マーカー画像（`map_markers_view_data_mapper.dart` の独自ディスクキャッシュ）は
-別々のキャッシュだが、どちらも入れ直せば消える。
+カード画像のキャッシュは data の `CardImageDataSource`（キー `libCachedImageData`）
+の 1 つだけで、一覧・詳細・マーカーのどれもここから読む。
 
 ### 覗ける通信の対応表
 
@@ -77,7 +76,7 @@ fvm flutter run --dart-define-from-file=dart_defines/development.env
 | Firestore | ネイティブ（gRPC） | HTTP プロキシでは覗きにくい |
 
 カード画像は Dart 側で完結するので、**CA 証明書のインストールは不要**。
-`lib/app/service/debug_proxy.dart` が証明書の検証を無視するため、プロキシを
+`lib/debug_proxy.dart` が証明書の検証を無視するため、プロキシを
 立てて 1 行足すだけで HTTPS の中身まで見える。
 
 主系（`image_url` / R2）の GET が失敗すると、続けて代替（`image_sub_url` /

@@ -1,0 +1,227 @@
+import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:loading_overlay/loading_overlay.dart';
+import 'package:uuid/uuid.dart';
+
+import 'package:app/src/router/use_screen_view.dart';
+import 'package:app/src/view_model/detail_view_model.dart';
+import 'package:app/src/widget/app_bar_title.dart';
+import 'package:app/src/widget/app_text.dart';
+import 'package:app/src/widget/card_image.dart';
+import 'package:app/src/widget/card_image_provider.dart';
+import 'package:app/src/widget/html_content.dart';
+
+/// カード詳細。リストタブと、マップタブのモーダルから開く。
+class DetailPage extends HookConsumerWidget {
+  const DetailPage({super.key, required this.cardId});
+
+  final String cardId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final card = ref.watch(detailViewModelProvider(cardId)).valueOrNull;
+    final viewModel = ref.read(detailViewModelProvider(cardId).notifier);
+
+    useScreenView(ref, viewModel.sendScreenView);
+
+    return Scaffold(
+      appBar: AppBar(title: const AppBarTitle('詳細')),
+      body: Stack(
+        children: [
+          Container(color: Theme.of(context).colorScheme.surface),
+          LoadingOverlay(
+            color: Theme.of(context).colorScheme.surface,
+            isLoading: card == null,
+            child:
+                card == null
+                    ? Container()
+                    : Column(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 16),
+                                Builder(
+                                  builder: (context) {
+                                    final heroTag = const Uuid().v4();
+                                    return GestureDetector(
+                                      onTap: () async {
+                                        // 画像拡大（PhotoView）が使う原寸の
+                                        // デコードを待ってから遷移する。遷移を
+                                        // 始めた時点で PhotoView が Hero を作れ、
+                                        // 初回でも Hero が成立する。
+                                        try {
+                                          await precacheImage(
+                                            ref.read(cardImageProvider(cardId)),
+                                            context,
+                                          );
+                                        } on Exception {
+                                          // 先読みに失敗しても遷移は続ける。
+                                        }
+                                        await viewModel.onTapImage(heroTag);
+                                      },
+                                      child: Hero(
+                                        tag: heroTag,
+                                        flightShuttleBuilder:
+                                            CardImage.heroFlightShuttleBuilder(
+                                              alreadyGet: card.alreadyGet,
+                                            ),
+                                        child: SizedBox(
+                                          width: 130,
+                                          height: 180,
+                                          // memCacheWidth を指定せず原寸デコード
+                                          // する。画像拡大（PhotoView）も原寸
+                                          // デコードのため、デコード済みビット
+                                          // マップが共有され、初回タップでも
+                                          // Hero 遷移が成立する。
+                                          child: CardImage(
+                                            cardId: cardId,
+                                            alreadyGet: card.alreadyGet,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                _DetailRow(
+                                  label: '名前',
+                                  child: AppText.bodyLarge(card.name),
+                                ),
+                                _DetailRow(
+                                  label: '都道府県',
+                                  child: AppText.bodyLarge(card.prefecture),
+                                ),
+                                _DetailRow(
+                                  label: '弾数',
+                                  child: AppText.bodyLarge(card.volume),
+                                ),
+                                _DetailRow(
+                                  label: '発行年月日',
+                                  child: AppText.bodyLarge(
+                                    card.publicationDate,
+                                  ),
+                                ),
+                                if (card.distributionPlaceHtml.isNotEmpty)
+                                  _DetailRow(
+                                    label: '配布場所',
+                                    child: HtmlContent(
+                                      card.distributionPlaceHtml,
+                                      onTapLink: viewModel.onTapLink,
+                                    ),
+                                  ),
+                                if (card.distributionTimeHtml.isNotEmpty)
+                                  _DetailRow(
+                                    label: '配布時間',
+                                    child: HtmlContent(
+                                      card.distributionTimeHtml,
+                                      onTapLink: viewModel.onTapLink,
+                                    ),
+                                  ),
+                                _DetailRow(
+                                  label: '在庫状況',
+                                  child: HtmlContent(
+                                    card.stockHtml,
+                                    onTapLink: viewModel.onTapLink,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            // 在庫状況のリンクと下のボタンが近すぎて押し間違えやすい
+                            // ため、区切り線の上に少し余白を入れて間隔を空ける。
+                            const SizedBox(height: 12),
+                            const Divider(),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      0,
+                                      16,
+                                      0,
+                                    ),
+                                    child: ElevatedButton(
+                                      onPressed:
+                                          viewModel.onTapCheckWithMapButton,
+                                      child: SizedBox(
+                                        height: 48,
+                                        child: Center(
+                                          child: AppText.titleMedium(
+                                            'マップで見る',
+                                            color:
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .surfaceContainerLowest,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      0,
+                                      16,
+                                      0,
+                                    ),
+                                    child: ElevatedButton(
+                                      onPressed:
+                                          viewModel.onTapAlreadyGetButton,
+                                      child: SizedBox(
+                                        height: 48,
+                                        child: Center(
+                                          child: AppText.titleMedium(
+                                            card.alreadyGetActionButtonTitle,
+                                            color:
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .surfaceContainerLowest,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 40),
+                          ],
+                        ),
+                      ],
+                    ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  const _DetailRow({required this.label, required this.child});
+
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(width: 120, child: AppText.bodyLarge(label)),
+          Flexible(child: child),
+        ],
+      ),
+    );
+  }
+}
