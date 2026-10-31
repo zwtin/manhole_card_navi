@@ -111,14 +111,11 @@ def parse_municipality(cell_html):
     return name, serial
 
 
-def main():
-    if not os.path.exists(HTML_PATH):
-        sys.exit(f"HTMLが見つかりません: {HTML_PATH}")
-    html = open(HTML_PATH, encoding="utf-8", errors="replace").read()
-
+def parse_rows(html):
+    """一覧のHTMLから (カードのリスト, 警告のリスト) を返す。表が無ければ ValueError。"""
     m = re.search(r'<table[^>]*class="[^"]*table1[^"]*cr[^"]*"[^>]*>(.*?)</table>', html, re.S)
     if not m:
-        sys.exit("table1 cr が見つかりません")
+        raise ValueError("table1 cr が見つかりません")
     body = m.group(1)
     rows = [r for r in re.findall(r"<tr[^>]*>(.*?)</tr>", body, re.S) if "<td" in r]
 
@@ -164,6 +161,18 @@ def main():
             "stock_text": strip_tags_to_text(stock_cell),
         }
         cards.append(card)
+    return cards, warnings
+
+
+def main():
+    if not os.path.exists(HTML_PATH):
+        sys.exit(f"HTMLが見つかりません: {HTML_PATH}")
+    html = open(HTML_PATH, encoding="utf-8", errors="replace").read()
+
+    try:
+        cards, warnings = parse_rows(html)
+    except ValueError as e:
+        sys.exit(str(e))
 
     with open(OUT_PATH, "w", encoding="utf-8") as f:
         json.dump(cards, f, ensure_ascii=False, indent=2)

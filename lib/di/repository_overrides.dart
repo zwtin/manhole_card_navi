@@ -32,6 +32,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
     cardRepositoryProvider.overrideWith(
       (_) => CardRepositoryImpl(
         infrastructure.masterDataLocal,
+        infrastructure.cardUpdatesLocal,
         infrastructure.cardImage,
         infrastructure.analytics,
         crashlytics,
@@ -49,6 +50,7 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
       (_) => MasterDataRepositoryImpl(
         infrastructure.masterDataRemote,
         infrastructure.masterDataLocal,
+        infrastructure.cardUpdatesLocal,
         crashlytics,
       ),
     ),

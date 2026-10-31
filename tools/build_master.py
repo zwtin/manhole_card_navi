@@ -8,7 +8,9 @@ gk-p.jp の全カードから master バージョンを「毎回まるごと」�
   - 既存 master を引き継がず、cards_base.json（サイトの全カード）から全件を再生成する。
     これにより、弾の追加・カードの増減・在庫状況の変化がすべて自動で反映される。
   - カードID・マンホール座標は OCR 確定値（ocr_*）を使う。
-  - 配布場所の住所・在庫状況は AI 抽出の確定値（dist_*）を使う。
+  - 配布場所の住所は AI 抽出の確定値（dist_*）を使う。
+  - 配布状態は card_update.py baseline の結果を使う（在庫欄の AI 抽出に、自治体ページの
+    明確な記述を重ねたもの）。
   - 配布場所の座標は geocode_cache から引く。
   - 都道府県ID・弾IDは決定論的に導出する（ハードコードしない）:
       prefecture_id = pref_code を3桁ゼロ埋め（000=国機関 … 047=沖縄県）
@@ -61,6 +63,7 @@ gk-p.jp の全カードから master バージョンを「毎回まるごと」�
       ocr_id / ocr_lat_dms / ocr_lon_dms   … ocr_cards.py（画像の二重OCR）
       dist_addresses / dist_state          … extract_distribution.py（配布場所のAI抽出）
   tools/data/geocode_cache.json  住所 -> 座標（geocode.py）
+  tools/data/card_update_state.json  カードごとの配布状態（card_update.py baseline）
 
 前提が欠けていれば、どのカードの何が足りないかを表示して中断する。
 
@@ -84,6 +87,7 @@ import r2_utils  # noqa: E402  （主系 = R2 の配信ベース URL・キー計
 import hosting_utils  # noqa: E402  （代替 = Firebase Hosting の配信ベース URL）
 from geo_utils import geopoint, parse_dms_string, validate_jp_latlon  # noqa: E402
 from parse_cards import PREF_BY_CODE  # noqa: E402  （都道府県コード -> 名前）
+from card_update import load_state  # noqa: E402  （自治体ページの全件読みの結果）
 
 FS = os.path.join(HERE, "data", "firestore")
 DATA = os.path.join(HERE, "data")
@@ -131,9 +135,19 @@ def main():
 
     cards_base = load(os.path.join(DATA, "cards_base.json"))
     geocache = load(os.path.join(DATA, "geocode_cache.json"))
+    update_state = load_state()
 
     errors = []    # 致命的（これがあると master を作れない）
     warnings = []  # 注意（作れるが確認すべき）
+
+    # ---- 前提チェック: 自治体ページの全件読みが終わっているか ----
+    if update_state is None or update_state.get("baseline_in_progress"):
+        errors.append("自治体ページの全件読みが終わっていません（card_update.py baseline を実行）")
+    state_cards = (update_state or {}).get("cards", {})
+    for c in cards_base:
+        if update_state is not None and c.get("ocr_id") and c["ocr_id"] not in state_cards:
+            errors.append(f"{c['card_id']}: 全件読みの結果がありません"
+                          "（cards_base.json を変えたら card_update.py baseline --restart）")
 
     # ---- 前提チェック: OCR と AI抽出が全カードに揃っているか ----
     for c in cards_base:
@@ -227,7 +241,7 @@ def main():
             "distribution_points": points,
             "distribution_time_html": c.get("distribution_time_html", ""),
             "stock_html": c.get("stock_html", ""),
-            "distribution_state": c["dist_state"],
+            "distribution_state": state_cards[fs_id]["state"],
         })
 
     out = {

@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:data/src/datasource/card_image_data_source.dart';
+import 'package:data/src/datasource/card_updates_local_data_source.dart';
 import 'package:data/src/datasource/analytics_data_source.dart';
 import 'package:data/src/model/analytics_event_model.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
@@ -22,6 +23,7 @@ class MockAnalyticsDataSource extends Mock implements AnalyticsDataSource {}
 void main() {
   late Directory directory;
   late MasterDataLocalDataSource store;
+  late CardUpdatesLocalDataSource updates;
   late MockCardImageDataSource cardImage;
   late MockAnalyticsDataSource analytics;
   late MockFirebaseCrashlytics crashlytics;
@@ -34,6 +36,7 @@ void main() {
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('card_repository');
     store = MasterDataLocalDataSource(directory: () async => directory);
+    updates = CardUpdatesLocalDataSource(directory: () async => directory);
     cardImage = MockCardImageDataSource();
     analytics = MockAnalyticsDataSource();
     when(() => analytics.send(any())).thenAnswer((_) async {});
@@ -41,6 +44,7 @@ void main() {
     stubRecordError(crashlytics);
     repository = CardRepositoryImpl(
       store,
+      updates,
       cardImage,
       analytics,
       CrashlyticsDataSource(crashlytics),
@@ -69,6 +73,55 @@ void main() {
       isA<NotFoundException>(),
     );
     expect(recordedErrors(crashlytics).single.error, isA<NotFoundException>());
+  });
+
+  group('差分', () {
+    test('差分のあるカードだけ、最新の値を重ねて返す', () async {
+      await store.writeAll([localCard(id: 'A'), localCard(id: 'B')]);
+      await updates.writeAll([localCardUpdate(id: 'B')]);
+
+      final result = await repository.fetchAll();
+
+      final cards = (result as Success<List<ManholeCard>>).value;
+      expect(cards[0], card(id: 'A'));
+      expect(cards[1].distributionState, DistributionState.distributing);
+      expect(cards[1].distributionPlaceHtml, '<p>藤井寺市立図書館</p>');
+      expect(cards[1].distributionPoints, const [
+        Coordinate(latitude: 34.58, longitude: 135.61),
+      ]);
+      expect(cards[1].name, card(id: 'B').name);
+    });
+
+    test('1 枚だけ読むときも重ねる', () async {
+      await store.writeAll([localCard(id: 'A')]);
+      await updates.writeAll([localCardUpdate(id: 'A')]);
+
+      final result = await repository.get(id: 'A');
+
+      expect(
+        (result as Success<ManholeCard>).value.distributionState,
+        DistributionState.distributing,
+      );
+    });
+
+    test('master にないカードの差分は無視する', () async {
+      await store.writeAll([localCard(id: 'A')]);
+      await updates.writeAll([localCardUpdate(id: 'Z')]);
+
+      final result = await repository.fetchAll();
+
+      expect((result as Success<List<ManholeCard>>).value, [card(id: 'A')]);
+    });
+
+    test('差分が壊れていても、記録してカードは master のまま返す', () async {
+      await store.writeAll([localCard(id: 'A')]);
+      File('${directory.path}/card_updates.json').writeAsStringSync('[{');
+
+      final result = await repository.fetchAll();
+
+      expect((result as Success<List<ManholeCard>>).value, [card(id: 'A')]);
+      expect(recordedErrors(crashlytics).single.error, isA<FormatException>());
+    });
   });
 
   test('マスターデータを取り込む前は、全件の読み取りも失敗にする', () async {

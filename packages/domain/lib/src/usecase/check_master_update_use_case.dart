@@ -69,4 +69,13 @@ class CheckMasterUpdateUseCase {
     // 先に記録すると、入れ替えに失敗したときに古いデータのまま取り込み済みになる。
     return _masterVersionRepository.setCurrentVersion(version: inquiredVersion);
   }
+
+  Future<Result<void>> updateCardUpdates() async {
+    switch (await _masterVersionRepository.getInquiredVersion()) {
+      case Failure(:final exception):
+        return Result.failure(exception);
+      case Success(:final value):
+        return _masterDataRepository.replaceCardUpdates(version: value);
+    }
+  }
 }

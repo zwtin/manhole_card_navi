@@ -26,6 +26,27 @@ abstract final class LocalCardMapper {
     );
   }
 
+  static LocalCardModel toUpdatedCard(
+    LocalCardModel card,
+    LocalCardUpdateModel update,
+  ) {
+    return LocalCardModel(
+      id: card.id,
+      position: card.position,
+      name: card.name,
+      publicationDate: card.publicationDate,
+      distributionState: update.distributionState,
+      image: card.image,
+      imageSub: card.imageSub,
+      distributionPlaceHtml: update.distributionPlaceHtml,
+      distributionTimeHtml: update.distributionTimeHtml,
+      stockHtml: update.stockHtml,
+      distributionPoints: update.distributionPoints,
+      prefecture: card.prefecture,
+      volume: card.volume,
+    );
+  }
+
   static Coordinate _toCoordinate(LocalCoordinateModel model) {
     return Coordinate(latitude: model.latitude, longitude: model.longitude);
   }

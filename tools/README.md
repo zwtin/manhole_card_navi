@@ -47,6 +47,7 @@ Firestore へ投入する場合はさらに:
 3. ocr_cards.py                    新規カード画像を二重OCR → ID・座標を確定（cards_base に ocr_*）
 4. extract_distribution.py         配布場所HTMLをAI抽出 → 住所・在庫状況を確定（cards_base に dist_*）
 5. geocode.py                      配布場所の住所 → 緯度経度（Google Geocoding API・キャッシュ）
+5-2. card_update.py baseline       自治体ページを全件読み → 配布状態に明確な記述を重ねる
 6. build_master.py                 全カードを毎回まるごと再生成 → master_{version}_{project}.json
 7. deploy_images.py                gk-p.jp から1回取得 → R2（主系）と Hosting（代替）の両方へ配置
 8. upload_master_to_firestore.py   master_{version}.json を Firestore の master/{version} へ
@@ -169,6 +170,37 @@ master も直さない（情報源が二重になり、次回の再生成で戻�
 文字列で引き直す。キーはサイト表記の住所のままなので master 側の参照は変わらない。
 **座標は書かない**（人力の座標を混ぜない原則を保つ）。最も効くのは `{施設名} {住所}` の形。
 
+### 配布状態の定期更新（差分の配信）
+
+master を発行し直さずに、配布状態・配布場所・配布時間の変化を配信する。Mac の launchd が
+毎日 04:00 に `card_update.py run` を動かし、`master/{番号}/card_updates/current` に
+「master と違うカードの最新の値」を丸ごと書く。アプリは起動時に読んで master に重ねる。
+
+```bash
+tools/card_update.sh on      # 定期実行を始める
+tools/card_update.sh off     # 定期実行を止める（処理中の更新も止まる）
+tools/card_update.sh status  # ON か OFF か、接続先、最後に成功した日時
+python3 tools/test_card_update.py
+```
+
+- **tools/data のあるチェックアウトで実行する。** 接続先は `card_update.sh` の `PROJECT`。
+  変えたら `off` と `on` を実行する。ログは `data/card_update.log`。
+- **読むのは前回から変わった分だけ。** gk-p.jp の配布場所か在庫の文言が変わったカードと、本文が
+  変わった自治体のページを、道具なしの `claude -p`（Opus、サブスクリプションの枠）に読ませる。
+  ページの文章に指示が混ざっていても、Claude はファイルにもネットワークにも触れられない。
+- **配布状態:** 同じ回に変わったら自治体の明確な記述を優先し、回が違えば後から変わったほうを
+  採用する。記述がない・読めないときは変えない。
+- **座標:** 配布場所の欄が変わったカードだけ住所を取り出し、住所が変わっていれば
+  `distribution_points` を取り直す（`geocode.py` のキャッシュと差し替えを使う）。変換できなければ
+  変えない。蓋の位置 `location` は変えない。
+- **全件読みは master 発行のときだけ**（`card_update.py baseline`、`/update-master` の手順9-2）。
+- **Mac が止まっていたとき:** スリープ中の分は復帰時に動き、電源オフの分は動かない。追いつきも
+  再試行も作っていない。次の実行で最新を読むので取りこぼさない。失敗で読めなかった分も次回に読む。
+- **書き込み先:** Remote Config に載っている、`MIN_VERSION`（`card_update.py`）以降の番号すべて。
+  比較に `data/firestore/master_{番号}_{project}.json` を使う。
+- **誤配信:** 次の実行で上書きされる。急ぐときは `off` にして、Firebase コンソールで差分の
+  ドキュメントを消す。アプリには次の起動で届く。
+
 ## セットアップ
 
 ```bash
@@ -252,6 +284,9 @@ python3 tools/extract_distribution.py  # 不一致は out/dist_conflicts.json �
 export GOOGLE_GEOCODING_API_KEY=xxxxx
 python3 tools/geocode.py --dry-run     # 問い合わせ件数の確認
 python3 tools/geocode.py
+
+# 3-2) 自治体ページを全件読み（5 時間枠で止まったら、もう一度実行すると続きから読む）
+python3 tools/card_update.py baseline
 
 # 4) 投入データ生成（全カードを毎回まるごと再生成）
 #    dev / prod で配信ドメインが違うので project ごとに作る

@@ -8,3 +8,4 @@ cd "$(dirname "$0")/.." || exit 1
 (cd packages/data && env -u GIT_DIR fvm flutter test)
 (cd packages/app && env -u GIT_DIR fvm flutter test)
 env -u GIT_DIR fvm flutter test
+python3 tools/test_card_update.py

@@ -23,10 +23,43 @@ Map<String, dynamic> cardDocument() {
   };
 }
 
+Map<String, dynamic> cardUpdateDocument() {
+  return {
+    'id': '27-226-B001',
+    'distribution_state': 'stopped',
+    'distribution_place_html': '<p>図書館</p>',
+    'distribution_time_html': '<p>土日</p>',
+    'stock_html': '<p>なし</p>',
+    'distribution_points': [const GeoPoint(34.2, 135.2), 'not a point'],
+  };
+}
+
 void main() {
   FirestoreCardModel decode(Map<String, dynamic> data) {
     return FirestoreCardModel.fromDocument(data);
   }
+
+  group('差分のドキュメント', () {
+    test('変わったカードの最新の値を読む', () {
+      final model = FirestoreCardUpdatesModel.fromDocument({
+        'cards': [cardUpdateDocument()],
+      }).cards.single;
+
+      expect(model.id, '27-226-B001');
+      expect(model.distributionState, DistributionStateModel.stopped);
+      expect(model.distributionPlaceHtml, '<p>図書館</p>');
+      expect(model.distributionPoints, [const GeoPoint(34.2, 135.2)]);
+    });
+
+    test('知らない配布状態は、読めなかったことを知らせる', () {
+      expect(
+        () => FirestoreCardUpdatesModel.fromDocument({
+          'cards': [cardUpdateDocument()..['distribution_state'] = 'unknown'],
+        }),
+        throwsA(isA<CheckedFromJsonException>()),
+      );
+    });
+  });
 
   test('カードのドキュメントを読む', () {
     final model = decode(cardDocument());

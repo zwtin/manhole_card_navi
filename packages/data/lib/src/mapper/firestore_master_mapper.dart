@@ -33,4 +33,23 @@ abstract final class FirestoreMasterMapper {
       volume: LocalNamedModel(id: model.volumeId, name: volumeName),
     );
   }
+
+  static LocalCardUpdateModel toLocalCardUpdate(
+    FirestoreCardUpdateModel model,
+  ) {
+    return LocalCardUpdateModel(
+      id: model.id,
+      distributionState: model.distributionState,
+      distributionPlaceHtml: model.distributionPlaceHtml,
+      distributionTimeHtml: model.distributionTimeHtml,
+      stockHtml: model.stockHtml,
+      distributionPoints: [
+        for (final point in model.distributionPoints)
+          LocalCoordinateModel(
+            latitude: point.latitude,
+            longitude: point.longitude,
+          ),
+      ],
+    );
+  }
 }

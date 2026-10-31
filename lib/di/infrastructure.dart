@@ -20,6 +20,7 @@ class Infrastructure {
     required this.remoteConfig,
     required this.masterDataLocal,
     required this.masterDataRemote,
+    required this.cardUpdatesLocal,
     required this.cardImage,
     required this.analytics,
     required this.auth,
@@ -60,6 +61,7 @@ class Infrastructure {
       remoteConfig: remoteConfig,
       masterDataLocal: MasterDataLocalDataSource.inApplicationSupport(),
       masterDataRemote: MasterDataRemoteDataSource(FirebaseFirestore.instance),
+      cardUpdatesLocal: CardUpdatesLocalDataSource.inApplicationSupport(),
       cardImage: CardImageDataSource.withDeviceCache(),
       analytics: AnalyticsDataSource(FirebaseAnalytics.instance),
       auth: AuthDataSource(FirebaseAuth.instance),
@@ -80,6 +82,10 @@ class Infrastructure {
   final MasterDataLocalDataSource masterDataLocal;
 
   final MasterDataRemoteDataSource masterDataRemote;
+
+  /// 読み込んだ差分をメモリに持つので、Repository どうしで同じものを使う。
+  final CardUpdatesLocalDataSource cardUpdatesLocal;
+
   final CardImageDataSource cardImage;
   final AnalyticsDataSource analytics;
   final AuthDataSource auth;

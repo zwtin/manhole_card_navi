@@ -141,4 +141,37 @@ void main() {
       );
     });
   });
+
+  group('updateCardUpdates', () {
+    test('要求バージョンの差分と入れ替える', () async {
+      when(
+        () => masterDataRepository.replaceCardUpdates(
+          version: any(named: 'version'),
+        ),
+      ).thenAnswer((_) async => const Result.success(null));
+
+      final result = await getUseCase().updateCardUpdates();
+
+      expect(result, isA<Success<void>>());
+      verify(
+        () => masterDataRepository.replaceCardUpdates(version: inquiredVersion),
+      ).called(1);
+    });
+
+    test('要求バージョンを取れなければ、入れ替えずに失敗を返す', () async {
+      const failure = OfflineException();
+      when(
+        () => masterVersionRepository.getInquiredVersion(),
+      ).thenAnswer((_) async => const Result.failure(failure));
+
+      final result = await getUseCase().updateCardUpdates();
+
+      expect((result as Failure<void>).exception, same(failure));
+      verifyNever(
+        () => masterDataRepository.replaceCardUpdates(
+          version: any(named: 'version'),
+        ),
+      );
+    });
+  });
 }

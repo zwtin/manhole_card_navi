@@ -48,3 +48,17 @@ LocalCardModel localCard({
     volume: const LocalNamedModel(id: '0000', name: '第1弾'),
   );
 }
+
+/// [localCard] と違う値を持つ差分。
+LocalCardUpdateModel localCardUpdate({String id = '27-226-B001'}) {
+  return LocalCardUpdateModel(
+    id: id,
+    distributionState: DistributionStateModel.distributing,
+    distributionPlaceHtml: '<p>藤井寺市立図書館</p>',
+    distributionTimeHtml: '<p>10:00〜18:00</p>',
+    stockHtml: '<p>再開</p>',
+    distributionPoints: const [
+      LocalCoordinateModel(latitude: 34.58, longitude: 135.61),
+    ],
+  );
+}

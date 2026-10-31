@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:data/src/datasource/analytics_data_source.dart';
 import 'package:data/src/datasource/card_image_data_source.dart';
+import 'package:data/src/datasource/card_updates_local_data_source.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/mapper/analytics_event_mapper.dart';
@@ -14,12 +15,14 @@ import 'package:domain/domain.dart';
 class CardRepositoryImpl implements CardRepository {
   CardRepositoryImpl(
     this._masterData,
+    this._cardUpdates,
     this._cardImage,
     this._analytics,
     this._crashlytics,
   );
 
   final MasterDataLocalDataSource _masterData;
+  final CardUpdatesLocalDataSource _cardUpdates;
   final CardImageDataSource _cardImage;
   final AnalyticsDataSource _analytics;
   final CrashlyticsDataSource _crashlytics;
@@ -104,6 +107,26 @@ class CardRepositoryImpl implements CardRepository {
     if (cards == null || cards.isEmpty) {
       throw const NotFoundException(detail: '端末にマスターデータがありません');
     }
-    return cards;
+    final updates = await _readUpdates();
+    if (updates.isEmpty) {
+      return cards;
+    }
+    return [
+      for (final card in cards)
+        switch (updates[card.id]) {
+          final update? => LocalCardMapper.toUpdatedCard(card, update),
+          null => card,
+        },
+    ];
+  }
+
+  /// 差分が読めなくても、カードは master のまま出す。
+  Future<Map<String, LocalCardUpdateModel>> _readUpdates() async {
+    try {
+      return await _cardUpdates.readAll();
+    } on Exception catch (error, stackTrace) {
+      _crashlytics.recordNonFatal(error, stackTrace);
+      return const {};
+    }
   }
 }

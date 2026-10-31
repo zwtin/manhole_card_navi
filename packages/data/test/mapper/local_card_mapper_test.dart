@@ -38,6 +38,25 @@ void main() {
     expect(read.position, const Coordinate(latitude: 35, longitude: 139));
   });
 
+  test('差分を重ねると、変わる項目だけが差分の値になる', () {
+    final updated = LocalCardMapper.toUpdatedCard(
+      localCard(),
+      localCardUpdate(),
+    );
+
+    final expected = localCard().toJson()
+      ..addAll({
+        'distributionState': 'distributing',
+        'distributionPlaceHtml': '<p>藤井寺市立図書館</p>',
+        'distributionTimeHtml': '<p>10:00〜18:00</p>',
+        'stockHtml': '<p>再開</p>',
+        'distributionPoints': [
+          {'latitude': 34.58, 'longitude': 135.61},
+        ],
+      });
+    expect(updated.toJson(), expected);
+  });
+
   test('壊れたカードは、壊れたデータの失敗にする', () {
     Map<String, dynamic> broken(String key, Object? value) {
       return stored(localCard())..[key] = value;
