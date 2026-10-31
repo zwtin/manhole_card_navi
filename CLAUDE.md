@@ -41,6 +41,7 @@ fvm flutter analyze
 (cd packages/data && fvm flutter test)
 (cd packages/app && fvm flutter test)
 fvm flutter test                       # ルート（lib/ の組み立て・記録）
+python3 tools/test_card_update.py      # 配布状態の定期更新
 
 # コード生成（パッケージごと。依存される側から順に）
 for package in packages/domain packages/data packages/app; do
@@ -81,10 +82,11 @@ lefthook がフックで検査を走らせる。導入は `brew install lefthook
    - `datasource/` - 外界と話すクラス。**Repository は DataSource としか話さない**ので、外界は素通しでも必ずここで包む（包むか判断しないで済むようにするため）。返すのは model か素の値で、SDK の型もエンティティも外に出さない。domain を知らないので、失敗は package が定義した例外（`CheckedFromJsonException`・`FormatException` など）のまま投げる。失敗の種類にするのは Repository。**DataSource は例外を捕まえない**（壊れたファイルを消す など、後片付けをして投げ直すときだけ捕まえてよい）。握りつぶすと、どこで何が起きたかが誰にも見えなくなる
      - **DataSource は 1 つの外界だけを相手にし、単体で独立させる。** DataSource の中に別の DataSource やサービスを持たない。複数の外界を組み合わせる（片方でだめならもう片方、取れたら計測する など）のは Repository の役目
      - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
+     - `CardUpdatesLocalDataSource`: カードに重ねる差分を 1 つの JSON ファイルで持つ
      - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）。取り直さない時間は環境で変わるので、ルートから渡す。同じく環境で変わるアプリ名も、ルートが `AppInfoRepositoryImpl` に渡す（data は `String.fromEnvironment` を読まない）
      - `CardImageDataSource`: カード画像を、端末のキャッシュから読む／URL から取って保存する
      - `AnalyticsDataSource`: アプリのイベントを Analytics に送る。イベント名とパラメータへの置き換えは `AnalyticsEventMapper`
-     - `MasterDataRemoteDataSource`: サーバー（Firestore）が配信するマスターデータ
+     - `MasterDataRemoteDataSource`: サーバー（Firestore）が配信するマスターデータと、その差分
      - `PreferencesDataSource`: 端末に保存する利用者の設定・取得済みカード（SharedPreferences）。書き込みは保存できたかを bool で返し、失敗として扱うかは Repository が決める
      - `AuthDataSource`: 匿名ログイン。返すのは利用者の ID だけ
      - `PushNotificationDataSource` / `PackageInfoDataSource` / `LocationDataSource` / `AppBadgeDataSource`: 通知の許可・アプリ自身の情報・位置情報・アプリのバッジ
@@ -173,6 +175,7 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 ### データ層
 - **リモート:** クラウドデータ用のFirebase Firestore
 - **ローカル:** 取り込んだマスターデータは 1 つの JSON ファイル（`MasterDataLocalDataSource`）。Firestore から取ったカードは、エンティティを通さずに端末に保存する形（`LocalCardModel`）にして書く。全件をまとめて読んでメモリに持ち、入れ替えは一時ファイルに書いてから名前を変えて行う。ファイルの形を変えたらファイル名のバージョンを上げ、古い形は取り込んでいない扱いにして取り直す。利用者の設定・取得済みカードは SharedPreferences
+- **差分:** master を発行し直さずに配布状態・配布場所・配布時間を更新する仕組み。Mac の定期実行（`tools/card_update.sh`、詳細は `tools/README.md`）が `master/{番号}/card_updates/current` の 1 ドキュメントに「master と違うカードの最新の値」を丸ごと書く。アプリは起動時チェックで master を確かめた後に読み、別のファイル（`CardUpdatesLocalDataSource`）に置き換える。カードを読むときに `CardRepositoryImpl` が master に重ねるので、master のファイルは書き換えない。取れなくても起動は止めず、前回の差分で続ける。差分は取得元の master に対するものなので、master を入れ替えるときに捨てる
 - **コード生成:** イミュータブルモデル用のFreezed
 
 ### 主要な依存関係

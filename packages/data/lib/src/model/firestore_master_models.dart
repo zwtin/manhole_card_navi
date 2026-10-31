@@ -59,6 +59,45 @@ class FirestoreCardModel {
   final String volumeId;
 }
 
+/// `master/{version}/card_updates/current`。master から変わったカードの最新の値。
+@JsonSerializable(checked: true, createToJson: false)
+class FirestoreCardUpdatesModel {
+  const FirestoreCardUpdatesModel({required this.cards});
+
+  factory FirestoreCardUpdatesModel.fromDocument(Map<String, dynamic> data) =>
+      _$FirestoreCardUpdatesModelFromJson(data);
+
+  final List<FirestoreCardUpdateModel> cards;
+}
+
+@JsonSerializable(
+  checked: true,
+  createToJson: false,
+  fieldRename: FieldRename.snake,
+)
+class FirestoreCardUpdateModel {
+  const FirestoreCardUpdateModel({
+    required this.id,
+    required this.distributionState,
+    required this.distributionPlaceHtml,
+    required this.distributionTimeHtml,
+    required this.stockHtml,
+    required this.distributionPoints,
+  });
+
+  factory FirestoreCardUpdateModel.fromJson(Map<String, dynamic> json) =>
+      _$FirestoreCardUpdateModelFromJson(json);
+
+  final String id;
+  final DistributionStateModel distributionState;
+  final String distributionPlaceHtml;
+  final String distributionTimeHtml;
+  final String stockHtml;
+
+  @_GeoPointListConverter()
+  final List<GeoPoint> distributionPoints;
+}
+
 @JsonSerializable(checked: true, createToJson: false)
 class FirestorePrefectureModel {
   const FirestorePrefectureModel({required this.id, required this.name});

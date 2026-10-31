@@ -27,6 +27,7 @@ class CheckMasterUpdateViewModel
 
   Future<void> onLoad() async {
     await _updateMasterIfNeeded();
+    await _updateCardUpdates();
     final needAgree = await _checkNeedAgree();
     if (needAgree) {
       _navigationService.goToTutorial();
@@ -70,6 +71,13 @@ class CheckMasterUpdateViewModel
       }
       return;
     }
+  }
+
+  /// 取れなくても前回の差分で使えるので、知らせずに起動を続ける。
+  Future<void> _updateCardUpdates() async {
+    state = state.copyWith(isLoading: true);
+    await _checkMasterUpdateUseCase.updateCardUpdates();
+    state = state.copyWith(isLoading: false);
   }
 
   Future<void> _showUpdateFailure(DomainException exception) async {

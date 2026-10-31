@@ -5,7 +5,8 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:data/src/datasource/master_data_remote_data_source.dart';
 
-import '../model/firestore_master_models_test.dart' show cardDocument;
+import '../model/firestore_master_models_test.dart'
+    show cardDocument, cardUpdateDocument;
 
 // Firestore の型は sealed だが、テストのために差し替える。
 // ignore_for_file: subtype_of_sealed_class
@@ -23,6 +24,9 @@ class MockQuerySnapshot extends Mock
 
 class MockQueryDocument extends Mock
     implements QueryDocumentSnapshot<Map<String, dynamic>> {}
+
+class MockDocumentSnapshot extends Mock
+    implements DocumentSnapshot<Map<String, dynamic>> {}
 
 void main() {
   late MockFirestore firestore;
@@ -97,6 +101,45 @@ void main() {
       dataSource.read('0006'),
       throwsA(isA<FirebaseException>()),
     );
+  });
+
+  group('readCardUpdates', () {
+    void stubCardUpdates(Map<String, dynamic>? data) {
+      final collection = MockCollection();
+      final document = MockDocument();
+      final snapshot = MockDocumentSnapshot();
+      when(() => master.collection('card_updates')).thenReturn(collection);
+      when(() => collection.doc('current')).thenReturn(document);
+      when(document.get).thenAnswer((_) async => snapshot);
+      when(snapshot.data).thenReturn(data);
+    }
+
+    test('master の配下の差分を読んで model にする', () async {
+      stubCardUpdates({
+        'cards': [cardUpdateDocument()],
+      });
+
+      final updates = await dataSource.readCardUpdates('0006');
+
+      expect(updates.single.id, '27-226-B001');
+    });
+
+    test('ドキュメントがなければ、差分はない', () async {
+      stubCardUpdates(null);
+
+      expect(await dataSource.readCardUpdates('0006'), isEmpty);
+    });
+
+    test('形の違うドキュメントは、読めなかったことをそのまま投げる', () async {
+      stubCardUpdates({
+        'cards': [cardUpdateDocument()..remove('stock_html')],
+      });
+
+      await expectLater(
+        dataSource.readCardUpdates('0006'),
+        throwsA(isA<CheckedFromJsonException>()),
+      );
+    });
   });
 }
 

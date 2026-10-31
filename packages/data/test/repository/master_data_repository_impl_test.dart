@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:data/src/datasource/card_updates_local_data_source.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
 import 'package:data/src/datasource/master_data_remote_data_source.dart';
@@ -14,7 +15,8 @@ import 'package:domain/domain.dart';
 
 import '../datasource/crashlytics_mock.dart';
 import '../fixtures.dart';
-import '../model/firestore_master_models_test.dart' show cardDocument;
+import '../model/firestore_master_models_test.dart'
+    show cardDocument, cardUpdateDocument;
 
 class MockMasterDataRemoteDataSource extends Mock
     implements MasterDataRemoteDataSource {}
@@ -24,6 +26,7 @@ void main() {
 
   late Directory directory;
   late MasterDataLocalDataSource local;
+  late CardUpdatesLocalDataSource cardUpdates;
   late MockMasterDataRemoteDataSource remote;
   late MasterDataRepositoryImpl repository;
 
@@ -52,12 +55,14 @@ void main() {
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('master_data');
     local = MasterDataLocalDataSource(directory: () async => directory);
+    cardUpdates = CardUpdatesLocalDataSource(directory: () async => directory);
     remote = MockMasterDataRemoteDataSource();
     final crashlytics = MockFirebaseCrashlytics();
     stubRecordError(crashlytics);
     repository = MasterDataRepositoryImpl(
       remote,
       local,
+      cardUpdates,
       CrashlyticsDataSource(crashlytics),
     );
   });
@@ -160,5 +165,59 @@ void main() {
 
     expect((result as Failure<void>).exception, isA<OfflineException>());
     expect((await local.readAll())!.map((card) => card.id), ['old']);
+  });
+
+  test('master を入れ替えると、前の master に対する差分を捨てる', () async {
+    await cardUpdates.writeAll([localCardUpdate(id: 'old')]);
+    stubRead(
+      cards: [cardDocument()],
+      prefectures: [
+        {'id': '27', 'name': '大阪府'},
+      ],
+      volumes: [
+        {'id': '0000', 'name': '第1弾'},
+      ],
+    );
+
+    await repository.replace(version: version);
+
+    expect(await cardUpdates.readAll(), isEmpty);
+  });
+
+  test('master を取得できなければ、差分も変えない', () async {
+    await cardUpdates.writeAll([localCardUpdate(id: 'old')]);
+    when(() => remote.read('0006')).thenThrow(
+      FirebaseException(plugin: 'cloud_firestore', code: 'unavailable'),
+    );
+
+    await repository.replace(version: version);
+
+    expect((await cardUpdates.readAll()).keys, ['old']);
+  });
+
+  group('replaceCardUpdates', () {
+    test('サーバーの差分と入れ替える', () async {
+      await cardUpdates.writeAll([localCardUpdate(id: 'old')]);
+      when(() => remote.readCardUpdates('0006')).thenAnswer(
+        (_) async => [FirestoreCardUpdateModel.fromJson(cardUpdateDocument())],
+      );
+
+      final result = await repository.replaceCardUpdates(version: version);
+
+      expect(result, isA<Success<void>>());
+      expect((await cardUpdates.readAll()).keys, ['27-226-B001']);
+    });
+
+    test('取得できなければ、前の差分のまま失敗を返す', () async {
+      await cardUpdates.writeAll([localCardUpdate(id: 'old')]);
+      when(() => remote.readCardUpdates('0006')).thenThrow(
+        FirebaseException(plugin: 'cloud_firestore', code: 'unavailable'),
+      );
+
+      final result = await repository.replaceCardUpdates(version: version);
+
+      expect((result as Failure<void>).exception, isA<OfflineException>());
+      expect((await cardUpdates.readAll()).keys, ['old']);
+    });
   });
 }

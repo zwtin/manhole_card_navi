@@ -42,6 +42,31 @@ class LocalCardModel {
   final LocalNamedModel volume;
 }
 
+/// カードに重ねる差分。master から変わる項目だけを持つ。
+@JsonSerializable(checked: true, explicitToJson: true)
+class LocalCardUpdateModel {
+  const LocalCardUpdateModel({
+    required this.id,
+    required this.distributionState,
+    required this.distributionPlaceHtml,
+    required this.distributionTimeHtml,
+    required this.stockHtml,
+    required this.distributionPoints,
+  });
+
+  factory LocalCardUpdateModel.fromJson(Map<String, dynamic> json) =>
+      _$LocalCardUpdateModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LocalCardUpdateModelToJson(this);
+
+  final String id;
+  final DistributionStateModel distributionState;
+  final String distributionPlaceHtml;
+  final String distributionTimeHtml;
+  final String stockHtml;
+  final List<LocalCoordinateModel> distributionPoints;
+}
+
 @JsonSerializable(checked: true)
 class LocalCoordinateModel {
   const LocalCoordinateModel({required this.latitude, required this.longitude});

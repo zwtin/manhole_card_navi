@@ -41,6 +41,9 @@ void main() {
     when(
       () => termsOfServiceUseCase.getNeedAgree(),
     ).thenAnswer((_) async => const Result.success(true));
+    when(
+      () => checkMasterUpdateUseCase.updateCardUpdates(),
+    ).thenAnswer((_) async => const Result.success(null));
   });
 
   tearDown(() {
@@ -116,5 +119,34 @@ void main() {
       ),
     ).called(1);
     verify(() => checkMasterUpdateUseCase.getNeedUpdate()).called(2);
+  });
+
+  test('マスターデータを確かめてから、差分を取り直す', () async {
+    stubNeedUpdate([const Result.success(false)]);
+
+    await onLoad();
+
+    verifyInOrder([
+      () => checkMasterUpdateUseCase.getNeedUpdate(),
+      () => checkMasterUpdateUseCase.updateCardUpdates(),
+      () => navigationService.goToTutorial(),
+    ]);
+  });
+
+  test('差分を取れなくても、知らせずに次の画面へ進む', () async {
+    stubNeedUpdate([const Result.success(false)]);
+    when(
+      () => checkMasterUpdateUseCase.updateCardUpdates(),
+    ).thenAnswer((_) async => const Result.failure(OfflineException()));
+
+    await onLoad();
+
+    verifyNever(
+      () => navigationService.showFailure(
+        title: any(named: 'title'),
+        exception: any(named: 'exception'),
+      ),
+    );
+    verify(() => navigationService.goToTutorial()).called(1);
   });
 }

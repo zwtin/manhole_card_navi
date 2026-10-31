@@ -5,7 +5,8 @@ import 'package:data/src/model/distribution_state_model.dart';
 import 'package:data/src/model/firestore_master_models.dart';
 import 'package:data/src/model/local_card_model.dart';
 
-import '../model/firestore_master_models_test.dart' show cardDocument;
+import '../model/firestore_master_models_test.dart'
+    show cardDocument, cardUpdateDocument;
 
 LocalCardModel _toLocalCard(Map<String, dynamic> data) {
   return FirestoreMasterMapper.toLocalCard(
@@ -32,5 +33,22 @@ void main() {
     );
     expect((card.prefecture.id, card.prefecture.name), ('27', '大阪府'));
     expect((card.volume.id, card.volume.name), ('0000', '第1弾'));
+  });
+
+  test('サーバーの差分を、端末に保存する差分にする', () {
+    final update = FirestoreMasterMapper.toLocalCardUpdate(
+      FirestoreCardUpdateModel.fromJson(cardUpdateDocument()),
+    );
+
+    expect(update.id, '27-226-B001');
+    expect(update.distributionState, DistributionStateModel.stopped);
+    expect(update.stockHtml, '<p>なし</p>');
+    expect(
+      [
+        for (final point in update.distributionPoints)
+          (point.latitude, point.longitude),
+      ],
+      [(34.2, 135.2)],
+    );
   });
 }
