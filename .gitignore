@@ -88,3 +88,7 @@ tools/data/
 tools/images/
 tools/out/
 tools/**/.DS_Store
+
+# 作業用の一時置き場。フォルダだけ残すため .gitkeep はコミットし、中身は除外する。
+/tmp/*
+!/tmp/.gitkeep
