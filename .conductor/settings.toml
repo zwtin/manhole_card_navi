@@ -1,0 +1,24 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[scripts]
+setup = '''
+set -e
+export PATH="$HOME/.rbenv/shims:/opt/homebrew/bin:/usr/local/bin:$HOME/.pub-cache/bin:$HOME/.local/bin:$PATH"
+lefthook install
+./scripts/setup_worktree.sh
+'''
+run_mode = "concurrent"
+
+[scripts.run.setup]
+command = 'export PATH="$HOME/.rbenv/shims:/opt/homebrew/bin:/usr/local/bin:$HOME/.pub-cache/bin:$HOME/.local/bin:$PATH"; lefthook install && ./scripts/setup_worktree.sh'
+icon = "wrench"
+available_in = ["local"]
+
+[scripts.run.check]
+command = 'export PATH="$HOME/.rbenv/shims:/opt/homebrew/bin:/usr/local/bin:$HOME/.pub-cache/bin:$PATH"; fvm flutter analyze && ./scripts/check_app_rules.sh && ./scripts/run_tests.sh'
+icon = "check-check"
+available_in = ["local"]
+
+[prompts]
+general = "AGENTS.md を読み、そこにある共通ルールと作業別の参照指示に従ってください。"
+code_review = "AGENTS.md を読み、そこから案内する共通レビュー基準に従ってレビューしてください。"
