@@ -1,0 +1,30 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[scripts]
+setup = '''
+set -e
+export PATH="$HOME/.rbenv/shims:/opt/homebrew/bin:/usr/local/bin:$HOME/.pub-cache/bin:$HOME/.local/bin:$PATH"
+python3 "$CONDUCTOR_ROOT_PATH/scripts/ai_team.py" bootstrap
+lefthook install
+./scripts/setup_worktree.sh
+'''
+run_mode = "concurrent"
+
+[scripts.run.setup]
+command = 'export PATH="$HOME/.rbenv/shims:/opt/homebrew/bin:/usr/local/bin:$HOME/.pub-cache/bin:$HOME/.local/bin:$PATH"; lefthook install && ./scripts/setup_worktree.sh'
+icon = "wrench"
+available_in = ["local"]
+
+[scripts.run.check]
+command = 'export PATH="$HOME/.rbenv/shims:/opt/homebrew/bin:/usr/local/bin:$HOME/.pub-cache/bin:$PATH"; fvm flutter analyze && ./scripts/check_app_rules.sh && ./scripts/run_tests.sh'
+icon = "check-check"
+available_in = ["local"]
+
+[prompts]
+general = '''
+日本語で応答しCLAUDE.mdを共通ルールとする。Conductorの担当はチャットごとに維持する。
+ユーザーが選んだteam-design/team-build/team-reviewを後続の通常メッセージでも継続し、対応する.agents/skillsのSKILL.mdを参照する。成果物の完成や別担当への言及で担当を変えない。共有の現在モードを作らず、他タブの履歴の共有を仮定しない。
+Astraは設計の相談と.context/ai-team/spec.mdの更新、Opusは実装・検証とimplementation.mdの更新、SolはPRレビュー・反論の検討・指摘の訂正と対応確認、reviews/の更新を担当する。
+実装は仕様書なしでも直接依頼できる。PR作成はユーザーの明示依頼がある時点で行い、PR後もOpusは指摘対応を継続する。Solは初回を独立に評価し、その後は同じチャットで議論と再確認を続ける。自動で別担当へ移行せず、マージは別の明示依頼が必要。
+'''
+code_review = "日本語で、受入条件・データモデルと現実の対応・具体的な不具合を優先し、根拠となるファイルと行、再現条件、影響を示す。好みだけの指摘は不要。"
