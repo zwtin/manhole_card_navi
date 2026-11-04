@@ -4,7 +4,6 @@
 setup = '''
 set -e
 export PATH="$HOME/.rbenv/shims:/opt/homebrew/bin:/usr/local/bin:$HOME/.pub-cache/bin:$HOME/.local/bin:$PATH"
-python3 "$CONDUCTOR_ROOT_PATH/scripts/ai_team.py" bootstrap
 lefthook install
 ./scripts/setup_worktree.sh
 '''

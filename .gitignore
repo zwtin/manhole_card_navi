@@ -95,4 +95,3 @@ tools/**/.DS_Store
 
 /.context/
 /.conductor/*.local.*
-**/__pycache__/
