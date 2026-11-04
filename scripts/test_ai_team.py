@@ -60,6 +60,8 @@ class IntegrationTests(unittest.TestCase):
 
     def test_bootstrap_preserves_existing_files(self):
         (self.root / 'AGENTS.md').write_text('local instructions')
+        (self.root / 'docs').mkdir()
+        (self.root / 'docs/development.md').write_text('local setup instructions')
         self.assertEqual(self.call('bootstrap').returncode, 0)
         self.assertEqual((self.root / 'AGENTS.md').read_text(), 'local instructions')
         alias = self.root / '.claude/skills'
@@ -68,6 +70,10 @@ class IntegrationTests(unittest.TestCase):
         for name in ('team-design', 'team-build', 'team-review', 'update-master', 'cleanup-old-images'):
             self.assertTrue((alias / name / 'SKILL.md').samefile(self.root / '.agents/skills' / name / 'SKILL.md'))
         self.assertFalse((self.root / '.claude/commands').exists())
+        self.assertEqual((self.root / 'CLAUDE.md').read_text(), '@AGENTS.md\n')
+        for name in ('architecture.md', 'app-architecture.md', 'development.md', 'conductor.md'):
+            self.assertTrue((self.root / 'docs' / name).is_file())
+        self.assertEqual((self.root / 'docs/development.md').read_text(), 'local setup instructions')
         (alias / 'team-build/SKILL.md').write_text('local implementation instructions')
         once = (self.root / '.gitignore').read_text()
         self.assertEqual(self.call('bootstrap').returncode, 0)

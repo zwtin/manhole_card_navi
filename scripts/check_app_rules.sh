@@ -84,7 +84,7 @@ check no_ui_in_view_model "$view_model_targets" \
 
 if [ "$found" -eq 1 ]; then
   echo ""
-  echo "app の約束から外れています。CLAUDE.md の app の節を参照。"
+  echo "app の約束から外れています。docs/app-architecture.md を参照。"
   exit 1
 fi
 echo "app の約束: 問題なし"

@@ -113,7 +113,8 @@ def link_skills(root):
 def bootstrap(root):
     source = Path(__file__).resolve().parent.parent
     link_skills(root)
-    files = ["AGENTS.md", "scripts/ai_team.py"]
+    files = ["AGENTS.md", "CLAUDE.md", "scripts/ai_team.py",
+             "docs/architecture.md", "docs/app-architecture.md", "docs/development.md", "docs/conductor.md"]
     files += [str(path.relative_to(source)) for path in (source / ".agents/skills").rglob("*")
               if path.is_file()]
     for name in files:
@@ -167,7 +168,7 @@ def main():
     request = args.request.read_text() if args.request else ""
     common = (
         "日本語で回答してください。コードやファイルを変更しない読み取り専用の相談です。"
-        "CLAUDE.mdとAGENTS.mdを読み、次の目的・受入条件を実コードと照合してください。"
+        "AGENTS.mdと、そこに示した参照条件に応じた設計資料を読み、次の目的・受入条件を実コードと照合してください。"
         "他のAIや相談スクリプトを呼び出さないでください。秘密情報や環境設定の値を読まないでください。\n"
         f"開始コミット: {base}\n目的・受入条件:\n{brief.read_text()}\n"
     )

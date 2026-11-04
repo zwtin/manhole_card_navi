@@ -1,2 +1,0 @@
-# 共通ルールを集約した AGENTS.md が既定の 32 KiB を超えるため。
-project_doc_max_bytes = 65536

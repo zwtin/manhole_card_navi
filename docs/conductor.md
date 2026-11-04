@@ -40,7 +40,7 @@ Runメニューの `setup` は開発環境の再準備、`check` は静的解析
 
 設定ファイル:
 
-- 継続する担当の指示: `AGENTS.md`
+- 共通ルールと作業別資料の参照条件: `AGENTS.md`（`CLAUDE.md` は `@AGENTS.md` の1行）
 - スキル本体: `.agents/skills/<名前>/SKILL.md`（追加・編集はここだけで行う）
 - Claude Codeの参照先: `.claude/skills` → `../.agents/skills`（相対シンボリックリンク）
 - 共有設定: `.conductor/settings.toml`
@@ -50,7 +50,7 @@ Runメニューの `setup` は開発環境の再準備、`check` は静的解析
 
 共有Conductor設定はデフォルトブランチへ取り込んだ後に反映される。取り込む前に試す場合は、ローカルの上書き設定を使う。必要なモデルが表示されない場合は、利用するCodex・Claude Codeの実行ファイルをローカル設定で指定する。
 
-新しいワークスペースのsetupは、連携ファイルの不足分を補い、Gitフックと既存のFlutterセットアップを実行する。既存の連携ファイルは上書きしない。`.claude/skills` が実ディレクトリなら、内容を `.agents/skills` へ移して相対シンボリックリンクにする。同名スキルが両方にある場合や別のリンク先を指す場合は、既存内容を保持して停止する。設定ファイル、署名ファイル、依存取得、コード生成、iOS設定の詳細は `CLAUDE.md` と `scripts/setup_worktree.sh` を参照。
+新しいワークスペースのsetupは、連携ファイルの不足分を補い、Gitフックと既存のFlutterセットアップを実行する。既存の連携ファイルは上書きしない。`.claude/skills` が実ディレクトリなら、内容を `.agents/skills` へ移して相対シンボリックリンクにする。同名スキルが両方にある場合や別のリンク先を指す場合は、既存内容を保持して停止する。設計・開発の参照資料も不足分を配置する。設定ファイル、署名ファイル、依存取得、コード生成、iOS設定の詳細は [開発・検証手順](development.md) と `scripts/setup_worktree.sh` を参照。
 
 `scripts/ai_team.py` にはsetup用の `bootstrap` と、任意の単発相談用CLIがある。通常の3タブでの会話では相談用CLIの実行は不要。CLIは新しい読み取り専用セッションを使うため、継続中のタブの会話を引き継がない。
 
@@ -58,4 +58,4 @@ Runメニューの `setup` は開発環境の再準備、`check` は静的解析
 
 CLIはPATH上の `codex` / `claude` を使う。必要なら本体チェックアウトの `.conductor/ai-team.local.json` に `codex` / `claude` の実行ファイルパスを指定できる。月額契約のCLIログインを確認し、APIキーへの切替は行わない。
 
-補助スクリプトの検証: `python3 scripts/test_ai_team.py`。アプリの検証は `CLAUDE.md` に従う。
+補助スクリプトの検証: `python3 scripts/test_ai_team.py`。アプリの検証は `AGENTS.md` と [開発・検証手順](development.md) に従う。
