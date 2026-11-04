@@ -4,6 +4,10 @@
 
 常に日本語で応答する。提案の前に問題設定と前提を検証し、データモデルが現実を表しているかを優先する。指摘には根拠と具体的な次の行動を添える。コメントにはコードから読めない意図を書く。
 
+## スキルの管理
+
+スキルの本体は `.agents/skills/<名前>/SKILL.md` とその配下の関連ファイルで管理する。`.claude/skills` は `../.agents/skills` への相対シンボリックリンクとし、Claude専用のコピーや同名の `.claude/commands` を作らない。スキルの追加・編集は `.agents/skills` 側で行う。
+
 ## Conductorの継続する担当
 
 - 同じワークスペース内で、`team-design` はAstraの設計タブ、`team-build` はOpusの実装タブ、`team-review` はSolのレビュータブに使う。選択モデルはユーザーがUIで設定する。

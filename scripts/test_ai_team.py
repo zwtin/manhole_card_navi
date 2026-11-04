@@ -62,10 +62,56 @@ class IntegrationTests(unittest.TestCase):
         (self.root / 'AGENTS.md').write_text('local instructions')
         self.assertEqual(self.call('bootstrap').returncode, 0)
         self.assertEqual((self.root / 'AGENTS.md').read_text(), 'local instructions')
-        self.assertTrue((self.root / '.claude/commands/team-build.md').is_file())
+        alias = self.root / '.claude/skills'
+        self.assertTrue(alias.is_symlink())
+        self.assertEqual(alias.readlink(), Path('../.agents/skills'))
+        for name in ('team-design', 'team-build', 'team-review', 'update-master', 'cleanup-old-images'):
+            self.assertTrue((alias / name / 'SKILL.md').samefile(self.root / '.agents/skills' / name / 'SKILL.md'))
+        self.assertFalse((self.root / '.claude/commands').exists())
+        (alias / 'team-build/SKILL.md').write_text('local implementation instructions')
         once = (self.root / '.gitignore').read_text()
         self.assertEqual(self.call('bootstrap').returncode, 0)
         self.assertEqual(once, (self.root / '.gitignore').read_text())
+        self.assertEqual((self.root / '.agents/skills/team-build/SKILL.md').read_text(), 'local implementation instructions')
+
+    def test_bootstrap_migrates_existing_skills_with_supporting_files(self):
+        skill = self.root / '.claude/skills/team-build'
+        (skill / 'references').mkdir(parents=True)
+        (skill / 'SKILL.md').write_text('custom skill')
+        (skill / 'references/example.md').write_text('custom reference')
+        result = self.call('bootstrap')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue((self.root / '.claude/skills').is_symlink())
+        canonical = self.root / '.agents/skills/team-build'
+        self.assertEqual((canonical / 'SKILL.md').read_text(), 'custom skill')
+        self.assertEqual((canonical / 'references/example.md').read_text(), 'custom reference')
+        self.assertTrue((skill / 'SKILL.md').samefile(canonical / 'SKILL.md'))
+
+    def test_bootstrap_preserves_both_versions_on_skill_conflict(self):
+        for location, contents in (('.agents', 'canonical skill'), ('.claude', 'legacy skill')):
+            skill = self.root / location / 'skills/team-build'
+            skill.mkdir(parents=True)
+            (skill / 'SKILL.md').write_text(contents)
+        unique = self.root / '.claude/skills/custom'
+        unique.mkdir()
+        (unique / 'SKILL.md').write_text('unrelated skill')
+        self.assertNotEqual(self.call('bootstrap').returncode, 0)
+        self.assertFalse((self.root / '.claude/skills').is_symlink())
+        self.assertEqual((self.root / '.agents/skills/team-build/SKILL.md').read_text(), 'canonical skill')
+        self.assertEqual((self.root / '.claude/skills/team-build/SKILL.md').read_text(), 'legacy skill')
+        self.assertEqual((unique / 'SKILL.md').read_text(), 'unrelated skill')
+
+    def test_bootstrap_preserves_unexpected_skill_link(self):
+        external = self.root / 'external-skills'
+        external.mkdir()
+        (external / 'notes.md').write_text('untouched')
+        alias = self.root / '.claude/skills'
+        alias.parent.mkdir()
+        alias.symlink_to('../external-skills', target_is_directory=True)
+        self.assertNotEqual(self.call('bootstrap').returncode, 0)
+        self.assertEqual(alias.readlink(), Path('../external-skills'))
+        self.assertEqual(list(external.iterdir()), [external / 'notes.md'])
+        self.assertEqual((external / 'notes.md').read_text(), 'untouched')
 
     def test_api_auth_is_rejected(self):
         result = subprocess.CompletedProcess([], 0, 'Logged in using an API key', '')

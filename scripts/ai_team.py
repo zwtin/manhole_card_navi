@@ -84,14 +84,41 @@ def run_agent(root, provider, prompt, output, timeout):
         raise RuntimeError("回答が空でした。相談・レビューは未完了です。")
 
 
+def link_skills(root):
+    canonical = root / ".agents/skills"
+    alias = root / ".claude/skills"
+    if alias.is_symlink():
+        if alias.readlink() != Path("../.agents/skills"):
+            raise RuntimeError(".claude/skills が別のリンク先を指しています。既存リンクを確認してください。")
+        canonical.mkdir(parents=True, exist_ok=True)
+        return
+    entries = []
+    if alias.exists():
+        if not alias.is_dir():
+            raise RuntimeError(".claude/skills がディレクトリではありません。既存ファイルを確認してください。")
+        entries = list(alias.iterdir())
+        conflicts = [entry.name for entry in entries
+                     if (canonical / entry.name).exists() or (canonical / entry.name).is_symlink()]
+        if conflicts:
+            raise RuntimeError("両方に同名スキルがあります。内容を統合してから再実行してください: " + ", ".join(sorted(conflicts)))
+    canonical.mkdir(parents=True, exist_ok=True)
+    for entry in entries:
+        entry.rename(canonical / entry.name)
+    if alias.exists():
+        alias.rmdir()
+    alias.parent.mkdir(parents=True, exist_ok=True)
+    alias.symlink_to("../.agents/skills", target_is_directory=True)
+
+
 def bootstrap(root):
     source = Path(__file__).resolve().parent.parent
+    link_skills(root)
     files = ["AGENTS.md", "scripts/ai_team.py"]
-    for name in ("design", "build", "review"):
-        files += [f".agents/skills/team-{name}/SKILL.md", f".claude/commands/team-{name}.md"]
+    files += [str(path.relative_to(source)) for path in (source / ".agents/skills").rglob("*")
+              if path.is_file()]
     for name in files:
         destination = root / name
-        if destination.exists():
+        if destination.exists() or destination.is_symlink():
             continue
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source / name, destination)

@@ -41,14 +41,16 @@ Runメニューの `setup` は開発環境の再準備、`check` は静的解析
 設定ファイル:
 
 - 継続する担当の指示: `AGENTS.md`
-- スキル: `.agents/skills/team-*/SKILL.md`
-- Conductorのコマンド: `.claude/commands/team-*.md`
+- スキル本体: `.agents/skills/<名前>/SKILL.md`（追加・編集はここだけで行う）
+- Claude Codeの参照先: `.claude/skills` → `../.agents/skills`（相対シンボリックリンク）
 - 共有設定: `.conductor/settings.toml`
 - Mac固有の上書き: `.conductor/settings.local.toml`（Git管理外）
 
+`team-design` / `team-build` / `team-review` に加え、既存の `update-master` / `cleanup-old-images` も同じ場所で管理する。Claude Codeでは `/team-build` などの名前で呼び出せる。同名の `.claude/commands` は置かない。リンク先は各ワークツリー内なので、別ワークツリーのスキルを直接編集することはない。
+
 共有Conductor設定はデフォルトブランチへ取り込んだ後に反映される。取り込む前に試す場合は、ローカルの上書き設定を使う。必要なモデルが表示されない場合は、利用するCodex・Claude Codeの実行ファイルをローカル設定で指定する。
 
-新しいワークスペースのsetupは、連携ファイルの不足分を補い、Gitフックと既存のFlutterセットアップを実行する。既存の連携ファイルは上書きしない。設定ファイル、署名ファイル、依存取得、コード生成、iOS設定の詳細は `CLAUDE.md` と `scripts/setup_worktree.sh` を参照。
+新しいワークスペースのsetupは、連携ファイルの不足分を補い、Gitフックと既存のFlutterセットアップを実行する。既存の連携ファイルは上書きしない。`.claude/skills` が実ディレクトリなら、内容を `.agents/skills` へ移して相対シンボリックリンクにする。同名スキルが両方にある場合や別のリンク先を指す場合は、既存内容を保持して停止する。設定ファイル、署名ファイル、依存取得、コード生成、iOS設定の詳細は `CLAUDE.md` と `scripts/setup_worktree.sh` を参照。
 
 `scripts/ai_team.py` にはsetup用の `bootstrap` と、任意の単発相談用CLIがある。通常の3タブでの会話では相談用CLIの実行は不要。CLIは新しい読み取り専用セッションを使うため、継続中のタブの会話を引き継がない。
 
