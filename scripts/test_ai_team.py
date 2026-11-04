@@ -71,7 +71,7 @@ class IntegrationTests(unittest.TestCase):
             self.assertTrue((alias / name / 'SKILL.md').samefile(self.root / '.agents/skills' / name / 'SKILL.md'))
         self.assertFalse((self.root / '.claude/commands').exists())
         self.assertEqual((self.root / 'CLAUDE.md').read_text(), '@AGENTS.md\n')
-        for name in ('architecture.md', 'app-architecture.md', 'development.md', 'conductor.md'):
+        for name in ('architecture.md', 'app-architecture.md', 'development.md', 'code-review.md', 'conductor.md'):
             self.assertTrue((self.root / 'docs' / name).is_file())
         self.assertEqual((self.root / 'docs/development.md').read_text(), 'local setup instructions')
         (alias / 'team-build/SKILL.md').write_text('local implementation instructions')

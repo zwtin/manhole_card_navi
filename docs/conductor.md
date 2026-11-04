@@ -41,10 +41,13 @@ Runメニューの `setup` は開発環境の再準備、`check` は静的解析
 設定ファイル:
 
 - 共通ルールと作業別資料の参照条件: `AGENTS.md`（`CLAUDE.md` は `@AGENTS.md` の1行）
+- 共通レビュー基準: [コードレビュー](code-review.md)（Conductorのレビュー機能・`team-review`・単発レビューCLIで共有）
 - スキル本体: `.agents/skills/<名前>/SKILL.md`（追加・編集はここだけで行う）
 - Claude Codeの参照先: `.claude/skills` → `../.agents/skills`（相対シンボリックリンク）
 - 共有設定: `.conductor/settings.toml`
 - Mac固有の上書き: `.conductor/settings.local.toml`（Git管理外）
+
+`prompts.general` と `prompts.code_review` は `AGENTS.md` への参照指示だけを持つ。共通ルールは `AGENTS.md`、レビュー基準はそこから案内する `docs/code-review.md` で更新する。
 
 `team-design` / `team-build` / `team-review` に加え、既存の `update-master` / `cleanup-old-images` も同じ場所で管理する。Claude Codeでは `/team-build` などの名前で呼び出せる。同名の `.claude/commands` は置かない。リンク先は各ワークツリー内なので、別ワークツリーのスキルを直接編集することはない。
 

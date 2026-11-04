@@ -114,7 +114,7 @@ def bootstrap(root):
     source = Path(__file__).resolve().parent.parent
     link_skills(root)
     files = ["AGENTS.md", "CLAUDE.md", "scripts/ai_team.py",
-             "docs/architecture.md", "docs/app-architecture.md", "docs/development.md", "docs/conductor.md"]
+             "docs/architecture.md", "docs/app-architecture.md", "docs/development.md", "docs/code-review.md", "docs/conductor.md"]
     files += [str(path.relative_to(source)) for path in (source / ".agents/skills").rglob("*")
               if path.is_file()]
     for name in files:
@@ -176,9 +176,7 @@ def main():
         prompt = common + (
             "\n実装者との会話や .context/ai-team 内の過去の相談・レビューを読まず、独立して最終レビューしてください。"
             "git diff <開始コミット> と git status --short を使い、コミット済み・未コミット・未追跡の変更を確認してください。"
-            "最初に問題設定・データモデル・受入条件の不足を検討し、その後に具体的な不具合を探してください。"
-            "推測は推測と示し、指摘には重要度・ファイルと行・再現条件・影響を付けてください。"
-            "根拠のない好みや儀礼的な指摘は不要です。検証できない部分も示してください。"
+            "レビューの判断と指摘は docs/code-review.md を読み、その共通基準に従ってください。"
             "冒頭は『判定: 問題なし』『判定: 要修正』『判定: 要確認』のいずれかにしてください。\n"
             f"実行した検証の記録（自己評価ではなく事実）:\n{request}\n"
         )

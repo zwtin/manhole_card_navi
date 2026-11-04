@@ -17,6 +17,7 @@
 | アプリの設計・コード変更・レビュー（層の境界、domain・data、DI、失敗と記録） | [共通・データ層の設計](docs/architecture.md) |
 | `packages/app/` の画面、ViewModel、表示、テーマ、画面遷移の設計・変更・レビュー | 上記に加えて [画面の設計](docs/app-architecture.md) |
 | 実行・ビルド・検証・コード生成・環境設定・Gitフック・ワークツリーの準備や片付け | [開発・検証手順](docs/development.md) の該当節 |
+| コード・設計のレビュー、指摘の妥当性の検討、修正後の再レビュー | [共通レビュー基準](docs/code-review.md) |
 | Conductorの設定、担当タブの使い方、引き継ぎの運用 | [Conductorの使い方](docs/conductor.md) と担当スキル |
 
 詳細ルールの更新は対応する資料で行い、このファイルには常時必要な原則と参照条件を保つ。
