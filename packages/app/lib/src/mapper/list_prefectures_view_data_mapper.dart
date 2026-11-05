@@ -8,35 +8,39 @@ import 'package:domain/domain.dart';
 abstract final class ListPrefecturesViewDataMapper {
   static final _dateFormat = DateFormat('yyyy/MM/dd');
 
-  /// 都道府県の分数は、取得済みで絞り込む前の枚数を分母にする。
+  /// [countCards] は都道府県の並びと分数（分母・取得済みの数）に使い、
+  /// [visibleCards] は行に出す。取得済みで絞り込んでも分母が変わらないよう、
+  /// 呼ぶ側が取得状態でだけ絞り分ける。
   static List<ListPrefectureViewData> toViewData({
-    required List<ManholeCard> cards,
+    required List<ManholeCard> countCards,
+    required List<ManholeCard> visibleCards,
     required Set<String> alreadyGetCardIds,
-    required CommonSearchCondition searchCondition,
     required Set<String> expandedPrefectureIds,
   }) {
-    final byPrefecture = <String, List<ManholeCard>>{};
-    for (final card in cards.where(searchCondition.matchesCard)) {
-      byPrefecture.putIfAbsent(card.prefecture.id, () => []).add(card);
+    final countsByPrefecture = <String, List<ManholeCard>>{};
+    for (final card in countCards) {
+      countsByPrefecture.putIfAbsent(card.prefecture.id, () => []).add(card);
+    }
+    final visibleByPrefecture = <String, List<ManholeCard>>{};
+    for (final card in visibleCards) {
+      visibleByPrefecture.putIfAbsent(card.prefecture.id, () => []).add(card);
     }
 
     final prefectures = <ListPrefectureViewData>[];
-    for (final MapEntry(key: id, value: inPrefecture) in byPrefecture.entries) {
-      final shown = [
-        for (final card in inPrefecture)
-          if (searchCondition.matchesAlreadyGet(
-            alreadyGet: alreadyGetCardIds.contains(card.id),
-          ))
-            _toCard(card, alreadyGet: alreadyGetCardIds.contains(card.id)),
-      ];
-      if (shown.isEmpty) {
+    for (final MapEntry(key: id, value: inPrefecture)
+        in countsByPrefecture.entries) {
+      final shown = visibleByPrefecture[id];
+      if (shown == null) {
         continue;
       }
       prefectures.add(
         ListPrefectureViewData(
           id: id,
           name: PrefectureNameMapper.nameOf(inPrefecture.first.prefecture),
-          cards: shown,
+          cards: [
+            for (final card in shown)
+              _toCard(card, alreadyGet: alreadyGetCardIds.contains(card.id)),
+          ],
           initiallyExpanded: expandedPrefectureIds.contains(id),
           totalCount: inPrefecture.length,
           alreadyGetCount:

@@ -32,6 +32,7 @@ void main() {
     final analyticsUseCase = MockAnalyticsUseCase();
     final searchConditionUseCase = MockSearchConditionUseCase();
     cardUseCase = MockCardUseCase();
+    stubRealFilter(cardUseCase);
     locationUseCase = MockLocationUseCase();
     navigationService = MockNavigationService();
     permission = StreamController.broadcast();
@@ -217,6 +218,78 @@ void main() {
       await viewModel().onCameraMove(latitude: 35.9, longitude: 139.77);
 
       expect(state().markers, hasLength(1));
+    });
+
+    test('絞り込みで外れたカードは、30 本の枠を使わない', () async {
+      // 中心のすぐそばに取得済みが 31 枚、少し離れて未取得が 1 枚。
+      final alreadyGetCards = [
+        for (var i = 0; i < 31; i++)
+          manholeCard(
+            id: 'got$i',
+            distributionPoints: [
+              Coordinate(latitude: 35.68 + i * 0.0001, longitude: 139.76),
+            ],
+          ),
+      ];
+      when(() => cardUseCase.fetchAll()).thenAnswer(
+        (_) async => Result.success([
+          ...alreadyGetCards,
+          manholeCard(
+            id: 'target',
+            distributionPoints: const [
+              Coordinate(latitude: 35.73, longitude: 139.76),
+            ],
+          ),
+        ]),
+      );
+      when(
+        () => cardUseCase.fetchImage(cardId: any(named: 'cardId')),
+      ).thenAnswer((_) async => Result.success(pngBytes));
+      await viewModel().onLoad();
+
+      alreadyGet.add({for (final card in alreadyGetCards) card.id});
+      searchCondition.add(
+        const SearchCondition(
+          common: CommonSearchCondition(
+            alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
+          ),
+        ),
+      );
+      await pumpEventQueue();
+
+      expect(state().markers.map((marker) => marker.cardId), ['target']);
+    });
+
+    test('絞り込んでも、配布地点ごとのピンは残す', () async {
+      when(() => cardUseCase.fetchAll()).thenAnswer(
+        (_) async => Result.success([
+          manholeCard(
+            id: 'A',
+            distributionPoints: const [
+              Coordinate(latitude: 35.69, longitude: 139.77),
+              Coordinate(latitude: 35.70, longitude: 139.78),
+            ],
+          ),
+        ]),
+      );
+      when(
+        () => cardUseCase.fetchImage(cardId: 'A'),
+      ).thenAnswer((_) async => Result.success(pngBytes));
+      await viewModel().onLoad();
+
+      searchCondition.add(
+        const SearchCondition(
+          common: CommonSearchCondition(
+            alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
+          ),
+        ),
+      );
+      await pumpEventQueue();
+
+      expect(
+        state().markers.map((marker) => (marker.latitude, marker.longitude)),
+        unorderedEquals([(35.69, 139.77), (35.70, 139.78)]),
+      );
     });
   });
 

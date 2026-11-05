@@ -16,6 +16,7 @@ final manholeCardListViewModelProvider = AsyncNotifierProvider.autoDispose<
 class ManholeCardListViewModel
     extends AutoDisposeAsyncNotifier<ManholeCardListViewData> {
   AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
+  CardUseCase get _cardUseCase => ref.read(cardUseCaseProvider);
   NavigationService get _navigationService =>
       ref.read(navigationServiceProvider);
 
@@ -55,7 +56,7 @@ class ManholeCardListViewModel
         return;
       }
       _alreadyGetCardIds = cardIds;
-      state = AsyncData(_buildViewData());
+      state = AsyncData(_buildViewData(cardUseCase));
     });
     ref.onDispose(alreadyGetSubscription.cancel);
 
@@ -66,11 +67,11 @@ class ManholeCardListViewModel
         return;
       }
       _searchCondition = condition;
-      state = AsyncData(_buildViewData());
+      state = AsyncData(_buildViewData(cardUseCase));
     });
     ref.onDispose(searchConditionSubscription.cancel);
 
-    return _buildViewData();
+    return _buildViewData(cardUseCase);
   }
 
   Future<void> onTap(String cardId) async {
@@ -91,7 +92,7 @@ class ManholeCardListViewModel
       return;
     }
     // 一覧はスクロールで外れた行を作り直すので、開いた状態も ViewData に持たせる。
-    state = AsyncData(_buildViewData());
+    state = AsyncData(_buildViewData(_cardUseCase));
   }
 
   Future<void> sendScreenView() async {
@@ -103,12 +104,27 @@ class ManholeCardListViewModel
     );
   }
 
-  ManholeCardListViewData _buildViewData() {
+  ManholeCardListViewData _buildViewData(CardUseCase cardUseCase) {
+    // 都道府県の分母は、取得済みで絞り込む前の枚数にする。
+    final countCards = cardUseCase.filter(
+      searchCondition: _searchCondition.copyWith(
+        common: _searchCondition.common.copyWith(
+          alreadyGetFilter: AlreadyGetFilter.all,
+        ),
+      ),
+      cards: _cards,
+      alreadyGetCardIds: _alreadyGetCardIds,
+    );
+    final visibleCards = cardUseCase.filter(
+      searchCondition: _searchCondition,
+      cards: countCards,
+      alreadyGetCardIds: _alreadyGetCardIds,
+    );
     return ManholeCardListViewData(
       prefectures: ListPrefecturesViewDataMapper.toViewData(
-        cards: _cards,
+        countCards: countCards,
+        visibleCards: visibleCards,
         alreadyGetCardIds: _alreadyGetCardIds,
-        searchCondition: _searchCondition.common,
         expandedPrefectureIds: _expandedPrefectureIds,
       ),
       totalCount: _cards.length,

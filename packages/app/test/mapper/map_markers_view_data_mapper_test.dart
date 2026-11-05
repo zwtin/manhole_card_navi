@@ -104,8 +104,6 @@ void main() {
 
       final selected = MapMarkersViewDataMapper.selectNearest(
         pins: pins,
-        searchCondition: const CommonSearchCondition(),
-        alreadyGetCardIds: const {},
         center: center,
       );
 
@@ -116,49 +114,10 @@ void main() {
     test('遠すぎるピンは外す', () {
       final selected = MapMarkersViewDataMapper.selectNearest(
         pins: [pinAt('near', 0.01), pinAt('far', 10)],
-        searchCondition: const CommonSearchCondition(),
-        alreadyGetCardIds: const {},
         center: center,
       );
 
       expect(selected.map((pin) => pin.card.id), ['near']);
-    });
-
-    test('絞り込みで外れたピンは、近傍の枠を使わない', () {
-      final pins = [
-        for (var i = 0; i < 31; i++)
-          _pin(
-            _card(
-              id: 'other$i',
-              distributionPoints: const [],
-              position: Coordinate(latitude: 35.0 + i * 0.0001, longitude: 135),
-              volume: const Volume(id: '0001', name: '第2弾'),
-            ),
-          ),
-        pinAt('target', 0.05),
-      ];
-
-      final selected = MapMarkersViewDataMapper.selectNearest(
-        pins: pins,
-        searchCondition: const CommonSearchCondition(volumeIds: {'0011'}),
-        alreadyGetCardIds: const {},
-        center: center,
-      );
-
-      expect(selected.map((pin) => pin.card.id), ['target']);
-    });
-
-    test('取得済みで絞り込む', () {
-      final selected = MapMarkersViewDataMapper.selectNearest(
-        pins: [pinAt('got', 0.01), pinAt('not', 0.02)],
-        searchCondition: const CommonSearchCondition(
-          alreadyGetFilter: AlreadyGetFilter.alreadyGet,
-        ),
-        alreadyGetCardIds: const {'got'},
-        center: center,
-      );
-
-      expect(selected.map((pin) => pin.card.id), ['got']);
     });
   });
 }

@@ -61,6 +61,9 @@ class ManholeCardMapViewModel
 
   MapCoordinateType get _coordinateType => _searchCondition.map.coordinateType;
 
+  /// 読み込んだすべてのカード。絞り込みはこれに対して行う。
+  List<ManholeCard> _cards = const [];
+
   /// 座標の種別ごとのピン。カードを読み込むまでは空。
   Map<MapCoordinateType, List<CardPin>> _pins = {};
 
@@ -269,6 +272,7 @@ class ManholeCardMapViewModel
       return;
     }
     final cards = (result as Success<List<ManholeCard>>).value;
+    _cards = cards;
     _pins = {
       for (final coordinateType in MapCoordinateType.values)
         coordinateType: MapMarkersViewDataMapper.toPins(cards, coordinateType),
@@ -307,10 +311,20 @@ class ManholeCardMapViewModel
     _lastReloadKey = reloadKey;
 
     final generation = ++_markerGeneration;
+    final targetCardIds = {
+      for (final card in _cardUseCase.filter(
+        searchCondition: _searchCondition,
+        cards: _cards,
+        alreadyGetCardIds: _alreadyGetCardIds,
+      ))
+        card.id,
+    };
+    // 近傍を選ぶ前に絞り込む。後で絞ると、対象外のカードが 30 本の枠を使う。
     final pins = MapMarkersViewDataMapper.selectNearest(
-      pins: _currentPins,
-      searchCondition: _searchCondition.common,
-      alreadyGetCardIds: _alreadyGetCardIds,
+      pins: [
+        for (final pin in _currentPins)
+          if (targetCardIds.contains(pin.card.id)) pin,
+      ],
       center: _center,
     );
 
