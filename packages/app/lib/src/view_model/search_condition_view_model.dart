@@ -133,10 +133,7 @@ class SearchConditionViewModel
     if (!state.hasValue) {
       return;
     }
-    final normalized = _draft.normalized(allVolumeIds: _allVolumeIds);
-    final result = await _searchConditionUseCase.save(
-      searchCondition: normalized,
-    );
+    final result = await _searchConditionUseCase.save(searchCondition: _draft);
     if (result case Failure(:final exception)) {
       await _navigationService.showFailure(
         title: '検索条件を保存できませんでした',

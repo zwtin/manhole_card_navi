@@ -56,12 +56,9 @@ abstract final class MapMarkersViewDataMapper {
     return toPins([card], coordinateType).firstOrNull?.coordinate;
   }
 
-  /// 絞り込んでから近傍を選ぶ。先に絞ることで、絞り込みの対象外のカードが
-  /// 近傍の枠を消費しないようにする。
+  /// [pins] は絞り込み済みのものを渡す。
   static List<CardPin> selectNearest({
     required List<CardPin> pins,
-    required CommonSearchCondition searchCondition,
-    required Set<String> alreadyGetCardIds,
     required Coordinate center,
   }) {
     double distanceOf(CardPin pin) {
@@ -71,13 +68,7 @@ abstract final class MapMarkersViewDataMapper {
     }
 
     final near =
-        pins.where((pin) {
-            return searchCondition.matchesCard(pin.card) &&
-                searchCondition.matchesAlreadyGet(
-                  alreadyGet: alreadyGetCardIds.contains(pin.card.id),
-                ) &&
-                distanceOf(pin) < _nearDistance;
-          }).toList()
+        pins.where((pin) => distanceOf(pin) < _nearDistance).toList()
           ..sort((pin1, pin2) => distanceOf(pin1).compareTo(distanceOf(pin2)));
     return near.take(_limit).toList();
   }

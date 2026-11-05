@@ -16,6 +16,28 @@ class MockAppInfoUseCase extends Mock implements AppInfoUseCase {}
 
 class MockCardUseCase extends Mock implements CardUseCase {}
 
+class _UnusedCardRepository extends Mock implements CardRepository {}
+
+/// 絞り込みは本物の [CardUseCase.filter] に任せる。画面が絞り込みをどう使うかを、
+/// モックの返す値ではなく本物の規則で確かめるため。
+void stubRealFilter(MockCardUseCase cardUseCase) {
+  final real = CardUseCase(_UnusedCardRepository());
+  when(
+    () => cardUseCase.filter(
+      searchCondition: any(named: 'searchCondition'),
+      cards: any(named: 'cards'),
+      alreadyGetCardIds: any(named: 'alreadyGetCardIds'),
+    ),
+  ).thenAnswer((invocation) {
+    final arguments = invocation.namedArguments;
+    return real.filter(
+      searchCondition: arguments[#searchCondition] as SearchCondition,
+      cards: arguments[#cards] as List<ManholeCard>,
+      alreadyGetCardIds: arguments[#alreadyGetCardIds] as Set<String>,
+    );
+  });
+}
+
 class MockCheckMasterUpdateUseCase extends Mock
     implements CheckMasterUpdateUseCase {}
 
@@ -95,5 +117,7 @@ ManholeCard manholeCard({
 void registerFallbackValues() {
   registerFallbackValue(const UnknownException());
   registerFallbackValue(SearchCondition.initial());
+  registerFallbackValue(<ManholeCard>[]);
+  registerFallbackValue(<String>{});
   registerFallbackValue(const AnalyticsEvent.appOpen());
 }

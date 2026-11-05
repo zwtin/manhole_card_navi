@@ -26,6 +26,7 @@ void main() {
     final analyticsUseCase = MockAnalyticsUseCase();
     final searchConditionUseCase = MockSearchConditionUseCase();
     cardUseCase = MockCardUseCase();
+    stubRealFilter(cardUseCase);
     navigationService = MockNavigationService();
     alreadyGet = StreamController.broadcast();
     searchCondition = StreamController.broadcast();
@@ -124,6 +125,24 @@ void main() {
     expect(state().prefectures.map((prefecture) => prefecture.id), ['13']);
     expect(prefecture('13').cards.map((card) => card.id), ['A']);
     expect(state().activeFilterCount, 1);
+  });
+
+  test('取得済みで絞り込んでも、都道府県の分母は絞り込む前の枚数', () async {
+    await load();
+
+    searchCondition.add(
+      const SearchCondition(
+        common: CommonSearchCondition(
+          alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
+        ),
+      ),
+    );
+    await pumpEventQueue();
+
+    expect(prefecture('13').cards.map((card) => card.id), ['C']);
+    expect(prefecture('13').totalCount, 2);
+    expect(prefecture('13').alreadyGetCount, 1);
+    expect(state().navigationTitle, 'リスト　1/3');
   });
 
   test('カードを取れなければ知らせ、空の一覧で続ける', () async {

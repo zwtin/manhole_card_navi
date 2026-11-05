@@ -26,13 +26,12 @@ void main() {
     _card('C', prefectureId: '13'),
   ];
 
-  test('都道府県は最初に出てきた順に並び、分母は取得済みで絞り込む前の枚数', () {
+  test('都道府県の並びと分数は集計するカードから、行は表示するカードから作る', () {
+    // C は取得済みで絞り込んだので出さないが、13 の分母には数える。
     final viewData = ListPrefecturesViewDataMapper.toViewData(
-      cards: cards,
+      countCards: cards,
+      visibleCards: [cards[1], cards[2]],
       alreadyGetCardIds: {'A'},
-      searchCondition: const CommonSearchCondition(
-        alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
-      ),
       expandedPrefectureIds: {'27'},
     );
 
@@ -50,16 +49,25 @@ void main() {
     );
   });
 
-  test('取得済みで絞り込んで 1 枚も残らない都道府県は出さない', () {
+  test('表示するカードが 1 枚もない都道府県は出さない', () {
     final viewData = ListPrefecturesViewDataMapper.toViewData(
-      cards: cards,
+      countCards: cards,
+      visibleCards: [cards[1]],
       alreadyGetCardIds: {'B'},
-      searchCondition: const CommonSearchCondition(
-        alreadyGetFilter: AlreadyGetFilter.alreadyGet,
-      ),
       expandedPrefectureIds: const {},
     );
 
     expect(viewData.map((prefecture) => prefecture.id), ['27']);
+  });
+
+  test('都道府県の並びは、表示するカードの順ではなく集計するカードの順', () {
+    final viewData = ListPrefecturesViewDataMapper.toViewData(
+      countCards: cards,
+      visibleCards: [cards[1], cards[0]],
+      alreadyGetCardIds: const {},
+      expandedPrefectureIds: const {},
+    );
+
+    expect(viewData.map((prefecture) => prefecture.id), ['13', '27']);
   });
 }

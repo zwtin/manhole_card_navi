@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:domain/src/entity/distribution_state.dart';
-import 'package:domain/src/entity/manhole_card.dart';
 
 part 'search_condition.freezed.dart';
 
@@ -16,27 +15,6 @@ abstract class SearchCondition with _$SearchCondition {
   factory SearchCondition.initial() => const SearchCondition();
 
   int get activeFilterCount => common.activeFilterCount;
-
-  /// すべて選んだ項目を、空（絞り込まない）にそろえる。そろえないと、絞り込んで
-  /// いないのに有効な絞り込みの数に数えられる。
-  SearchCondition normalized({required Set<String> allVolumeIds}) {
-    var volumeIds = common.volumeIds;
-    if (allVolumeIds.isNotEmpty &&
-        volumeIds.length == allVolumeIds.length &&
-        volumeIds.containsAll(allVolumeIds)) {
-      volumeIds = const {};
-    }
-    var distributionStates = common.distributionStates;
-    if (distributionStates.containsAll(DistributionState.values)) {
-      distributionStates = const {};
-    }
-    return copyWith(
-      common: common.copyWith(
-        volumeIds: volumeIds,
-        distributionStates: distributionStates,
-      ),
-    );
-  }
 }
 
 /// 集合が空なら、その項目では絞り込まない。
@@ -61,32 +39,6 @@ abstract class CommonSearchCondition with _$CommonSearchCondition {
       count++;
     }
     return count;
-  }
-
-  /// 取得済みかどうかは [matchesAlreadyGet] で別に見る。一覧は、取得済みで
-  /// 絞り込む前の数を分母に出すため。
-  bool matchesCard(ManholeCard card) {
-    return matchesVolume(card.volume.id) &&
-        matchesDistributionState(card.distributionState);
-  }
-
-  bool matchesVolume(String volumeId) {
-    return volumeIds.isEmpty || volumeIds.contains(volumeId);
-  }
-
-  bool matchesDistributionState(DistributionState state) {
-    return distributionStates.isEmpty || distributionStates.contains(state);
-  }
-
-  bool matchesAlreadyGet({required bool alreadyGet}) {
-    switch (alreadyGetFilter) {
-      case AlreadyGetFilter.all:
-        return true;
-      case AlreadyGetFilter.alreadyGet:
-        return alreadyGet;
-      case AlreadyGetFilter.notAlreadyGet:
-        return !alreadyGet;
-    }
   }
 }
 

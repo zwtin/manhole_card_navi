@@ -120,12 +120,40 @@ void main() {
     verify(() => navigationService.pop()).called(1);
   });
 
-  test('すべての弾を選んで適用すると、未選択（すべて表示）として保存する', () async {
+  test('すべての弾を選んで適用すると、選んだままの条件を保存に渡す', () async {
+    // 全選択を未選択にそろえるのは、保存する UseCase の役目。
     viewModel().selectAllVolumes();
 
     await viewModel().onApply();
 
-    expect(savedCondition().common.volumeIds, isEmpty);
+    expect(savedCondition().common.volumeIds, {'0000', '0001', '0017'});
+  });
+
+  test('保存できなければ知らせ、閉じずに編集中の条件を残す', () async {
+    when(
+      () => searchConditionUseCase.save(
+        searchCondition: any(named: 'searchCondition'),
+      ),
+    ).thenAnswer((_) async => const Result.failure(PersistenceException()));
+    when(
+      () => navigationService.showFailure(
+        title: any(named: 'title'),
+        exception: any(named: 'exception'),
+      ),
+    ).thenAnswer((_) async {});
+    viewModel().toggleVolume(0);
+
+    await viewModel().onApply();
+
+    verify(
+      () => navigationService.showFailure(
+        title: '検索条件を保存できませんでした',
+        exception: any(named: 'exception', that: isA<PersistenceException>()),
+      ),
+    ).called(1);
+    verifyNever(() => navigationService.pop());
+    final state = container.read(searchConditionViewModelProvider).requireValue;
+    expect(state.volumes.first.selected, isTrue);
   });
 
   test('ピンの大きさは既定で中。選び直して適用すると保存する', () async {
