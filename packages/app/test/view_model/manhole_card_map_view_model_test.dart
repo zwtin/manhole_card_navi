@@ -21,7 +21,7 @@ void main() {
   late MockLocationUseCase locationUseCase;
   late MockNavigationService navigationService;
   late StreamController<bool> permission;
-  late StreamController<SearchCondition> searchCondition;
+  late StreamController<CardBrowsingSettings> settings;
   late StreamController<Set<String>> alreadyGet;
   late ProviderContainer container;
 
@@ -30,13 +30,13 @@ void main() {
   setUp(() {
     final alreadyGetCardUseCase = MockAlreadyGetCardUseCase();
     final analyticsUseCase = MockAnalyticsUseCase();
-    final searchConditionUseCase = MockSearchConditionUseCase();
+    final settingsUseCase = MockCardBrowsingSettingsUseCase();
     cardUseCase = MockCardUseCase();
     stubRealFilter(cardUseCase);
     locationUseCase = MockLocationUseCase();
     navigationService = MockNavigationService();
     permission = StreamController.broadcast();
-    searchCondition = StreamController.broadcast();
+    settings = StreamController.broadcast();
     alreadyGet = StreamController.broadcast();
 
     when(
@@ -45,8 +45,8 @@ void main() {
     when(
       () => analyticsUseCase.send(event: any(named: 'event')),
     ).thenAnswer((_) async => const Result.success(null));
-    when(() => searchConditionUseCase.watch()).thenAnswer(
-      (_) => watching(SearchCondition.initial(), searchCondition.stream),
+    when(() => settingsUseCase.watch()).thenAnswer(
+      (_) => watching(CardBrowsingSettings.initial(), settings.stream),
     );
     when(
       () => cardUseCase.fetchAll(),
@@ -62,8 +62,7 @@ void main() {
       () => locationUseCase.isPermissionGranted(),
     ).thenAnswer((_) async => const Result.success(true));
     when(() => locationUseCase.getCurrentLocation()).thenAnswer(
-      (_) async =>
-          const Result.success(Coordinate(latitude: 35.0, longitude: 135.0)),
+      (_) async => Result.success(Coordinate(latitude: 35.0, longitude: 135.0)),
     );
     when(
       () => navigationService.showAlert(
@@ -81,9 +80,7 @@ void main() {
         currentRouteProvider.overrideWith(FakeCurrentRoute.new),
         locationUseCaseProvider.overrideWithValue(locationUseCase),
         navigationServiceProvider.overrideWithValue(navigationService),
-        searchConditionUseCaseProvider.overrideWithValue(
-          searchConditionUseCase,
-        ),
+        cardBrowsingSettingsUseCaseProvider.overrideWithValue(settingsUseCase),
       ],
     );
     // autoDispose の ViewModel がテスト中に破棄されないよう購読しておく。
@@ -94,7 +91,7 @@ void main() {
     container.dispose();
     await Future.wait([
       permission.close(),
-      searchCondition.close(),
+      settings.close(),
       alreadyGet.close(),
     ]);
   });
@@ -236,7 +233,7 @@ void main() {
           ...alreadyGetCards,
           manholeCard(
             id: 'target',
-            distributionPoints: const [
+            distributionPoints: [
               Coordinate(latitude: 35.73, longitude: 139.76),
             ],
           ),
@@ -248,9 +245,9 @@ void main() {
       await viewModel().onLoad();
 
       alreadyGet.add({for (final card in alreadyGetCards) card.id});
-      searchCondition.add(
-        const SearchCondition(
-          common: CommonSearchCondition(
+      settings.add(
+        const CardBrowsingSettings(
+          searchCondition: SearchCondition(
             alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
           ),
         ),
@@ -265,7 +262,7 @@ void main() {
         (_) async => Result.success([
           manholeCard(
             id: 'A',
-            distributionPoints: const [
+            distributionPoints: [
               Coordinate(latitude: 35.69, longitude: 139.77),
               Coordinate(latitude: 35.70, longitude: 139.78),
             ],
@@ -277,9 +274,9 @@ void main() {
       ).thenAnswer((_) async => Result.success(pngBytes));
       await viewModel().onLoad();
 
-      searchCondition.add(
-        const SearchCondition(
-          common: CommonSearchCondition(
+      settings.add(
+        const CardBrowsingSettings(
+          searchCondition: SearchCondition(
             alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
           ),
         ),
@@ -378,10 +375,10 @@ void main() {
     await viewModel().onLoad();
     expect(state().pinWidth, 72);
 
-    searchCondition.add(
-      const SearchCondition(
-        common: CommonSearchCondition(volumeIds: {'0000'}),
-        map: MapSearchCondition(
+    settings.add(
+      const CardBrowsingSettings(
+        searchCondition: SearchCondition(volumeIds: {'0000'}),
+        mapDisplaySettings: MapDisplaySettings(
           coordinateType: MapCoordinateType.position,
           pinSize: MapPinSize.largest,
         ),
@@ -402,8 +399,10 @@ void main() {
     await pumpEventQueue();
     clearInteractions(cardUseCase);
 
-    searchCondition.add(
-      const SearchCondition(map: MapSearchCondition(pinSize: MapPinSize.small)),
+    settings.add(
+      const CardBrowsingSettings(
+        mapDisplaySettings: MapDisplaySettings(pinSize: MapPinSize.small),
+      ),
     );
     await pumpEventQueue();
 

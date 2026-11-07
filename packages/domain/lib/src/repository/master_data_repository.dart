@@ -11,10 +11,11 @@ final masterDataRepositoryProvider = Provider<MasterDataRepository>(
 );
 
 abstract class MasterDataRepository {
-  /// 端末のマスターデータを、サーバーの [version] のものと入れ替える。途中で失敗
-  /// したら何も変えない。
+  /// 端末のマスターデータを、サーバーの [version] のものと入れ替える。カードと
+  /// バージョンを一緒に入れ替え、途中で失敗したら何も変えない。
   Future<Result<void>> replace({required MasterVersion version});
 
-  /// 端末に取り込まれているか。
-  Future<Result<bool>> exists();
+  /// 端末に取り込んであるマスターデータのバージョン。まだ取り込んでいなければ
+  /// null。カードと同じところから読むので、カードと食い違わない。
+  Future<Result<MasterVersion?>> getCurrentVersion();
 }

@@ -2,27 +2,33 @@ import 'package:data/src/mapper/distribution_state_mapper.dart';
 import 'package:data/src/model/search_condition_model.dart';
 import 'package:domain/domain.dart';
 
-abstract final class SearchConditionMapper {
-  static SearchConditionModel toModel(SearchCondition condition) {
+/// 保存の形（[SearchConditionModel]）は、検索条件を `common`、マップの表示を
+/// `map` に持つ。
+abstract final class CardBrowsingSettingsMapper {
+  static SearchConditionModel toModel(CardBrowsingSettings settings) {
+    final condition = settings.searchCondition;
+    final display = settings.mapDisplaySettings;
     return SearchConditionModel(
       common: CommonSearchConditionModel(
-        displayFilter: _toDisplayFilterModel(condition.common.alreadyGetFilter),
-        volumeIds: condition.common.volumeIds,
+        displayFilter: _toDisplayFilterModel(condition.alreadyGetFilter),
+        volumeIds: condition.volumeIds,
         distributionStates: {
-          for (final state in condition.common.distributionStates)
+          for (final state in condition.distributionStates)
             DistributionStateMapper.toModel(state),
         },
       ),
       map: MapSearchConditionModel(
-        coordinateType: _toCoordinateTypeModel(condition.map.coordinateType),
-        pinSize: _toPinSizeModel(condition.map.pinSize),
+        coordinateType: _toCoordinateTypeModel(display.coordinateType),
+        pinSize: _toPinSizeModel(display.pinSize),
       ),
     );
   }
 
-  static SearchCondition toSearchCondition(SearchConditionModel model) {
-    return SearchCondition(
-      common: CommonSearchCondition(
+  static CardBrowsingSettings toCardBrowsingSettings(
+    SearchConditionModel model,
+  ) {
+    return CardBrowsingSettings(
+      searchCondition: SearchCondition(
         alreadyGetFilter: _toAlreadyGetFilter(model.common.displayFilter),
         volumeIds: model.common.volumeIds,
         distributionStates: {
@@ -30,7 +36,7 @@ abstract final class SearchConditionMapper {
             DistributionStateMapper.toDistributionState(state),
         },
       ),
-      map: MapSearchCondition(
+      mapDisplaySettings: MapDisplaySettings(
         coordinateType: _toMapCoordinateType(model.map.coordinateType),
         pinSize: _toMapPinSize(model.map.pinSize),
       ),

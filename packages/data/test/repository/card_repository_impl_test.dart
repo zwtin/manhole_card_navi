@@ -9,6 +9,7 @@ import 'package:data/src/datasource/analytics_data_source.dart';
 import 'package:data/src/model/analytics_event_model.dart';
 import 'package:data/src/datasource/crashlytics_data_source.dart';
 import 'package:data/src/datasource/master_data_local_data_source.dart';
+import 'package:data/src/model/local_master_data_model.dart';
 import 'package:data/src/repository/card_repository_impl.dart';
 import 'package:domain/domain.dart';
 
@@ -52,7 +53,15 @@ void main() {
   });
 
   test('ID でカードを読む', () async {
-    await store.writeAll([localCard(id: 'A'), localCard(id: 'B')]);
+    await store.write(
+      LocalMasterDataModel(
+        version: '0006',
+        cards: [
+          localCard(id: 'A'),
+          localCard(id: 'B'),
+        ],
+      ),
+    );
 
     final result = await repository.get(id: 'B');
 
@@ -60,7 +69,12 @@ void main() {
   });
 
   test('ない ID は、データがない失敗として返し、記録する', () async {
-    await store.writeAll([localCard(id: 'A')]);
+    await store.write(
+      LocalMasterDataModel(
+        version: '0006',
+        cards: [localCard(id: 'A')],
+      ),
+    );
 
     final result = await repository.get(id: 'Z');
 
@@ -86,7 +100,12 @@ void main() {
 
     /// [url] のカードを 1 枚だけ端末に持たせる。
     Future<void> storeCard() {
-      return store.writeAll([localCard(id: 'A', image: url, imageSub: subUrl)]);
+      return store.write(
+        LocalMasterDataModel(
+          version: '0006',
+          cards: [localCard(id: 'A', image: url, imageSub: subUrl)],
+        ),
+      );
     }
 
     void stubCache(String target, List<int>? bytes) {

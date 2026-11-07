@@ -42,14 +42,30 @@ class LocalCardModel {
   final LocalNamedModel volume;
 }
 
+/// 緯度・経度が地球上の範囲になければ作れない。端末のファイルが壊れていても、
+/// 範囲外の座標を domain に渡さないため。
 @JsonSerializable(checked: true)
 class LocalCoordinateModel {
-  const LocalCoordinateModel({required this.latitude, required this.longitude});
+  /// 範囲外・NaN・無限大は [FormatException]。
+  LocalCoordinateModel({required this.latitude, required this.longitude}) {
+    if (!isValid(latitude: latitude, longitude: longitude)) {
+      throw FormatException('緯度・経度が範囲外です', '$latitude, $longitude');
+    }
+  }
 
   factory LocalCoordinateModel.fromJson(Map<String, dynamic> json) =>
       _$LocalCoordinateModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$LocalCoordinateModelToJson(this);
+
+  /// domain の Coordinate と同じ範囲。NaN はどの比較も false になるので、範囲の
+  /// 比較だけで NaN・無限大も弾ける。
+  static bool isValid({required double latitude, required double longitude}) {
+    return latitude >= -90 &&
+        latitude <= 90 &&
+        longitude >= -180 &&
+        longitude <= 180;
+  }
 
   final double latitude;
   final double longitude;

@@ -76,7 +76,7 @@ class Infrastructure {
   final CrashlyticsDataSource crashlytics;
   final RemoteConfigDataSource remoteConfig;
 
-  /// 読み込んだカードをメモリに持つので、Repository どうしで同じものを使う。
+  /// 読み込んだマスターデータをメモリに持つので、Repository どうしで同じものを使う。
   final MasterDataLocalDataSource masterDataLocal;
 
   final MasterDataRemoteDataSource masterDataRemote;

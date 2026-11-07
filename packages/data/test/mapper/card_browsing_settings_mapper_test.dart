@@ -1,20 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'package:data/src/mapper/search_condition_mapper.dart';
+import 'package:data/src/mapper/card_browsing_settings_mapper.dart';
 import 'package:data/src/model/search_condition_model.dart';
 import 'package:domain/domain.dart';
 
-SearchCondition _read(String source) {
-  return SearchConditionMapper.toSearchCondition(
+CardBrowsingSettings _read(String source) {
+  return CardBrowsingSettingsMapper.toCardBrowsingSettings(
     SearchConditionModel.fromJsonString(source),
   );
 }
 
 void main() {
   test('保存して読み戻すと同じ条件になる', () {
-    final original = SearchCondition(
-      common: CommonSearchCondition(
+    final original = CardBrowsingSettings(
+      searchCondition: SearchCondition(
         alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
         volumeIds: {'0000', '0017'},
         distributionStates: {
@@ -22,13 +22,13 @@ void main() {
           DistributionState.notClear,
         },
       ),
-      map: const MapSearchCondition(
+      mapDisplaySettings: const MapDisplaySettings(
         coordinateType: MapCoordinateType.position,
         pinSize: MapPinSize.smallest,
       ),
     );
 
-    final source = SearchConditionMapper.toModel(original).toJsonString();
+    final source = CardBrowsingSettingsMapper.toModel(original).toJsonString();
 
     expect(_read(source), original);
   });
@@ -40,13 +40,13 @@ void main() {
         '"distributionStates":["stopped"]},'
         '"map":{"coordinateType":"position"}}',
       ),
-      SearchCondition(
-        common: CommonSearchCondition(
+      CardBrowsingSettings(
+        searchCondition: SearchCondition(
           alreadyGetFilter: AlreadyGetFilter.alreadyGet,
           volumeIds: {'0001'},
           distributionStates: {DistributionState.stopped},
         ),
-        map: const MapSearchCondition(
+        mapDisplaySettings: const MapDisplaySettings(
           coordinateType: MapCoordinateType.position,
         ),
       ),
@@ -54,18 +54,18 @@ void main() {
   });
 
   test('保存する文字列は以前のバージョンと同じ', () {
-    const condition = SearchCondition(
-      common: CommonSearchCondition(
+    const settings = CardBrowsingSettings(
+      searchCondition: SearchCondition(
         alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
         distributionStates: {DistributionState.notClear},
       ),
-      map: MapSearchCondition(
+      mapDisplaySettings: MapDisplaySettings(
         coordinateType: MapCoordinateType.position,
         pinSize: MapPinSize.largest,
       ),
     );
 
-    expect(SearchConditionMapper.toModel(condition).toJson(), {
+    expect(CardBrowsingSettingsMapper.toModel(settings).toJson(), {
       'common': {
         'displayFilter': 'unacquired',
         'volumeIds': <String>[],
@@ -76,7 +76,7 @@ void main() {
   });
 
   test('未保存（空文字）なら初期状態', () {
-    expect(_read(''), SearchCondition.initial());
+    expect(_read(''), CardBrowsingSettings.initial());
   });
 
   test('壊れた JSON・形の違う JSON は投げる', () {
@@ -95,12 +95,15 @@ void main() {
       '"map":{"coordinateType":"unknown","pinSize":"unknown"}}',
     );
 
-    expect(restored.common.alreadyGetFilter, AlreadyGetFilter.all);
-    expect(restored.common.volumeIds, {'0001'});
-    expect(restored.common.distributionStates, {
+    expect(restored.searchCondition.alreadyGetFilter, AlreadyGetFilter.all);
+    expect(restored.searchCondition.volumeIds, {'0001'});
+    expect(restored.searchCondition.distributionStates, {
       DistributionState.distributing,
     });
-    expect(restored.map.coordinateType, MapCoordinateType.distribution);
-    expect(restored.map.pinSize, MapPinSize.medium);
+    expect(
+      restored.mapDisplaySettings.coordinateType,
+      MapCoordinateType.distribution,
+    );
+    expect(restored.mapDisplaySettings.pinSize, MapPinSize.medium);
   });
 }

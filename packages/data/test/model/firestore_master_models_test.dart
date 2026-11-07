@@ -83,4 +83,30 @@ void main() {
       throwsA(isA<CheckedFromJsonException>()),
     );
   });
+
+  test('範囲外の座標があれば、壊れたデータにする', () {
+    for (final entry in <String, Object>{
+      'location': _OutOfRangeGeoPoint(),
+      'distribution_points': [_OutOfRangeGeoPoint()],
+    }.entries) {
+      expect(
+        () => decode(cardDocument()..[entry.key] = entry.value),
+        throwsA(isA<CheckedFromJsonException>()),
+        reason: entry.key,
+      );
+    }
+  });
+}
+
+/// GeoPoint は範囲外の値で作ると assert で落ちるので、範囲外を返すものを作る。
+/// 届いたものを端末に保存する前に確かめていることを見る。
+class _OutOfRangeGeoPoint implements GeoPoint {
+  @override
+  double get latitude => 91;
+
+  @override
+  double get longitude => 135;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

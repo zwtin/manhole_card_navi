@@ -22,7 +22,7 @@ class ManholeCardListViewModel
 
   List<ManholeCard> _cards = [];
   Set<String> _alreadyGetCardIds = {};
-  SearchCondition _searchCondition = SearchCondition.initial();
+  SearchCondition _searchCondition = const SearchCondition();
 
   /// 展開中の都道府県。取得状態や検索条件が変わって一覧を作り直しても開いたままにする。
   final Set<String> _expandedPrefectureIds = {};
@@ -31,7 +31,7 @@ class ManholeCardListViewModel
   Future<ManholeCardListViewData> build() async {
     final alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     final cardUseCase = ref.watch(cardUseCaseProvider);
-    final searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
+    final settingsUseCase = ref.watch(cardBrowsingSettingsUseCaseProvider);
     final navigationService = ref.watch(navigationServiceProvider);
 
     switch (await cardUseCase.fetchAll()) {
@@ -45,7 +45,7 @@ class ManholeCardListViewModel
           ),
         );
     }
-    _searchCondition = await searchConditionUseCase.watch().first;
+    _searchCondition = (await settingsUseCase.watch().first).searchCondition;
     _alreadyGetCardIds = await alreadyGetCardUseCase.watch().first;
 
     final alreadyGetSubscription = alreadyGetCardUseCase.watch().listen((
@@ -60,9 +60,11 @@ class ManholeCardListViewModel
     });
     ref.onDispose(alreadyGetSubscription.cancel);
 
-    final searchConditionSubscription = searchConditionUseCase.watch().listen((
-      condition,
+    // マップの表示だけが変わったときは、一覧は変わらない。
+    final searchConditionSubscription = settingsUseCase.watch().listen((
+      settings,
     ) {
+      final condition = settings.searchCondition;
       if (condition == _searchCondition) {
         return;
       }
@@ -108,9 +110,7 @@ class ManholeCardListViewModel
     // 都道府県の分母は、取得済みで絞り込む前の枚数にする。
     final countCards = cardUseCase.filter(
       searchCondition: _searchCondition.copyWith(
-        common: _searchCondition.common.copyWith(
-          alreadyGetFilter: AlreadyGetFilter.all,
-        ),
+        alreadyGetFilter: AlreadyGetFilter.all,
       ),
       cards: _cards,
       alreadyGetCardIds: _alreadyGetCardIds,

@@ -29,6 +29,12 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
         appName: const String.fromEnvironment('appName'),
       ),
     ),
+    cardBrowsingSettingsRepositoryProvider.overrideWith(
+      (_) => CardBrowsingSettingsRepositoryImpl(
+        infrastructure.preferences,
+        crashlytics,
+      ),
+    ),
     cardRepositoryProvider.overrideWith(
       (_) => CardRepositoryImpl(
         infrastructure.masterDataLocal,
@@ -53,11 +59,8 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
       ),
     ),
     masterVersionRepositoryProvider.overrideWith(
-      (_) => MasterVersionRepositoryImpl(
-        infrastructure.preferences,
-        infrastructure.remoteConfig,
-        crashlytics,
-      ),
+      (_) =>
+          MasterVersionRepositoryImpl(infrastructure.remoteConfig, crashlytics),
     ),
     privacyPolicyRepositoryProvider.overrideWith(
       (_) =>
@@ -66,12 +69,6 @@ List<Override> repositoryOverrides(Infrastructure infrastructure) {
     pushNotificationRepositoryProvider.overrideWith(
       (_) => PushNotificationRepositoryImpl(
         infrastructure.pushNotification,
-        crashlytics,
-      ),
-    ),
-    searchConditionRepositoryProvider.overrideWith(
-      (_) => SearchConditionRepositoryImpl(
-        infrastructure.preferences,
         crashlytics,
       ),
     ),

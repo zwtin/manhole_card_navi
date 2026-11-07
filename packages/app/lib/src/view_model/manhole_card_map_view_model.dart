@@ -35,8 +35,8 @@ class ManholeCardMapViewModel
   LocationUseCase get _locationUseCase => ref.read(locationUseCaseProvider);
   NavigationService get _navigationService =>
       ref.read(navigationServiceProvider);
-  SearchConditionUseCase get _searchConditionUseCase =>
-      ref.read(searchConditionUseCaseProvider);
+  CardBrowsingSettingsUseCase get _settingsUseCase =>
+      ref.read(cardBrowsingSettingsUseCaseProvider);
 
   /// 控えておくピンの画像の数。1 枚 50 KB ほど。地図に出すのは 30 本までなので、
   /// 行き来する範囲のぶんを持てればよい。
@@ -57,9 +57,10 @@ class ManholeCardMapViewModel
   /// 合成しない。
   final _buildingIcons = <_IconKey, Future<Uint8List?>>{};
 
-  SearchCondition _searchCondition = SearchCondition.initial();
+  CardBrowsingSettings _settings = CardBrowsingSettings.initial();
 
-  MapCoordinateType get _coordinateType => _searchCondition.map.coordinateType;
+  MapCoordinateType get _coordinateType =>
+      _settings.mapDisplaySettings.coordinateType;
 
   /// 読み込んだすべてのカード。絞り込みはこれに対して行う。
   List<ManholeCard> _cards = const [];
@@ -98,7 +99,7 @@ class ManholeCardMapViewModel
     return ManholeCardMapViewData(
       navigationTitle: MapCoordinateTypeNameMapper.mapTitleOf(_coordinateType),
       pinWidth: MapMarkersViewDataMapper.pinWidthOf(
-        _searchCondition.map.pinSize,
+        _settings.mapDisplaySettings.pinSize,
       ),
     );
   }
@@ -107,11 +108,11 @@ class ManholeCardMapViewModel
     // 枠 PNG のデコードを先行させ、最初のマーカー合成の待ちを減らす。
     // 初期化フローを塞がないよう await しない。
     unawaited(MarkerIconMapper.preloadFrames());
-    await _loadSearchCondition();
+    await _loadSettings();
     await _fetchCards();
     await _reloadMarkerViewData();
     _listenAlreadyGetCard();
-    _listenSearchCondition();
+    _listenSettings();
   }
 
   Future<void> onTapSearchCondition() async {
@@ -243,18 +244,19 @@ class ManholeCardMapViewModel
     await _moveCamera(position, animated: false);
   }
 
-  Future<void> _loadSearchCondition() async {
-    _applySearchCondition(await _searchConditionUseCase.watch().first);
+  Future<void> _loadSettings() async {
+    _applySettings(await _settingsUseCase.watch().first);
   }
 
-  void _applySearchCondition(SearchCondition condition) {
-    _searchCondition = condition;
+  void _applySettings(CardBrowsingSettings settings) {
+    _settings = settings;
+    final display = settings.mapDisplaySettings;
     state = state.copyWith(
       navigationTitle: MapCoordinateTypeNameMapper.mapTitleOf(
-        condition.map.coordinateType,
+        display.coordinateType,
       ),
-      activeFilterCount: condition.activeFilterCount,
-      pinWidth: MapMarkersViewDataMapper.pinWidthOf(condition.map.pinSize),
+      activeFilterCount: settings.searchCondition.activeFilterCount,
+      pinWidth: MapMarkersViewDataMapper.pinWidthOf(display.pinSize),
     );
   }
 
@@ -289,11 +291,9 @@ class ManholeCardMapViewModel
     ref.onDispose(subscription.cancel);
   }
 
-  void _listenSearchCondition() {
-    final subscription = _searchConditionUseCase.watch().listen((
-      condition,
-    ) async {
-      _applySearchCondition(condition);
+  void _listenSettings() {
+    final subscription = _settingsUseCase.watch().listen((settings) async {
+      _applySettings(settings);
       // 起動時に読み込めていなければ、ここで読み込み直す。
       await _fetchCards();
       await _reloadMarkerViewData();
@@ -303,7 +303,7 @@ class ManholeCardMapViewModel
 
   Future<void> _reloadMarkerViewData() async {
     final reloadKey =
-        '${_coordinateType.name}_${_searchCondition.common.hashCode}_'
+        '${_coordinateType.name}_${_settings.searchCondition.hashCode}_'
         '${_center.latitude}_${_center.longitude}';
     if (reloadKey == _lastReloadKey) {
       return;
@@ -313,7 +313,7 @@ class ManholeCardMapViewModel
     final generation = ++_markerGeneration;
     final targetCardIds = {
       for (final card in _cardUseCase.filter(
-        searchCondition: _searchCondition,
+        searchCondition: _settings.searchCondition,
         cards: _cards,
         alreadyGetCardIds: _alreadyGetCardIds,
       ))

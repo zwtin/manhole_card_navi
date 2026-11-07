@@ -30,25 +30,13 @@ class CheckMasterUpdateUseCase {
         inquiredVersion = value;
     }
 
-    final MasterVersion? currentVersion;
-    switch (await _masterVersionRepository.getCurrentVersion()) {
-      case Failure(:final exception):
-        return Result.failure(exception);
+    switch (await _masterDataRepository.getCurrentVersion()) {
+      // 端末のマスターデータが読めなければ、ないのと同じなので取り直す。読めない
+      // ファイルは消してあり、記録も Repository が済ませている。
+      case Failure():
+        return const Result.success(true);
       case Success(:final value):
-        currentVersion = value;
-    }
-
-    if (currentVersion != inquiredVersion) {
-      return const Result.success(true);
-    }
-
-    // 端末のマスターデータは壊れていたときなどに消えるが、取り込み済みのバージョン
-    // の記録は残る。バージョンだけで判定すると、カードが 1 件もないまま取り直さない。
-    switch (await _masterDataRepository.exists()) {
-      case Failure(:final exception):
-        return Result.failure(exception);
-      case Success(:final value):
-        return Result.success(!value);
+        return Result.success(value != inquiredVersion);
     }
   }
 
@@ -61,12 +49,6 @@ class CheckMasterUpdateUseCase {
         inquiredVersion = value;
     }
 
-    if (await _masterDataRepository.replace(version: inquiredVersion)
-        case Failure(:final exception)) {
-      return Result.failure(exception);
-    }
-
-    // 先に記録すると、入れ替えに失敗したときに古いデータのまま取り込み済みになる。
-    return _masterVersionRepository.setCurrentVersion(version: inquiredVersion);
+    return _masterDataRepository.replace(version: inquiredVersion);
   }
 }
