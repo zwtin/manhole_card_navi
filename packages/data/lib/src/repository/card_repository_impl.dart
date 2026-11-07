@@ -100,10 +100,10 @@ class CardRepositoryImpl implements CardRepository {
   }
 
   Future<List<LocalCardModel>> _readAll() async {
-    final cards = await _masterData.readAll();
-    if (cards == null || cards.isEmpty) {
+    final master = await _masterData.read();
+    if (master == null) {
       throw const NotFoundException(detail: '端末にマスターデータがありません');
     }
-    return cards;
+    return master.cards;
   }
 }

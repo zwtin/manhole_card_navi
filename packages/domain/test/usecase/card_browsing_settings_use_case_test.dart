@@ -6,13 +6,13 @@ import 'package:domain/domain.dart';
 
 class MockCardRepository extends Mock implements CardRepository {}
 
-class MockSearchConditionRepository extends Mock
-    implements SearchConditionRepository {}
+class MockCardBrowsingSettingsRepository extends Mock
+    implements CardBrowsingSettingsRepository {}
 
 ManholeCard _card({required String id, required String volumeId}) {
   return ManholeCard(
     id: id,
-    position: const Coordinate(latitude: 35.68, longitude: 139.76),
+    position: Coordinate(latitude: 35.68, longitude: 139.76),
     name: 'カード $id',
     publicationDate: DateTime(2026, 1, 2),
     distributionState: DistributionState.distributing,
@@ -27,21 +27,21 @@ ManholeCard _card({required String id, required String volumeId}) {
 
 void main() {
   late MockCardRepository cardRepository;
-  late MockSearchConditionRepository searchConditionRepository;
+  late MockCardBrowsingSettingsRepository settingsRepository;
   late ProviderContainer container;
 
   setUpAll(() {
-    registerFallbackValue(SearchCondition.initial());
+    registerFallbackValue(CardBrowsingSettings.initial());
   });
 
   setUp(() {
     cardRepository = MockCardRepository();
-    searchConditionRepository = MockSearchConditionRepository();
+    settingsRepository = MockCardBrowsingSettingsRepository();
     container = ProviderContainer(
       overrides: [
         cardRepositoryProvider.overrideWithValue(cardRepository),
-        searchConditionRepositoryProvider.overrideWithValue(
-          searchConditionRepository,
+        cardBrowsingSettingsRepositoryProvider.overrideWithValue(
+          settingsRepository,
         ),
       ],
     );
@@ -54,9 +54,7 @@ void main() {
       ]),
     );
     when(
-      () => searchConditionRepository.save(
-        searchCondition: any(named: 'searchCondition'),
-      ),
+      () => settingsRepository.save(settings: any(named: 'settings')),
     ).thenAnswer((_) async => const Result.success(null));
   });
 
@@ -64,59 +62,60 @@ void main() {
     container.dispose();
   });
 
-  SearchConditionUseCase getUseCase() {
-    return container.read(searchConditionUseCaseProvider);
+  CardBrowsingSettingsUseCase getUseCase() {
+    return container.read(cardBrowsingSettingsUseCaseProvider);
   }
 
-  SearchCondition savedCondition() {
+  CardBrowsingSettings savedSettings() {
     return verify(
-          () => searchConditionRepository.save(
-            searchCondition: captureAny(named: 'searchCondition'),
-          ),
+          () =>
+              settingsRepository.save(settings: captureAny(named: 'settings')),
         ).captured.single
-        as SearchCondition;
+        as CardBrowsingSettings;
   }
 
   group('save', () {
     test('すべての弾を選んだ状態は、未選択（すべて表示）にして保存する', () async {
       // 弾の ID が空のカード D は、全弾に数えない。
       await getUseCase().save(
-        searchCondition: SearchCondition(
-          common: CommonSearchCondition(volumeIds: {'0000', '0001'}),
+        settings: CardBrowsingSettings(
+          searchCondition: SearchCondition(volumeIds: {'0000', '0001'}),
         ),
       );
 
-      expect(savedCondition().common.volumeIds, isEmpty);
+      expect(savedSettings().searchCondition.volumeIds, isEmpty);
     });
 
     test('すべての配布状態を選んだ状態は、未選択にして保存する', () async {
       await getUseCase().save(
-        searchCondition: SearchCondition(
-          common: CommonSearchCondition(
+        settings: CardBrowsingSettings(
+          searchCondition: SearchCondition(
             distributionStates: DistributionState.values.toSet(),
           ),
         ),
       );
 
-      expect(savedCondition().common.distributionStates, isEmpty);
+      expect(savedSettings().searchCondition.distributionStates, isEmpty);
     });
 
     test('一部だけ選んだ状態・知らない弾・取得状態・マップの表示はそのまま保存する', () async {
-      final condition = SearchCondition(
-        common: CommonSearchCondition(
+      final settings = CardBrowsingSettings(
+        searchCondition: SearchCondition(
           alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
           volumeIds: {'0000', '9999'},
           distributionStates: {DistributionState.stopped},
         ),
-        map: const MapSearchCondition(
+        mapDisplaySettings: const MapDisplaySettings(
           coordinateType: MapCoordinateType.position,
           pinSize: MapPinSize.large,
         ),
       );
 
-      await getUseCase().save(searchCondition: condition);
+      final result = await getUseCase().save(settings: settings);
 
-      expect(savedCondition(), condition);
+      expect(result, isA<Success<void>>());
+      // 検索条件とマップの表示を、1 回の保存でまとめて書く。
+      expect(savedSettings(), settings);
     });
 
     test('全弾は保存する時点のマスターで決める', () async {
@@ -130,12 +129,12 @@ void main() {
       );
 
       await getUseCase().save(
-        searchCondition: SearchCondition(
-          common: CommonSearchCondition(volumeIds: {'0000', '0001'}),
+        settings: CardBrowsingSettings(
+          searchCondition: SearchCondition(volumeIds: {'0000', '0001'}),
         ),
       );
 
-      expect(savedCondition().common.volumeIds, {'0000', '0001'});
+      expect(savedSettings().searchCondition.volumeIds, {'0000', '0001'});
     });
 
     test('カードを取れなければ保存せず、その失敗を返す', () async {
@@ -145,27 +144,23 @@ void main() {
       ).thenAnswer((_) async => const Result.failure(exception));
 
       final result = await getUseCase().save(
-        searchCondition: SearchCondition.initial(),
+        settings: CardBrowsingSettings.initial(),
       );
 
       expect((result as Failure<void>).exception, exception);
       verifyNever(
-        () => searchConditionRepository.save(
-          searchCondition: any(named: 'searchCondition'),
-        ),
+        () => settingsRepository.save(settings: any(named: 'settings')),
       );
     });
 
     test('保存できなければ、その失敗を返す', () async {
       const exception = PersistenceException();
       when(
-        () => searchConditionRepository.save(
-          searchCondition: any(named: 'searchCondition'),
-        ),
+        () => settingsRepository.save(settings: any(named: 'settings')),
       ).thenAnswer((_) async => const Result.failure(exception));
 
       final result = await getUseCase().save(
-        searchCondition: SearchCondition.initial(),
+        settings: CardBrowsingSettings.initial(),
       );
 
       expect((result as Failure<void>).exception, exception);

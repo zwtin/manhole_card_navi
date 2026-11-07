@@ -45,8 +45,8 @@ class MockLocationUseCase extends Mock implements LocationUseCase {}
 
 class MockNavigationService extends Mock implements NavigationService {}
 
-class MockSearchConditionUseCase extends Mock
-    implements SearchConditionUseCase {}
+class MockCardBrowsingSettingsUseCase extends Mock
+    implements CardBrowsingSettingsUseCase {}
 
 class MockTermsOfServiceUseCase extends Mock implements TermsOfServiceUseCase {}
 
@@ -94,21 +94,20 @@ final pngBytes = base64Decode(
 ManholeCard manholeCard({
   required String id,
   String prefectureId = '13',
-  Coordinate position = const Coordinate(latitude: 35.68, longitude: 139.76),
-  List<Coordinate> distributionPoints = const [
-    Coordinate(latitude: 35.69, longitude: 139.77),
-  ],
+  Coordinate? position,
+  List<Coordinate>? distributionPoints,
 }) {
   return ManholeCard(
     id: id,
-    position: position,
+    position: position ?? Coordinate(latitude: 35.68, longitude: 139.76),
     name: 'カード $id',
     publicationDate: DateTime(2026, 1, 2),
     distributionState: DistributionState.distributing,
     distributionPlaceHtml: '',
     distributionTimeHtml: '',
     stockHtml: '',
-    distributionPoints: distributionPoints,
+    distributionPoints:
+        distributionPoints ?? [Coordinate(latitude: 35.69, longitude: 139.77)],
     prefecture: Prefecture(id: prefectureId, name: '県 $prefectureId'),
     volume: const Volume(id: '0000', name: '第1弾'),
   );
@@ -116,7 +115,8 @@ ManholeCard manholeCard({
 
 void registerFallbackValues() {
   registerFallbackValue(const UnknownException());
-  registerFallbackValue(SearchCondition.initial());
+  registerFallbackValue(const SearchCondition());
+  registerFallbackValue(CardBrowsingSettings.initial());
   registerFallbackValue(<ManholeCard>[]);
   registerFallbackValue(<String>{});
   registerFallbackValue(const AnalyticsEvent.appOpen());

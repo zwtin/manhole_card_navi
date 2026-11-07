@@ -12,7 +12,7 @@ import 'test_doubles.dart';
 ManholeCard _card({required String volumeId, required String volumeName}) {
   return ManholeCard(
     id: 'card-$volumeId',
-    position: const Coordinate(latitude: 34.69, longitude: 135.50),
+    position: Coordinate(latitude: 34.69, longitude: 135.50),
     name: 'カード',
     publicationDate: DateTime(2026, 1, 1),
     distributionState: DistributionState.distributing,
@@ -26,7 +26,7 @@ ManholeCard _card({required String volumeId, required String volumeName}) {
 }
 
 void main() {
-  late MockSearchConditionUseCase searchConditionUseCase;
+  late MockCardBrowsingSettingsUseCase settingsUseCase;
   late MockNavigationService navigationService;
   late ProviderContainer container;
 
@@ -34,12 +34,12 @@ void main() {
 
   setUp(() async {
     final cardUseCase = MockCardUseCase();
-    searchConditionUseCase = MockSearchConditionUseCase();
+    settingsUseCase = MockCardBrowsingSettingsUseCase();
     navigationService = MockNavigationService();
 
     when(
-      () => searchConditionUseCase.watch(),
-    ).thenAnswer((_) => Stream.value(SearchCondition.initial()));
+      () => settingsUseCase.watch(),
+    ).thenAnswer((_) => Stream.value(CardBrowsingSettings.initial()));
     when(() => cardUseCase.fetchAll()).thenAnswer(
       (_) async => Result.success([
         _card(volumeId: '0000', volumeName: '第1弾'),
@@ -48,9 +48,7 @@ void main() {
       ]),
     );
     when(
-      () => searchConditionUseCase.save(
-        searchCondition: any(named: 'searchCondition'),
-      ),
+      () => settingsUseCase.save(settings: any(named: 'settings')),
     ).thenAnswer((_) async => const Result.success(null));
 
     container = ProviderContainer(
@@ -58,9 +56,7 @@ void main() {
         analyticsUseCaseProvider.overrideWithValue(MockAnalyticsUseCase()),
         cardUseCaseProvider.overrideWithValue(cardUseCase),
         navigationServiceProvider.overrideWithValue(navigationService),
-        searchConditionUseCaseProvider.overrideWithValue(
-          searchConditionUseCase,
-        ),
+        cardBrowsingSettingsUseCaseProvider.overrideWithValue(settingsUseCase),
       ],
     );
     // autoDispose の ViewModel がテスト中に破棄されないよう購読しておく。
@@ -76,13 +72,11 @@ void main() {
     return container.read(searchConditionViewModelProvider.notifier);
   }
 
-  SearchCondition savedCondition() {
+  CardBrowsingSettings savedSettings() {
     return verify(
-          () => searchConditionUseCase.save(
-            searchCondition: captureAny(named: 'searchCondition'),
-          ),
+          () => settingsUseCase.save(settings: captureAny(named: 'settings')),
         ).captured.single
-        as SearchCondition;
+        as CardBrowsingSettings;
   }
 
   test('弾の選択肢は新しい弾から並ぶ', () {
@@ -96,11 +90,7 @@ void main() {
 
     final state = container.read(searchConditionViewModelProvider).requireValue;
     expect(state.volumes[1], (label: '第2弾', selected: true));
-    verifyNever(
-      () => searchConditionUseCase.save(
-        searchCondition: any(named: 'searchCondition'),
-      ),
-    );
+    verifyNever(() => settingsUseCase.save(settings: any(named: 'settings')));
   });
 
   test('一部の弾を選んで適用すると、その条件を保存して閉じる', () async {
@@ -114,9 +104,9 @@ void main() {
 
     await viewModel().onApply();
 
-    final saved = savedCondition();
-    expect(saved.common.volumeIds, {'0001'});
-    expect(saved.common.alreadyGetFilter, AlreadyGetFilter.alreadyGet);
+    final saved = savedSettings();
+    expect(saved.searchCondition.volumeIds, {'0001'});
+    expect(saved.searchCondition.alreadyGetFilter, AlreadyGetFilter.alreadyGet);
     verify(() => navigationService.pop()).called(1);
   });
 
@@ -126,14 +116,12 @@ void main() {
 
     await viewModel().onApply();
 
-    expect(savedCondition().common.volumeIds, {'0000', '0001', '0017'});
+    expect(savedSettings().searchCondition.volumeIds, {'0000', '0001', '0017'});
   });
 
   test('保存できなければ知らせ、閉じずに編集中の条件を残す', () async {
     when(
-      () => searchConditionUseCase.save(
-        searchCondition: any(named: 'searchCondition'),
-      ),
+      () => settingsUseCase.save(settings: any(named: 'settings')),
     ).thenAnswer((_) async => const Result.failure(PersistenceException()));
     when(
       () => navigationService.showFailure(
@@ -156,6 +144,23 @@ void main() {
     expect(state.volumes.first.selected, isTrue);
   });
 
+  test('適用すると、検索条件とマップの表示を 1 回でまとめて保存する', () async {
+    viewModel()
+      ..toggleVolume(1)
+      ..selectCoordinateType(
+        SearchConditionViewDataMapper.coordinateTypes.indexOf(
+          MapCoordinateType.position,
+        ),
+      );
+
+    await viewModel().onApply();
+
+    // savedSettings は 1 回だけ呼ばれたことも確かめる。
+    final saved = savedSettings();
+    expect(saved.searchCondition.volumeIds, {'0001'});
+    expect(saved.mapDisplaySettings.coordinateType, MapCoordinateType.position);
+  });
+
   test('ピンの大きさは既定で中。選び直して適用すると保存する', () async {
     final state = container.read(searchConditionViewModelProvider).requireValue;
     expect(state.pinSizes.singleWhere((option) => option.selected).label, '中');
@@ -165,7 +170,7 @@ void main() {
     );
     await viewModel().onApply();
 
-    expect(savedCondition().map.pinSize, MapPinSize.smallest);
+    expect(savedSettings().mapDisplaySettings.pinSize, MapPinSize.smallest);
   });
 
   test('リセットは絞り込みだけを消し、マップ表示は残す', () async {
@@ -187,20 +192,16 @@ void main() {
 
     await viewModel().onApply();
 
-    final saved = savedCondition();
-    expect(saved.activeFilterCount, 0);
-    expect(saved.map.coordinateType, MapCoordinateType.position);
-    expect(saved.map.pinSize, MapPinSize.largest);
+    final saved = savedSettings();
+    expect(saved.searchCondition.activeFilterCount, 0);
+    expect(saved.mapDisplaySettings.coordinateType, MapCoordinateType.position);
+    expect(saved.mapDisplaySettings.pinSize, MapPinSize.largest);
   });
 
   test('閉じるときは保存しない', () {
     viewModel().onClose();
 
     verify(() => navigationService.pop()).called(1);
-    verifyNever(
-      () => searchConditionUseCase.save(
-        searchCondition: any(named: 'searchCondition'),
-      ),
-    );
+    verifyNever(() => settingsUseCase.save(settings: any(named: 'settings')));
   });
 }

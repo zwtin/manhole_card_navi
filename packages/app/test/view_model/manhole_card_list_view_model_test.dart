@@ -16,7 +16,7 @@ void main() {
   late MockCardUseCase cardUseCase;
   late MockNavigationService navigationService;
   late StreamController<Set<String>> alreadyGet;
-  late StreamController<SearchCondition> searchCondition;
+  late StreamController<CardBrowsingSettings> settings;
   late ProviderContainer container;
 
   setUpAll(registerFallbackValues);
@@ -24,12 +24,12 @@ void main() {
   setUp(() {
     final alreadyGetCardUseCase = MockAlreadyGetCardUseCase();
     final analyticsUseCase = MockAnalyticsUseCase();
-    final searchConditionUseCase = MockSearchConditionUseCase();
+    final settingsUseCase = MockCardBrowsingSettingsUseCase();
     cardUseCase = MockCardUseCase();
     stubRealFilter(cardUseCase);
     navigationService = MockNavigationService();
     alreadyGet = StreamController.broadcast();
-    searchCondition = StreamController.broadcast();
+    settings = StreamController.broadcast();
 
     when(
       () => alreadyGetCardUseCase.watch(),
@@ -37,8 +37,8 @@ void main() {
     when(
       () => analyticsUseCase.send(event: any(named: 'event')),
     ).thenAnswer((_) async => const Result.success(null));
-    when(() => searchConditionUseCase.watch()).thenAnswer(
-      (_) => watching(SearchCondition.initial(), searchCondition.stream),
+    when(() => settingsUseCase.watch()).thenAnswer(
+      (_) => watching(CardBrowsingSettings.initial(), settings.stream),
     );
     when(() => cardUseCase.fetchAll()).thenAnswer(
       (_) async => Result.success([
@@ -63,16 +63,14 @@ void main() {
         analyticsUseCaseProvider.overrideWithValue(analyticsUseCase),
         cardUseCaseProvider.overrideWithValue(cardUseCase),
         navigationServiceProvider.overrideWithValue(navigationService),
-        searchConditionUseCaseProvider.overrideWithValue(
-          searchConditionUseCase,
-        ),
+        cardBrowsingSettingsUseCaseProvider.overrideWithValue(settingsUseCase),
       ],
     );
   });
 
   tearDown(() async {
     container.dispose();
-    await Future.wait([alreadyGet.close(), searchCondition.close()]);
+    await Future.wait([alreadyGet.close(), settings.close()]);
   });
 
   /// 一覧を開き、読み込みが終わるまで待つ。
@@ -113,9 +111,9 @@ void main() {
   test('検索条件が変わると、絞り込んで作り直す', () async {
     await load();
 
-    searchCondition.add(
-      const SearchCondition(
-        common: CommonSearchCondition(
+    settings.add(
+      const CardBrowsingSettings(
+        searchCondition: SearchCondition(
           alreadyGetFilter: AlreadyGetFilter.alreadyGet,
         ),
       ),
@@ -127,12 +125,38 @@ void main() {
     expect(state().activeFilterCount, 1);
   });
 
+  test('マップの表示だけが変わっても、一覧と絞り込みの数は変わらない', () async {
+    await load();
+    final before = state();
+    clearInteractions(cardUseCase);
+
+    settings.add(
+      const CardBrowsingSettings(
+        mapDisplaySettings: MapDisplaySettings(
+          coordinateType: MapCoordinateType.position,
+          pinSize: MapPinSize.largest,
+        ),
+      ),
+    );
+    await pumpEventQueue();
+
+    expect(state(), before);
+    expect(state().activeFilterCount, 0);
+    verifyNever(
+      () => cardUseCase.filter(
+        searchCondition: any(named: 'searchCondition'),
+        cards: any(named: 'cards'),
+        alreadyGetCardIds: any(named: 'alreadyGetCardIds'),
+      ),
+    );
+  });
+
   test('取得済みで絞り込んでも、都道府県の分母は絞り込む前の枚数', () async {
     await load();
 
-    searchCondition.add(
-      const SearchCondition(
-        common: CommonSearchCondition(
+    settings.add(
+      const CardBrowsingSettings(
+        searchCondition: SearchCondition(
           alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
         ),
       ),

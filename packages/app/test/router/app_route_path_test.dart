@@ -39,4 +39,38 @@ void main() {
       isNull,
     );
   });
+
+  test('座標として読めない・地球上の範囲にない値は、ピンの指定なしとみなす', () {
+    for (final (latitude, longitude) in [
+      ('abc', '135.6'),
+      ('34.5', ''),
+      ('90.1', '135.6'),
+      ('-90.1', '135.6'),
+      ('34.5', '180.1'),
+      ('34.5', '-180.1'),
+      ('NaN', '135.6'),
+      ('34.5', 'Infinity'),
+      ('-Infinity', '135.6'),
+    ]) {
+      final uri = Uri(
+        path: AppRoutePath.cardModal('27-226-B001'),
+        queryParameters: {'latitude': latitude, 'longitude': longitude},
+      );
+
+      expect(AppRoutePath.pinOf(uri), isNull, reason: '$uri');
+    }
+  });
+
+  test('範囲の端の座標は、ピンとして読める', () {
+    final location = AppRoutePath.cardModalWithPin(
+      '27-226-B001',
+      latitude: -90,
+      longitude: 180,
+    );
+
+    expect(AppRoutePath.pinOf(Uri.parse(location)), (
+      latitude: -90.0,
+      longitude: 180.0,
+    ));
+  });
 }

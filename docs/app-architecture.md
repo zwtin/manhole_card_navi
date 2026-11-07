@@ -26,7 +26,7 @@
 - ViewModel は BuildContext を持たない。遷移・アラート・選択肢（`showChoice`）・URL を開く操作は `NavigationService` 経由で行う。画面や widget も自分でダイアログを出したり URL を開いたりせず、ViewModel に渡す（HTML のリンクなら `HtmlContent` の `onTapLink` で受け取って ViewModel へ）。OS で分ける判断は ViewModel が `defaultTargetPlatform` で行う（`dart:io` の `Platform` はテストで差し替えられない）
 - **ViewModel は画面の部品（widget・地図の `GoogleMapController` など）を持たない**（`scripts/check_app_rules.sh` が止める）。部品を動かしたいときは指示を State に載せ、View が `ref.listen` で受け取って自分の部品を動かす。マップのカメラなら、ViewModel は `CameraMoveViewData` を出し、controller は View が `useRef` で持つ。同じ指示を続けて出しても届くよう、指示ごとに番号を振る
 - ViewModel が読み書きするのは UseCase だけで、Repository を直接呼ばない。処理のない読み取りも、Repository を素通しする UseCase のメソッドを通す
-- **ViewModel は他の ViewModel を読まず、画面は自分の ViewModel だけを読む**（`scripts/check_app_rules.sh` が止める）。画面をまたいで共有する状態は UseCase の watch で流す（取得済みカード・検索条件・位置情報の許可）。レイアウトの寸法は状態にせず、要る画面が自分の受け取った大きさ（constraints）から求める（マップとカードのモーダルの高さ）
+- **ViewModel は他の ViewModel を読まず、画面は自分の ViewModel だけを読む**（`scripts/check_app_rules.sh` が止める）。画面をまたいで共有する状態は UseCase の watch で流す（取得済みカード・検索条件とマップの表示・位置情報の許可）。レイアウトの寸法は状態にせず、要る画面が自分の受け取った大きさ（constraints）から求める（マップとカードのモーダルの高さ）
 - カード画像は、app の `CardImageProvider`（Flutter の `ImageProvider`）がカードの ID で `CardUseCase.fetchImage` から画像データを受け取って表示する。画像は Flutter の画像の仕組みで読み込むため、ここだけは ViewModel を通さない。View と widget はカードの ID を `cardImageProvider` に渡して受け取るだけで、UseCase を知っているのは `card_image_provider.dart` だけ。画像の URL・代わりの配信元・端末に保存するかは data だけが知っていて、エンティティにも画像の URL は持たせない
 
 ## 画面遷移（app）
@@ -35,6 +35,6 @@
 - 起動時チェックの最初（アプリのバージョン確認の画面）で匿名ログインを済ませてから `app_open` を送る。イベントに利用者の ID が付いた状態でアプリを使ってもらうため。初回だけ通信が要り、できなければやり直す
 - オフラインでも起動できる。起動時の Remote Config の取得（待ち時間 10 秒）は失敗しても止まらず前回の値で続け、マスターデータは端末のものを使う。前回の値がない初回は、起動時チェックが「通信できませんでした」を出してやり直す
 - マップのカードモーダルもルート（`/map/card/:cardId`）で、ピンをタップして開いたときはピンの座標をクエリに載せる。モーダルはマップの表示エリア（AppBar より下）の 2/3 を覆い、マップはその分を地図の `padding` にして、ピンをモーダルの上の中央に出す（地図を縮めない。Google のロゴも見えている範囲に動く）。`padding` とカメラはシートと同じ長さと曲線で動かし、地図がモーダルと一緒に上へずれるようにする。`padding` を変えたときの地図の動きは SDK で違う（iOS はカメラの中心を保って地図をずらし、Android は見えている場所を保つ）ので、どちらかが動いている間は View が毎フレームカメラの中心を指定し直し、OS で分けずに同じ動きにする。モーダルがないときも、下タブの丸がはみ出す分（`ShellScaffold.tabBarOverlap`）を空けて、ロゴを隠さない。高さは受け渡さず、マップは自分の表示エリアから、モーダルはシートで使える高さ（ステータスバーより下）からマップの AppBar を除いて、どちらも `CardModalPage.heightIn` で求める
-- 画面の引数は URL（パスとクエリ）に載せ、go_router の `extra` は使わない（URL に載らず、復元できない）。URL の組み立てと読み取りは `AppRoutePath` だけが行う。画像の拡大は、Hero が飛び始める時点で色を決めるため、取得済みかもクエリに載せる
+- 画面の引数は URL（パスとクエリ）に載せ、go_router の `extra` は使わない（URL に載らず、復元できない）。URL の組み立てと読み取りは `AppRoutePath` だけが行う。URL は外から書き換えられるので、読めない・地球上の範囲にない座標はピンの指定がないものとして扱う。画像の拡大は、Hero が飛び始める時点で色を決めるため、取得済みかもクエリに載せる
 - 戻る操作はタブ内の画面があればそれを閉じ、タブのルートでは `ShellScaffold` の `PopScope` がタブ切り替え／アプリ終了を決める
 - PV は各画面の `useScreenView` が、GoRouter 上で最前面になったとき（表示・戻り・タブ切り替え）に送る

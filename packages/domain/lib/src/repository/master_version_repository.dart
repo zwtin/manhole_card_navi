@@ -11,11 +11,7 @@ final masterVersionRepositoryProvider = Provider<MasterVersionRepository>(
 );
 
 abstract class MasterVersionRepository {
-  /// 使うべきバージョン。
+  /// 使うべきバージョン。端末に取り込み済みのバージョンは
+  /// `MasterDataRepository.getCurrentVersion`。
   Future<Result<MasterVersion>> getInquiredVersion();
-
-  /// 端末に取り込み済みのバージョン。まだ取り込んでいなければ null。
-  Future<Result<MasterVersion?>> getCurrentVersion();
-
-  Future<Result<void>> setCurrentVersion({required MasterVersion version});
 }

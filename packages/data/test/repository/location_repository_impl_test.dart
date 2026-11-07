@@ -52,6 +52,22 @@ void main() {
       expect((result as Success<bool>).value, isTrue);
       expect(await granted, isTrue);
     });
+
+    test('許可を待っている間に dispose されても、結果はそのまま返し、閉じた Stream には流さない', () async {
+      final answer = Completer<bool>();
+      when(
+        () => platform.isLocationServiceEnabled(),
+      ).thenAnswer((_) async => true);
+      when(() => platform.requestPermission()).thenAnswer((_) => answer.future);
+
+      final requesting = repository.requestPermission();
+      await pumpEventQueue();
+      await repository.dispose();
+      answer.complete(true);
+
+      // 閉じた StreamController に add すると StateError で落ちる。
+      expect((await requesting as Success<bool>).value, isTrue);
+    });
   });
 
   group('getCurrentLocation', () {
@@ -64,7 +80,7 @@ void main() {
 
       expect(
         (result as Success<Coordinate?>).value,
-        const Coordinate(latitude: 35.68, longitude: 139.76),
+        Coordinate(latitude: 35.68, longitude: 139.76),
       );
     });
 
@@ -80,6 +96,20 @@ void main() {
         expect((result as Success<Coordinate?>).value, isNull);
       }
       verifyNotRecorded(crashlytics);
+    });
+
+    test('範囲外の座標は壊れたデータの失敗にし、元の例外を 1 回記録する', () async {
+      when(
+        () => platform.getCurrentPosition(),
+      ).thenAnswer((_) async => (latitude: double.nan, longitude: 139.76));
+
+      final result = await repository.getCurrentLocation();
+
+      expect(
+        (result as Failure<Coordinate?>).exception,
+        isA<CorruptedDataException>(),
+      );
+      expect(recordedErrors(crashlytics).single.error, isA<FormatException>());
     });
 
     test('タイムアウトは応答が遅すぎる失敗にし、元の例外を記録する', () async {

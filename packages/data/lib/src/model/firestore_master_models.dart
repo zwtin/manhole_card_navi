@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:data/src/model/distribution_state_model.dart';
+import 'package:data/src/model/local_card_model.dart';
 
 part 'firestore_master_models.g.dart';
 
@@ -87,7 +88,7 @@ class _GeoPointConverter implements JsonConverter<GeoPoint, Object?> {
   @override
   GeoPoint fromJson(Object? json) {
     if (json is GeoPoint) {
-      return json;
+      return _checkRange(json);
     }
     throw FormatException('座標（GeoPoint）ではありません（${json.runtimeType}）');
   }
@@ -102,13 +103,25 @@ class _GeoPointListConverter implements JsonConverter<List<GeoPoint>, Object?> {
   @override
   List<GeoPoint> fromJson(Object? json) {
     if (json is List<dynamic>) {
-      return json.whereType<GeoPoint>().toList();
+      return json.whereType<GeoPoint>().map(_checkRange).toList();
     }
     throw FormatException('座標の一覧ではありません（${json.runtimeType}）');
   }
 
   @override
   Object? toJson(List<GeoPoint> object) => object;
+}
+
+/// 端末に保存する形（[LocalCoordinateModel]）にするときに失敗しないよう、
+/// 読んだ時点で確かめる。
+GeoPoint _checkRange(GeoPoint point) {
+  if (!LocalCoordinateModel.isValid(
+    latitude: point.latitude,
+    longitude: point.longitude,
+  )) {
+    throw const FormatException('座標（GeoPoint）が範囲外です');
+  }
+  return point;
 }
 
 class _SlashDateConverter implements JsonConverter<DateTime, String> {

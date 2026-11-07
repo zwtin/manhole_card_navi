@@ -26,7 +26,7 @@ void main() {
   setUp(() {
     final analyticsUseCase = MockAnalyticsUseCase();
     final cardUseCase = MockCardUseCase();
-    final searchConditionUseCase = MockSearchConditionUseCase();
+    final settingsUseCase = MockCardBrowsingSettingsUseCase();
     alreadyGetCardUseCase = MockAlreadyGetCardUseCase();
     navigationService = MockNavigationService();
     alreadyGet = StreamController.broadcast();
@@ -52,10 +52,12 @@ void main() {
       (_) async =>
           Result.success(manholeCard(id: 'B', distributionPoints: const [])),
     );
-    when(() => searchConditionUseCase.watch()).thenAnswer(
+    when(() => settingsUseCase.watch()).thenAnswer(
       (_) => watching(
-        SearchCondition(
-          map: MapSearchCondition(coordinateType: coordinateType),
+        CardBrowsingSettings(
+          mapDisplaySettings: MapDisplaySettings(
+            coordinateType: coordinateType,
+          ),
         ),
         const Stream.empty(),
       ),
@@ -79,9 +81,7 @@ void main() {
         analyticsUseCaseProvider.overrideWithValue(analyticsUseCase),
         cardUseCaseProvider.overrideWithValue(cardUseCase),
         navigationServiceProvider.overrideWithValue(navigationService),
-        searchConditionUseCaseProvider.overrideWithValue(
-          searchConditionUseCase,
-        ),
+        cardBrowsingSettingsUseCaseProvider.overrideWithValue(settingsUseCase),
       ],
     );
   });

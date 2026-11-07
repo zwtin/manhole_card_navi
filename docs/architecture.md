@@ -7,17 +7,18 @@
 
 1. **domain** (`packages/domain/`) - 他のパッケージにも Flutter にも依存しない中心。provider の宣言には Flutter を含まない `riverpod` 本体を使う（`hooks_riverpod` は使わない）
    - `core/` - エンティティではない、操作の結果を表す共通の型。成功か失敗かを包む `Result` と、失敗の種類 `DomainException`。Flutter の Clean Architecture でよく見る `core/error/` と同じ位置づけ
-   - `entity/` - アプリが扱うもの（カードのように ID で区別するものと、座標やバージョンのように値そのものに意味があるもの）
+   - `entity/` - アプリが扱うもの（カードのように ID で区別するものと、座標やバージョンのように値そのものに意味があるもの）。値で完結する性質は値の型に置く（`Coordinate` は作った時点で緯度・経度が範囲内であることを保証し、範囲外・NaN・無限大は `FormatException`。`AppVersion` の比較、`SearchCondition.activeFilterCount` も同じ）
    - `repository/` - リポジトリインターフェースと、その provider
    - `usecase/` - ビジネスロジックの実装と、その provider。エンティティや bool をそのまま返し、画面用の型に詰め替えない
-     - クラスは、扱うもの（エンティティ）ごとに 1 つ（`CardUseCase`・`AppInfoUseCase` など）。そのエンティティの保存に付随する取得・変換は、別の Repository を使っても同じクラスに置く（`SearchConditionUseCase.save` は、全弾を選んだかをカードから確かめて未選択にそろえてから保存する）。どのエンティティにも属さない独立した手順だけ、手順ごとのクラスにする（`CheckMasterUpdateUseCase`）。1 つのユースケースに 1 クラスにすると、Repository を素通しするだけのクラスが大半になるため
-     - 画面が既に持っている値だけで済む処理は、Repository を読まずに引数で受ける同期のメソッドにする（`CardUseCase.filter` は、読み込み済みのカードと取得済みを受けて検索条件で絞り込む）。読み直すと、画面が表示している値と別の時点の値で処理することになるため。判定の規則はエンティティにも画面の mapper にも置かない
+     - クラスは、扱うもの（エンティティ）ごとに 1 つ（`CardUseCase`・`AppInfoUseCase` など）。そのエンティティの保存に付随する取得・変換は、別の Repository を使っても同じクラスに置く（`CardBrowsingSettingsUseCase.save` は、検索条件で全弾を選んだかをカードから確かめて未選択にそろえてから保存する）。どのエンティティにも属さない独立した手順だけ、手順ごとのクラスにする（`CheckMasterUpdateUseCase`）。1 つのユースケースに 1 クラスにすると、Repository を素通しするだけのクラスが大半になるため
+     - 画面が既に持っている値だけで済む処理は、Repository を読まずに引数で受ける同期のメソッドにする（`CardUseCase.filter` は、読み込み済みのカードと取得済みを受けて検索条件で絞り込む）。読み直すと、画面が表示している値と別の時点の値で処理することになるため。Repository を使う段取りと、カード・条件・取得済みのように複数の値を組み合わせる判定は UseCase に置き、そのためだけの Specification・DomainService などは作らない。画面の mapper には業務の判定を置かない
+     - 利用者がまとめて選んで保存する設定は、まとめた型で保存する（`CardBrowsingSettings` は絞り込みの `SearchCondition` とマップの見せ方の `MapDisplaySettings` の組）。型を分けても保存を分けると、片方だけ保存された状態ができるため
 
 2. **data** (`packages/data/`) - domain のインターフェースの実装。組み立て（どの実装をどの部品で作るか）は持たず、実装クラスを公開するだけ
    - `repository/` - Repository の実装だけを置く。**外界に触るのは DataSource 経由だけで、SDK を直接持たない。** DataSource から model を受け取り、mapper でエンティティにして返す。複数の DataSource の組み合わせも、別々のドキュメントどうしが食い違っていないか（カードが指す都道府県があるか など）を確かめるのもここで行う。例外を捕まえるのは data の中でここだけで、捕まえたら記録し、`DomainExceptionMapper.from` で種類に変換して `Result` に包む
    - `datasource/` - 外界と話すクラス。**Repository は DataSource としか話さない**ので、外界は素通しでも必ずここで包む（包むか判断しないで済むようにするため）。返すのは model か素の値で、SDK の型もエンティティも外に出さない。domain を知らないので、失敗は package が定義した例外（`CheckedFromJsonException`・`FormatException` など）のまま投げる。失敗の種類にするのは Repository。**DataSource は例外を捕まえない**（壊れたファイルを消す など、後片付けをして投げ直すときだけ捕まえてよい）。握りつぶすと、どこで何が起きたかが誰にも見えなくなる
      - **DataSource は 1 つの外界だけを相手にし、単体で独立させる。** DataSource の中に別の DataSource やサービスを持たない。複数の外界を組み合わせる（片方でだめならもう片方、取れたら計測する など）のは Repository の役目
-     - `MasterDataLocalDataSource`: 取り込んだマスターデータ（カード一式）を 1 つの JSON ファイルで持つ
+     - `MasterDataLocalDataSource`: 取り込んだマスターデータ（配信のバージョンとカード一式の組、`LocalMasterDataModel`）を 1 つの JSON ファイルで持つ。読み書きは 1 つずつ順に行い、読んでいる間に終わった書き込みを古い内容で戻さない
      - `RemoteConfigDataSource`: Remote Config の取得（起動時の `activate`）と読み取り（空なら取り直す）。取り直さない時間は環境で変わるので、ルートから渡す。同じく環境で変わるアプリ名も、ルートが `AppInfoRepositoryImpl` に渡す（data は `String.fromEnvironment` を読まない）
      - `CardImageDataSource`: カード画像を、端末のキャッシュから読む／URL から取って保存する
      - `AnalyticsDataSource`: アプリのイベントを Analytics に送る。イベント名とパラメータへの置き換えは `AnalyticsEventMapper`
@@ -26,7 +27,7 @@
      - `AuthDataSource`: 匿名ログイン。返すのは利用者の ID だけ
      - `PushNotificationDataSource` / `PackageInfoDataSource` / `LocationDataSource` / `AppBadgeDataSource`: 通知の許可・アプリ自身の情報・位置情報・アプリのバッジ
      - `CrashlyticsDataSource`: Crashlytics への記録。アプリの中で Crashlytics を触るのはここだけ
-   - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。model 以外は置かない。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば生成コードが `CheckedFromJsonException` を投げる。保存する値の enum も model が持ち、値の名前を保存する文字列にそろえる（domain の名前を変えても保存済みの値は変わらない）。エンティティは JSON を知らない
+   - `model/` - 外の形（Firestore のドキュメント・端末の JSON ファイル・保存した検索条件）をそのまま表すクラス。model 以外は置かない。JSON との変換は json_serializable で生成する。外から受け取ったものは `checked: true` で読み、形が違えば生成コードが `CheckedFromJsonException` を投げる。型だけでは表せない約束（座標の範囲、マスターのバージョンが空でない・カードが 0 件でない）は model のコンストラクタで確かめて `FormatException` を投げ、作れた model は使えるものにする（data の model は domain を知らないので、`Coordinate` と同じ範囲をここでも確かめる）。保存する値の enum も model が持ち、値の名前を保存する文字列にそろえる（domain の名前を変えても保存済みの値は変わらない）。エンティティは JSON を知らない
    - `mapper/` - model とエンティティ・model どうしの変換（`toCard`・`toModel`・`toLocalCard` など、出力するもので名前を付ける）と、外の例外から失敗の種類への変換（`DomainExceptionMapper.from`）。model が形を保証しているので、mapper は詰め替えるだけで例外を投げない
 
 3. **app** (`packages/app/`) - 画面。View・表示用データ・ViewModel・mapper・テーマの構成は [画面の設計](app-architecture.md) を参照。
@@ -42,12 +43,12 @@
   - Repository は状態を持たないか、アプリ全体で共有するもの（端末に取り込んだマスターデータなど）なので、`autoDispose` にせずアプリ全体で 1 つにする
   - UseCase も状態を持たない（状態は ViewModel か data に置く）ので、画面ごとに分けず（`family` にせず）、`autoDispose` にもせずアプリ全体で 1 つにする。クリーンアーキテクチャ・DDD の慣習でも、UseCase（アプリケーションサービス）に求められるのは状態を持たないことで、寿命は決めごとにしていない
   - ViewModel は画面の状態を持つので、画面の寿命に合わせて `autoDispose` にする
-  - アプリ全体で 1 つの Repository・UseCase は、アプリが動いている間は dispose されない。閉じる必要のある資源（StreamController・HTTP クライアントなど）を持つクラスだけ `dispose` を作り、`ref.onDispose` に登録する
+  - アプリ全体で 1 つの Repository・UseCase は、ふだんはアプリが動いている間ずっと共有するが、明示的な `invalidate` や `ProviderContainer` の破棄では dispose される。閉じる必要のある資源（StreamController・HTTP クライアントなど）を持つクラスだけ `dispose` を作り、作った provider の `ref.onDispose` に登録する。待っている間に dispose されることもあるので、待った後に閉じた資源へ書き込まない（`LocationRepositoryImpl.requestPermission`）。別の持ち主の資源（共有の DataSource や SDK）は閉じない
 - テストでは `ProviderContainer(overrides: [...])` でモックに差し替える
 
 ## UseCase・Repository の引数
 - 既にあるものを探す・指す・消すときは ID で渡す（`CardUseCase.get(id:)`、`AlreadyGetCardRepository.save(cardId:)`、サーバーのマスターデータを指す `MasterDataRepository.replace(version:)`）。UseCase が Repository から正しいエンティティを読み直す
-- 保存する中身や新しく作るものは、値やエンティティで渡す（`SearchConditionRepository.save(searchCondition:)`）
+- 保存する中身や新しく作るものは、値やエンティティで渡す（`CardBrowsingSettingsRepository.save(settings:)`）
 - ID は値オブジェクトにせず String のまま扱う
 
 ## 失敗の扱い
@@ -76,7 +77,7 @@ Exception も Error も、すべて 1 回だけ記録する。ルールは 4 つ
 
 ## データ層
 - **リモート:** クラウドデータ用のFirebase Firestore
-- **ローカル:** 取り込んだマスターデータは 1 つの JSON ファイル（`MasterDataLocalDataSource`）。Firestore から取ったカードは、エンティティを通さずに端末に保存する形（`LocalCardModel`）にして書く。全件をまとめて読んでメモリに持ち、入れ替えは一時ファイルに書いてから名前を変えて行う。ファイルの形を変えたらファイル名のバージョンを上げ、古い形は取り込んでいない扱いにして取り直す。利用者の設定・取得済みカードは SharedPreferences
+- **ローカル:** 取り込んだマスターデータは、配信のバージョン（Remote Config の値）とカード一式を 1 つの JSON ファイル（`MasterDataLocalDataSource`、`master_data.json`）に一緒に書き、マスターデータが変わるたびにこのファイルを上書きする。バージョンを別の場所に保存しないのは、片方だけ入れ替わって食い違わないようにするため。取り込み済みのバージョンは `MasterDataRepository.getCurrentVersion` がこのファイルから読み、`MasterVersionRepository` は使うべきバージョン（Remote Config）だけを返す。Firestore から取ったカードは、エンティティを通さずに端末に保存する形（`LocalCardModel`）にして書く。全件をまとめて読んでメモリに持ち、入れ替えは一時ファイルに書いてから名前を変えて行う。ファイルの形を変えてもファイル名は変えない。読めない中身は壊れたファイルとして消して記録し、利用者に知らせずにそのまま取り直す（`CheckMasterUpdateUseCase.getNeedUpdate` は、取り込み済みのバージョンを読めなければ更新が必要と返す）。利用者の設定・取得済みカードは SharedPreferences（検索条件とマップの表示は `search_condition` キーの 1 つの JSON で、`common` と `map` に分けて持つ）
 - **コード生成:** イミュータブルモデル用のFreezed
 
 ## 主要な依存関係

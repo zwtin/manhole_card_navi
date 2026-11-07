@@ -30,13 +30,13 @@ void main() {
   });
 
   test('ドラフトで選ばれているものに印が付く', () {
-    const draft = SearchCondition(
-      common: CommonSearchCondition(
+    const draft = CardBrowsingSettings(
+      searchCondition: SearchCondition(
         alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
         volumeIds: {'0001'},
         distributionStates: {DistributionState.stopped},
       ),
-      map: MapSearchCondition(
+      mapDisplaySettings: MapDisplaySettings(
         coordinateType: MapCoordinateType.position,
         pinSize: MapPinSize.large,
       ),

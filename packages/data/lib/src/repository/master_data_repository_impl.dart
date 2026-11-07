@@ -4,6 +4,7 @@ import 'package:data/src/datasource/master_data_remote_data_source.dart';
 import 'package:data/src/mapper/domain_exception_mapper.dart';
 import 'package:data/src/mapper/firestore_master_mapper.dart';
 import 'package:data/src/model/local_card_model.dart';
+import 'package:data/src/model/local_master_data_model.dart';
 import 'package:domain/domain.dart';
 
 class MasterDataRepositoryImpl implements MasterDataRepository {
@@ -16,7 +17,10 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
   @override
   Future<Result<void>> replace({required MasterVersion version}) async {
     try {
-      await _local.writeAll(await _fetch(version));
+      final cards = await _fetch(version);
+      await _local.write(
+        LocalMasterDataModel(version: version.value, cards: cards),
+      );
       return const Result.success(null);
     } on Exception catch (error, stackTrace) {
       _crashlytics.recordNonFatal(error, stackTrace);
@@ -25,9 +29,12 @@ class MasterDataRepositoryImpl implements MasterDataRepository {
   }
 
   @override
-  Future<Result<bool>> exists() async {
+  Future<Result<MasterVersion?>> getCurrentVersion() async {
     try {
-      return Result.success(await _local.exists());
+      final master = await _local.read();
+      return Result.success(
+        master == null ? null : MasterVersion(value: master.version),
+      );
     } on Exception catch (error, stackTrace) {
       _crashlytics.recordNonFatal(error, stackTrace);
       return Result.failure(DomainExceptionMapper.from(error));

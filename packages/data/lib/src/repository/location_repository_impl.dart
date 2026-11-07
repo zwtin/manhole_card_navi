@@ -20,7 +20,10 @@ class LocationRepositoryImpl implements LocationRepository {
       final granted =
           await _location.isLocationServiceEnabled() &&
           await _location.requestPermission();
-      _permissionGranted.add(granted);
+      // 待っている間に dispose されていたら、閉じた Stream には流さない。
+      if (!_permissionGranted.isClosed) {
+        _permissionGranted.add(granted);
+      }
       return Result.success(granted);
     } on Exception catch (error, stackTrace) {
       _crashlytics.recordNonFatal(error, stackTrace);

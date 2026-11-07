@@ -6,7 +6,7 @@ import 'package:domain/domain.dart';
 ManholeCard _card(String id, {required String prefectureId}) {
   return ManholeCard(
     id: id,
-    position: const Coordinate(latitude: 35.68, longitude: 139.76),
+    position: Coordinate(latitude: 35.68, longitude: 139.76),
     name: 'カード $id',
     publicationDate: DateTime(2026, 1, 2),
     distributionState: DistributionState.distributing,

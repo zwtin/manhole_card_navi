@@ -12,23 +12,23 @@ final searchConditionViewModelProvider = AsyncNotifierProvider.autoDispose<
 
 class SearchConditionViewModel
     extends AutoDisposeAsyncNotifier<SearchConditionViewData> {
-  SearchConditionUseCase get _searchConditionUseCase =>
-      ref.read(searchConditionUseCaseProvider);
+  CardBrowsingSettingsUseCase get _settingsUseCase =>
+      ref.read(cardBrowsingSettingsUseCaseProvider);
   AnalyticsUseCase get _analyticsUseCase => ref.read(analyticsUseCaseProvider);
   NavigationService get _navigationService =>
       ref.read(navigationServiceProvider);
 
   /// 編集中のドラフト。適用するまで端末保存も他画面も変更しない。
-  late SearchCondition _draft;
+  late CardBrowsingSettings _draft;
 
   late List<Volume> _volumes;
 
   @override
   Future<SearchConditionViewData> build() async {
-    final searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
+    final settingsUseCase = ref.watch(cardBrowsingSettingsUseCaseProvider);
     final cardUseCase = ref.watch(cardUseCaseProvider);
 
-    _draft = await searchConditionUseCase.watch().first;
+    _draft = await settingsUseCase.watch().first;
     _volumes = await _loadVolumes(cardUseCase);
     return _toViewData();
   }
@@ -36,7 +36,7 @@ class SearchConditionViewModel
   void selectAlreadyGetFilter(int index) {
     _updateDraft(
       (draft) => draft.copyWith(
-        common: draft.common.copyWith(
+        searchCondition: draft.searchCondition.copyWith(
           alreadyGetFilter:
               SearchConditionViewDataMapper.alreadyGetFilters[index],
         ),
@@ -47,7 +47,7 @@ class SearchConditionViewModel
   void selectCoordinateType(int index) {
     _updateDraft(
       (draft) => draft.copyWith(
-        map: draft.map.copyWith(
+        mapDisplaySettings: draft.mapDisplaySettings.copyWith(
           coordinateType: SearchConditionViewDataMapper.coordinateTypes[index],
         ),
       ),
@@ -57,7 +57,7 @@ class SearchConditionViewModel
   void selectPinSize(int index) {
     _updateDraft(
       (draft) => draft.copyWith(
-        map: draft.map.copyWith(
+        mapDisplaySettings: draft.mapDisplaySettings.copyWith(
           pinSize: SearchConditionViewDataMapper.pinSizes[index],
         ),
       ),
@@ -67,38 +67,46 @@ class SearchConditionViewModel
   void toggleVolume(int index) {
     final volumeId = _volumes[index].id;
     _updateDraft((draft) {
-      final next = Set<String>.of(draft.common.volumeIds);
+      final next = Set<String>.of(draft.searchCondition.volumeIds);
       if (!next.remove(volumeId)) {
         next.add(volumeId);
       }
-      return draft.copyWith(common: draft.common.copyWith(volumeIds: next));
+      return draft.copyWith(
+        searchCondition: draft.searchCondition.copyWith(volumeIds: next),
+      );
     });
   }
 
   void selectAllVolumes() {
     final volumeIds = _allVolumeIds;
     _updateDraft(
-      (draft) =>
-          draft.copyWith(common: draft.common.copyWith(volumeIds: volumeIds)),
+      (draft) => draft.copyWith(
+        searchCondition: draft.searchCondition.copyWith(volumeIds: volumeIds),
+      ),
     );
   }
 
   void clearVolumes() {
     _updateDraft(
-      (draft) =>
-          draft.copyWith(common: draft.common.copyWith(volumeIds: const {})),
+      (draft) => draft.copyWith(
+        searchCondition: draft.searchCondition.copyWith(volumeIds: const {}),
+      ),
     );
   }
 
   void toggleDistributionState(int index) {
     final state = SearchConditionViewDataMapper.distributionStates[index];
     _updateDraft((draft) {
-      final next = Set<DistributionState>.of(draft.common.distributionStates);
+      final next = Set<DistributionState>.of(
+        draft.searchCondition.distributionStates,
+      );
       if (!next.remove(state)) {
         next.add(state);
       }
       return draft.copyWith(
-        common: draft.common.copyWith(distributionStates: next),
+        searchCondition: draft.searchCondition.copyWith(
+          distributionStates: next,
+        ),
       );
     });
   }
@@ -106,7 +114,7 @@ class SearchConditionViewModel
   void selectAllDistributionStates() {
     _updateDraft(
       (draft) => draft.copyWith(
-        common: draft.common.copyWith(
+        searchCondition: draft.searchCondition.copyWith(
           distributionStates:
               SearchConditionViewDataMapper.distributionStates.toSet(),
         ),
@@ -117,7 +125,9 @@ class SearchConditionViewModel
   void clearDistributionStates() {
     _updateDraft(
       (draft) => draft.copyWith(
-        common: draft.common.copyWith(distributionStates: const {}),
+        searchCondition: draft.searchCondition.copyWith(
+          distributionStates: const {},
+        ),
       ),
     );
   }
@@ -125,7 +135,7 @@ class SearchConditionViewModel
   /// 座標の種類とピンの大きさは絞り込みではなく、マップの表示の選択なので残す。
   void clearAllFilters() {
     _updateDraft(
-      (draft) => draft.copyWith(common: const CommonSearchCondition()),
+      (draft) => draft.copyWith(searchCondition: const SearchCondition()),
     );
   }
 
@@ -133,7 +143,7 @@ class SearchConditionViewModel
     if (!state.hasValue) {
       return;
     }
-    final result = await _searchConditionUseCase.save(searchCondition: _draft);
+    final result = await _settingsUseCase.save(settings: _draft);
     if (result case Failure(:final exception)) {
       await _navigationService.showFailure(
         title: '検索条件を保存できませんでした',
@@ -158,7 +168,9 @@ class SearchConditionViewModel
 
   Set<String> get _allVolumeIds => _volumes.map((volume) => volume.id).toSet();
 
-  void _updateDraft(SearchCondition Function(SearchCondition draft) update) {
+  void _updateDraft(
+    CardBrowsingSettings Function(CardBrowsingSettings draft) update,
+  ) {
     // 読み込みが終わるまでは、ドラフトも選択肢もまだない。
     if (!state.hasValue) {
       return;

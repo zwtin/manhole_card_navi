@@ -35,37 +35,33 @@ class CardUseCase {
     required List<ManholeCard> cards,
     required Set<String> alreadyGetCardIds,
   }) {
-    final common = searchCondition.common;
     return [
       for (final card in cards)
-        if (_matchesVolume(common, card) &&
-            _matchesDistributionState(common, card) &&
+        if (_matchesVolume(searchCondition, card) &&
+            _matchesDistributionState(searchCondition, card) &&
             _matchesAlreadyGet(
-              common,
+              searchCondition,
               alreadyGet: alreadyGetCardIds.contains(card.id),
             ))
           card,
     ];
   }
 
-  bool _matchesVolume(CommonSearchCondition common, ManholeCard card) {
-    return common.volumeIds.isEmpty ||
-        common.volumeIds.contains(card.volume.id);
+  bool _matchesVolume(SearchCondition condition, ManholeCard card) {
+    return condition.volumeIds.isEmpty ||
+        condition.volumeIds.contains(card.volume.id);
   }
 
-  bool _matchesDistributionState(
-    CommonSearchCondition common,
-    ManholeCard card,
-  ) {
-    return common.distributionStates.isEmpty ||
-        common.distributionStates.contains(card.distributionState);
+  bool _matchesDistributionState(SearchCondition condition, ManholeCard card) {
+    return condition.distributionStates.isEmpty ||
+        condition.distributionStates.contains(card.distributionState);
   }
 
   bool _matchesAlreadyGet(
-    CommonSearchCondition common, {
+    SearchCondition condition, {
     required bool alreadyGet,
   }) {
-    return switch (common.alreadyGetFilter) {
+    return switch (condition.alreadyGetFilter) {
       AlreadyGetFilter.all => true,
       AlreadyGetFilter.alreadyGet => alreadyGet,
       AlreadyGetFilter.notAlreadyGet => !alreadyGet,

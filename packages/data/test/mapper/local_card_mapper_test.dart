@@ -22,7 +22,7 @@ void main() {
     expect(
       LocalCardMapper.toCard(
         LocalCardModel.fromJson(
-          stored(localCard(id: '00-101-A001', distributionPoints: const [])),
+          stored(localCard(id: '00-101-A001', distributionPoints: [])),
         ),
       ),
       card(id: '00-101-A001', distributionPoints: const []),
@@ -35,7 +35,7 @@ void main() {
 
     final read = LocalCardMapper.toCard(LocalCardModel.fromJson(json));
 
-    expect(read.position, const Coordinate(latitude: 35, longitude: 139));
+    expect(read.position, Coordinate(latitude: 35, longitude: 139));
   });
 
   test('壊れたカードは、壊れたデータの失敗にする', () {
@@ -48,6 +48,10 @@ void main() {
       broken('distributionState', 'unknown'),
       broken('publicationDate', 'きのう'),
       broken('prefecture', null),
+      broken('position', {'latitude': 90.5, 'longitude': 135.0}),
+      broken('distributionPoints', [
+        {'latitude': 35.0, 'longitude': -180.5},
+      ]),
     ]) {
       expect(
         () => LocalCardModel.fromJson(json),

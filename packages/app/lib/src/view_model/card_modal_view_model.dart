@@ -32,7 +32,7 @@ class CardModalViewModel
     final alreadyGetCardUseCase = ref.watch(alreadyGetCardUseCaseProvider);
     final cardUseCase = ref.watch(cardUseCaseProvider);
     final navigationService = ref.watch(navigationServiceProvider);
-    final searchConditionUseCase = ref.watch(searchConditionUseCaseProvider);
+    final settingsUseCase = ref.watch(cardBrowsingSettingsUseCaseProvider);
 
     final subscription = alreadyGetCardUseCase.watch().listen((cardIds) {
       final current = state.valueOrNull;
@@ -61,7 +61,7 @@ class CardModalViewModel
     return CardModalViewData(
       card: ModalCardViewDataMapper.toViewData(
         card: card,
-        position: await _positionOf(card, searchConditionUseCase),
+        position: await _positionOf(card, settingsUseCase),
       ),
       alreadyGet: alreadyGetCardIds.contains(arg.cardId),
     );
@@ -162,16 +162,16 @@ class CardModalViewModel
   /// 「マップで見る」から開いたときは、マップがカメラを向けるのと同じピンにする。
   Future<Coordinate> _positionOf(
     ManholeCard card,
-    SearchConditionUseCase searchConditionUseCase,
+    CardBrowsingSettingsUseCase settingsUseCase,
   ) async {
     final pin = arg.pin;
     if (pin != null) {
       return Coordinate(latitude: pin.latitude, longitude: pin.longitude);
     }
-    final condition = await searchConditionUseCase.watch().first;
+    final settings = await settingsUseCase.watch().first;
     return MapMarkersViewDataMapper.firstPinOf(
           card,
-          condition.map.coordinateType,
+          settings.mapDisplaySettings.coordinateType,
         ) ??
         card.position;
   }

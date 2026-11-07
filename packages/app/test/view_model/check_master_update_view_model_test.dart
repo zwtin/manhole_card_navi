@@ -68,7 +68,7 @@ void main() {
     verify(() => navigationService.goToTutorial()).called(1);
   });
 
-  test('更新が必要なら、取り込んでから次の画面へ進む', () async {
+  test('更新が必要なら、何も知らせずに取り込んでから次の画面へ進む', () async {
     stubNeedUpdate([const Result.success(true)]);
     when(
       () => checkMasterUpdateUseCase.updateMaster(),
@@ -81,6 +81,12 @@ void main() {
 
     verify(() => checkMasterUpdateUseCase.updateMaster()).called(1);
     verify(() => navigationService.goToCheckTermsOfServiceUpdate()).called(1);
+    verifyNever(
+      () => navigationService.showFailure(
+        title: any(named: 'title'),
+        exception: any(named: 'exception'),
+      ),
+    );
   });
 
   test('失敗したら、何に失敗したかと失敗の種類を知らせてやり直す', () async {

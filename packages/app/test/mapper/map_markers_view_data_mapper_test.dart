@@ -6,13 +6,13 @@ import 'package:domain/domain.dart';
 ManholeCard _card({
   required String id,
   required List<Coordinate> distributionPoints,
-  Coordinate position = const Coordinate(latitude: 35.68, longitude: 139.76),
+  Coordinate? position,
   DistributionState distributionState = DistributionState.distributing,
   Volume volume = const Volume(id: '0011', name: '第12弾'),
 }) {
   return ManholeCard(
     id: id,
-    position: position,
+    position: position ?? Coordinate(latitude: 35.68, longitude: 139.76),
     name: 'カード',
     publicationDate: DateTime(2026, 1, 1),
     distributionState: distributionState,
@@ -31,7 +31,7 @@ void main() {
   final cards = [
     _card(
       id: 'A',
-      distributionPoints: const [
+      distributionPoints: [
         Coordinate(latitude: 35.69, longitude: 139.77),
         Coordinate(latitude: 35.70, longitude: 139.78),
       ],
@@ -46,8 +46,8 @@ void main() {
     );
 
     expect(pins.map((pin) => (pin.card.id, pin.coordinate)), [
-      ('A', const Coordinate(latitude: 35.68, longitude: 139.76)),
-      ('B', const Coordinate(latitude: 35.68, longitude: 139.76)),
+      ('A', Coordinate(latitude: 35.68, longitude: 139.76)),
+      ('B', Coordinate(latitude: 35.68, longitude: 139.76)),
     ]);
   });
 
@@ -57,7 +57,7 @@ void main() {
         cards[0],
         MapCoordinateType.distribution,
       ),
-      const Coordinate(latitude: 35.69, longitude: 139.77),
+      Coordinate(latitude: 35.69, longitude: 139.77),
     );
     expect(
       MapMarkersViewDataMapper.firstPinOf(
@@ -75,8 +75,8 @@ void main() {
     );
 
     expect(pins.map((pin) => (pin.card.id, pin.coordinate)), [
-      ('A', const Coordinate(latitude: 35.69, longitude: 139.77)),
-      ('A', const Coordinate(latitude: 35.70, longitude: 139.78)),
+      ('A', Coordinate(latitude: 35.69, longitude: 139.77)),
+      ('A', Coordinate(latitude: 35.70, longitude: 139.78)),
     ]);
   });
 
@@ -87,7 +87,7 @@ void main() {
   });
 
   group('selectNearest', () {
-    const center = Coordinate(latitude: 35.0, longitude: 135.0);
+    final center = Coordinate(latitude: 35.0, longitude: 135.0);
 
     CardPin pinAt(String id, double offset) {
       return _pin(

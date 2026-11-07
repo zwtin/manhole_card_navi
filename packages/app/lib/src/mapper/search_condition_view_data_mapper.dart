@@ -28,39 +28,43 @@ abstract final class SearchConditionViewDataMapper {
 
   /// [volumes] は [toVolumes] で並べたもの。
   static SearchConditionViewData toViewData({
-    required SearchCondition draft,
+    required CardBrowsingSettings draft,
     required List<Volume> volumes,
   }) {
-    final common = draft.common;
+    final condition = draft.searchCondition;
+    final display = draft.mapDisplaySettings;
     return SearchConditionViewData(
       alreadyGetFilters: [
         for (final filter in alreadyGetFilters)
           (
             label: _alreadyGetFilterName(filter),
-            selected: filter == common.alreadyGetFilter,
+            selected: filter == condition.alreadyGetFilter,
           ),
       ],
       volumes: [
         for (final volume in volumes)
-          (label: volume.name, selected: common.volumeIds.contains(volume.id)),
+          (
+            label: volume.name,
+            selected: condition.volumeIds.contains(volume.id),
+          ),
       ],
       distributionStates: [
         for (final state in distributionStates)
           (
             label: _distributionStateName(state),
-            selected: common.distributionStates.contains(state),
+            selected: condition.distributionStates.contains(state),
           ),
       ],
       coordinateTypes: [
         for (final type in coordinateTypes)
           (
             label: MapCoordinateTypeNameMapper.nameOf(type),
-            selected: type == draft.map.coordinateType,
+            selected: type == display.coordinateType,
           ),
       ],
       pinSizes: [
         for (final size in pinSizes)
-          (label: _pinSizeName(size), selected: size == draft.map.pinSize),
+          (label: _pinSizeName(size), selected: size == display.pinSize),
       ],
     );
   }

@@ -53,10 +53,20 @@ abstract final class AppRoutePath {
   }
 
   /// [cardModalWithPin] で開いたときのピンの座標。それ以外は null。
+  ///
+  /// URL は外から書き換えられるので、地球上の範囲にない座標も null にして、ピンの
+  /// 指定がないときと同じくカードの位置を使わせる。
   static PinCoordinate? pinOf(Uri uri) {
     final latitude = double.tryParse(uri.queryParameters[_latitude] ?? '');
     final longitude = double.tryParse(uri.queryParameters[_longitude] ?? '');
     if (latitude == null || longitude == null) {
+      return null;
+    }
+    // NaN はどの比較も false になるので、範囲の比較だけで NaN・無限大も弾ける。
+    if (!(latitude >= -90 &&
+        latitude <= 90 &&
+        longitude >= -180 &&
+        longitude <= 180)) {
       return null;
     }
     return (latitude: latitude, longitude: longitude);

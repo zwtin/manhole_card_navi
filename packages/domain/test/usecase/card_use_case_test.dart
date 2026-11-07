@@ -12,7 +12,7 @@ ManholeCard _card({
 }) {
   return ManholeCard(
     id: id,
-    position: const Coordinate(latitude: 35.68, longitude: 139.76),
+    position: Coordinate(latitude: 35.68, longitude: 139.76),
     name: 'カード $id',
     publicationDate: DateTime(2026, 1, 2),
     distributionState: distributionState,
@@ -50,12 +50,12 @@ void main() {
   });
 
   List<String> filteredIds(
-    CommonSearchCondition common, {
+    SearchCondition searchCondition, {
     Set<String> alreadyGetCardIds = const {},
   }) {
     return useCase
         .filter(
-          searchCondition: SearchCondition(common: common),
+          searchCondition: searchCondition,
           cards: cards,
           alreadyGetCardIds: alreadyGetCardIds,
         )
@@ -65,11 +65,11 @@ void main() {
 
   group('filter', () {
     test('絞り込みがなければ、すべてのカードを順序どおり返す', () {
-      expect(filteredIds(const CommonSearchCondition()), ['A', 'B', 'C', 'D']);
+      expect(filteredIds(const SearchCondition()), ['A', 'B', 'C', 'D']);
     });
 
     test('弾は、選んだどれかに当たるカードを通す', () {
-      expect(filteredIds(CommonSearchCondition(volumeIds: {'0001', '0002'})), [
+      expect(filteredIds(SearchCondition(volumeIds: {'0001', '0002'})), [
         'B',
         'C',
         'D',
@@ -79,7 +79,7 @@ void main() {
     test('配布状態は、選んだどれかに当たるカードを通す', () {
       expect(
         filteredIds(
-          CommonSearchCondition(
+          SearchCondition(
             distributionStates: {
               DistributionState.stopped,
               DistributionState.notClear,
@@ -93,16 +93,14 @@ void main() {
     test('取得状態で絞り込む', () {
       expect(
         filteredIds(
-          const CommonSearchCondition(
-            alreadyGetFilter: AlreadyGetFilter.alreadyGet,
-          ),
+          const SearchCondition(alreadyGetFilter: AlreadyGetFilter.alreadyGet),
           alreadyGetCardIds: {'A', 'C'},
         ),
         ['A', 'C'],
       );
       expect(
         filteredIds(
-          const CommonSearchCondition(
+          const SearchCondition(
             alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
           ),
           alreadyGetCardIds: {'A', 'C'},
@@ -114,7 +112,7 @@ void main() {
     test('弾・配布状態・取得状態は、すべてに当たるカードだけを通す', () {
       expect(
         filteredIds(
-          CommonSearchCondition(
+          SearchCondition(
             alreadyGetFilter: AlreadyGetFilter.notAlreadyGet,
             volumeIds: {'0001'},
             distributionStates: {DistributionState.distributing},
@@ -126,31 +124,14 @@ void main() {
     });
 
     test('当たるカードがなければ空', () {
-      expect(filteredIds(CommonSearchCondition(volumeIds: {'9999'})), isEmpty);
-    });
-
-    test('マップの表示の設定では絞り込まない', () {
-      final result = useCase.filter(
-        searchCondition: const SearchCondition(
-          map: MapSearchCondition(
-            coordinateType: MapCoordinateType.position,
-            pinSize: MapPinSize.smallest,
-          ),
-        ),
-        cards: cards,
-        alreadyGetCardIds: const {},
-      );
-
-      expect(result, cards);
+      expect(filteredIds(SearchCondition(volumeIds: {'9999'})), isEmpty);
     });
 
     test('渡したリストを変えず、Repository も呼ばない', () {
       final input = List.of(cards);
 
       final result = useCase.filter(
-        searchCondition: SearchCondition(
-          common: CommonSearchCondition(volumeIds: {'0000'}),
-        ),
+        searchCondition: SearchCondition(volumeIds: {'0000'}),
         cards: input,
         alreadyGetCardIds: const {},
       );
